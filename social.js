@@ -2,7 +2,7 @@
 export function startSocial(db,user){
 const panel=document.querySelector('#social-panel'),tabs=panel.querySelectorAll('[data-social-tab]'),chatList=panel.querySelector('#world-chat-lines'),chatForm=panel.querySelector('#world-chat-form'),chatInput=panel.querySelector('#world-chat-input'),friendList=panel.querySelector('#friend-list'),search=panel.querySelector('#friend-search'),searchResult=panel.querySelector('#friend-results'),note=panel.querySelector('#social-note');
 let active='chat',busy=false,lastSend=0;
-const name=user.user_metadata?.username||'Adventurer';
+const name=user.user_metadata?.username||'Adventurer';window.eldervaleUserId=user.id;
 function info(s){note.textContent=s||''}
 function el(tag,content,cls){const node=document.createElement(tag);if(content!==undefined)node.textContent=content;if(cls)node.className=cls;return node}
 function show(tab){active=tab;for(const t of tabs)t.classList.toggle('active',t.dataset.socialTab===tab);panel.querySelector('#social-chat').hidden=tab!=='chat';panel.querySelector('#social-friends').hidden=tab!=='friends';if(tab==='friends')refreshFriends()}
