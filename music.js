@@ -65,8 +65,8 @@ export function startMusic(){
  }
  function schedule(){
   if(!playing||!ctx)return;
-  const quarter=60/songs[track].bpm;
   while(nextTime<ctx.currentTime+.4){
+   const quarter=60/songs[track].bpm;
    if(region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;updateAmbience();label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name}
    const currentSong=songs[track],i=step%32,bar=Math.floor(i/4),transpose=regionOffsets[region]||0,root=currentSong.roots[bar]+transpose;
    // Bass line and two supporting voices give the march a full brass-ensemble texture.
@@ -94,7 +94,7 @@ export function startMusic(){
  button.addEventListener('click',toggle);
  settingsToggle?.addEventListener('click',toggle);
  // Start music on the first user interaction permitted by the browser.
- document.addEventListener('pointerdown',event=>{if(!playing&&!event.target.closest('#music-toggle'))toggle()},{once:true});
+ document.addEventListener('pointerdown',event=>{if(!playing&&!event.target.closest('#music-toggle, #settings-music-toggle'))toggle()},{once:true});
  document.addEventListener('keydown',event=>{if(!playing&&!event.repeat&&!event.target.closest('#music-toggle'))toggle()},{once:true});
  slider.addEventListener('input',()=>{if(settingsVolume)settingsVolume.value=slider.value;localStorage.setItem('eldervale-music-volume',slider.value);if(ctx&&master)master.gain.setTargetAtTime(musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,.04)});
  settingsVolume?.addEventListener('input',()=>{slider.value=settingsVolume.value;slider.dispatchEvent(new Event('input',{bubbles:true}))});
