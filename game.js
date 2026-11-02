@@ -22,7 +22,7 @@ sphere(.055,0x222222,-.14,2.43,.315,body);sphere(.055,0x222222,.14,2.43,.315,bod
 function joint(x,y,w,h,c){const g=new T.Group();g.position.set(x,y,0);body.add(g);box(w,h,.3,c,0,-h/2,0,g);return g}
 const la=joint(-.55,1.97,.27,.95,0x49738a),ra=joint(.55,1.97,.27,.95,0x49738a),ll=joint(-.23,1,.32,.85,0x424750),rl=joint(.23,1,.32,.85,0x424750);
 box(.33,.27,.48,0x382b25,0,-.84,.07,ll);box(.33,.27,.48,0x382b25,0,-.84,.07,rl);
-const saved=JSON.parse(localStorage.getItem('eldervale-save')||'{}');
+const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
 const armorCatalog={
   helm:{name:'Iron full helm',slot:'Head',desc:'A sturdy iron helmet.'},
   chest:{name:'Iron platebody',slot:'Body',desc:'A solid iron breastplate.'},
