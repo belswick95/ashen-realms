@@ -63,11 +63,11 @@ export function buildHumanoid(T,root,look={}){
  const eyeShape=geo('humanAlmondEye',()=>{const shape=new T.Shape();shape.moveTo(-.038,0);shape.quadraticCurveTo(-.004,.014,.038,0);shape.quadraticCurveTo(.004,-.010,-.038,0);return new T.ShapeGeometry(shape,8)});
  const browShape=geo('humanTaperedBrow',()=>{const s=new T.Shape();s.moveTo(-.052,-.006);s.lineTo(-.035,.007);s.lineTo(.020,.006);s.lineTo(.052,-.004);s.lineTo(.036,-.008);s.lineTo(-.035,-.004);s.closePath();return new T.ExtrudeGeometry(s,{depth:.004,bevelEnabled:false})});
  for(const side of [-1,1]){
-  const lid=mesh(eyeShape,mat(0x775443),head,side*.108,2.465,.221,1.10,1.20,1);lid.rotation.z=side*.045;
-  const sclera=mesh(eyeShape,mat(0xbeb8a6),head,side*.108,2.465,.225,.92,.76,1);sclera.rotation.z=side*.045;
-  mesh(geo('humanIris',()=>new T.CircleGeometry(.011,14)),mat(0x59634f),head,side*.108,2.465,.227,1,.94,1);
-  mesh(geo('humanPupil',()=>new T.CircleGeometry(.004,12)),mat(0x20251f),head,side*.108,2.465,.228);
-  mesh(geo('humanEyeGlint',()=>new T.CircleGeometry(.0017,6)),mat(0xd9d9c6),head,side*.108-.003,2.469,.229);
+  const lid=mesh(eyeShape,mat(0x775443),head,side*.108,2.465,.233,1.10,1.20,1);lid.rotation.z=side*.045;
+  const sclera=mesh(eyeShape,mat(0xbeb8a6),head,side*.108,2.465,.237,.92,.76,1);sclera.rotation.z=side*.045;
+  mesh(geo('humanIris',()=>new T.CircleGeometry(.011,14)),mat(0x59634f),head,side*.108,2.465,.239,1,.94,1);
+  mesh(geo('humanPupil',()=>new T.CircleGeometry(.004,12)),mat(0x20251f),head,side*.108,2.465,.240);
+  mesh(geo('humanEyeGlint',()=>new T.CircleGeometry(.0017,6)),mat(0xd9d9c6),head,side*.108-.003,2.469,.241);
   const brow=mesh(browShape,hairMat,head,side*.108,2.505,.234);brow.rotation.z=-side*.07;
  }
  const noseGeometry=geo('humanNasalBridge',()=>{
@@ -75,8 +75,8 @@ export function buildHumanoid(T,root,look={}){
   g.setIndex([0,2,4,0,4,1,1,4,3,2,5,4,3,4,6,5,6,4,2,3,6,2,6,5]);g.computeVertexNormals();return g;
  });
  mesh(noseGeometry,faceMat,head,0,0,0);
- mesh(sphere,mat(0x936f5c),head,0,2.300,.222,.064,.010,.009);
- mesh(sphere,faceMat,head,0,2.285,.222,.059,.009,.010);
+ mesh(sphere,mat(0x936f5c),head,0,2.300,.244,.064,.010,.009);
+ mesh(sphere,faceMat,head,0,2.285,.242,.059,.009,.010);
  for(const side of [-1,1]){const ear=mesh(sphere,faceMat,head,side*.256,2.405,-.012,.035,.082,.047);ear.rotation.z=side*.13}
  // Close-fitted hairstyle volumes and swept strands are attached to the skull.
  const style=look.hair||'Side swept';
