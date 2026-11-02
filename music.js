@@ -86,9 +86,9 @@ export function startMusic(){
   try{
    if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();const limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-15;limiter.ratio.value=4;master.connect(limiter);limiter.connect(ctx.destination)}
    if(playing){musicMuted=!musicMuted;master.gain.setTargetAtTime(musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,.08);button.textContent=musicMuted?'Music Off':'Music On';button.setAttribute('aria-pressed',String(!musicMuted));if(settingsToggle){settingsToggle.textContent=musicMuted?'Unmute music':'Mute music';settingsToggle.setAttribute('aria-pressed',String(!musicMuted))}return}
-   await ctx.resume();startAmbience();master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.05);
+   await ctx.resume();startAmbience();master.gain.setTargetAtTime(musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,.05);
    nextTime=ctx.currentTime+.08;playing=true;timer=setInterval(schedule,90);schedule();
-   button.textContent='Music On';button.setAttribute('aria-pressed','true');label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name;
+   button.textContent=musicMuted?'Music Off':'Music On';button.setAttribute('aria-pressed',String(!musicMuted));if(settingsToggle){settingsToggle.textContent=musicMuted?'Unmute music':'Mute music';settingsToggle.setAttribute('aria-pressed',String(!musicMuted))}label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name;
   }catch(err){label.textContent='Audio unavailable';console.warn('Eldervale music:',err)}
  }
  button.addEventListener('click',toggle);
