@@ -48,6 +48,18 @@ function disk(r,c,x,z){const m=new T.Mesh(new T.CircleGeometry(r,28),material(c)
 function trail(ax,az,bx,bz,width=2.7){const len=Math.hypot(bx-ax,bz-az);const pathMap=dirtTexture.clone();pathMap.repeat.set(Math.max(1,width/3),Math.max(1,len/3));pathMap.needsUpdate=true;const m=new T.Mesh(new T.PlaneGeometry(width,len),new T.MeshLambertMaterial({map:pathMap}));m.rotation.x=-Math.PI/2;m.rotation.z=-Math.atan2(bx-ax,bz-az);m.position.set((ax+bx)/2,.025,(az+bz)/2);scene.add(m)}
 trail(0,0,-60,45);trail(0,0,75,-55);trail(0,0,105,103);trail(-60,45,-105,-91);texturedPatch(13,0,0,0x8a9870);
 for(let i=0;i<480;i++){const a=i*2.399963,r=8+Math.sqrt(i)*9.1,x=Math.sin(a)*r,z=Math.cos(a)*r;if(Math.abs(x)<410&&Math.abs(z)<410){const g=box(.11,.14,.11,i%3?0x79955b:0x9baa70,x,.08,z);g.rotation.y=a}}
+// Draw-call-efficient tufts add near-ground depth without thousands of meshes.
+const tuftGeometry=new T.ConeGeometry(.095,.32,3);
+const tuftMaterial=new T.MeshLambertMaterial({color:0x789b58,side:T.DoubleSide});
+const tuftCount=1600,tufts=new T.InstancedMesh(tuftGeometry,tuftMaterial,tuftCount);
+const tuftDummy=new T.Object3D();
+for(let i=0;i<tuftCount;i++){
+ const angle=i*2.3999632297,radius=10+Math.sqrt(i)*9.5;
+ const x=Math.cos(angle)*radius,z=Math.sin(angle)*radius;
+ tuftDummy.position.set(x,.12,z);tuftDummy.rotation.set(0,i*2.17,0);
+ const size=.7+(Math.sin(i*1.37)*.5+.5)*.9;tuftDummy.scale.set(size,size,size);tuftDummy.updateMatrix();tufts.setMatrixAt(i,tuftDummy.matrix)
+}
+tufts.instanceMatrix.needsUpdate=true;tufts.frustumCulled=false;scene.add(tufts);
 for(let i=0;i<38;i++){const a=i*2.4,r=17+i*3.8,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<405&&Math.abs(z)<405){const stone=sphere(.3+i%3*.12,0x8d8e7c,x,.16,z);stone.scale.y=.5}}
 function tree(x,z){
  const seed=Math.abs(Math.sin(x*12.9898+z*78.233));
