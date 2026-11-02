@@ -78,37 +78,45 @@ function rock(x,z){
  const smaller=new T.Mesh(new T.DodecahedronGeometry(.36,0),material(0x6f7770,'stone'));smaller.position.set(.68,.24,.18);smaller.castShadow=true;root.add(smaller);
  m.userData={kind:'rock',x,z};targets.push(m)
 }
+const houseInteriors=[];
 function house(x,z,c,scale=1.65,rotation=0){
  const group=new T.Group();group.position.set(x,0,z);group.scale.setScalar(scale);group.rotation.y=rotation;scene.add(group);
- box(4,3,3.7,c,0,1.5,0,group,'stone');
+ // Real walk-in room, with a front doorway instead of a solid wall block.
+ box(4,.12,3.7,0x81684c,0,.065,0,group,'wood');
+ box(4,3,.18,c,0,1.5,-1.83,group,'stone');
+ for(const side of [-1,1])box(.18,3,3.7,c,side*1.91,1.5,0,group,'stone');
+ for(const side of [-1,1])box(1.48,3,.18,c,side*1.26,1.5,1.83,group,'stone');
+ box(1.04,.75,.18,c,0,2.625,1.83,group,'stone');
+ const roofParts=[];
  for(const side of [-1,1]){
   box(.18,3.15,.2,0x715139,side*1.94,1.55,1.83,group,'wood');
   box(.18,3.15,.2,0x715139,side*1.94,1.55,-1.83,group,'wood')
  }
- box(4.25,.18,3.9,0x74543c,0,3.07,0,group,'wood');
+ roofParts.push(box(4.25,.18,3.9,0x74543c,0,3.07,0,group,'wood'));
  // Roof geometry: ridge x=0 at y=4.40; eaves x=±2.25 at y=3.12.
  // Slopes descend away from the ridge, meeting cleanly at the center.
  const roofRun=2.25,roofRise=1.28,roofLength=Math.hypot(roofRun,roofRise);
  const roofAngle=Math.atan2(roofRise,roofRun);
  for(const side of [-1,1]){
   const roof=box(roofLength+.04,.16,4.35,0x634332,side*roofRun/2,3.12+roofRise/2,0,group,'roof');
-  roof.rotation.z=-side*roofAngle;
+  roof.rotation.z=-side*roofAngle;roofParts.push(roof);
   // Thin wooden fascia follows the actual eave rather than floating above it.
-  const fascia=box(.18,.23,4.45,0x644a32,side*roofRun,3.11,0,group,'wood');
+  const fascia=box(.18,.23,4.45,0x644a32,side*roofRun,3.11,0,group,'wood');roofParts.push(fascia);
  }
  // Close the triangular gable walls under the roof at front and back.
  for(const z of [-1.87,1.87]){
   const shape=new T.Shape();shape.moveTo(-2,3.08);shape.lineTo(2,3.08);shape.lineTo(0,4.21);shape.closePath();
-  const gable=new T.Mesh(new T.ShapeGeometry(shape),material(c,'stone'));gable.position.z=z;gable.material.side=T.DoubleSide;gable.castShadow=true;group.add(gable);
+  const gable=new T.Mesh(new T.ShapeGeometry(shape),material(c,'stone'));gable.position.z=z;gable.material.side=T.DoubleSide;gable.castShadow=true;group.add(gable);roofParts.push(gable);
  }
- box(.86,1.65,.12,0x493322,0,.84,1.92,group,'wood');
- box(.08,.08,.06,0xc7a65f,.29,.84,2.0,group);
+ // Open doorway: no opaque door mesh blocks the entrance.
+ box(1.1,.14,.22,0x67452f,0,1.8,1.92,group,'wood');
  for(const side of [-1,1]){
   box(.79,.82,.12,0x89aeb8,side*1.25,1.92,1.92,group);
   box(.1,.91,.17,0x614832,side*1.25,1.92,2.02,group,'wood');
   box(.85,.10,.17,0x614832,side*1.25,1.92,2.02,group,'wood')
  }
- box(.4,1.2,.4,0x76665b,1.1,4.35,-.7,group,'stone');
+ roofParts.push(box(.4,1.2,.4,0x76665b,1.1,4.35,-.7,group,'stone'));
+ houseInteriors.push({group,roofParts,inside:false});
  for(let i=0;i<4;i++)box(.36,.21,.29,0x858479,-1.55+i*.95,.12,1.96,group,'stone');
 }
 for(let i=0;i<520;i++){const a=i*2.399,r=14+Math.sqrt(i)*17,x=Math.sin(a)*r,z=Math.cos(a)*r;if(i%4===0)rock(x,z);else tree(x,z)}
@@ -122,6 +130,37 @@ const villageBuildings=[
 ];
 for(const [x,z,c,scale,rot] of villageBuildings)house(x,z,c,scale,rot);
 house(-60,42,0xb7a08c);house(-54,48,0xaaa38a);house(73,-58,0xc3b29b);house(78,-51,0x99866c);house(-105,-91,0x9a9b87);house(102,103,0xb8a48d);house(-210,145,0xbda78a);house(-205,151,0xa8a089);house(260,-185,0xbda78a);house(265,-180,0xaaa08a);house(225,215,0xbaa78e);house(-275,-215,0xbda88d);
+// Oakcross starter armory: a one-time supply chest in the northern house.
+const armoryHouse=houseInteriors[1];
+const chestRoot=new T.Group();armoryHouse.group.add(chestRoot);
+chestRoot.position.set(0,0,-.65);
+box(1.15,.66,.73,0x6e4325,0,.43,0,chestRoot,'wood');
+box(1.24,.17,.81,0xa47a3f,0,.82,0,chestRoot,'wood');
+for(const x of [-.48,.48]){box(.10,.79,.82,0xb6a069,x,.45,0,chestRoot,'stone')}
+box(.22,.24,.09,0xe0b866,0,.63,.43,chestRoot,'stone');
+const chestLid=new T.Group();chestLid.position.set(0,.85,-.36);chestRoot.add(chestLid);
+box(1.2,.22,.75,0x85552c,0,.05,.36,chestLid,'wood');
+const chestHit=new T.Mesh(new T.BoxGeometry(1.65,1.3,1.25),new T.MeshBasicMaterial({visible:false}));
+chestHit.position.set(0,.7,0);chestRoot.add(chestHit);
+const chestWorld=new T.Vector3();chestRoot.getWorldPosition(chestWorld);
+chestHit.userData={kind:'chest',x:chestWorld.x,z:chestWorld.z};
+targets.push(chestHit);
+function openArmoryChest(){
+ if(state.starterChestClaimed){say('The armory chest is empty. You have already collected its supplies.');return}
+ state.starterChestClaimed=true;
+ for(const key of armorKeys)if(!state.armorOwned.includes(key))state.armorOwned.push(key);
+ for(const key of Object.keys(weaponCatalog))if(!state.weaponsOwned.includes(key))state.weaponsOwned.push(key);
+ chestLid.rotation.x=-1.1;
+ say('Armory chest opened! Iron armor, four swords, an axe and a pickaxe added to your inventory.');
+ save();draw();
+}
+function updateHouseRoofs(){
+ for(const house of houseInteriors){
+  const local=house.group.worldToLocal(player.position.clone());
+  const inside=Math.abs(local.x)<1.93&&Math.abs(local.z)<1.84;
+  if(inside!==house.inside){house.inside=inside;for(const part of house.roofParts)part.visible=!inside}
+ }
+}
 // Shared scenery primitives: low-poly timber, market awnings, wells and village clutter.
 function villageCrate(x,z,rotation=0){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=rotation;scene.add(g);
  box(.9,.75,.85,0x8c653f,0,.39,0,g,'wood');
@@ -253,8 +292,8 @@ const armorCatalog={
 };
 const armorKeys=Object.keys(armorCatalog);
 const state={wood:saved.wood||0,ore:saved.ore||0,gold:saved.gold||0,woodXP:saved.woodXP||0,miningXP:saved.miningXP||0,
-armorOwned:Array.isArray(saved.armorOwned)?saved.armorOwned.filter(k=>armorCatalog[k]):[...armorKeys],
-equipped:(saved.equipped&&typeof saved.equipped==='object')?saved.equipped:{},weaponsOwned:Array.isArray(saved.weaponsOwned)?saved.weaponsOwned.filter(k=>weaponCatalog[k]):Object.keys(weaponCatalog),equippedWeapon:weaponCatalog[saved.equippedWeapon]?saved.equippedWeapon:null};
+armorOwned:Array.isArray(saved.armorOwned)?saved.armorOwned.filter(k=>armorCatalog[k]):[],
+equipped:(saved.equipped&&typeof saved.equipped==='object')?saved.equipped:{},weaponsOwned:Array.isArray(saved.weaponsOwned)?saved.weaponsOwned.filter(k=>weaponCatalog[k]):[],equippedWeapon:weaponCatalog[saved.equippedWeapon]?saved.equippedWeapon:null,starterChestClaimed:!!saved.starterChestClaimed};
 for(const key of ['attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP'])state[key]=Number.isFinite(Number(saved[key]))?Math.max(0,Math.floor(Number(saved[key]))):0;
 for(const k of armorKeys)if(state.equipped[k]&&!state.armorOwned.includes(k))state.armorOwned.push(k);
 const pieces=buildPlateArmor(T,body,avatar);
@@ -393,7 +432,7 @@ renderer.domElement.addEventListener('pointermove',e=>{if(!down)return;const dx=
 renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;if(drag)return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(targets,false);const point=new T.Vector3();const hitGround=ray.ray.intersectPlane(plane,point);
 if(e.button===2){
  const choices=[];
- if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':'Gather '+a.kind,()=>{action=a;dest=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():new T.Vector3(a.x,0,a.z);markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' ('+Math.max(0,a.mob.hp)+' HP)':a.kind==='npc'?a.profile.name+' — '+a.profile.role:a.kind==='merchant'?'A traveling trader who buys logs and ore.':'A harvestable '+a.kind+'.')])}
+ if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='chest'?'Open armory chest':'Gather '+a.kind,()=>{action=a;dest=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():new T.Vector3(a.x,0,a.z);markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' ('+Math.max(0,a.mob.hp)+' HP)':a.kind==='npc'?a.profile.name+' — '+a.profile.role:a.kind==='merchant'?'A traveling trader who buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':'A harvestable '+a.kind+'.')])}
  if(hitGround)choices.push(['Walk here',()=>{dest=point.clone();action=null;closeDialog();markClick(dest.x,dest.z,'walk')}]);
  choices.push(['Cancel',()=>{}]);showMenu(e.clientX,e.clientY,choices);return;
 }
@@ -401,11 +440,11 @@ if(hits.length){action=hits[0].object.userData;dest=action.kind==='creature'?act
 renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.deltaY*.015,9,42)},{passive:true});
 const clock=new T.Clock();let phase=0,blend=0,saveTick=0;
 function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);let moving=false;
-if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){moving=true;delta.normalize();player.position.addScaledVector(delta,Math.min(5*dt,distance));player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(action){const a=action;action=null;if(a.kind==='creature'){if(a.mob.alive){strike(a.mob);if(a.mob.alive){action=a;dest=a.mob.root.position.clone()}}}else if(a.kind==='npc'){talkTo(a.profile)}else if(a.kind==='merchant'){const earned=state.wood*3+state.ore*5;state.gold+=earned;state.wood=0;state.ore=0;say(earned?'Sold resources for '+earned+' gold!':'Merchant: Bring me logs or ore.')}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;state.woodXP+=25;say('You chop logs. +25 XP')}else{state.ore++;state.miningXP+=25;say('You mine ore. +25 XP')}save();draw()}}}
+if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){moving=true;delta.normalize();player.position.addScaledVector(delta,Math.min(5*dt,distance));player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(action){const a=action;action=null;if(a.kind==='creature'){if(a.mob.alive){strike(a.mob);if(a.mob.alive){action=a;dest=a.mob.root.position.clone()}}}else if(a.kind==='npc'){talkTo(a.profile)}else if(a.kind==='chest'){openArmoryChest()}else if(a.kind==='merchant'){const earned=state.wood*3+state.ore*5;state.gold+=earned;state.wood=0;state.ore=0;say(earned?'Sold resources for '+earned+' gold!':'Merchant: Bring me logs or ore.')}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;state.woodXP+=25;say('You chop logs. +25 XP')}else{state.ore++;state.miningXP+=25;say('You mine ore. +25 XP')}save();draw()}}}
 combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);healthBar.style.width=(combat.hp/combat.maxHp*100)+'%';
 for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>.4){delta.normalize();mob.root.position.addScaledVector(delta,dt*(mob.hostile&&distance<10?1.7:.8));mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(action?.kind==='creature'&&action.mob===mob&&dest)dest.copy(mob.root.position)}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 for(const npc of npcs){npc.wait-=dt;if(npc.wait<=0){const a=npc.phase*2.4+npc.wait;npc.goal.set(npc.home.x+Math.cos(a)*3.2,0,npc.home.z+Math.sin(a)*3.2);npc.wait=4+(npc.phase%4)*1.3;npc.phase++}const d=npc.goal.clone().sub(npc.root.position);const walking=d.length()>.3;if(walking){d.normalize();const step=d.clone().multiplyScalar(dt*.55);const proposed=npc.root.position.clone().add(step);const crowded=npcs.some(other=>other!==npc&&other.root.position.distanceToSquared(proposed)<1.15*1.15)||player.position.distanceToSquared(proposed)<1.0*1.0;if(!crowded)npc.root.position.add(step);npc.root.rotation.y=Math.atan2(d.x,d.z)}const gait=walking?Math.sin(performance.now()*.005+npc.phase)*.45:0;npc.leftLeg.rotation.x=gait;npc.rightLeg.rotation.x=-gait;npc.leftArm.rotation.x=-gait*.65+Math.sin(performance.now()*.001+npc.phase)*.035;npc.rightArm.rotation.x=gait*.65;if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position)}
 blend=T.MathUtils.lerp(blend,moving?1:0,1-Math.exp(-12*dt));if(moving)phase+=dt*10;const swing=Math.sin(phase)*.65*blend;ll.rotation.x=swing;rl.rotation.x=-swing;la.rotation.x=-swing*.7;ra.rotation.x=swing*.7;if(combat.attackAnim>0){const t=1-combat.attackAnim/.55;ra.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;ra.rotation.z=-.32;body.rotation.y=Math.sin(t*Math.PI)*-.15}else{ra.rotation.z=T.MathUtils.lerp(ra.rotation.z,0,dt*12);body.rotation.y=T.MathUtils.lerp(body.rotation.y,0,dt*10)}if(combat.hitAnim>0){body.rotation.z=Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12}else body.rotation.z=T.MathUtils.lerp(body.rotation.z,0,dt*12);body.position.y=Math.abs(Math.sin(phase))*.06*blend;
-const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);saveTick+=dt;if(saveTick>4){saveTick=0;save()}for(const animateTown of townAnimations)animateTown(performance.now()*.001);renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
+const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);saveTick+=dt;if(saveTick>4){saveTick=0;save()}for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();
