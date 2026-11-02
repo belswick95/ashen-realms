@@ -70,6 +70,8 @@ export function buildHumanoid(T,root,look={}){
   for(const side of [-1,1])mesh(sphere,hairMat,root,side*.20,2.41,-.105,.085,.26,.105);
   mesh(sphere,hairMat,root,0,2.42,-.175,.20,.28,.10);
  }
+ // Dedicated attachment anchors prevent weapons and shields from floating or
+ // swapping hands as shoulder and elbow joints animate.
  const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
  // Gameplay camera follows from behind: right-hand weapon appears on the player's right.
  leftArm.position.set(-.455,1.84,0);rightArm.position.set(.455,1.84,0);
@@ -96,6 +98,10 @@ export function buildHumanoid(T,root,look={}){
   shoe.rotation.x=-.07;
   mesh(box(.27,.05,.33),boots,knee,side*.01,-.485,.16);
  }
- // Shared anatomical joints can be animated independently by the player and NPC rigs.
- return {root,body:root,leftArm,rightArm,leftLeg,rightLeg,leftElbow,rightElbow,leftKnee,rightKnee,torso,neck,face};
+ // Attachment points follow the wrist joints, not the upper-arm pivots.
+ const leftHand=new T.Group(),rightHand=new T.Group();
+ leftHand.position.set(-.012,-.33,.015);rightHand.position.set(.012,-.33,.015);
+ leftElbow.add(leftHand);rightElbow.add(rightHand);
+ // Anatomical rig contracts used by armor and equipment.
+ return {root,body:root,leftArm,rightArm,leftLeg,rightLeg,leftElbow,rightElbow,leftKnee,rightKnee,leftHand,rightHand,torso,neck,face};
 }
