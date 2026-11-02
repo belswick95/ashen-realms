@@ -59,7 +59,7 @@ const iron=0x8b969e,trim=0xb7c2c8;
 const pieces={
  helm:[box(.78,.44,.68,iron,0,2.55,0,armorVisual),box(.82,.12,.77,trim,0,2.37,.03,armorVisual)],
  chest:[box(1.08,.95,.7,iron,0,1.55,0,armorVisual),box(.94,.14,.76,trim,0,1.15,0,armorVisual)],
- legs:[box(.39,.78,.45,iron,-.23,-.43,0,ll),box(.39,.78,.45,iron,.23,-.43,0,rl)],
+ legs:[box(.34,.77,.38,iron,0,-.40,0,ll),box(.34,.77,.38,iron,0,-.40,0,rl)],
  boots:[box(.4,.31,.54,trim,0,-.84,.09,ll),box(.4,.31,.54,trim,0,-.84,.09,rl)]
 };
 function refreshArmor(){for(const k of armorKeys)for(const m of pieces[k])m.visible=!!state.equipped[k]}
@@ -101,7 +101,7 @@ function spawnNPC(profile,index){
 }
 npcProfiles.forEach(spawnNPC);
 // Wildlife and enemies use lightweight low-poly models and simple local AI.
-const creatures=[];function creature(name,x,z,hostile=false){const root=new T.Group();root.position.set(x,0,z);scene.add(root);const fur=name==='Wolf'?0x646762:name==='Boar'?0x76553f:0x9a8062;box(.8,.65,1.3,fur,0,.65,0,root);sphere(.37,fur,0,.92,.73,root);for(const sx of [-.27,.27])for(const sz of [-.42,.42])box(.19,.52,.2,0x4e473a,sx,.26,sz,root);if(name==='Wolf'){for(const sx of [-.2,.2])cone(.15,.38,fur,sx,1.28,.7,root)}if(name==='Deer')cone(.18,.5,0xc5b28a,0,1.38,.75,root);const hit=sphere(.38,fur,0,.95,.75,root);const mob={name,root,home:new T.Vector3(x,0,z),goal:new T.Vector3(x,0,z),hp:hostile?36:20,maxHp:hostile?36:20,hostile,alive:true,wait:2,attackCooldown:0,respawn:0};hit.userData={kind:'creature',mob};targets.push(hit);mob.hit=hit;creatures.push(mob)}
+const creatures=[];function creature(name,x,z,hostile=false){const root=new T.Group();root.position.set(x,0,z);scene.add(root);const fur=name==='Wolf'?0x646762:name==='Boar'?0x76553f:0x9a8062;box(.8,.65,1.3,fur,0,.65,0,root);sphere(.37,fur,0,.92,.73,root);for(const sx of [-.27,.27])for(const sz of [-.42,.42])box(.19,.52,.2,0x4e473a,sx,.26,sz,root);if(name==='Wolf'){for(const sx of [-.2,.2])cone(.15,.38,fur,sx,1.28,.7,root)}if(name==='Deer')cone(.18,.5,0xc5b28a,0,1.38,.75,root);const hit=new T.Mesh(new T.SphereGeometry(.48,8,6),new T.MeshBasicMaterial({visible:false}));hit.position.set(0,.95,.75);root.add(hit);const mob={name,root,home:new T.Vector3(x,0,z),goal:new T.Vector3(x,0,z),hp:hostile?36:20,maxHp:hostile?36:20,hostile,alive:true,wait:2,attackCooldown:0,respawn:0};hit.userData={kind:'creature',mob};targets.push(hit);mob.hit=hit;creatures.push(mob)}
 for(let i=0;i<24;i++){const a=i*2.399,r=22+i*11;creature(i%5===0?'Wolf':i%3===0?'Boar':'Deer',Math.sin(a)*r,Math.cos(a)*r,i%5===0)}
 const healthBar=document.querySelector('#health-fill'),combatNotice=document.querySelector('#combat-notice');
 function combatMessage(msg){combatNotice.textContent=msg;combatNotice.hidden=false;clearTimeout(combatMessage.timer);combatMessage.timer=setTimeout(()=>combatNotice.hidden=true,1800)}
