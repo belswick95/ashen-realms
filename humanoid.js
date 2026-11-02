@@ -81,15 +81,32 @@ export function buildHumanoid(T,root,look={}){
  // Close-fitted hairstyle volumes and swept strands are attached to the skull.
  const style=look.hair||'Side swept';
  const hairCap=mesh(geo('humanHairCapV3',()=>new T.SphereGeometry(1,14,9,0,Math.PI*2,0,Math.PI*.56)),hairMat,head,0,2.679,-.015,.244,style==='Buzz cut'?.075:.125,.220);
+ // Tapered, overlapping locks replace rectangular hair blocks. Shared geometry
+ // keeps the extra silhouette detail inexpensive for crowds and mobile devices.
+ const lock=geo('humanTaperedHairLockV1',()=>new T.ConeGeometry(.045,.22,5));
  if(style==='Side swept'){
-  const fringe=mesh(box(.30,.075,.13),hairMat,head,-.07,2.66,.145);fringe.rotation.z=-.23;
+  for(let i=0;i<7;i++){
+   const strand=mesh(lock,hairMat,head,-.19+i*.062,2.675-i*.006,.154-i*.004,1,1,.78);
+   strand.rotation.z=-.35-i*.055;strand.rotation.x=.18;
+  }
  }else if(style==='Short crop'){
-  mesh(box(.32,.055,.10),hairMat,head,0,2.676,.145);
+  for(let i=-3;i<=3;i++){
+   const strand=mesh(lock,hairMat,head,i*.058,2.695,.135,1,.43,.75);
+   strand.rotation.z=-.12;
+  }
  }else if(style==='Spiky'){
-  for(let i=-2;i<=2;i++){const tuft=mesh(geo('humanSpike',()=>new T.ConeGeometry(.049,.075,5)),hairMat,head,i*.08,2.735,-.015);tuft.rotation.z=-i*.14}
+  for(let i=-3;i<=3;i++){
+   const tuft=mesh(lock,hairMat,head,i*.065,2.745,-.015,1,.67,1);
+   tuft.rotation.z=-i*.14;
+  }
  }else if(style==='Long'){
-  for(const side of [-1,1])mesh(sphere,hairMat,head,side*.20,2.41,-.105,.085,.26,.105);
-  mesh(sphere,hairMat,head,0,2.42,-.175,.20,.28,.10);
+  for(const side of [-1,1]){
+   for(let i=0;i<5;i++){
+    const strand=mesh(lock,hairMat,head,side*(.17+i*.018),2.42,-.13+i*.045,1,2.35,.95);
+    strand.rotation.z=side*.10;
+   }
+  }
+  for(let i=-3;i<=3;i++)mesh(lock,hairMat,head,i*.058,2.45,-.22,1,2.25,1);
  }
  // Facial hair follows the jaw and leaves the mouth and nasal bridge visible.
  if(look.beard==='Stubble'||look.beard==='Short beard'){
