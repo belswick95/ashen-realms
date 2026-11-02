@@ -14,7 +14,7 @@ import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-
 const landscape=createLandscape();
 import {buildPlateArmor} from './armor.js?v=release-20261102-worldtime4';
 import {createCape} from './cape.js?v=release-20261102-worldtime4';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-gripfix7';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-handedness11';
 import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-worldtime4';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
