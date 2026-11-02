@@ -1,4 +1,4 @@
-import {startMusic} from './music.js?v=login-audio-20261102';
+import {startMusic} from './music.js?v=release-20261102-multiplayer3';
 import {installOrientationGate} from './responsive.js?v=release-20261102-multiplayer3';
 installOrientationGate();
 import {SKINS,HAIRS,SHIRTS,PANTS,HAIRSTYLES,FACES,BEARDS,safeAppearance} from './appearance.js?v=release-20261102-multiplayer3';
