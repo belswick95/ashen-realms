@@ -1,3 +1,4 @@
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {buildHumanoid} from './humanoid.js';
 import {createHumanoidAnimator} from './animation.js';
@@ -787,27 +788,26 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{activeTab=b.da
 
 // Player-local graphics and interface preferences (no changes to cloud saves).
 const settingKey='eldervale-client-settings';
-let clientSettings={preset:'high',scale:1,distance:330,shadows:true,fps:false,reducedMotion:false};
+let clientSettings={preset:'auto',scale:1,distance:330,shadows:true,fps:false,reducedMotion:false};
 try{clientSettings={...clientSettings,...JSON.parse(localStorage.getItem(settingKey)||'{}')}}catch{}
 function applyGraphics(){
- const presets={low:{scale:.65,distance:110,shadows:false},medium:{scale:.8,distance:210,shadows:false},high:{scale:1,distance:330,shadows:true},ultra:{scale:1.25,distance:440,shadows:true}};
- const preset=presets[clientSettings.preset]||presets.high;
- const scale=Number(clientSettings.scale)||preset.scale;
- renderer.setPixelRatio(Math.min(devicePixelRatio*scale,2.5));
- renderer.shadowMap.enabled=Boolean(clientSettings.shadows);
- sun.castShadow=Boolean(clientSettings.shadows);
- camera.far=Number(clientSettings.distance)||preset.distance;camera.updateProjectionMatrix();
- const ids={'graphics-preset':clientSettings.preset,'render-scale':String(scale),'view-distance':String(clientSettings.distance),'shadows-setting':clientSettings.shadows,'fps-setting':clientSettings.fps,'reduce-motion':clientSettings.reducedMotion};
+ const profile=deviceProfile({width:innerWidth,height:innerHeight,coarse:matchMedia('(pointer:coarse)').matches,memory:navigator.deviceMemory||8});
+ const resolved=effectiveGraphics(clientSettings,profile),scale=Number(resolved.scale)||1;
+ renderer.setPixelRatio(Math.min(devicePixelRatio*scale,resolved.pixelCap));
+ renderer.shadowMap.enabled=Boolean(resolved.shadows);sun.castShadow=Boolean(resolved.shadows);
+ camera.far=Number(resolved.distance)||330;scene.fog.far=camera.far;scene.fog.near=camera.far*.45;camera.updateProjectionMatrix();
+ const ids={'graphics-preset':clientSettings.preset,'render-scale':String(scale),'view-distance':String(resolved.distance),'shadows-setting':resolved.shadows,'fps-setting':clientSettings.fps,'reduce-motion':clientSettings.reducedMotion};
  for(const [id,value] of Object.entries(ids)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=Boolean(value);else el.value=String(value)}}
  document.querySelector('#fps-counter').hidden=!clientSettings.fps;
  document.body.classList.toggle('reduce-motion',Boolean(clientSettings.reducedMotion));
 }
-function storeGraphics(){localStorage.setItem(settingKey,JSON.stringify(clientSettings));applyGraphics()}
-document.querySelector('#graphics-preset').addEventListener('change',e=>{clientSettings.preset=e.target.value;const p={low:[.65,110,false],medium:[.8,210,false],high:[1,330,true],ultra:[1.25,440,true]}[e.target.value];[clientSettings.scale,clientSettings.distance,clientSettings.shadows]=p;storeGraphics()});
-for(const [id,key,parse] of [['render-scale','scale',Number],['view-distance','distance',Number],['shadows-setting','shadows',Boolean],['fps-setting','fps',Boolean],['reduce-motion','reducedMotion',Boolean]])document.getElementById(id).addEventListener('change',e=>{clientSettings[key]=e.target.type==='checkbox'?e.target.checked:parse(e.target.value);storeGraphics()});
+function storeGraphics(){if(clientSettings.preset==='auto')clientSettings.preset='custom';localStorage.setItem(settingKey,JSON.stringify(clientSettings));applyGraphics()}
+document.querySelector('#graphics-preset').addEventListener('change',e=>{clientSettings.preset=e.target.value;if(e.target.value==='auto'){localStorage.setItem(settingKey,JSON.stringify(clientSettings));applyGraphics();return}const p={low:[.65,110,false],medium:[.8,210,false],high:[1,330,true],ultra:[1.25,440,true]}[e.target.value];[clientSettings.scale,clientSettings.distance,clientSettings.shadows]=p;storeGraphics()});
+for(const [id,key,parse] of [['render-scale','scale',Number],['view-distance','distance',Number],['shadows-setting','shadows',Boolean],['fps-setting','fps',Boolean],['reduce-motion','reducedMotion',Boolean]])document.getElementById(id).addEventListener('change',e=>{if(clientSettings.preset==='auto')clientSettings={...effectiveGraphics(clientSettings,deviceProfile({width:innerWidth,height:innerHeight,coarse:matchMedia('(pointer:coarse)').matches,memory:navigator.deviceMemory||8})),preset:'custom'};clientSettings[key]=e.target.type==='checkbox'?e.target.checked:parse(e.target.value);storeGraphics()});
 document.querySelectorAll('[data-settings-page]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-settings-page]').forEach(t=>t.classList.toggle('active',t===b));document.querySelectorAll('[data-settings-panel]').forEach(p=>p.hidden=p.dataset.settingsPanel!==b.dataset.settingsPage)}));
 document.querySelector('#settings-music-volume').addEventListener('input',e=>{const slider=document.querySelector('#music-volume');if(slider){slider.value=e.target.value;slider.dispatchEvent(new Event('input',{bubbles:true}))}});
-document.querySelector('#open-friends').addEventListener('click',()=>{const panel=document.querySelector('#social-panel');panel.hidden=false;panel.classList.remove('collapsed');document.querySelector('[data-social-tab="friends"]')?.click()});
+document.querySelector('#open-friends').addEventListener('click',()=>{responsiveLayout.collapse();const panel=document.querySelector('#social-panel');panel.hidden=false;panel.classList.remove('collapsed');document.querySelector('[data-social-tab="friends"]')?.click()});
+const responsiveLayout=installResponsiveLayout({onChange:()=>applyGraphics()});
 applyGraphics();
 let fpsSamples=0,fpsSeconds=0;
 
@@ -880,8 +880,9 @@ window.eldervaleCaptureSave=captureSave;
 function save(){captureSave();window.eldervaleSave?.()}
 document.querySelector('#reset').onclick=()=>window.eldervaleReset?.();
 let dest=null,action=null,yaw=.75,pitch=.8,zoom=24,drag=false,down=null;const ray=new T.Raycaster(),pointer=new T.Vector2();
+installTouchGestures(renderer.domElement,{onPinch:ratio=>{zoom=T.MathUtils.clamp(zoom*ratio,9,42);drag=true;down=null},onHold:p=>renderer.domElement.dispatchEvent(new PointerEvent('pointerup',{clientX:p.x,clientY:p.y,button:2,pointerType:'touch',bubbles:true}))});
 renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
-renderer.domElement.addEventListener('pointerdown',e=>{if(e.button!==0&&e.button!==2)return;down=[e.clientX,e.clientY];drag=false;renderer.domElement.setPointerCapture(e.pointerId)});
+renderer.domElement.addEventListener('pointerdown',e=>{if(e.button!==0&&e.button!==2)return;responsiveLayout.collapse();down=[e.clientX,e.clientY];drag=false;renderer.domElement.setPointerCapture(e.pointerId)});
 renderer.domElement.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-down[0],dy=e.clientY-down[1];if(Math.abs(dx)+Math.abs(dy)>4)drag=true;if(drag){yaw-=dx*.007;pitch=T.MathUtils.clamp(pitch+dy*.004,.25,1.3)}down=[e.clientX,e.clientY]});
 renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;if(drag)return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(targets,false);const point=new T.Vector3();const groundHit=ray.intersectObjects(walkSurfaces,false)[0];const hitGround=groundHit?point.copy(groundHit.point):null;
 if(e.button===2){
@@ -914,7 +915,7 @@ for(const bridge of landscape.bridges){
  }
 }
 const clock=new T.Clock();let lastAutosave=performance.now();
-function frame(){requestAnimationFrame(frame);const elapsed=clock.getDelta(),dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
+function frame(){requestAnimationFrame(frame);const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
 if(action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<2.6){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
 if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(5*dt,distance));
  const collision=walkAllowed(player.position,proposed);

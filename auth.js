@@ -1,3 +1,5 @@
+import {installOrientationGate} from './responsive.js';
+installOrientationGate();
 import {SKINS,HAIRS,SHIRTS,PANTS,HAIRSTYLES,FACES,BEARDS,safeAppearance} from './appearance.js';
 import {toPlayerRow,fromPlayerRow} from './player-save.js';
 import {createSaveCoordinator} from './cloud-save.js';

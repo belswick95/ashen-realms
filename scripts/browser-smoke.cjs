@@ -6,17 +6,17 @@ const {chromium}=require(process.env.ELDERVALE_PLAYWRIGHT_MODULE||'playwright-co
 const root=path.resolve(__dirname,'..');
 const three=fs.readFileSync(path.join(root,'node_modules/three/build/three.module.js'));
 const fixture={x:7,z:5,gold:123,wood:8,ore:4,woodXP:456,miningXP:321,combatXP:90,kills:3,attackXP:22,appearance:{hair:'Long',skin:'#c9916b',shirt:'#426e68'},armorOwned:['helm','chest','legs','boots','cape'],equipped:{helm:true,chest:true,legs:true,boots:true,cape:true},weaponsOwned:['longsword'],equippedWeapon:'longsword',shieldsOwned:['kite'],equippedShield:'kite',starterShieldsGranted:true};
-const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req.url==='/'?'/index.html':req.url));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return}try{res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':'text/html');res.end(fs.readFileSync(file))}catch{res.writeHead(404).end()}});
+const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req.url==='/'?'/index.html':req.url));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return}try{res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(file))}catch{res.writeHead(404).end()}});
 (async()=>{
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  const browser=await chromium.launch({headless:true,...(process.env.ELDERVALE_CHROMIUM?{executablePath:process.env.ELDERVALE_CHROMIUM}:{}),args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  try{
- const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];page.on('console',message=>{if(message.type()==='error'&&/WebGLProgram|shader error|VALIDATE_STATUS/i.test(message.text()))errors.push(message.text())});page.on('pageerror',e=>{errors.push(e.message);console.error('PAGE:',e.message)});
+ const page=await browser.newPage({viewport:{width:1440,height:1000},hasTouch:true}),errors=[];page.on('console',message=>{if(message.type()==='error'&&/WebGLProgram|shader error|VALIDATE_STATUS/i.test(message.text()))errors.push(message.text())});page.on('pageerror',e=>{errors.push(e.message);console.error('PAGE:',e.message)});
  await page.route('**/*',route=>{
   const url=route.request().url();
   if(url==='https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js')return route.fulfill({contentType:'text/javascript',body:three});
   if(!url.startsWith('http://127.0.0.1:'))return route.abort();
-  if(url.endsWith('/game.js'))return route.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(root,'game.js'),'utf8')+'\nwindow.offlineWorld={landscape,player,camera,scene,walkAllowed,findWalkPath,state,combat,creatures,strike,draw,save,equipWeapon,equipShield,avatar};'});
+  if(url.endsWith('/game.js'))return route.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(root,'game.js'),'utf8')+'\nwindow.offlineWorld={landscape,player,camera,scene,renderer,getZoom:()=>zoom,walkAllowed,findWalkPath,state,combat,creatures,strike,draw,save,equipWeapon,equipShield,avatar};'});
   if(url.endsWith('/auth.js'))return route.fulfill({contentType:'text/javascript',body:"document.querySelector('#auth-screen').hidden=true;import('./game.js').then(()=>window.testGameReady=true);"});
   return route.continue();
  });
@@ -39,8 +39,14 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req
  for(const key of ['gold','wood','ore','woodXP','miningXP','combatXP','kills','attackXP','appearance','equippedWeapon','equippedShield','equipped'])assert.deepEqual(saved[key],fixture[key],key+' preserved');
  await page.reload();await page.waitForFunction(()=>window.testGameReady);
  assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('eldervale-save')).appearance),fixture.appearance);
- await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>document.querySelector('#social-panel').classList.contains('collapsed'));
- const layout=await page.evaluate(()=>{const a=document.querySelector('#side').getBoundingClientRect(),b=document.querySelector('#social-panel').getBoundingClientRect();return {separate:a.bottom<=b.top,chat:document.querySelector('#social-panel').classList.contains('collapsed')}});assert.equal(layout.chat,true);assert.equal(layout.separate,true);
+ await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>document.body.classList.contains('landscape-required'));assert.equal(await page.locator('#rotate-phone').isVisible(),true);await page.setViewportSize({width:844,height:390});await page.waitForFunction(()=>!document.body.classList.contains('landscape-required'));
+ const layout=await page.evaluate(()=>{const a=document.querySelector('#side').getBoundingClientRect(),b=document.querySelector('#social-panel').getBoundingClientRect();return {separate:b.bottom<=a.top,chat:document.querySelector('#social-panel').classList.contains('collapsed')}});assert.equal(layout.chat,true);assert.equal(layout.separate,true);
+ const quality=await page.evaluate(()=>({preset:document.querySelector('#graphics-preset').value,scale:document.querySelector('#render-scale').value,ratio:window.offlineWorld.renderer.getPixelRatio()}));assert.equal(quality.preset,'auto');assert.ok(['0.8','0.65'].includes(quality.scale));assert.ok(quality.ratio<=1.5);
+ const touch=await page.context().newCDPSession(page),beforeZoom=await page.evaluate(()=>window.offlineWorld.getZoom());
+ await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:150,y:200}]});await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:150,y:200},{x:210,y:200}]});await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:120,y:200},{x:240,y:200}]});await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert.ok(await page.evaluate(()=>window.offlineWorld.getZoom())<beforeZoom);
+ await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:190,y:200}]});await page.locator('#contextmenu').waitFor({state:'visible'});await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.keyboard.press('Escape');await touch.detach();
+ await page.locator('[data-tab="inventory"]').click();await page.waitForFunction(()=>document.body.classList.contains('compact-panel-open'));await page.getByRole('button',{name:'Close game panel'}).click();assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('compact-panel-open')),false);
+ await page.setViewportSize({width:844,height:390});await page.waitForFunction(()=>document.body.classList.contains('compact-layout'));assert.ok(await page.locator('[data-tab="inventory"]').evaluate(el=>el.getBoundingClientRect().height>=44));await page.setViewportSize({width:844,height:390});
  const out=path.join(root,'test-results');fs.mkdirSync(out,{recursive:true});await page.screenshot({path:path.join(out,'mobile-world.png')});
  await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:path.join(out,'world.png')});
  await page.locator('#map-toggle').click();await page.screenshot({path:path.join(out,'atlas.png')});await page.locator('#map-close').click();

@@ -79,3 +79,20 @@ was performed. Apex Fabrication Co. and GymWarden were not modified.
 - Existing gameplay remains client-authoritative; this graphics overhaul does not
   establish a server-authoritative MMO simulation or anti-cheat system.
 - Explicit owner approval remains required before merge, deployment or publishing.
+
+## Automatic small-screen mode
+
+Phones require landscape orientation; portrait shows a rotation screen and pauses the local simulation. Short touch-screen landscape viewports automatically use a compact HUD
+and a closed panel dock. Inventory, equipment, skills and settings open on demand
+with a close control and 44px minimum navigation targets. Portrait/landscape
+changes are handled without reload. Safe-area offsets, smaller map/status panels,
+readable input sizes, pinch zoom and press-and-hold context actions are included.
+
+Automatic graphics selects balanced or low defaults using screen shape and
+available device-memory hints, caps phone pixel density, reduces view distance
+and disables shadows. Explicit player graphics choices are retained; selecting
+Automatic restores adaptation. No device-level FPS guarantee is implied.
+
+The regression suite now contains 31 unit tests. Browser checks additionally cover
+automatic graphics selection, portrait and touch landscape, the panel dock,
+real touch-event pinch zoom and press-and-hold menus.
