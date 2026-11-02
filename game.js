@@ -622,6 +622,15 @@ for(const lake of worldLakes){
    ctx.strokeStyle='rgba(235,220,170,.3)';ctx.lineWidth=.8;ctx.stroke();
   }
  }
+ // Settlement cartography: town rings, converging footpaths and a readable central square.
+ if(scale)for(const [name,x,z] of places){
+  const cx=toX(x),cy=toY(z);if(cx<0||cx>w||cy<0||cy>h)continue;
+  const radius=name.includes('Ruins')?7:12;
+  ctx.save();ctx.setLineDash([3,2]);ctx.strokeStyle='rgba(214,191,139,.55)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.ellipse(cx,cy,radius,radius*.68,-.25,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(201,171,111,.24)';ctx.beginPath();ctx.ellipse(cx,cy,5,3,0,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+ }
  for(const [name,x,z] of places){const px=toX(x),py=toY(z);if(px<0||px>w||py<0||py>h)continue;ctx.fillStyle='#e6c988';ctx.beginPath();ctx.arc(px,py,scale?4:3,0,Math.PI*2);ctx.fill();if(scale){
   ctx.font='bold 13px Georgia';ctx.textAlign='center';ctx.lineJoin='round';
   ctx.strokeStyle='#263025';ctx.lineWidth=3;ctx.strokeText(name,px,py-11);
