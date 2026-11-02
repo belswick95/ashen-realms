@@ -20,8 +20,11 @@ jobs:
       - run: npm test
       - run: npm run check
       - run: npx playwright-core install --with-deps chromium
-      - run: npm run test:browser
-      - run: npm run test:auth
+      - name: Browser regression (bounded runtime)
+        run: timeout --signal=INT --kill-after=15s 360s npm run test:browser
+      - name: Authentication regression
+        if: success() || failure()
+        run: timeout --signal=INT --kill-after=15s 180s npm run test:auth
       - uses: actions/upload-artifact@v4
         if: always()
         with:
