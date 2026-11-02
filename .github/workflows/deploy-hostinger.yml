@@ -1,0 +1,73 @@
+name: Deploy Eldervale to Hostinger
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eldervale-hostinger-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out Eldervale
+        uses: actions/checkout@v4
+        with:
+          ref: feature/materials-character-animation
+
+      - name: Verify deployment configuration
+        env:
+          SSH_HOST: ${{ secrets.ELDERVALE_SSH_HOST }}
+          SSH_PORT: ${{ secrets.ELDERVALE_SSH_PORT }}
+          SSH_USER: ${{ secrets.ELDERVALE_SSH_USER }}
+          SSH_KEY: ${{ secrets.ELDERVALE_SSH_KEY }}
+          SSH_HOST_KEY: ${{ secrets.ELDERVALE_SSH_HOST_KEY }}
+        run: |
+          set -euo pipefail
+          for v in SSH_HOST SSH_PORT SSH_USER SSH_KEY SSH_HOST_KEY; do
+            test -n "${!v}" || { echo "::error::Missing $v secret"; exit 1; }
+          done
+          test -f index.html && test -f game.js && test -f cape.js
+
+      - name: Install pinned SSH host key and deployment key
+        env:
+          SSH_HOST: ${{ secrets.ELDERVALE_SSH_HOST }}
+          SSH_PORT: ${{ secrets.ELDERVALE_SSH_PORT }}
+          SSH_KEY: ${{ secrets.ELDERVALE_SSH_KEY }}
+          SSH_HOST_KEY: ${{ secrets.ELDERVALE_SSH_HOST_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/eldervale_deploy
+          chmod 600 ~/.ssh/eldervale_deploy
+          printf '%s\n' "$SSH_HOST_KEY" > ~/.ssh/known_hosts
+          ssh-keygen -F "[$SSH_HOST]:$SSH_PORT" -f ~/.ssh/known_hosts >/dev/null || { echo "::error::Pinned host key must match host and port"; exit 1; }
+
+      - name: Verify isolated destination exists
+        env:
+          SSH_HOST: ${{ secrets.ELDERVALE_SSH_HOST }}
+          SSH_PORT: ${{ secrets.ELDERVALE_SSH_PORT }}
+          SSH_USER: ${{ secrets.ELDERVALE_SSH_USER }}
+        run: |
+          set -euo pipefail
+          SSH=(ssh -i "$HOME/.ssh/eldervale_deploy" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT")
+          "${SSH[@]}" "$SSH_USER@$SSH_HOST" 'set -eu; d="$HOME/domains/apexfabricationco.com/public_html/eldervale"; test -d "$d"; test ! -L "$d"; test "$(basename "$d")" = eldervale; test "$(basename "$(dirname "$d")")" = public_html; printf "Eldervale directory verified: %s\n" "$d"'
+
+      - name: Upload game files to Eldervale only
+        env:
+          SSH_HOST: ${{ secrets.ELDERVALE_SSH_HOST }}
+          SSH_PORT: ${{ secrets.ELDERVALE_SSH_PORT }}
+          SSH_USER: ${{ secrets.ELDERVALE_SSH_USER }}
+        run: |
+          set -euo pipefail
+          rsync -az --no-perms --no-owner --no-group \
+            --exclude='.git/' --exclude='.github/' --exclude='node_modules/' \
+            -e "ssh -i $HOME/.ssh/eldervale_deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
+            ./ "$SSH_USER@$SSH_HOST:domains/apexfabricationco.com/public_html/eldervale/"
+          echo "Uploaded Eldervale files; no delete flag used."
