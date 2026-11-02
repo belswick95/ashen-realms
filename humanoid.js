@@ -138,8 +138,9 @@ export function buildHumanoid(T,root,look={}){
  // Dedicated attachment anchors prevent weapons and shields from floating or
  // swapping hands as shoulder and elbow joints animate.
  const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
- // Gameplay camera follows from behind: right-hand weapon appears on the player's right.
- // Facing +Z: the character's anatomical RIGHT is world -X (viewed from the front).
+ // Facing +Z, the anatomical right is -X when viewed from the front.
+ // From the chase camera behind the character, the right-hand weapon appears on screen-left.
+ // This matches the requested reference and avoids swapping hands by screen position.
  // Previously these anchors were swapped, making right-hand weapons appear left-handed.
  leftArm.position.set(.455,1.84,0);rightArm.position.set(-.455,1.84,0);
  leftLeg.position.set(-.165,.985,0);rightLeg.position.set(.165,.985,0);
