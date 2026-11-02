@@ -796,8 +796,14 @@ const creatures=[];function creature(name,x,z,hostile=false){const root=new T.Gr
 for(let i=0;i<24;i++){const a=i*2.399,r=22+i*11;creature(i%5===0?'Wolf':i%3===0?'Boar':'Deer',Math.sin(a)*r,Math.cos(a)*r,i%5===0)}
 // Consolidate screen furniture before creating the shared portrait/status panel.
 const audioSettings=document.querySelector('[data-settings-panel="audio"]');
-const oldAudioVolume=document.querySelector('#settings-music-volume').closest('label');oldAudioVolume.style.display='none';
-audioSettings.querySelector('p')?.remove();audioSettings.append(document.querySelector('#music-controls'));
+// Keep the native audio controls visible; the legacy floating widget remains hidden.
+const legacyMusicControls=document.querySelector('#music-controls');
+legacyMusicControls.style.display='none';
+const musicVolumeLabel=document.querySelector('#settings-music-volume').closest('label');
+musicVolumeLabel.style.display='block';
+audioSettings.querySelector('p').textContent='Music plays in towns. Adjust music and environmental ambience independently. On iPhone or iPad, tap Enable audio once to unlock sound.';
+const enableAudio=document.createElement('button');enableAudio.type='button';enableAudio.id='enable-game-audio';enableAudio.textContent='Enable audio';enableAudio.addEventListener('click',()=>window.eldervaleEnableAudio?.());
+audioSettings.prepend(enableAudio);
 const gameplaySettings=document.querySelector('[data-settings-panel="gameplay"]');gameplaySettings.append(document.querySelector('#stats'),document.querySelector('#reset'));
 document.querySelector('#character-panel').hidden=true;
 const brand=document.createElement('strong');brand.className='minimap-brand';brand.textContent='ELDERVALE';document.querySelector('#map-widget').prepend(brand);
