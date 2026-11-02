@@ -501,6 +501,33 @@ function showMenu(x,y,items){menu.innerHTML='';for(const [label,fn] of items){co
 function toggleArmor(k){if(!state.armorOwned.includes(k))return;state.equipped[k]=!state.equipped[k];refreshArmor();say((state.equipped[k]?'Equipped ':'Removed ')+armorCatalog[k].name);save();draw()}
 function examine(k){say(armorCatalog[k].name+': '+armorCatalog[k].desc)}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{activeTab=b.dataset.tab;draw();closeMenu()});
+
+// Player-local graphics and interface preferences (no changes to cloud saves).
+const settingKey='eldervale-client-settings';
+let clientSettings={preset:'high',scale:1,distance:330,shadows:true,fps:false,reducedMotion:false};
+try{clientSettings={...clientSettings,...JSON.parse(localStorage.getItem(settingKey)||'{}')}}catch{}
+function applyGraphics(){
+ const presets={low:{scale:.65,distance:110,shadows:false},medium:{scale:.8,distance:210,shadows:false},high:{scale:1,distance:330,shadows:true},ultra:{scale:1.25,distance:440,shadows:true}};
+ const preset=presets[clientSettings.preset]||presets.high;
+ const scale=Number(clientSettings.scale)||preset.scale;
+ renderer.setPixelRatio(Math.min(devicePixelRatio*scale,2.5));
+ renderer.shadowMap.enabled=Boolean(clientSettings.shadows);
+ sun.castShadow=Boolean(clientSettings.shadows);
+ camera.far=Number(clientSettings.distance)||preset.distance;camera.updateProjectionMatrix();
+ const ids={'graphics-preset':clientSettings.preset,'render-scale':String(scale),'view-distance':String(clientSettings.distance),'shadows-setting':clientSettings.shadows,'fps-setting':clientSettings.fps,'reduce-motion':clientSettings.reducedMotion};
+ for(const [id,value] of Object.entries(ids)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=Boolean(value);else el.value=String(value)}}
+ document.querySelector('#fps-counter').hidden=!clientSettings.fps;
+ document.body.classList.toggle('reduce-motion',Boolean(clientSettings.reducedMotion));
+}
+function storeGraphics(){localStorage.setItem(settingKey,JSON.stringify(clientSettings));applyGraphics()}
+document.querySelector('#graphics-preset').addEventListener('change',e=>{clientSettings.preset=e.target.value;const p={low:[.65,110,false],medium:[.8,210,false],high:[1,330,true],ultra:[1.25,440,true]}[e.target.value];[clientSettings.scale,clientSettings.distance,clientSettings.shadows]=p;storeGraphics()});
+for(const [id,key,parse] of [['render-scale','scale',Number],['view-distance','distance',Number],['shadows-setting','shadows',Boolean],['fps-setting','fps',Boolean],['reduce-motion','reducedMotion',Boolean]])document.getElementById(id).addEventListener('change',e=>{clientSettings[key]=e.target.type==='checkbox'?e.target.checked:parse(e.target.value);storeGraphics()});
+document.querySelectorAll('[data-settings-page]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-settings-page]').forEach(t=>t.classList.toggle('active',t===b));document.querySelectorAll('[data-settings-panel]').forEach(p=>p.hidden=p.dataset.settingsPanel!==b.dataset.settingsPage)}));
+document.querySelector('#settings-music-volume').addEventListener('input',e=>{const slider=document.querySelector('#music-volume');if(slider){slider.value=e.target.value;slider.dispatchEvent(new Event('input',{bubbles:true}))}});
+document.querySelector('#open-friends').addEventListener('click',()=>{const panel=document.querySelector('#social-panel');panel.hidden=false;panel.classList.remove('collapsed');document.querySelector('[data-social-tab="friends"]')?.click()});
+applyGraphics();
+let fpsSamples=0,fpsSeconds=0;
+
 document.addEventListener('pointerdown',e=>{if(!menu.contains(e.target))closeMenu()});
 const level=x=>1+Math.floor(Math.sqrt(x/50));
 const skillDefinitions=[['⚔','Attack','attackXP'],['💪','Strength','strengthXP'],['🛡','Defence','defenceXP'],['❤️','Hitpoints','hitpointsXP'],['🏹','Ranged','rangedXP'],['✨','Magic','magicXP'],['🙏','Prayer','prayerXP'],['🌳','Woodcutting','woodXP'],['⛏','Mining','miningXP'],['🔥','Firemaking','firemakingXP'],['🎣','Fishing','fishingXP'],['🍳','Cooking','cookingXP'],['🔨','Smithing','smithingXP'],['🛠','Crafting','craftingXP'],['🌿','Herblore','herbloreXP'],['🌱','Farming','farmingXP'],['🏃','Agility','agilityXP'],['🗝','Thieving','thievingXP']];
@@ -527,7 +554,7 @@ function draw(){
  stats.innerHTML='<p><strong>Health: '+Math.ceil(combat.hp)+' / '+combat.maxHp+'</strong><br>Combat: '+level(combat.xp)+' ('+combat.xp+' XP)<br>Defeated: '+combat.kills+'<br>Gold: '+state.gold+'<br>Woodcutting: '+level(state.woodXP)+' ('+state.woodXP+' XP)<br>Mining: '+level(state.miningXP)+' ('+state.miningXP+' XP)</p>';
  inventory.innerHTML='';equipment.innerHTML='';
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.tab===activeTab));
- inventory.hidden=activeTab!=='inventory';equipment.hidden=activeTab!=='equipment';skillsPanel.hidden=activeTab!=='skills';if(activeTab==='skills')drawSkills();
+ inventory.hidden=activeTab!=='inventory';equipment.hidden=activeTab!=='equipment';skillsPanel.hidden=activeTab!=='skills';for(const key of ['friends','blocked','settings'])document.querySelector('#'+key+'-tab').hidden=activeTab!==key;if(activeTab==='skills')drawSkills();
  const slots=[];
  for(const key of state.weaponsOwned)if(state.equippedWeapon!==key)slots.push({kind:'weapon',key});
  for(const k of armorKeys)if(state.armorOwned.includes(k)&&!state.equipped[k])slots.push({kind:'armor',key:k});
@@ -578,7 +605,7 @@ if(e.button===2){
 if(hits.length){action=hits[0].object.userData;dest=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):new T.Vector3(action.x,0,action.z);markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){dest=point.clone();action=null;closeDialog();markClick(dest.x,dest.z,'walk')}});
 renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.deltaY*.015,9,42)},{passive:true});
 const clock=new T.Clock();let phase=0,blend=0,saveTick=0;
-function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);let moving=false;
+function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);fpsSamples++;fpsSeconds+=dt;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}let moving=false;
 if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){moving=true;delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(5*dt,distance));
  const collision=walkAllowed(player.position,proposed);
  if(!collision.blocked)player.position.copy(proposed);
