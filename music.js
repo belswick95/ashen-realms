@@ -63,16 +63,16 @@ export function startMusic(){
   const song=songs[track],quarter=60/song.bpm;
   while(nextTime<ctx.currentTime+.4){
    if(step%32===0&&region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;updateAmbience();label.textContent=region==='Wilderness'?'Wilderness · ambient score':region+' · '+songs[track].name}
-   const i=step%32,bar=Math.floor(i/4),transpose=regionOffsets[region]||0,root=song.roots[bar]+transpose;
+   const currentSong=songs[track],i=step%32,bar=Math.floor(i/4),transpose=regionOffsets[region]||0,root=currentSong.roots[bar]+transpose;
    // Bass line and two supporting voices give the march a full brass-ensemble texture.
    if(region!=='Wilderness')brass(root-12,nextTime,quarter*.90,'tuba',.085);
    if(i%2===0&&region!=='Wilderness'){brass(root,nextTime,quarter*1.78,'horn',.043);brass(root+7,nextTime,quarter*1.7,'horn',.028)}
    if(i%4===0&&region!=='Wilderness'){brass(root+12,nextTime,quarter*2.6,'horn',.032);percussion(nextTime,true)}
    else if(i%2===0&&region!=='Wilderness')percussion(nextTime,false);
    if(i%8===0&&region!=='Wilderness')percussion(nextTime,false,'cymbal');
-   const note=song.melody[i];
+   const note=currentSong.melody[i];
    if(note!=null&&region!=='Wilderness')brass(note+transpose,nextTime,quarter*(i%8===6?1.7:.84),'trumpet',.084);
-   if(song.counter[i]!=null&&region!=='Wilderness')brass(song.counter[i]+transpose,nextTime,quarter*1.8,'horn',.044);
+   if(currentSong.counter[i]!=null&&region!=='Wilderness')brass(currentSong.counter[i]+transpose,nextTime,quarter*1.8,'horn',.044);
    step++;nextTime+=quarter;
    if(region==='Wilderness')label.textContent='Wilderness ambience';
   }
@@ -89,6 +89,7 @@ export function startMusic(){
  button.addEventListener('click',toggle);
  // Start music on the first user interaction permitted by the browser.
  document.addEventListener('pointerdown',event=>{if(!playing&&!event.target.closest('#music-toggle'))toggle()},{once:true});
+ document.addEventListener('keydown',event=>{if(!playing&&!event.repeat&&!event.target.closest('#music-toggle'))toggle()},{once:true});
  slider.addEventListener('input',()=>{localStorage.setItem('eldervale-music-volume',slider.value);if(ctx&&master)master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.04)});
  const stored=localStorage.getItem('eldervale-music-volume');const saved=stored===null?45:Number(stored);slider.value=Number.isFinite(saved)&&saved>=0&&saved<=100?String(saved):'45';
  window.addEventListener('pagehide',()=>{playing=false;clearInterval(timer);windSource?.stop();ctx?.close()},{once:true});
