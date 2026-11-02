@@ -2,7 +2,7 @@
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
  let phase=0,blend=0,time=0;
- return {update(dt,{distance=0,speed=0,attack=0,hit=0}={}){
+ return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false}={}){
   if(!Number.isFinite(dt)||dt<=0)return;
   dt=Math.min(dt,.1);time+=dt;
   distance=Number.isFinite(distance)?Math.max(0,distance):0;
@@ -17,6 +17,8 @@ export function createHumanoidAnimator(rig){
   rig.leftLeg.rotation.x=gait*stride;rig.rightLeg.rotation.x=opposite*stride;
   rig.leftKnee.rotation.x=Math.max(0,-gait)*(.62+run*.48)*blend;
   rig.rightKnee.rotation.x=Math.max(0,gait)*(.62+run*.48)*blend;
+  for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
+  rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
   rig.leftArm.rotation.x=-gait*stride*.65+Math.sin(time*1.7)*.018*(1-blend);
   rig.rightArm.rotation.x=gait*stride*.65-Math.sin(time*1.7)*.018*(1-blend);
   rig.leftElbow.rotation.x=-.12-run*.35*blend-Math.max(0,gait)*.2*blend;
@@ -27,6 +29,13 @@ export function createHumanoidAnimator(rig){
    const t=Math.max(0,Math.min(1,1-attack/.55));
    rig.rightArm.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;
    rig.rightArm.rotation.z=-.32;rig.rightElbow.rotation.x=-.55;
+  }
+  if(shield&&!twoHanded){rig.leftArm.rotation.x=-.25-gait*.07*blend;rig.leftArm.rotation.z=.08;rig.leftElbow.rotation.x=-.60}
+  if(twoHanded&&rig.solveArm){
+   const t=attack>0?Math.max(0,Math.min(1,1-attack/.55)):0,swing=attack>0?Math.sin(t*Math.PI):0;
+   const V=rig.root.position.constructor,angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle));
+   const target=new V(0,1.62+swing*.14,.25+swing*.08);
+   rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
   }
   // Never translate the whole rig: grounded feet and gameplay root stay stable.
   if(rig.torso)rig.torso.scale.y=1+Math.sin(time*1.7)*.004*(1-blend);

@@ -28,7 +28,7 @@ test('equipment stays attached to wrists while arms and elbows articulate',()=>{
  assert.ok(before.distanceTo(weapon.getWorldPosition(new T.Vector3()))>.1);
  assert.equal(weapon.parent,r.rightHand);assert.equal(shield.parent,r.leftHand);
  const slots=buildPlateArmor(T,r.root,r);
- assert.deepEqual(slots.helm[0].parent.scale.toArray(),r.head.scale.toArray());
+ r.root.updateMatrixWorld(true);const headBounds=new T.Box3().setFromObject(r.head),helmetBounds=new T.Box3();for(const part of slots.helm)helmetBounds.union(new T.Box3().setFromObject(part));const headWidth=headBounds.getSize(new T.Vector3()).x,helmetWidth=helmetBounds.getSize(new T.Vector3()).x;assert.ok(helmetWidth>headWidth);assert.ok(helmetWidth<headWidth*1.4);assert.ok(helmetBounds.max.z>headBounds.max.z);
  for(const pieces of Object.values(slots))for(const m of pieces)assert.equal(m.visible,false);
 });
 test('distance drives cadence consistently across frame rates',()=>{
@@ -44,4 +44,14 @@ test('stopping settles gait and ending combat resets attack channels',()=>{
  assert.ok(Math.abs(r.leftLeg.rotation.x)<1e-10);assert.equal(r.rightArm.rotation.z,0);
  assert.equal(r.root.position.y,0);assert.ok(r.leftKnee.rotation.x>=0);
  a.update(NaN,{distance:Infinity});assert.ok(Number.isFinite(r.leftArm.rotation.x));
+});
+test('two-handed IK keeps both wrists on the grip through idle and attack',()=>{
+ const r=character(),a=createHumanoidAnimator(r);
+ for(const attack of [0,.5,.3,.1]){
+  a.update(.016,{twoHanded:true,attack});r.root.updateMatrixWorld(true);
+  const right=r.rightHand.getWorldPosition(new T.Vector3()),left=r.leftHand.getWorldPosition(new T.Vector3());
+  assert.ok(Math.abs(right.distanceTo(left)-.10)<.025,'wrists remain one grip length apart');
+  assert.ok(Number.isFinite(right.y));
+ }
+ a.update(.016);assert.equal(r.leftElbow.rotation.z,0);assert.equal(r.rightElbow.rotation.z,0);
 });

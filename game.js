@@ -1,22 +1,25 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {buildHumanoid} from './humanoid.js';
 import {createHumanoidAnimator} from './animation.js';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry} from './geography.js';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js';
 import {buildForest} from './forest.js';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js';
+const landscape=createLandscape();
 import {buildPlateArmor} from './armor.js';
 import {createCape} from './cape.js';
 import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js';
 import {shieldCatalog,makeShield} from './shields.js';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
-const tint=(hex,fallback)=>/^#[0-9a-f]{6}$/i.test(hex||'')?parseInt(hex.slice(1),16):fallback;
-const skin=tint(appearance.skin,0xd9a783),shirt=tint(appearance.shirt,0x315b76),pants=tint(appearance.pants,0x424750),hairColor=tint(appearance.hairColor,0x3b2b22);
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
-scene.add(new T.HemisphereLight(0xcfe4ff,0x5a4d33,2));const sun=new T.DirectionalLight(0xffe9b6,2.3);sun.position.set(12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+scene.add(new T.HemisphereLight(0xcfe4ff,0x5a4d33,2));const sun=new T.DirectionalLight(0xffe9b6,2.3);sun.position.set(12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);scene.add(sun.target);renderer.shadowMap.type=T.PCFSoftShadowMap;
+Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:.5,far:180});sun.shadow.normalBias=.04;sun.shadow.bias=-.00015;sun.shadow.camera.updateProjectionMatrix();
 // Seeded procedural canvas textures, cached and shared across meshes.
 const textureCache=new Map();
 function texture(kind,base){const key=kind+base;if(textureCache.has(key))return textureCache.get(key);const canvas=document.createElement('canvas');const groundKind=kind==='grass'||kind==='dirt';const texSize=groundKind?256:128;canvas.width=texSize;canvas.height=texSize;const ctx=canvas.getContext('2d');ctx.fillStyle='#'+base.toString(16).padStart(6,'0');ctx.fillRect(0,0,texSize,texSize);let seed=base>>>0;const rnd=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
 for(let i=0;i<750;i++){const x=rnd()*128,y=rnd()*128,r=.4+rnd()*2.7;ctx.fillStyle=rnd()>.5?'rgba(255,248,208,.075)':'rgba(18,27,18,.09)';ctx.fillRect(x,y,r,r)}
+if(kind==='water'){for(let i=0;i<180;i++){const x=rnd()*128,y=rnd()*128;ctx.strokeStyle=i%3?'#a9d1cb30':'#1f536333';ctx.lineWidth=.4+rnd()*.6;ctx.beginPath();ctx.moveTo(x,y);ctx.bezierCurveTo(x+3,y-1,x+7,y+1,x+12,y);ctx.stroke()}}
 if(kind==='wood'){for(let i=0;i<22;i++){ctx.strokeStyle=i%2?'#ffffff16':'#130d0b24';ctx.lineWidth=.5+rnd()*1.6;ctx.beginPath();const y=i*6+rnd()*3;ctx.moveTo(0,y);ctx.bezierCurveTo(36,y+3,78,y-3,128,y+2);ctx.stroke()}}
 if(kind==='stone'){for(let i=0;i<20;i++){ctx.strokeStyle='#18201b23';ctx.beginPath();const x=rnd()*128,y=rnd()*128;ctx.moveTo(x,y);ctx.lineTo(x+5+rnd()*17,y+2+rnd()*9);ctx.stroke()}}
 if(kind==='grass'){
@@ -42,7 +45,13 @@ function sphere(r,c,x,y,z,p=scene){const o=new T.Mesh(new T.SphereGeometry(r,10,
 function cone(r,h,c,x,y,z,p=scene,kind='leaf'){const o=new T.Mesh(new T.ConeGeometry(r,h,7),material(c,kind));o.position.set(x,y,z);o.castShadow=true;p.add(o);return o}
 const groundTexture=texture('grass',0x69865b).clone();
 groundTexture.repeat.set(210,210);groundTexture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());groundTexture.needsUpdate=true;
-const ground=new T.Mesh(new T.PlaneGeometry(840,840),new T.MeshLambertMaterial({map:groundTexture}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+const groundMaterial=new T.MeshStandardMaterial({map:groundTexture,vertexColors:true,roughness:.95});
+groundMaterial.onBeforeCompile=shader=>{
+ shader.uniforms.terrainRock={value:texture('stone',0x929087)};
+ shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying float terrainHeight;varying float terrainSlope;').replace('#include <begin_vertex>','#include <begin_vertex>\nterrainHeight=position.y;terrainSlope=normal.y;');
+ shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D terrainRock;varying float terrainHeight;varying float terrainSlope;').replace('#include <map_fragment>','vec4 grass=texture2D(map,vMapUv);vec4 rock=texture2D(terrainRock,vMapUv*.55);float stone=clamp(smoothstep(18.0,42.0,terrainHeight)*.85+(1.0-smoothstep(.65,.88,terrainSlope))*.8,0.0,1.0);diffuseColor*=mix(grass,rock,stone);float snow=smoothstep(48.0,59.0,terrainHeight)*smoothstep(.55,.85,terrainSlope);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.86,.89,.86),snow*.85);');
+};
+const ground=new T.Mesh(landscapeGeometry(T,landscape),groundMaterial);ground.userData.terrainFixed=true;ground.receiveShadow=true;scene.add(ground);const walkSurfaces=[ground];
 const dirtTexture=texture('dirt',0xa38b64).clone();dirtTexture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());dirtTexture.needsUpdate=true;
 const pathMaterial=new T.MeshLambertMaterial({map:dirtTexture,color:0xffffff,polygonOffset:true,polygonOffsetFactor:-1});
 function texturedPatch(radius,x,z,tint=0x789362){
@@ -74,12 +83,14 @@ const forestTrees=[];
 const treeHitGeometry=new T.ConeGeometry(2.35,6.5,8);
 const treeHitMaterial=new T.MeshBasicMaterial({visible:false});
 function tree(x,z){
+ if(landscape.waterAt(x,z)>.01||distanceToRoad(x,z)<4||landscapeSettlements.some(([sx,sz])=>Math.hypot(x-sx,z-sz)<32))return;
  forestTrees.push({x,z});
  // Retain individual harvest targets and world coordinates independently of rendering.
  const hit=new T.Mesh(treeHitGeometry,treeHitMaterial);hit.position.set(x,4,z);scene.add(hit);
  hit.userData={kind:'tree',x,z};targets.push(hit);
 }
 function rock(x,z){
+ if(landscape.waterAt(x,z)>.01)return;
  const root=new T.Group();root.position.set(x,0,z);scene.add(root);
  const color=[0x777b78,0x898b7d,0x676f6c][Math.floor(Math.abs(Math.sin(x+z))*3)];
  const m=new T.Mesh(new T.DodecahedronGeometry(.9,0),material(color,'stone'));m.position.y=.57;m.scale.set(1.15,.75,1);m.rotation.y=x*.1;m.castShadow=true;m.receiveShadow=true;root.add(m);
@@ -88,6 +99,9 @@ function rock(x,z){
 }
 const houseInteriors=[];const mapProps=[];
 function house(x,z,c,scale=1.65,rotation=0){
+ // Keep full building footprints ashore, including existing lakeside hamlets.
+ const dry=(px,pz)=>[-1,0,1].every(a=>[-1,0,1].every(b=>landscape.waterAt(px+a*3.2*scale,pz+b*3.2*scale)<=0));
+ if(!dry(x,z)){let found=false;for(let r=2;r<=40&&!found;r+=2)for(let i=0;i<24;i++){const angle=i*Math.PI/12,px=x+Math.cos(angle)*r,pz=z+Math.sin(angle)*r;if(dry(px,pz)){x=px;z=pz;found=true;break}}}
  const group=new T.Group();group.position.set(x,0,z);group.scale.setScalar(scale);group.rotation.y=rotation;scene.add(group);
  // Real walk-in room, with a front doorway instead of a solid wall block.
  box(4,.12,3.7,0x81684c,0,.065,0,group,'wood');
@@ -149,7 +163,7 @@ house(-60,42,0xb7a08c);house(-54,48,0xaaa38a);house(73,-58,0xc3b29b);house(78,-5
 
 const places=[['Oakcross',0,0],['Northwatch',-60,45],['Eastmarch',75,-55],['Old Cairn',132,26],['Farwatch',105,103],['Westmere',-210,145],['Suncrest',260,-185],['Greenwatch',225,215],['Ashen Ruins',-275,-215]];
 // Lakeside settlements and landmarks. Water is a visible, discoverable world feature.
-const worldLakes=[{x:-91,z:80,rx:18,rz:12,name:'Moonmere Lake'},{x:157,z:77,rx:24,rz:16,name:'Silverfin Lake'},{x:244,z:175,rx:16,rz:12,name:'Greenwatch Pond'}];
+const worldLakes=landscapeLakes;
 for(const lake of worldLakes){
  const outlineGeometry=factor=>{const shape=new T.Shape();lakeOutline(lake,factor).forEach(([x,z],i)=>i?shape.lineTo(x,-z):shape.moveTo(x,-z));shape.closePath();return new T.ShapeGeometry(shape)};
  const shore=new T.Mesh(outlineGeometry(1.08),new T.MeshStandardMaterial({color:0xb6a47a,roughness:1,side:T.DoubleSide}));
@@ -165,7 +179,20 @@ for(const lake of worldLakes){
  for(const x of [dx-2,dx+2])for(const z of [lake.z-1,lake.z+1])box(.2,.75,.2,0x5a402d,x,.35,z,scene,'wood');
  mapProps.push({x:dx,z:lake.z,color:'#e5c37c'});
 }
-buildForest(T,scene,forestTrees,{wood:material(0x665039,'wood'),leaf:material(0xffffff,'leaf')});
+// Dense forest biomes use the same noise field as the atlas; roads and hamlets stay clear.
+for(let gx=-402;gx<=402;gx+=7)for(let gz=-402;gz<=402;gz+=7){
+ const seed=Math.sin(gx*12.9898+gz*78.233)*43758.5453,rnd=seed-Math.floor(seed);
+ const x=gx+(rnd-.5)*5,z=gz+(Math.sin(seed)*.5)*5;
+ if(noise(x/90+17,z/90-11)<.55||rnd<.18||landscape.heightAt(x,z)>35||distanceToRoad(x,z)<5)continue;
+ if(landscapeSettlements.some(([sx,sz])=>Math.hypot(x-sx,z-sz)<38))continue;
+ tree(x,z);
+}
+// Weathered outcrops break up the highlands and retain the existing mining interaction.
+for(let i=0;i<240;i++){
+ const x=Math.sin(i*127.1)*405,z=Math.cos(i*311.7)*405;
+ if(landscape.heightAt(x,z)>15&&distanceToRoad(x,z)>6&&landscape.canWalk(x,z))rock(x,z);
+}
+buildForest(T,scene,forestTrees,{wood:material(0x665039,'wood'),leaf:material(0xffffff,'leaf'),heightAt:landscape.heightAt});
 const extraSettlements=[
  {name:'Moonmere',x:-114,z:82,color:0xb4a18a},
  {name:'Silverfin',x:187,z:74,color:0xc3ae92},
@@ -220,7 +247,8 @@ function housePoint(h,x,z){return h.group.localToWorld(new T.Vector3(x,0,z))}
 function insideHouse(h,p){const q=houseLocal(h,p);return Math.abs(q.x)<1.92&&Math.abs(q.z)<1.82}
 function walkAllowed(from,to){
  // Swept movement sampled at sub-character intervals prevents tunneling through thin walls.
- const distance=from.distanceTo(to),samples=Math.max(1,Math.ceil(distance/.18));
+ const distance=Math.hypot(to.x-from.x,to.z-from.z),samples=Math.max(1,Math.ceil(distance/.18));
+ for(let i=1;i<=samples;i++){const t=i/samples;if(!landscape.canWalk(from.x+(to.x-from.x)*t,from.z+(to.z-from.z)*t))return {blocked:true,terrain:true}}
  for(const h of houseInteriors){
   const a=houseLocal(h,from),b=houseLocal(h,to);
   const radius=.26,limitX=1.91+radius,limitZ=1.83+radius;
@@ -248,7 +276,7 @@ function findWalkPath(start,goal,maxCells=14000){
  const cols=Math.min(480,Math.ceil((Math.abs(start.x-goal.x)+margin*2)/cell)+1);
  const rows=Math.min(480,Math.ceil((Math.abs(start.z-goal.z)+margin*2)/cell)+1);
  const coord=p=>[Math.max(0,Math.min(cols-1,Math.round((p.x-originX)/cell))),Math.max(0,Math.min(rows-1,Math.round((p.z-originZ)/cell)))];
- const point=(x,z)=>new T.Vector3(originX+x*cell,0,originZ+z*cell);
+ const point=(x,z)=>{const wx=originX+x*cell,wz=originZ+z*cell;return new T.Vector3(wx,landscape.walkHeight(wx,wz),wz)};
  const [sx,sz]=coord(start),[gx,gz]=coord(goal);
  const key=(x,z)=>z*cols+x;
  const startKey=key(sx,sz),goalKey=key(gx,gz);
@@ -280,7 +308,7 @@ function findWalkPath(start,goal,maxCells=14000){
 }
 
 function routeTo(target){
- const goal=target.clone();goal.y=0;
+ const goal=target.clone();goal.y=landscape.walkHeight(goal.x,goal.z);
  const h=houseInteriors.find(h=>insideHouse(h,goal));
  if(h&&!insideHouse(h,player.position)){
   const door=housePoint(h,0,2.48),threshold=housePoint(h,0,1.08);
@@ -407,14 +435,20 @@ for(let i=0;i<16;i++){const a=i*Math.PI*2/16;box(1.6,1.1+(i%4)*.4,1.5,0x6d716b,1
 for(const [x,z,r,c] of [[-190,155,18,0x537d55],[245,-170,25,0x6b8052],[210,230,19,0x78926b],[-260,-220,22,0x708660]])disk(r,c,x,z);
 for(let i=0;i<60;i++){const a=i*2.4,r=12+i*.8;const x=250+Math.sin(a)*r,z=-180+Math.cos(a)*r;const stone=sphere(.6+i%4*.16,0x797f76,x,.32,z);stone.scale.y=.55}
 for(let i=0;i<16;i++){const a=i*Math.PI/8;box(1.8,1.2+i%3,1.8,0x74776e,-285+Math.cos(a)*13,.8,-220+Math.sin(a)*13)}
+// Ancient stonework gives Old Cairn a discoverable silhouette and history.
+const cairn=new T.Group();cairn.position.set(132,0,26);scene.add(cairn);
+for(let i=0;i<9;i++){const a=i*Math.PI*2/9,h=1.8+(i%3)*.65;const standing=box(.8,h,.65,0x7e8277,Math.cos(a)*7,h/2,Math.sin(a)*7,cairn,'stone');standing.rotation.z=Math.sin(i*4)*.12;standing.rotation.y=a;if(i%3===0)box(3.1,.5,.85,0x828578,Math.cos(a)*7,h+.18,Math.sin(a)*7,cairn,'stone')}
+box(2.4,.9,1.4,0x777e76,0,.45,0,cairn,'stone');box(2.7,.23,1.7,0x939788,0,1,0,cairn,'stone');
+for(let i=0;i<15;i++){const a=i*2.4,r=2.5+i*.42;const rubble=sphere(.24+(i%3)*.10,0x777d72,Math.cos(a)*r,.12,Math.sin(a)*r,cairn);rubble.scale.set(1,.5,.7)}
+mapProps.push({x:132,z:26,color:'#b6b49c'});
 const merchant=new T.Group();merchant.position.set(-3,0,7);scene.add(merchant);
 const trader=buildHumanoid(T,merchant,{skin:0xd8a57e,shirt:0x704c77,pants:0x514638,hairColor:0x30231f,hair:'Long'});
 // The shopkeeper uses the same skeleton as other NPCs, with a distinct apron and belt.
-box(.54,.69,.045,0x9a7953,0,1.44,.225,merchant,'wood');box(.78,.12,.47,0x4b3428,0,1.01,0,merchant,'wood');
+box(.54,.69,.045,0x9a7953,0,1.735,.225,merchant,'wood');box(.78,.12,.47,0x4b3428,0,1.305,0,merchant,'wood');
 const mh=new T.Mesh(new T.SphereGeometry(.43,8,6),new T.MeshBasicMaterial({visible:false}));mh.position.set(0,1.45,0);merchant.add(mh);mh.userData={kind:'merchant',x:-3,z:7};targets.push(mh);
 box(2.5,.25,1,0x805832,-3,1,9,scene,'wood');
 const player=new T.Group();scene.add(player);const body=new T.Group();player.add(body);
-const avatar=buildHumanoid(T,body,{skin:appearance.skin,shirt:appearance.shirt,pants:appearance.pants,hairColor:appearance.hairColor,hair:appearance.hair});
+const avatar=buildHumanoid(T,body,{skin:appearance.skin,shirt:appearance.shirt,pants:appearance.pants,hairColor:appearance.hairColor,hair:appearance.hair,face:appearance.face,beard:appearance.beard});
 const playerAnimator=createHumanoidAnimator(avatar);
 const merchantAnimator=createHumanoidAnimator(trader);
 // Other online adventurers and short-lived overhead chat bubbles.
@@ -424,17 +458,21 @@ const mobileLayout=matchMedia('(max-width:700px)');
 function compactMobileChat(){if(!mobileLayout.matches)return;document.querySelector('#social-panel')?.classList.add('collapsed');const toggle=document.querySelector('#social-toggle');if(toggle)toggle.textContent='Show Chat'}
 mobileLayout.addEventListener('change',compactMobileChat);compactMobileChat();
 const bubbleLayer=document.createElement('div');bubbleLayer.id='overhead-chat-layer';bubbleLayer.style.cssText='position:fixed;inset:0;z-index:45;pointer-events:none;overflow:hidden';document.body.append(bubbleLayer);
-window.eldervaleGetPlayerPosition=()=>({x:Math.round(player.position.x*10)/10,z:Math.round(player.position.z*10)/10,yaw:player.rotation.y});
+window.eldervaleGetPlayerPosition=()=>({x:Math.round(player.position.x*10)/10,z:Math.round(player.position.z*10)/10,yaw:player.rotation.y,...publicCharacter(appearance,{armor:state.equipped,weapon:state.equippedWeapon,shield:state.equippedShield})});
 window.eldervaleUpdatePlayers=entries=>{
+ if(!Array.isArray(entries))return;
  const seen=new Set();
- for(const entry of entries){if(!entry.id||!Number.isFinite(entry.x)||!Number.isFinite(entry.z))continue;seen.add(entry.id);
+ for(const entry of entries){if(!entry||typeof entry!=='object'||!entry.id||!Number.isFinite(entry.x)||!Number.isFinite(entry.z))continue;seen.add(entry.id);
  let other=remotePlayers.get(entry.id);
- if(!other){const root=new T.Group();scene.add(root);const rig=buildHumanoid(T,root,{});const tag=document.createElement('div');tag.style.cssText='position:fixed;padding:3px 7px;background:#14221cdd;color:#f4e2ba;border:1px solid #9b8659;border-radius:5px;font:12px Arial;white-space:nowrap;pointer-events:none';tag.textContent=String(entry.username||'Adventurer').slice(0,24);bubbleLayer.append(tag);other={root,tag,animator:createHumanoidAnimator(rig),target:new T.Vector3(entry.x,0,entry.z),yaw:0};root.position.copy(other.target);remotePlayers.set(entry.id,other)}
+ if(!other){const root=new T.Group();scene.add(root);const display=buildCharacterDisplay(T,root,entry.appearance,entry.loadout);const tag=document.createElement('div');tag.style.cssText='position:fixed;padding:3px 7px;background:#14221cdd;color:#f4e2ba;border:1px solid #9b8659;border-radius:5px;font:12px Arial;white-space:nowrap;pointer-events:none';tag.textContent=String(entry.username||'Adventurer').slice(0,24);bubbleLayer.append(tag);other={root,tag,animator:display,signature:JSON.stringify(display.data),target:new T.Vector3(entry.x,0,entry.z),yaw:0};root.position.copy(other.target);remotePlayers.set(entry.id,other)}
+ const cosmetics=publicCharacter(entry.appearance,entry.loadout),signature=JSON.stringify(cosmetics);
+ if(signature!==other.signature){other.animator.dispose();other.animator=buildCharacterDisplay(T,other.root,cosmetics.appearance,cosmetics.loadout);other.signature=signature}
+ other.tag.textContent=String(entry.username||'Adventurer').slice(0,24);
  other.target.set(entry.x,0,entry.z);other.yaw=Number.isFinite(entry.yaw)?entry.yaw:0;
  // Treat long jumps as teleports rather than animating across the whole map.
  if(other.root.position.distanceToSquared(other.target)>400)other.root.position.copy(other.target);
  }
- for(const [id,other] of remotePlayers)if(!seen.has(id)){scene.remove(other.root);other.tag.remove();remotePlayers.delete(id);const bubble=chatBubbles.get(id);bubble?.node.remove();chatBubbles.delete(id)}
+ for(const [id,other] of remotePlayers)if(!seen.has(id)){other.animator.dispose();scene.remove(other.root);other.tag.remove();remotePlayers.delete(id);const bubble=chatBubbles.get(id);bubble?.node.remove();chatBubbles.delete(id)}
 };
 window.eldervaleShowChatBubble=(id,name,message)=>{
  if(!id||!message)return;const old=chatBubbles.get(id);old?.node.remove();
@@ -443,8 +481,8 @@ window.eldervaleShowChatBubble=(id,name,message)=>{
 };
 function updateOverheadChat(){
  const selfId=window.eldervaleUserId;const projected=new T.Vector3();
- for(const [id,other] of remotePlayers){projected.set(other.root.position.x,3.05,other.root.position.z).project(camera);const visible=projected.z<1&&projected.z>-1&&other.root.position.distanceTo(player.position)<75;other.tag.style.display=visible?'block':'none';if(visible){other.tag.style.left=((projected.x+1)*innerWidth/2-other.tag.offsetWidth/2)+'px';other.tag.style.top=((1-projected.y)*innerHeight/2)+'px'}}
- for(const [id,bubble] of chatBubbles){if(performance.now()>bubble.expires){bubble.node.remove();chatBubbles.delete(id);continue}const other=id===selfId?player:remotePlayers.get(id)?.root;if(!other){bubble.node.style.display='none';continue}projected.set(other.position.x,3.65,other.position.z).project(camera);const visible=projected.z<1&&projected.z>-1&&other.position.distanceTo(player.position)<75;bubble.node.style.display=visible?'block':'none';if(visible){bubble.node.style.left=((projected.x+1)*innerWidth/2-bubble.node.offsetWidth/2)+'px';bubble.node.style.top=((1-projected.y)*innerHeight/2-bubble.node.offsetHeight)+'px'}}
+ for(const [id,other] of remotePlayers){projected.set(other.root.position.x,other.root.position.y+3.05,other.root.position.z).project(camera);const visible=projected.z<1&&projected.z>-1&&other.root.position.distanceTo(player.position)<75;other.tag.style.display=visible?'block':'none';if(visible){other.tag.style.left=((projected.x+1)*innerWidth/2-other.tag.offsetWidth/2)+'px';other.tag.style.top=((1-projected.y)*innerHeight/2)+'px'}}
+ for(const [id,bubble] of chatBubbles){if(performance.now()>bubble.expires){bubble.node.remove();chatBubbles.delete(id);continue}const other=id===selfId?player:remotePlayers.get(id)?.root;if(!other){bubble.node.style.display='none';continue}projected.set(other.position.x,other.position.y+3.65,other.position.z).project(camera);const visible=projected.z<1&&projected.z>-1&&other.position.distanceTo(player.position)<75;bubble.node.style.display=visible?'block':'none';if(visible){bubble.node.style.left=((projected.x+1)*innerWidth/2-bubble.node.offsetWidth/2)+'px';bubble.node.style.top=((1-projected.y)*innerHeight/2-bubble.node.offsetHeight)+'px'}}
 }
 const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
 const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0,attackAnim:0,hitAnim:0};
@@ -476,13 +514,14 @@ const weaponMeshes=new Map();
 for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,0,.025);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
 const shieldMeshes=new Map();
 for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);model.position.set(-.12,-.03,.30);avatar.leftHand.add(model);model.visible=false;shieldMeshes.set(key,model)}
+if(state.equippedWeapon==='twohand')state.equippedShield=null;
 function refreshShield(){for(const [key,model] of shieldMeshes)model.visible=state.equippedShield===key}
-function equipShield(key){if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
+function equipShield(key){if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;if(state.equippedShield&&state.equippedWeapon==='twohand'){state.equippedWeapon=null;refreshWeapon()}refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
 refreshShield();
 function refreshWeapon(){for(const [key,model] of weaponMeshes)model.visible=state.equippedWeapon===key}
-function equipWeapon(key){if(!state.weaponsOwned.includes(key))return;state.equippedWeapon=state.equippedWeapon===key?null:key;refreshWeapon();say(state.equippedWeapon?'Equipped '+weaponCatalog[key].name:'Unequipped weapon');save();draw()}
+function equipWeapon(key){if(!state.weaponsOwned.includes(key))return;state.equippedWeapon=state.equippedWeapon===key?null:key;if(state.equippedWeapon==='twohand'){state.equippedShield=null;refreshShield()}refreshWeapon();say(state.equippedWeapon?'Equipped '+weaponCatalog[key].name:'Unequipped weapon');save();draw()}
 refreshWeapon();
-if(saved.x!==undefined)player.position.set(saved.x,0,saved.z);
+if(Number.isFinite(saved.x)&&Number.isFinite(saved.z)){const p=landscape.nearestDryPoint(saved.x,saved.z);player.position.set(p.x,0,p.z);if(Math.hypot(p.x,p.z)<2.5)player.position.z=5}else player.position.set(0,0,5);
 const stats=document.querySelector('#stats'),inventory=document.querySelector('#inventory'),log=document.querySelector('#log'),equipment=document.querySelector('#equipment'),menu=document.querySelector('#contextmenu');
 let activeTab='inventory',mapOpen=false;const mapCanvas=document.querySelector('#minimap'),largeMap=document.querySelector('#worldmap'),mapPanel=document.querySelector('#map-panel');
 const mapCtx=mapCanvas.getContext('2d'),largeCtx=largeMap.getContext('2d');
@@ -499,10 +538,10 @@ function terrainNoise(x,z){const xi=Math.floor(x),zi=Math.floor(z),u=x-xi,v=z-zi
   const wx=(x/size-.5)*840,wz=(y/size-.5)*840;
   const broad=terrainNoise(wx/130,wz/130),detail=terrainNoise(wx/34,wz/34),grain=terrainNoise(wx/5,wz/5);
   const woodland=terrainNoise(wx/90+17,wz/90-11);
-  const hill=terrainNoise(wx/170-22,wz/170+7);
+  const hill=landscape.heightAt(wx,wz)/55;
   let rgb;
-  if(hill>.73&&broad>.48)rgb=[112,108,94]; // rocky highlands
-  else if(woodland>.59)rgb=[46,85,48]; // dense forest
+  if(hill>.40)rgb=[112,108,94]; // rocky highlands
+  else if(woodland>.59)rgb=[62,98,52]; // dense forest
   else if(broad<.31)rgb=[112,105,64]; // dry heath and soil
   else if(detail>.67)rgb=[98,121,68]; // grassy clearings
   else rgb=[77,112,61];
@@ -514,47 +553,20 @@ function terrainNoise(x,z){const xi=Math.floor(x),zi=Math.floor(z),u=x-xi,v=z-zi
  const coord=(v)=>((v+420)/840)*size;
  for(let y=4;y<size-4;y+=4)for(let x=4;x<size-4;x+=4){
   const wx=(x/size-.5)*840,wz=(y/size-.5)*840;
-  const h=terrainNoise(wx/170-22,wz/170+7)*.65+terrainNoise(wx/55,wz/55)*.35;
-  const east=terrainNoise((wx+4)/170-22,wz/170+7)*.65+terrainNoise((wx+4)/55,wz/55)*.35;
+  const h=landscape.heightAt(wx,wz)/55;
+  const east=landscape.heightAt(wx+4,wz)/55;
   const contour=Math.floor(h*14)!==Math.floor(east*14);
   if(contour&&h>.51){terrainCtx.fillStyle='rgba(36,42,28,.17)';terrainCtx.fillRect(x,y,3,1)}
  }
- // A winding, continuous river network with banks and layered blue water.
- function river(points,width){
-  const draw=(stroke,line)=>{terrainCtx.strokeStyle=stroke;terrainCtx.lineWidth=line;terrainCtx.lineJoin='round';terrainCtx.lineCap='round';terrainCtx.beginPath();terrainCtx.moveTo(coord(points[0][0]),coord(points[0][1]));for(let i=1;i<points.length-1;i++){const p=points[i],q=points[i+1];terrainCtx.quadraticCurveTo(coord(p[0]),coord(p[1]),coord((p[0]+q[0])/2),coord((p[1]+q[1])/2))}const last=points[points.length-1];terrainCtx.lineTo(coord(last[0]),coord(last[1]));terrainCtx.stroke()};
-  draw('#8e946c',width+9);draw('#546f61',width+5);draw('#377486',width);draw('#6098a0',Math.max(1,width*.22));
+ // Rivers and forest symbols use actual world geometry, not imaginary atlas detail.
+ for(const river of worldRivers){
+  const trace=()=>{terrainCtx.beginPath();river.points.forEach(([x,z],i)=>i?terrainCtx.lineTo(coord(x),coord(z)):terrainCtx.moveTo(coord(x),coord(z)))};
+  terrainCtx.lineCap='round';terrainCtx.lineJoin='round';
+  trace();terrainCtx.strokeStyle='#8e946c';terrainCtx.lineWidth=(river.width+3)/840*size;terrainCtx.stroke();
+  trace();terrainCtx.strokeStyle='#397d8c';terrainCtx.lineWidth=river.width/840*size;terrainCtx.stroke();
  }
- river([[-420,-165],[-350,-145],[-290,-165],[-235,-130],[-175,-146],[-110,-100],[-85,-42],[-30,-10],[15,45],[85,55],[140,75],[210,65],[270,95],[350,70],[420,95]],11);
- river([[-190,-420],[-165,-350],[-145,-270],[-100,-205],[-110,-130],[-85,-42]],7);
- river([[420,-220],[345,-185],[290,-130],[230,-100],[195,-35],[140,75]],8);
- // Forest canopies are clusters of individual trees, not flat green circles.
- for(let i=0;i<13500;i++){
-  const wx=(terrainSeed(i,109)-.5)*840,wz=(terrainSeed(i,211)-.5)*840;
-  const woodland=terrainNoise(wx/90+17,wz/90-11);
-  if(woodland<.555)continue;
-  const x=coord(wx),y=coord(wz),radius=1.4+terrainSeed(i,311)*3.6;
-  terrainCtx.fillStyle='rgba(18,45,23,.26)';terrainCtx.beginPath();terrainCtx.arc(x+1.1,y+1.2,radius+1,0,Math.PI*2);terrainCtx.fill();
-  terrainCtx.fillStyle=terrainSeed(i,317)>.45?'#38673a':'#477842';
-  terrainCtx.beginPath();terrainCtx.arc(x,y,radius,0,Math.PI*2);terrainCtx.fill();
-  terrainCtx.fillStyle='rgba(166,190,113,.24)';terrainCtx.beginPath();terrainCtx.arc(x-.65,y-.65,radius*.43,0,Math.PI*2);terrainCtx.fill();
- }
+ for(const tree of forestTrees){const x=coord(tree.x),y=coord(tree.z),r=2.3/840*size;terrainCtx.fillStyle='#203e2b88';terrainCtx.beginPath();terrainCtx.arc(x+1,y+1,r+1,0,Math.PI*2);terrainCtx.fill();terrainCtx.fillStyle='#42673d';terrainCtx.beginPath();terrainCtx.arc(x,y,r,0,Math.PI*2);terrainCtx.fill()}
 
- // Tree canopies and rocky outcrops remain visible at larger zoom levels.
- for(let i=0;i<10000;i++){
-  const x=terrainSeed(i,9)*size,y=terrainSeed(i,29)*size;
-  const wx=(x/size-.5)*840,wz=(y/size-.5)*840;
-  const woodland=terrainNoise(wx/90+17,wz/90-11);
-  if(woodland<.58)continue;
-  const radius=1.2+terrainSeed(i,47)*3;
-  terrainCtx.fillStyle=terrainSeed(i,81)>.5?'#274d2b':'#3c6635';
-  terrainCtx.beginPath();terrainCtx.arc(x,y,radius,0,Math.PI*2);terrainCtx.fill();
- }
- for(let i=0;i<900;i++){
-  const x=terrainSeed(i,37)*size,y=terrainSeed(i,71)*size;
-  const wx=(x/size-.5)*840,wz=(y/size-.5)*840;
-  if(terrainNoise(wx/170-22,wz/170+7)<.69)continue;
-  terrainCtx.fillStyle=i%2?'#8b8771':'#6c6b61';terrainCtx.fillRect(x,y,1+terrainSeed(i,41)*3,1+terrainSeed(i,43)*2);
- }
 })();
 function drawMap(ctx,canvas,scale){
  const w=canvas.width,h=canvas.height,extent=scale?840:90,pxPerUnit=w/extent,pzPerUnit=w/extent;
@@ -589,6 +601,7 @@ for(const lake of worldLakes){
   trace();ctx.strokeStyle='#8c7852';ctx.lineWidth=scale?4:6;ctx.stroke();
   trace();ctx.strokeStyle='#c3a878';ctx.lineWidth=scale?2.3:3.5;ctx.stroke();
  }
+ for(const bridge of landscape.bridges){const x=toX(bridge.x),y=toY(bridge.z);ctx.save();ctx.translate(x,y);ctx.rotate(-bridge.yaw);ctx.fillStyle='#bba37c';ctx.strokeStyle='#45392b';ctx.lineWidth=1;ctx.fillRect(-bridge.width*pxPerUnit/2,-bridge.length*pzPerUnit/2,bridge.width*pxPerUnit,bridge.length*pzPerUnit);ctx.strokeRect(-bridge.width*pxPerUnit/2,-bridge.length*pzPerUnit/2,bridge.width*pxPerUnit,bridge.length*pzPerUnit);ctx.restore()}
  // Draw buildings from their actual world transforms, including rotated footprints and doorway positions.
  for(const h of houseInteriors){
   const g=h.group,worldScale=g.scale.x,halfW=2*worldScale,halfD=1.85*worldScale;
@@ -670,7 +683,7 @@ document.querySelector('#map-close').onclick=()=>{mapOpen=false;mapPanel.hidden=
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeDialog();mapOpen=false;mapPanel.hidden=true}if(!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&e.key.toLowerCase()==='m'&&!e.repeat){mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)}});
 document.addEventListener('contextmenu',e=>{if(e.target.closest('#game-ui')||e.target===renderer.domElement)e.preventDefault()});
 // Animated ground-click markers: amber for walking and crimson for interactions.
-const markers=[];function markClick(x,z,kind='walk'){const group=new T.Group();group.position.set(x,.11,z);const color=kind==='walk'?0xffd05b:0xe64c46;const ring=new T.Mesh(new T.RingGeometry(.45,.62,32),new T.MeshBasicMaterial({color,transparent:true,opacity:.95,side:T.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;group.add(ring);const dot=new T.Mesh(new T.CircleGeometry(.12,20),new T.MeshBasicMaterial({color,transparent:true,opacity:.85,side:T.DoubleSide,depthWrite:false}));dot.rotation.x=-Math.PI/2;dot.position.y=.005;group.add(dot);scene.add(group);markers.push({group,ring,dot,age:0});}
+const markers=[];function markClick(x,z,kind='walk'){const group=new T.Group();group.position.set(x,landscape.walkHeight(x,z)+.11,z);const color=kind==='walk'?0xffd05b:0xe64c46;const ring=new T.Mesh(new T.RingGeometry(.45,.62,32),new T.MeshBasicMaterial({color,transparent:true,opacity:.95,side:T.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;group.add(ring);const dot=new T.Mesh(new T.CircleGeometry(.12,20),new T.MeshBasicMaterial({color,transparent:true,opacity:.85,side:T.DoubleSide,depthWrite:false}));dot.rotation.x=-Math.PI/2;dot.position.y=.005;group.add(dot);scene.add(group);markers.push({group,ring,dot,age:0});}
 // Job stations make villagers inhabit believable places rather than random spawn circles.
 function workCounter(x,z,kind){mapProps.push({x,z,color:'#d9b873'});
  const g=new T.Group();g.position.set(x,0,z);scene.add(g);
@@ -718,10 +731,14 @@ function spawnNPC(profile,index){
  const palettes=[0xc9916b,0xe0b48e,0x966247,0x67402f,0xb98362];
  const hairs=[0x39271f,0x6d4831,0xa17a4b,0x241e1d];
  const model=buildHumanoid(T,root,{skin:palettes[index%palettes.length],shirt:profile.color,pants:0x474442,hairColor:hairs[index%hairs.length],hair:['Short crop','Side swept','Spiky','Buzz cut','Long'][index%5]});
+ if(/guard|warden|sentinel|soldier/i.test(profile.role+' '+profile.name)){
+  const plates=buildPlateArmor(T,root,model);for(const slot of ['chest','legs','boots'])for(const part of plates[slot])part.visible=true;model.torso.visible=false;
+  const weapon=makeWeapon(T,'longsword');model.rightHand.add(weapon);
+ }
  // Clothing accents give each NPC a recognizable silhouette without changing the animation rig.
- if(index%3===0){box(.62,.11,.44,0x5e422d,0,1.07,0,root,'wood');box(.24,.16,.07,0xc5a46b,0,1.07,.245,root)}
- if(index%3===1){box(.52,.62,.045,0xb3a17b,0,1.48,.223,root,'cloth');box(.54,.12,.45,0x6b4c33,0,1.09,0,root,'wood')}
- if(index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.50,-.26,root,'cloth');cape.rotation.x=-.12}
+ if(index%3===0){box(.62,.11,.44,0x5e422d,0,1.365,0,root,'wood');box(.24,.16,.07,0xc5a46b,0,1.365,.245,root)}
+ if(index%3===1){box(.52,.62,.045,0xb3a17b,0,1.775,.223,root,'cloth');box(.54,.12,.45,0x6b4c33,0,1.385,0,root,'wood')}
+ if(index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.795,-.26,root,'cloth');cape.rotation.x=-.12}
  const hit=new T.Mesh(new T.CylinderGeometry(.68,.68,2.7,14),new T.MeshBasicMaterial({visible:false}));
  hit.position.set(0,1.38,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
  const npc={profile,root,animator:createHumanoidAnimator(model),leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,leftElbow:model.leftElbow,rightElbow:model.rightElbow,leftKnee:model.leftKnee,rightKnee:model.rightKnee,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null,patrolIndex:0};npcs.push(npc)
@@ -755,7 +772,7 @@ function combatSound(kind){
 }
 function faceTarget(object,target){const dx=target.x-object.position.x,dz=target.z-object.position.z;if(dx*dx+dz*dz>.0001)object.rotation.y=Math.atan2(dx,dz)}
 function strike(mob){if(!mob.alive||combat.attackTimer>0)return;combat.attackTimer=state.equippedWeapon?weaponCatalog[state.equippedWeapon].speed:.85;combat.attackAnim=.55;faceTarget(player,mob.root.position);combatSound(/axe|hatchet/i.test(String(state.equippedWeapon||''))?'axe':'slash');const damage=6+(state.equippedWeapon?weaponCatalog[state.equippedWeapon].damage:0)+Math.floor(Math.random()*7);mob.hp-=damage;combatMessage('You hit '+mob.name+' for '+damage+' damage');if(mob.hp<=0){mob.alive=false;mob.root.visible=false;mob.respawn=22;combat.kills++;combat.xp+=30;state.attackXP=(state.attackXP||0)+10;state.strengthXP=(state.strengthXP||0)+10;state.defenceXP=(state.defenceXP||0)+5;state.hitpointsXP=(state.hitpointsXP||0)+5;state.gold+=mob.hostile?8:2;combatMessage('Defeated '+mob.name+'! +30 combat XP');action=null;dest=null;save();draw()}}
-function playerHit(mob){const defense=Object.values(state.equipped).filter(Boolean).length;const damage=Math.max(1,6+Math.floor(Math.random()*5)-defense);combat.hp=Math.max(0,combat.hp-damage);combat.hitAnim=.35;faceTarget(mob.root,player.position);combatSound(Object.values(state.equipped).some(Boolean)?'metal':'axe');combatMessage(mob.name+' hits you for '+damage);draw();if(combat.hp<=0){combat.hp=100;player.position.set(0,0,0);dest=null;action=null;state.gold=Math.max(0,state.gold-10);combatMessage('You fell in battle and returned to Oakcross.');save();draw()}}
+function playerHit(mob){const defense=Object.values(state.equipped).filter(Boolean).length;const damage=Math.max(1,6+Math.floor(Math.random()*5)-defense);combat.hp=Math.max(0,combat.hp-damage);combat.hitAnim=.35;faceTarget(mob.root,player.position);combatSound(Object.values(state.equipped).some(Boolean)?'metal':'axe');combatMessage(mob.name+' hits you for '+damage);draw();if(combat.hp<=0){combat.hp=100;player.position.set(0,0,5);dest=null;action=null;state.gold=Math.max(0,state.gold-10);combatMessage('You fell in battle and returned to Oakcross.');save();draw()}}
 
 const dialog=document.querySelector('#dialog'),dialogName=document.querySelector('#dialog-name'),dialogText=document.querySelector('#dialog-text'),dialogNext=document.querySelector('#dialog-next');let conversation=null;
 function closeDialog(){conversation=null;dialog.hidden=true;document.body.classList.remove('npc-conversation')}
@@ -858,13 +875,15 @@ function draw(){
   equipment.append(item);
  }
 }
-function say(s){const d=document.createElement('div');d.textContent=s;log.prepend(d)}function save(){localStorage.setItem('eldervale-save',JSON.stringify({...state,appearance,hp:combat.hp,combatXP:combat.xp,kills:combat.kills,x:player.position.x,z:player.position.z}));window.eldervaleSave?.()}
+function say(s){const d=document.createElement('div');d.textContent=s;log.prepend(d)}function captureSave(){const snapshot={...saved,...state,appearance,hp:combat.hp,combatXP:combat.xp,kills:combat.kills,x:player.position.x,z:player.position.z};localStorage.setItem('eldervale-save',JSON.stringify(snapshot));return snapshot}
+window.eldervaleCaptureSave=captureSave;
+function save(){captureSave();window.eldervaleSave?.()}
 document.querySelector('#reset').onclick=()=>window.eldervaleReset?.();
-let dest=null,action=null,yaw=.75,pitch=.8,zoom=24,drag=false,down=null;const ray=new T.Raycaster(),pointer=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),0);
+let dest=null,action=null,yaw=.75,pitch=.8,zoom=24,drag=false,down=null;const ray=new T.Raycaster(),pointer=new T.Vector2();
 renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
 renderer.domElement.addEventListener('pointerdown',e=>{if(e.button!==0&&e.button!==2)return;down=[e.clientX,e.clientY];drag=false;renderer.domElement.setPointerCapture(e.pointerId)});
 renderer.domElement.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-down[0],dy=e.clientY-down[1];if(Math.abs(dx)+Math.abs(dy)>4)drag=true;if(drag){yaw-=dx*.007;pitch=T.MathUtils.clamp(pitch+dy*.004,.25,1.3)}down=[e.clientX,e.clientY]});
-renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;if(drag)return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(targets,false);const point=new T.Vector3();const hitGround=ray.ray.intersectPlane(plane,point);
+renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;if(drag)return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(targets,false);const point=new T.Vector3();const groundHit=ray.intersectObjects(walkSurfaces,false)[0];const hitGround=groundHit?point.copy(groundHit.point):null;
 if(e.button===2){
  const choices=[];
  if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' ('+Math.max(0,a.mob.hp)+' HP)':a.kind==='npc'?a.profile.name+' — '+a.profile.role:a.kind==='merchant'?'A traveling trader who buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':'A harvestable '+a.kind+'.')])}
@@ -873,8 +892,29 @@ if(e.button===2){
 }
 if(hits.length){action=hits[0].object.userData;const goal=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):new T.Vector3(action.x,0,action.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){action=null;setWalkDestination(point);closeDialog();if(dest)markClick(dest.x,dest.z,'walk')}});
 renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.deltaY*.015,9,42)},{passive:true});
+// Seat existing scenery on the heightfield. Articulated actors are updated each frame.
+for(const object of scene.children){
+ if(object===ground||object===player||object.isLight||object.isInstancedMesh||object===sun.target||object.userData.terrainFixed)continue;
+ object.position.y+=landscape.heightAt(object.position.x,object.position.z);
+}
+for(let i=0;i<tufts.count;i++){const matrix=new T.Matrix4();tufts.getMatrixAt(i,matrix);const x=matrix.elements[12],z=matrix.elements[14];matrix.elements[13]+=landscape.heightAt(x,z);if(landscape.waterAt(x,z)>.01)matrix.scale(new T.Vector3(0,0,0));tufts.setMatrixAt(i,matrix)}
+tufts.instanceMatrix.needsUpdate=true;tufts.computeBoundingSphere();
+for(const river of worldRivers){
+ const bank=new T.Mesh(ribbonGeometry(T,river.points,river.width+3),material(0x9a9271,'dirt'));bank.position.y=.018;bank.userData.terrainFixed=true;scene.add(bank);
+ const water=new T.Mesh(ribbonGeometry(T,river.points,river.width),new T.MeshStandardMaterial({map:texture('water',0x577f83),color:0xb7c9c8,metalness:.16,roughness:.28,side:T.DoubleSide}));
+ water.position.y=.035;water.userData.terrainFixed=true;scene.add(water);
+}
+for(const bridge of landscape.bridges){
+ const group=new T.Group();group.position.set(bridge.x,0,bridge.z);group.rotation.y=bridge.yaw;group.userData.terrainFixed=true;scene.add(group);
+ const rows=Math.ceil(bridge.length/.45);
+ for(let i=0;i<=rows;i++){const z=(i/rows-.5)*bridge.length;const y=.24*(1-T.MathUtils.smoothstep(Math.abs(z),bridge.length/2-2,bridge.length/2));walkSurfaces.push(box(bridge.width,.18,bridge.length/rows*.94,0x786044,0,y-.09,z,group,'wood'))}
+ for(const side of [-1,1]){
+  for(let i=0;i<=4;i++)box(.16,1.3,.16,0x554533,side*(bridge.width/2-.12),.7,(i/4-.5)*(bridge.length-2),group,'wood');
+  box(.14,.14,bridge.length-2,0x9b7b4d,side*(bridge.width/2-.12),1.25,0,group,'wood');
+ }
+}
 const clock=new T.Clock();let lastAutosave=performance.now();
-function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);fpsSamples++;fpsSeconds+=dt;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
+function frame(){requestAnimationFrame(frame);const elapsed=clock.getDelta(),dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
 if(action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<2.6){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
 if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(5*dt,distance));
  const collision=walkAllowed(player.position,proposed);
@@ -918,18 +958,21 @@ for(const npc of npcs){
  npc.animator.update(dt,{distance:actualDistance,speed:actualDistance/Math.max(dt,.001)});
  if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position);
 }
-const traveled=player.position.distanceTo(frameStart);
-const pose=playerAnimator.update(dt,{distance:traveled,speed:traveled/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim});
+player.position.y=landscape.walkHeight(player.position.x,player.position.z);
+for(const npc of npcs)npc.root.position.y=landscape.walkHeight(npc.root.position.x,npc.root.position.z);
+for(const mob of creatures)mob.root.position.y=landscape.walkHeight(mob.root.position.x,mob.root.position.z);
+const traveled=Math.hypot(player.position.x-frameStart.x,player.position.z-frameStart.z);
+const pose=playerAnimator.update(dt,{distance:traveled,speed:traveled/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim,twoHanded:state.equippedWeapon==='twohand',shield:!!state.equippedShield});
 body.rotation.y=combat.attackAnim>0?Math.sin((1-combat.attackAnim/.55)*Math.PI)*-.15:T.MathUtils.lerp(body.rotation.y,0,1-Math.exp(-10*dt));
 body.rotation.z=combat.hitAnim>0?Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12:T.MathUtils.lerp(body.rotation.z,0,1-Math.exp(-12*dt));
 body.position.y=0;cape.update(dt,pose?.blend||0);merchantAnimator.update(dt);
 for(const other of remotePlayers.values()){
  const before=other.root.position.clone();
- other.root.position.lerp(other.target,1-Math.exp(-12*dt));
+ other.root.position.lerp(other.target,1-Math.exp(-12*dt));other.root.position.y=landscape.walkHeight(other.root.position.x,other.root.position.z);
  const delta=Math.atan2(Math.sin(other.yaw-other.root.rotation.y),Math.cos(other.yaw-other.root.rotation.y));
  other.root.rotation.y+=delta*(1-Math.exp(-12*dt));
  const distance=before.distanceTo(other.root.position);
  other.animator.update(dt,{distance,speed:distance/Math.max(dt,.001)});
 }
-const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
+const focus=player.position;sun.position.set(focus.x+40,focus.y+65,focus.z+30);sun.target.position.copy(focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}texture('water',0x577f83).offset.y=performance.now()*.000012;for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();

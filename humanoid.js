@@ -25,41 +25,59 @@ export function buildHumanoid(T,root,look={}){
  mesh(box(.115,.10,.035),mat(0xb8a075,.6),root,0,1.075,.253);
  // Pelvis fills the gap between the torso and two distinct articulated legs.
  mesh(sphere,trousers,root,0,.985,0,.30,.21,.235);
- const neck=mesh(geo('humanNeck',()=>new T.CylinderGeometry(.108,.125,.20,12)),faceMat,root,0,2.02,0);
+ const neck=mesh(geo('humanNeckV2',()=>new T.CylinderGeometry(.098,.12,.13,12)),faceMat,root,0,2.01,0);
  const head=new T.Group();root.add(head);
  // Sculpted low-poly head with independently controlled jaw, cheekbone and cranium widths.
  // An elliptical ring mesh avoids the cylindrical/ball-headed appearance.
- const headShape=geo('humanHeadV3',()=>{
+ const faceStyle=['Balanced','Angular','Broad'].includes(look.face)?look.face:'Balanced';
+ const headShape=geo('humanHeadV5'+faceStyle,()=>{
   const rings=[
-   [0,.095,.105,.010],[.045,.155,.145,.006],[.12,.208,.195,.005],
-   [.20,.240,.220,0],[.31,.258,.234,-.006],[.42,.255,.238,-.010],
-   [.53,.237,.221,-.016],[.60,.185,.188,-.019],[.65,.09,.10,-.025]
+   [0,.095,.112,.018],[.025,.130,.132,.016],[.07,.180,.162,.010],
+   [.13,.205,.185,.006],[.20,.228,.208,.002],[.26,.246,.223,-.002],
+   [.315,.249,.228,-.007],[.365,.244,.229,-.007],[.40,.247,.238,-.010],
+   [.47,.245,.237,-.013],[.53,.224,.218,-.016],[.59,.170,.180,-.020],[.64,.080,.090,-.025]
   ];
-  const positions=[],indices=[],sides=12;
+  const positions=[],indices=[],sides=20;
   for(const [y,rx,rz,off] of rings)for(let j=0;j<sides;j++){
    const a=j/sides*Math.PI*2;
-   positions.push(Math.cos(a)*rx,y,Math.sin(a)*rz+off);
+   const front=Math.sin(a),x=Math.cos(a)*rx*(faceStyle==='Broad'?1.08:faceStyle==='Angular'&&y<.22?.88:1);
+   let z=(front>0?Math.pow(front,.68):front)*rz+off;
+   if(front>.4){
+    const eyeSocket=(Math.exp(-Math.pow((x-.108)/.055,2))+Math.exp(-Math.pow((x+.108)/.055,2)))*Math.exp(-Math.pow((y-.365)/.042,2));
+    const cheekbone=Math.exp(-Math.pow((Math.abs(x)-.16)/.065,2)-Math.pow((y-.27)/.055,2));
+    const mouthPlane=Math.exp(-Math.pow(x/.09,2)-Math.pow((y-.20)/.045,2));
+    z-=eyeSocket*.024;z+=cheekbone*.011+mouthPlane*.008;
+   }
+   positions.push(x,y,z);
   }
   for(let k=0;k<rings.length-1;k++)for(let j=0;j<sides;j++){
    const a=k*sides+j,b=k*sides+(j+1)%sides,d=(k+1)*sides+j,e=(k+1)*sides+(j+1)%sides;
    indices.push(a,d,b,b,d,e);
   }
+  const bottom=positions.length/3;positions.push(0,0,.018);const top=positions.length/3;positions.push(0,.665,-.025);
+  for(let j=0;j<sides;j++){indices.push(j,(j+1)%sides,bottom);const last=(rings.length-1)*sides;indices.push(last+j,top,last+(j+1)%sides)}
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();return g;
  });
  const face=mesh(headShape,faceMat,head,0,2.10,.015);
- // Subtle cheeks and cheekbone planes produce a face rather than a featureless sphere.
+ // Inset almond eyes, narrow eyelids and tapered eyebrows follow the sculpted sockets.
+ const eyeShape=geo('humanAlmondEye',()=>{const shape=new T.Shape();shape.moveTo(-.038,0);shape.quadraticCurveTo(-.004,.014,.038,0);shape.quadraticCurveTo(.004,-.010,-.038,0);return new T.ShapeGeometry(shape,8)});
+ const browShape=geo('humanTaperedBrow',()=>{const s=new T.Shape();s.moveTo(-.052,-.006);s.lineTo(-.035,.007);s.lineTo(.020,.006);s.lineTo(.052,-.004);s.lineTo(.036,-.008);s.lineTo(-.035,-.004);s.closePath();return new T.ExtrudeGeometry(s,{depth:.004,bevelEnabled:false})});
  for(const side of [-1,1]){
-  // Recessed eyes and angled eyebrows, avoiding large cartoon eyeballs.
-  mesh(sphere,mat(0x392f2a),head,side*.108,2.515,.232,.038,.019,.012);
-  mesh(sphere,mat(0xb8b4a2),head,side*.108,2.515,.240,.021,.010,.005);
-  mesh(sphere,mat(0x4b5b50),head,side*.108,2.515,.246,.010,.011,.004);
-  mesh(sphere,mat(0x181c1b),head,side*.108,2.515,.249,.004,.008,.002);
-  const brow=mesh(box(.095,.014,.022),hairMat,head,side*.108,2.550,.235);brow.rotation.z=-side*.10;
+  const lid=mesh(eyeShape,mat(0x775443),head,side*.108,2.465,.221,1.10,1.20,1);lid.rotation.z=side*.045;
+  const sclera=mesh(eyeShape,mat(0xbeb8a6),head,side*.108,2.465,.225,.92,.76,1);sclera.rotation.z=side*.045;
+  mesh(geo('humanIris',()=>new T.CircleGeometry(.011,14)),mat(0x59634f),head,side*.108,2.465,.227,1,.94,1);
+  mesh(geo('humanPupil',()=>new T.CircleGeometry(.004,12)),mat(0x20251f),head,side*.108,2.465,.228);
+  mesh(geo('humanEyeGlint',()=>new T.CircleGeometry(.0017,6)),mat(0xd9d9c6),head,side*.108-.003,2.469,.229);
+  const brow=mesh(browShape,hairMat,head,side*.108,2.505,.234);brow.rotation.z=-side*.07;
  }
- const nose=mesh(geo('humanNoseV3',()=>new T.ConeGeometry(.054,.15,5)),faceMat,head,0,2.433,.258,.8,1,.9);
- nose.rotation.x=Math.PI/2;
- mesh(box(.085,.014,.014),mat(0x855d51),head,0,2.345,.221);
- for(const side of [-1,1]){const ear=mesh(sphere,faceMat,head,side*.256,2.405,-.012,.047,.104,.064);ear.rotation.z=side*.13}
+ const noseGeometry=geo('humanNasalBridge',()=>{
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute([-.028,2.485,.223,.028,2.485,.223,-.043,2.365,.229,.043,2.365,.229,0,2.405,.307,-.023,2.355,.264,.023,2.355,.264],3));
+  g.setIndex([0,2,4,0,4,1,1,4,3,2,5,4,3,4,6,5,6,4,2,3,6,2,6,5]);g.computeVertexNormals();return g;
+ });
+ mesh(noseGeometry,faceMat,head,0,0,0);
+ mesh(sphere,mat(0x936f5c),head,0,2.300,.222,.064,.010,.009);
+ mesh(sphere,faceMat,head,0,2.285,.222,.059,.009,.010);
+ for(const side of [-1,1]){const ear=mesh(sphere,faceMat,head,side*.256,2.405,-.012,.035,.082,.047);ear.rotation.z=side*.13}
  // Close-fitted hairstyle volumes and swept strands are attached to the skull.
  const style=look.hair||'Side swept';
  const hairCap=mesh(geo('humanHairCapV3',()=>new T.SphereGeometry(1,14,9,0,Math.PI*2,0,Math.PI*.56)),hairMat,head,0,2.679,-.015,.244,style==='Buzz cut'?.075:.125,.220);
@@ -68,14 +86,21 @@ export function buildHumanoid(T,root,look={}){
  }else if(style==='Short crop'){
   mesh(box(.32,.055,.10),hairMat,head,0,2.676,.145);
  }else if(style==='Spiky'){
-  for(let i=-2;i<=2;i++){const tuft=mesh(geo('humanSpike',()=>new T.ConeGeometry(.055,.15,5)),hairMat,head,i*.09,2.78,-.015);tuft.rotation.z=-i*.14}
+  for(let i=-2;i<=2;i++){const tuft=mesh(geo('humanSpike',()=>new T.ConeGeometry(.049,.075,5)),hairMat,head,i*.08,2.735,-.015);tuft.rotation.z=-i*.14}
  }else if(style==='Long'){
   for(const side of [-1,1])mesh(sphere,hairMat,head,side*.20,2.41,-.105,.085,.26,.105);
   mesh(sphere,hairMat,head,0,2.42,-.175,.20,.28,.10);
  }
+ // Facial hair follows the jaw and leaves the mouth and nasal bridge visible.
+ if(look.beard==='Stubble'||look.beard==='Short beard'){
+  const long=look.beard==='Short beard';
+  const beard=mesh(sphere,hairMat,head,0,2.205,.055,.176,long?.140:.106,.148);
+  for(const side of [-1,1]){const sideburn=mesh(sphere,hairMat,head,side*.193,2.300,.07,.029,.125,.085);sideburn.rotation.z=side*.15}
+  if(long)mesh(sphere,hairMat,head,0,2.188,.126,.115,.128,.104);
+ }
  // Reduce the oversized prototype head while keeping its neck attachment fixed.
  head.children.forEach(o=>{o.position.y-=2.10});
- head.position.y=2.10;head.scale.set(.74,.72,.78);
+ head.position.y=2.32;head.scale.set(.64,.55,.65);
  // Dedicated attachment anchors prevent weapons and shields from floating or
  // swapping hands as shoulder and elbow joints animate.
  const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
@@ -111,6 +136,27 @@ export function buildHumanoid(T,root,look={}){
  const leftHand=new T.Group(),rightHand=new T.Group();
  leftHand.position.set(-.012,-.33,.015);rightHand.position.set(.012,-.33,.015);
  leftElbow.add(leftHand);rightElbow.add(rightHand);
+ // Adult silhouette: longer articulated legs, lifted pelvis/torso and a seven-head stature.
+ const upperOffset=.295,legScale=1.3;
+ for(const child of root.children)if(child!==head&&child!==leftLeg&&child!==rightLeg)child.position.y+=upperOffset;
+ for(const [leg,knee] of [[leftLeg,leftKnee],[rightLeg,rightKnee]]){
+  leg.position.y+=upperOffset;
+  for(const child of leg.children){child.position.y*=legScale;if(child.isMesh)child.scale.y*=legScale}
+  for(const child of knee.children){child.position.y*=legScale;child.scale.y*=legScale}
+ }
+ root.scale.set(.78,1,.86);
+ // Two-bone arm IK keeps both palms on a two-handed grip rather than near it.
+ function solveArm(side,target,weaponUp=new T.Vector3(0,1,0)){
+  const arm=side==='left'?leftArm:rightArm,elbow=side==='left'?leftElbow:rightElbow,hand=side==='left'?leftHand:rightHand;
+  const upper=elbow.position.clone(),lower=hand.position.clone(),l1=upper.length(),l2=lower.length(),toward=target.clone().sub(arm.position),distance=Math.min(l1+l2-.001,Math.max(.02,toward.length()));
+  const direction=toward.normalize(),pole=new T.Vector3(side==='left'?-.7:.7,-.1,-.4);pole.addScaledVector(direction,-pole.dot(direction)).normalize();
+  const along=(l1*l1-l2*l2+distance*distance)/(2*distance),bend=Math.sqrt(Math.max(0,l1*l1-along*along));
+  const elbowDelta=direction.clone().multiplyScalar(along).addScaledVector(pole,bend);
+  arm.quaternion.setFromUnitVectors(upper.clone().normalize(),elbowDelta.clone().normalize());
+  const lowerDirection=direction.clone().multiplyScalar(distance).sub(elbowDelta).applyQuaternion(arm.quaternion.clone().invert()).normalize();
+  elbow.quaternion.setFromUnitVectors(lower.clone().normalize(),lowerDirection);
+  const parentRotation=arm.quaternion.clone().multiply(elbow.quaternion);hand.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),weaponUp.clone().applyQuaternion(parentRotation.invert()).normalize());
+ }
  // Anatomical rig contracts used by armor and equipment.
- return {root,body:root,leftArm,rightArm,leftLeg,rightLeg,leftElbow,rightElbow,leftKnee,rightKnee,leftHand,rightHand,torso,neck,face,head,hairMeshes:head.children.filter(o=>o.material===hairMat)};
+ return {solveArm,upperOffset,legScale,root,body:root,leftArm,rightArm,leftLeg,rightLeg,leftElbow,rightElbow,leftKnee,rightKnee,leftHand,rightHand,torso,neck,face,head,hairMeshes:head.children.filter(o=>o.material===hairMat)};
 }

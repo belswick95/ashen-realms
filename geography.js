@@ -29,3 +29,18 @@ export function ribbonGeometry(T,points,width){
  if(geometry.attributes.normal.getY(0)<0){for(let i=0;i<indices.length;i+=3)[indices[i+1],indices[i+2]]=[indices[i+2],indices[i+1]];geometry.setIndex(indices);geometry.computeVertexNormals()}
  return geometry;
 }
+
+export const landscapeSettlements=[[0,0],[-60,45],[75,-55],[105,103],[-210,145],[260,-185],[225,215],[-275,-215],[-114,82],[187,74],[-152,-133],[164,-116]];
+export const landscapeLakes=[{x:-91,z:80,rx:18,rz:12,name:'Moonmere Lake'},{x:157,z:77,rx:24,rz:16,name:'Silverfin Lake'},{x:244,z:175,rx:16,rz:12,name:'Greenwatch Pond'}];
+export const worldRivers=[
+ {name:'Silverwater',width:9,points:[[-420,110],[-325,90],[-230,105],[-140,100],[-91,80],[-20,65],[50,80],[115,65],[157,77],[180,110],[250,125],[330,115],[420,95]]},
+ {name:'Westmere Run',width:6,points:[[-180,-420],[-160,-310],[-190,-230],[-195,-175],[-195,-115],[-135,-45],[-140,40],[-91,80]]},
+ {name:'Eastwater',width:7,points:[[420,-220],[345,-185],[310,-100],[250,-25],[205,30],[157,77]]}
+];
+export function segmentDistance(x,z,a,b){
+ const dx=b[0]-a[0],dz=b[1]-a[1],length=dx*dx+dz*dz;
+ const t=length?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/length)):0;
+ return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);
+}
+export const roadLines=worldRoads.map(([a,b])=>roadPoints(a,b));
+export function distanceToRoad(x,z){let d=Infinity;for(const line of roadLines)for(let i=1;i<line.length;i++)d=Math.min(d,segmentDistance(x,z,line[i-1],line[i]));return d}

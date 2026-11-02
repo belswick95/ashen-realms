@@ -19,11 +19,11 @@ npm run check
 ```
 
 For the offline browser regression, install Chromium with
-`npx playwright-core install chromium`, then run `npm run test:browser`.
+`npx playwright-core install chromium`, then run `npm run test:browser` and `npm run test:auth`.
 An existing compatible binary can be supplied through `ELDERVALE_CHROMIUM`.
 The harness serves its own local HTTP page, substitutes an offline auth fixture,
 blocks external services, and writes ignored screenshots to `test-results/`.
-It never tests against production or changes real player accounts.
+The authentication suite uses the real client UI with a fake transport. Neither suite tests against production or changes real player accounts.
 
 Serve the repository with any static HTTP server for ordinary development.
 Production auth requires the existing Supabase configuration; never place private

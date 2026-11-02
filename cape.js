@@ -1,13 +1,13 @@
 // Original Eldervale shoulder-to-ankle cloth cape with lightweight procedural sway.
 export function createCape(T,body,{color=0x71364a}={}){
- const width=1.10,rows=12,cols=12,height=2.25;
+ const width=1.10,rows=12,cols=12,height=1.96;
  const positions=[],uvs=[],indices=[];
  for(let row=0;row<=rows;row++){
   const t=row/rows,spread=.84+.33*Math.sin(t*Math.PI*.65);
   for(let col=0;col<=cols;col++){
    const u=col/cols,x=(u-.5)*width*spread;
    // Drape outside the torso and platebody; flare away from the back as it falls.
-   positions.push(x,2.46-height*t,-.43-.20*t-.09*Math.sin(t*Math.PI));
+   positions.push(x,2.15-height*t,-.43-.20*t-.09*Math.sin(t*Math.PI));
    uvs.push(u,1-t);
   }
  }
@@ -20,7 +20,7 @@ export function createCape(T,body,{color=0x71364a}={}){
  const trim=new T.MeshStandardMaterial({color:0xd6b57c,metalness:.38,roughness:.52});
  for(const side of [-1,1]){
   const clasp=new T.Mesh(new T.SphereGeometry(.07,12,8),trim);
-  clasp.position.set(side*.45,2.45,-.43);body.add(clasp);
+  clasp.position.set(side*.35,2.15,-.43);body.add(clasp);
  }
  let time=0;
  return {mesh:cloth,update(dt,speed=0){
