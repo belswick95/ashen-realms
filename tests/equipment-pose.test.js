@@ -11,5 +11,7 @@ test('one-handed swords point forward and upward while the shield faces the outs
 });
 test('two-handed wrist IK controls the blade without a second attachment rotation',()=>{
  const d=buildCharacterDisplay(T,new T.Group(),{},{weapon:'twohand',shield:'kite'});
- for(const attack of [0,.5,.3,.1]){d.update(.016,{attack});d.visual.updateMatrixWorld(true);const sword=d.rig.rightHand.children[0],blade=direction(sword,new T.Vector3(0,1,0));assert.ok(blade.y>-.4);assert.equal(d.rig.leftHand.children.length,0);assert.ok(d.rig.rightHand.getWorldPosition(new T.Vector3()).distanceTo(d.rig.leftHand.getWorldPosition(new T.Vector3()))<.13)}
+ for(const attack of [.5,.3,.1]){d.update(.016,{attack});d.visual.updateMatrixWorld(true);const sword=d.rig.rightHand.children[0],blade=direction(sword,new T.Vector3(0,1,0));assert.ok(blade.y>-.4);assert.equal(d.rig.leftHand.children.length,0);assert.ok(d.rig.rightHand.getWorldPosition(new T.Vector3()).distanceTo(d.rig.leftHand.getWorldPosition(new T.Vector3()))<.13)}
 });
+
+test('greatsword rests upright on the right shoulder with the left hand free',()=>{const d=buildCharacterDisplay(T,new T.Group(),{},{weapon:'twohand'});d.update(.016,{});d.visual.updateMatrixWorld(true);const sword=d.rig.rightHand.children[0],blade=direction(sword,new T.Vector3(0,1,0));assert.ok(blade.y>.95);assert.ok(d.rig.rightHand.getWorldPosition(new T.Vector3()).x<-.25);assert.ok(d.rig.rightHand.getWorldPosition(new T.Vector3()).distanceTo(d.rig.leftHand.getWorldPosition(new T.Vector3()))>.4)});

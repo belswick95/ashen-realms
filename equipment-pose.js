@@ -4,6 +4,7 @@ export function attachWeapon(rig,model,key){
  model.position.set(0,-.015,.025);
  // Two-handed IK supplies the wrist orientation itself.
  model.rotation.set(key==='twohand'?0:1.30,0,key==='twohand'?0:-.10);
+ if(key==='scimitar')model.rotateY(Math.PI/2);
  rig.rightHand.add(model);return model;
 }
 export function attachShield(rig,model){

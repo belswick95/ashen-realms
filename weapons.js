@@ -18,14 +18,14 @@ export function makeWeapon(T,key){
  function blade(length,width,curved=false){
   // Low-poly sword blade: tapered silhouette, bevelled steel faces and a
   // narrow central fuller. The grip is at local Y=0; the tip points +Y.
-  const shape=new T.Shape(),sweep=curved?.095:0;
+  const shape=new T.Shape(),sweep=curved?.22:0;
   shape.moveTo(-width*.49,0);
   shape.lineTo(width*.49,0);
-  shape.lineTo(width*.43+sweep*.60,length*.57);
-  shape.lineTo(width*.23+sweep,length*.88);
-  shape.lineTo(sweep*.92,length);
-  shape.lineTo(-width*.24+sweep*.48,length*.84);
-  shape.lineTo(-width*.43+sweep*.18,length*.55);
+  shape.lineTo(width*(curved?.92:.43)+sweep*.45,length*.52);
+  shape.lineTo(width*(curved?1.05:.23)+sweep*.78,length*.80);
+  shape.lineTo(sweep*1.35,length);
+  shape.lineTo(-width*.24+sweep*.65,length*.80);
+  shape.lineTo(-width*.43+sweep*.12,length*.48);
   shape.closePath();
   const g=new T.ExtrudeGeometry(shape,{depth:.043,bevelEnabled:true,bevelThickness:.014,bevelSize:.011,bevelSegments:1,steps:1});
   mesh(g,steel,0,.17,-.022);
@@ -50,7 +50,7 @@ export function makeWeapon(T,key){
   }
  }else{
   box(key==='twohand'?.44:.34,.065,.13,brass,0,handle-.12,0);
-  blade(key==='shortsword'?.56:key==='twohand'?1.22:key==='longsword'?1.0:.83,key==='twohand'?.21:.15,key==='scimitar');
+  blade(key==='shortsword'?.56:key==='twohand'?1.22:key==='longsword'?1.0:.95,key==='twohand'?.21:key==='scimitar'?.20:.15,key==='scimitar');
   // blade geometry starts above the crossguard
   group.children.slice(-2).forEach(o=>o.position.y+=handle-.25)
  }
