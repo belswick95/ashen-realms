@@ -1,9 +1,9 @@
 name: Check unreleased Eldervale
 on:
   push:
-    branches: [work/character-overhaul-unreleased]
+    branches: [work/character-overhaul-unreleased, release/eldervale-production-integration-20261102]
   pull_request:
-    branches: [feature/materials-character-animation]
+    branches: [feature/materials-character-animation, main]
 permissions:
   contents: read
 jobs:
