@@ -1,13 +1,13 @@
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
- let phase=0,blend=0,time=0;
+ let phase=0,blend=0,time=0,impact=0;
  return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false}={}){
   if(!Number.isFinite(dt)||dt<=0)return;
   dt=Math.min(dt,.1);time+=dt;
   distance=Number.isFinite(distance)?Math.max(0,distance):0;
   speed=Number.isFinite(speed)?Math.max(0,speed):0;
-  const moving=distance>1e-6;
+  // Smooth incoming damage into a short, recoverable full-body reaction.\n  const incoming=Number.isFinite(hit)?Math.max(0,Math.min(1,hit)):0;\n  impact=Math.max(incoming,impact*Math.exp(-9*dt));\n  const moving=distance>1e-6;
   blend+=(moving?1-blend:-blend)*(1-Math.exp(-12*dt));
   const run=Math.max(0,Math.min(1,(speed-2)/3));
   // A full cycle spans two steps; cadence scales with distance and stride length.
@@ -39,6 +39,6 @@ export function createHumanoidAnimator(rig){
   }
   // Never translate the whole rig: grounded feet and gameplay root stay stable.
   if(rig.torso)rig.torso.scale.y=1+Math.sin(time*1.7)*.004*(1-blend);
-  return {blend,run,attack:attack>0,hit:hit>0};
+  return {blend,run,attack:attack>0,hit:impact>0.01};
  }};
 }
