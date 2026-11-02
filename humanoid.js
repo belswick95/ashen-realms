@@ -1,3 +1,4 @@
+import {loftGeometry,fabricMaterial} from './anatomy.js';
 // Eldervale's shared low-poly human rig. The same geometry powers players,
 // NPCs, remote adventurers and the live character-creation preview.
 // Rig pivots are preserved for existing movement, equipment and combat animations.
@@ -8,7 +9,7 @@ export function buildHumanoid(T,root,look={}){
  let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
  function mat(color,rough=.85){const k='mat'+color+':'+rough;if(!cache.has(k))cache.set(k,new T.MeshStandardMaterial({color,roughness:rough,flatShading:false}));return cache.get(k)}
  function geo(key,make){if(!cache.has(key))cache.set(key,make());return cache.get(key)}
- const faceMat=mat(skin),cloth=mat(shirt),trousers=mat(pants),hairMat=mat(hairColor),boots=mat(0x272523),beltMat=mat(0x57362a);
+ const faceMat=mat(skin),cloth=fabricMaterial(T,shirt,cache),trousers=fabricMaterial(T,pants,cache),hairMat=mat(hairColor),boots=mat(0x272523),beltMat=mat(0x57362a);
  function mesh(g,m,parent,x,y,z,sx=1,sy=1,sz=1){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
  const sphere=geo('humanSphere',()=>new T.SphereGeometry(1,12,8));
  const box=(w,h,d)=>geo('humanBox'+w+':'+h+':'+d,()=>new T.BoxGeometry(w,h,d));
@@ -20,11 +21,11 @@ export function buildHumanoid(T,root,look={}){
  ],14));
  const torso=mesh(torsoShape,cloth,root,0,1.08,0,1,1,.77);
  // Collar and belt avoid the separated "floating toy" silhouette.
- mesh(geo('humanCollar',()=>new T.CylinderGeometry(.16,.18,.085,12)),mat(0x4e4035),root,0,1.965,0,1,1,.80);
+ mesh(geo('humanCollar',()=>new T.CylinderGeometry(.14,.16,.045,12)),cloth,root,0,1.965,0,1,1,.80);
  mesh(geo('humanBelt',()=>new T.CylinderGeometry(.312,.295,.11,14)),beltMat,root,0,1.075,0,1,1,.82);
  mesh(box(.115,.10,.035),mat(0xb8a075,.6),root,0,1.075,.253);
  // Pelvis fills the gap between the torso and two distinct articulated legs.
- mesh(sphere,trousers,root,0,.985,0,.30,.21,.235);
+ mesh(geo('humanTailoredHipsV2',()=>loftGeometry(T,[[-.16,.22,.18],[-.06,.31,.235],[.06,.305,.23],[.15,.27,.20]])),trousers,root,0,.985,0);
  // Subtle stitched tunic seams and a leather strap break up the uniform torso
  // without requiring large textures or additional draw-heavy assets.
  const seamMat=mat(0x263c39),threadMat=mat(0x8f8064),metalMat=mat(0xb8a075,.6);
@@ -129,7 +130,7 @@ export function buildHumanoid(T,root,look={}){
   ],12));
   const beard=mesh(beardGeo,hairMat,head,0,2.155,.065,1,long?1.1:.77,.91);
   for(const side of [-1,1]){const sideburn=mesh(sphere,hairMat,head,side*.193,2.300,.07,.029,.125,.085);sideburn.rotation.z=side*.15}
-  if(long)mesh(sphere,hairMat,head,0,2.188,.126,.115,.128,.104);
+
  }
  // Reduce the oversized prototype head while keeping its neck attachment fixed.
  head.children.forEach(o=>{o.position.y-=2.10});
@@ -141,29 +142,25 @@ export function buildHumanoid(T,root,look={}){
  leftArm.position.set(-.455,1.84,0);rightArm.position.set(.455,1.84,0);
  leftLeg.position.set(-.165,.985,0);rightLeg.position.set(.165,.985,0);
  root.add(leftArm,rightArm,leftLeg,rightLeg);
- const limb=(top,bottom,len,key)=>geo(key,()=>new T.CylinderGeometry(top,bottom,len,12,1));
  const leftElbow=new T.Group(),rightElbow=new T.Group(),leftKnee=new T.Group(),rightKnee=new T.Group();
  for(const [arm,side,elbow] of [[leftArm,-1,leftElbow],[rightArm,1,rightElbow]]){
-  mesh(sphere,cloth,arm,0,-.09,0,.155,.14,.155);
-  const upper=mesh(limb(.145,.115,.38,'humanUpperArm'),cloth,arm,side*.01,-.27,0);
-  upper.rotation.z=side*.05;
+  mesh(geo('tailoredSleeveV2',()=>loftGeometry(T,[[-.445,.100,.095],[-.34,.117,.105],[-.20,.139,.122],[-.09,.151,.132],[-.015,.166,.142],[.055,.140,.12],[.105,.065,.065]])),cloth,arm,0,0,0);
   elbow.position.set(side*.018,-.46,0);arm.add(elbow);
   mesh(sphere,faceMat,elbow,0,0,0,.11,.12,.115);
-  mesh(limb(.11,.08,.31,'humanForearm'),faceMat,elbow,side*.006,-.14,0);
+  mesh(geo('humanForearmV2',()=>loftGeometry(T,[[-.295,.068,.061],[-.22,.081,.072],[-.13,.105,.085],[-.055,.109,.093],[.015,.094,.089]])),faceMat,elbow,side*.006,0,0);
   // A palm, four curled fingers and an opposed thumb replace the spherical fist.
   mesh(sphere,faceMat,elbow,side*.012,-.31,.015,.070,.090,.055);
   for(let finger=0;finger<4;finger++)mesh(sphere,faceMat,elbow,side*.012+(finger-1.5)*.027,-.385,.028,.017,.047,.027);
   const thumb=mesh(sphere,faceMat,elbow,-side*.061,-.325,.047,.025,.060,.026);thumb.rotation.z=-side*.4;
  }
  for(const [leg,side,knee] of [[leftLeg,-1,leftKnee],[rightLeg,1,rightKnee]]){
-  mesh(limb(.17,.13,.48,'humanThigh'),trousers,leg,side*.012,-.245,0);
+  mesh(geo('humanThighV2',()=>loftGeometry(T,[[-.49,.113,.116],[-.37,.137,.131],[-.20,.169,.154],[-.06,.179,.160],[.015,.155,.144]])),trousers,leg,side*.012,0,0);
   knee.position.set(side*.016,-.49,0);leg.add(knee);
   mesh(sphere,trousers,knee,0,0,0,.135,.12,.14);
-  mesh(limb(.13,.095,.37,'humanCalf'),trousers,knee,side*.005,-.17,-.005);
+  mesh(geo('humanCalfV2',()=>loftGeometry(T,[[-.36,.079,.083],[-.26,.093,.103,0,-.018],[-.15,.128,.123,0,-.017],[-.055,.123,.112],[.025,.113,.108]])),trousers,knee,side*.005,0,-.005);
   mesh(geo('humanBootCuff',()=>new T.CylinderGeometry(.13,.13,.09,12)),beltMat,knee,side*.01,-.35,.005);
-  const shoe=mesh(sphere,boots,knee,side*.01,-.42,.13,.16,.11,.27);
-  shoe.rotation.x=-.07;
-  mesh(box(.27,.05,.33),boots,knee,side*.01,-.485,.16);
+  mesh(geo('humanLeatherBootV2',()=>loftGeometry(T,[[-.07,.126,.22,0,.10],[-.025,.138,.23,0,.10],[.035,.128,.205,0,.075],[.10,.096,.115,0,-.015]])),boots,knee,side*.01,-.42,.015);
+  mesh(box(.26,.04,.43),boots,knee,side*.01,-.465,.115);
  }
  // Attachment points follow the wrist joints, not the upper-arm pivots.
  const leftHand=new T.Group(),rightHand=new T.Group();

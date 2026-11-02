@@ -76,3 +76,15 @@ test('garment details stay attached to the body without affecting rig pivots',()
  const animator=createHumanoidAnimator(rig);animator.update(.016,{speed:5,distance:.08});
  assert.ok(rig.leftArm.parent===rig.root&&rig.rightArm.parent===rig.root);
 });
+
+test('damage reaction decays, idle breathing remains finite and the gameplay root stays grounded',()=>{
+ const r=character(),a=createHumanoidAnimator(r);
+ const pose=a.update(1/60,{hit:1});
+ assert.equal(pose.hit,true);assert.ok(r.torso.rotation.x>0);assert.ok(r.head.rotation.x<0);
+ for(let i=0;i<180;i++)a.update(1/60,{hit:0});
+ assert.ok(Math.abs(r.torso.rotation.x)<1e-10);
+ assert.ok(Math.abs(r.head.rotation.x)<1e-10);
+ assert.ok(r.neck.scale.y>.99&&r.neck.scale.y<1.01);
+ assert.equal(r.root.position.y,0);
+ a.update(1/60,{hit:NaN});assert.ok(Number.isFinite(r.head.rotation.x));
+});

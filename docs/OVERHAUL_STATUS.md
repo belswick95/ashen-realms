@@ -1,13 +1,17 @@
 # Unreleased graphics overhaul
 
 Branch: `work/character-overhaul-unreleased`.
-This revision continues the verified `7d8983d` checkpoint. It is not deployed.
-No production branch update, database write, account creation or account deletion
-was performed. Apex Fabrication Co. and GymWarden were not modified.
+This revision incorporates the `9a71517` handoff and repairs its runtime animation
+regression. It is not deployed. The production branch is unchanged.
+Apex Fabrication Co. and GymWarden were not modified.
 
 ## Character implementation
 
 - Adult silhouette with longer articulated legs and a smaller seven-head stature.
+- Contoured sleeves, thighs, calves, forearms and boots replace generic cylinders
+  and spherical shoes. Shared UV-mapped fabric adds a subtle woven surface.
+- Damage recoil decays back to idle; head stabilization and neck/torso breathing
+  preserve the gameplay root and equipment attachment pivots.
 - Sculpted jaw/cheek/forehead planes, recessed almond eyes, eyelids, tapered brows,
   modeled nasal bridge, lips, ears, fingers and thumbs.
 - Three face shapes, three facial-hair choices and five compatible hairstyles.
@@ -51,7 +55,7 @@ was performed. Apex Fabrication Co. and GymWarden were not modified.
 
 ## Verified
 
-- 28 actual-runtime unit/regression tests, JavaScript syntax checks and whitespace
+- 35 actual-runtime unit/regression tests, JavaScript syntax checks and whitespace
   checks pass locally.
 - Offline Chromium/WebGL world test: equipment and two-handed transitions, map
   open/close and movement, remote avatars, save/reload, mobile panel separation,
@@ -71,9 +75,10 @@ was performed. Apex Fabrication Co. and GymWarden were not modified.
 
 - Final visual acceptance is still required. Procedural low-poly artwork should be
   assessed as actual game output, not described as photorealistic or AAA artwork.
-- Real provider login, confirmation-email delivery, live cloud round trips and
-  multi-device/network multiplayer testing have not been exercised by the fake
-  transport tests. Schema/policy inspection is not a substitute for those tests.
+- Confirmation-email delivery remains unverified: the provider rejected reserved
+  test-domain signup addresses. Live login/save tests used an explicitly authorized,
+  confirmed temporary fixture instead. Real multi-device multiplayer playtesting
+  remains a release acceptance task.
 - Hardware performance measurements and final tablet/phone playtesting remain;
   no production FPS or measured performance improvement is claimed.
 - Existing gameplay remains client-authoritative; this graphics overhaul does not
@@ -93,6 +98,27 @@ available device-memory hints, caps phone pixel density, reduces view distance
 and disables shadows. Explicit player graphics choices are retained; selecting
 Automatic restores adaptation. No device-level FPS guarantee is implied.
 
-The regression suite now contains 31 unit tests. Browser checks additionally cover
+Browser checks additionally cover
 automatic graphics selection, portrait and touch landscape, the panel dock,
 real touch-event pinch zoom and press-and-hold menus.
+
+## Authorized live authentication and save verification
+
+A single marked temporary Eldervale account was used against the actual Supabase
+provider. Password login, refresh, incorrect-password rejection, cloud upsert/read,
+real browser login and save/reload/logout, and preservation of experience,
+equipment, quests and extension data passed. Owner reassignment was rejected;
+anonymous access and cross-account save visibility were blocked.
+
+The fixture's sessions were revoked and its auth user, profile and save were
+removed. A final read-only check confirmed zero remaining fixture rows/sessions,
+the original one-user/one-profile/one-save counts, and an identical fingerprint
+for the existing player's save. No production schema or policy was changed.
+
+## Handoff regression
+
+The handoff animation module contained literal escaped newline characters inside
+a line comment, which commented out the moving-state declaration and caused a
+runtime ReferenceError. Real animator tests caught this despite valid syntax.
+The declaration is restored, and damage decay/idle recovery now has a dedicated
+runtime regression test. This is why syntax checks alone are insufficient.
