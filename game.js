@@ -456,9 +456,9 @@ const cape=createCape(T,body,{color:0x81394b});
 function refreshArmor(){avatar.torso.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
 refreshArmor();
 const weaponMeshes=new Map();
-for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.80,.04);ra.add(model);model.visible=false;weaponMeshes.set(key,model)}
+for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,0,.025);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
 const shieldMeshes=new Map();
-for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);avatar.leftArm.add(model);model.visible=false;shieldMeshes.set(key,model)}
+for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);model.position.set(-.12,-.03,.30);avatar.leftHand.add(model);model.visible=false;shieldMeshes.set(key,model)}
 function refreshShield(){for(const [key,model] of shieldMeshes)model.visible=state.equippedShield===key}
 function equipShield(key){if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
 refreshShield();
