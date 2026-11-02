@@ -1,79 +1,52 @@
-// Eldervale plate armor: fitted, beveled low-poly meshes, not oversized cubes.
-// All coordinates are local to the shared 2.7-unit humanoid rig.
+import {loftGeometry} from './anatomy.js?v=release-20261102-townlife1';
+import {surfaceTexture} from './surface-textures.js?v=release-20261102-townlife1';
+// Original, closed low-poly plate harness: angular steel, articulated lames and
+// tapered limbs. Every piece follows the existing wrist/knee rig and loadout.
 export function buildPlateArmor(T,body,rig){
- const steel=new T.MeshStandardMaterial({color:0x929ba5,metalness:.65,roughness:.48,flatShading:true});
- const shade=new T.MeshStandardMaterial({color:0x59646c,metalness:.66,roughness:.4,flatShading:true});
- const edge=new T.MeshStandardMaterial({color:0xb8c1c8,metalness:.68,roughness:.38,flatShading:true});
- const leather=new T.MeshStandardMaterial({color:0x593b32,roughness:.87});
- const gold=new T.MeshStandardMaterial({color:0xbca06a,metalness:.68,roughness:.35});
- const plume=new T.MeshStandardMaterial({color:0x743d3b,roughness:.9,flatShading:true,side:T.DoubleSide});
+ const caches=buildPlateArmor.caches||(buildPlateArmor.caches=new WeakMap());let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
+ const material=(name,color,metalness=.55,roughness=.64)=>{if(!cache.has(name)){const map=surfaceTexture(T,'metal',0xffffff);cache.set(name,new T.MeshStandardMaterial({color,metalness,roughness,flatShading:true,map,bumpMap:map,bumpScale:.002}))}cache.get(name).userData.eldervaleShared=true;return cache.get(name)};
+ const steel=material('steel',0x607e87),edge=material('edges',0x91a7aa),dark=material('recesses',0x293b41),leather=material('leather',0x4b3529,0,.95),plume=material('crest',0x6d3450,0,.96);
  const slots={helm:[],chest:[],legs:[],boots:[]};
- function add(geo,mat,parent,pos,slot){const m=new T.Mesh(geo,mat);m.position.set(...pos);m.castShadow=true;m.receiveShadow=true;parent.add(m);slots[slot].push(m);return m}
- function plate(parent,slot,points,z,depth=.09,mat=steel,bevel=.025){
-  const s=new T.Shape();points.forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y));s.closePath();
-  const geo=new T.ExtrudeGeometry(s,{depth,bevelEnabled:bevel>0,bevelThickness:bevel,bevelSize:bevel,bevelSegments:1,steps:1,curveSegments:1});
-  geo.computeVertexNormals();return add(geo,mat,parent,[0,0,z],slot);
+ function add(g,m,parent,slot,x=0,y=0,z=0){const key=g.type+':'+JSON.stringify(g.parameters||Array.from(g.attributes.position.array));if(cache.has(key)){g.dispose();g=cache.get(key)}else cache.set(key,g);g.userData.eldervaleShared=true;const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;parent.add(o);slots[slot].push(o);return o}
+ const shell=(parent,slot,rings,mat=steel,sides=8)=>add(loftGeometry(T,rings,sides),mat,parent,slot);
+ const box=(parent,slot,w,h,d,x,y,z,mat=steel)=>add(new T.BoxGeometry(w,h,d),mat,parent,slot,x,y,z);
+ // The helmet has a flat brow, a sloped crown and a closed jaw, with dark visor slots.
+ shell(body,'helm',[[2.10,.20,.24],[2.18,.285,.29],[2.43,.325,.31],[2.60,.30,.285],[2.76,.21,.22],[2.82,.055,.09]],steel,8);
+ box(body,'helm',.56,.11,.025,0,2.43,.298,dark);
+ box(body,'helm',.59,.045,.035,0,2.505,.30,edge);
+ for(const x of [-.22,-.11,0,.11,.22])box(body,'helm',.038,.145,.035,x,2.365,.327,steel);
+ box(body,'helm',.07,.26,.045,0,2.31,.345,edge);
+ const crest=shell(body,'helm',[[2.78,.04,.12],[2.97,.035,.16],[3.10,.025,.12]],plume,5);crest.position.z=-.055;
+ // Closed breast/back shell, shaped over the ribs and narrowing at the waist.
+ shell(body,'chest',[[1.10,.29,.235],[1.22,.33,.26],[1.52,.395,.31],[1.75,.435,.325],[1.91,.39,.27],[1.97,.22,.19]],steel,8);
+ shell(body,'chest',[[1.91,.20,.18],[2.015,.19,.165]],dark,8);
+ // Three overlapping fauld lames protect the hips without a giant rectangular skirt.
+ for(let i=0;i<3;i++)shell(body,'chest',[[1.01-i*.07,.355+i*.016,.265+i*.007],[1.10-i*.07,.34+i*.016,.25+i*.007]],i===1?edge:steel,8);
+ const belt=shell(body,'chest',[[1.10,.345,.265],[1.16,.345,.265]],leather,8);
+ box(body,'chest',.10,.075,.04,0,1.13,.285,edge);
+ for(const side of ['left','right']){
+  const arm=rig[side+'Arm'],elbow=rig[side+'Elbow'];
+  shell(arm,'chest',[[-.33,.19,.18],[-.20,.255,.23],[-.03,.25,.225],[.075,.15,.15]],steel,6);
+  shell(arm,'chest',[[-.36,.18,.17],[-.28,.21,.195]],edge,6);
+  shell(arm,'chest',[[-.44,.12,.115],[-.32,.16,.15]],steel,6);
+  shell(elbow,'chest',[[-.065,.13,.13],[.025,.16,.15],[.10,.12,.115]],edge,6);
+  shell(elbow,'chest',[[-.30,.09,.085],[-.22,.12,.11],[-.07,.13,.125]],steel,6);
+  shell(elbow,'chest',[[-.34,.10,.09],[-.28,.11,.10]],edge,6);
+  shell(elbow,'chest',[[-.41,.072,.06],[-.34,.083,.07]],steel,6);
  }
- function cylinder(parent,slot,r1,r2,h,pos,mat=steel,segments=16){return add(new T.CylinderGeometry(r1,r2,h,segments,1),mat,parent,pos,slot)}
- function strip(parent,slot,w,h,d,pos,mat=edge){return add(new T.BoxGeometry(w,h,d),mat,parent,pos,slot)}
- // Helmet: shaped shell, dark recessed visor, cheek plates, brow and red horsehair crest.
- const helmet=add(new T.SphereGeometry(.347,12,8,0,Math.PI*2,0,Math.PI*.74),steel,body,[0,2.38,0],'helm');
- helmet.scale.set(1.02,1.07,1.03);
- plate(body,'helm',[[-.33,2.45],[.33,2.45],[.30,2.18],[.20,2.11],[.14,2.22],[-.14,2.22],[-.20,2.11],[-.30,2.18]],.24,.055,steel);
- plate(body,'helm',[[-.20,2.35],[.20,2.35],[.16,2.25],[-.16,2.25]],.322,.009,shade,.006);
- plate(body,'helm',[[-.055,2.37],[.055,2.37],[.095,2.14],[0,2.06],[-.095,2.14]],.349,.035,edge,.012);
- const brow=cylinder(body,'helm',.347,.347,.055,[0,2.47,0],edge,24);brow.scale.z=1.08;
- for(const side of [-1,1]){
-  plate(body,'helm',[[side*.23,2.38],[side*.34,2.34],[side*.31,2.11],[side*.23,2.07]],.18,.09,steel);
-  cylinder(body,'helm',.04,.04,.04,[side*.31,2.32,.25],gold,8)
- }
- const crest=cylinder(body,'helm',.045,.045,.23,[0,2.68,-.035],shade);
- for(let i=0;i<5;i++){const a=i/4;plate(body,'helm',[[-.035,2.72-a*.08],[-.065,2.96-a*.08],[.065,2.96-a*.08],[.035,2.72-a*.08]],.03-i*.038,.012,plume,.005)}
- // Chest: a closed cuirass covers both front and back, preventing the underlying torso from showing through.
- const backShell=cylinder(body,'chest',.445,.355,.86,[0,1.49,0],steel,24);backShell.scale.z=.79;
- // Chest: tapered cuirass with layered breastplate, collar, waist faulds and gold accents.
- plate(body,'chest',[[-.41,1.91],[.41,1.91],[.43,1.66],[.30,1.17],[.20,1.10],[-.20,1.10],[-.30,1.17],[-.43,1.66]],.23,.10,steel);
- plate(body,'chest',[[-.38,1.87],[0,1.92],[.38,1.87],[.31,1.55],[0,1.39],[-.31,1.55]],.34,.055,edge);
- plate(body,'chest',[[-.29,1.50],[0,1.35],[.29,1.50],[.24,1.25],[0,1.15],[-.24,1.25]],.32,.055,steel);
- plate(body,'chest',[[-.13,1.99],[.13,1.99],[.20,1.86],[-.20,1.86]],.29,.08,shade);
- for(const side of [-1,1]){
-  const arm=side<0?rig.leftArm:rig.rightArm;
-  // Pauldrons attach to shoulders so they animate with the arms.
-  const shoulder=add(new T.SphereGeometry(.24,20,12,0,Math.PI*2,0,Math.PI*.66),steel,arm,[0,-.16,0],'chest');shoulder.scale.set(1.12,.84,1.06);shoulder.rotation.z=side*.16;
-  const rim=cylinder(arm,'chest',.235,.22,.045,[0,-.30,0],edge,18);
-  // Upper-arm plates rotate with the shoulder, while forearm guards follow the elbow.
-  cylinder(arm,'chest',.165,.14,.26,[0,-.33,0],shade,16);
-  const elbow=side<0?rig.leftElbow:rig.rightElbow;
-  cylinder(elbow,'chest',.17,.15,.13,[0,-.025,0],edge,16);
-  cylinder(elbow,'chest',.157,.112,.29,[0,-.17,0],steel,20);
-  cylinder(elbow,'chest',.15,.12,.10,[0,-.31,0],steel,16);
-  cylinder(body,'chest',.025,.025,.43,[side*.36,1.53,.26],shade,12)
- }
- for(let i=0;i<3;i++)plate(body,'chest',[[-.33+i*.03,1.17-i*.095],[.33-i*.03,1.17-i*.095],[.29-i*.03,1.08-i*.095],[-.29+i*.03,1.08-i*.095]],.29-i*.025,.035,i===1?edge:steel,.008);
- const belt=cylinder(body,'chest',.345,.33,.09,[0,1.10,0],leather,24);belt.scale.z=.85;
- cylinder(body,'chest',.075,.075,.045,[0,1.10,.42],gold);
- // Leg armor: fitted thigh plates and separate articulated knee / shin guards.
  for(const [leg,knee] of [[rig.leftLeg,rig.leftKnee],[rig.rightLeg,rig.rightKnee]]){
-  cylinder(leg,'legs',.185,.15,.42,[0,-.25,0],steel,16);
-  plate(leg,'legs',[[-.16,-.09],[.16,-.09],[.15,-.43],[0,-.48],[-.15,-.43]],.16,.04,edge);
-  cylinder(knee,'legs',.18,.16,.15,[0,-.025,.035],steel,18);
-  plate(knee,'legs',[[-.15,.03],[.15,.03],[.13,-.14],[0,-.19],[-.13,-.14]],.17,.04,edge);
-  cylinder(knee,'legs',.15,.115,.32,[0,-.20,0],shade,16);
-  // Sabatons follow the lower leg rather than stretching during knee flexion.
-  const shoe=add(new T.SphereGeometry(.19,16,12),steel,knee,[0,-.42,.14],'boots');shoe.scale.set(1.08,.62,1.55);
-  plate(knee,'boots',[[-.17,-.33],[.17,-.33],[.14,-.46],[0,-.51],[-.14,-.46]],.18,.10,steel);
-  strip(knee,'boots',.28,.025,.22,[0,-.40,.25],edge);
+  shell(leg,'legs',[[-.45,.14,.145],[-.25,.18,.18],[-.055,.20,.19],[.025,.175,.17]],steel,8);
+  shell(knee,'legs',[[-.10,.12,.13],[.005,.16,.18],[.08,.13,.145]],edge,6);
+  shell(knee,'legs',[[-.35,.10,.115],[-.23,.135,.15],[-.10,.15,.16]],steel,8);
+  // Pointed leather boots and overlapping metal sabatons, rather than round shoes.
+  shell(knee,'boots',[[-.46,.125,.20,0,.09],[-.40,.13,.225,0,.09],[-.34,.105,.16,0,.05],[-.29,.09,.095]],leather,6);
+  shell(knee,'boots',[[-.44,.12,.22,0,.115],[-.385,.12,.23,0,.10],[-.34,.10,.15,0,.055]],steel,6);
+  box(knee,'boots',.23,.025,.035,0,-.38,.28,edge);
  }
- // Follow the same adult skeleton proportions as the base character.
- for(const slot of ['chest','legs','boots'])for(const part of slots[slot]){
-  if(part.parent===body)part.position.y+=rig.upperOffset;
-  else if([rig.leftLeg,rig.rightLeg,rig.leftKnee,rig.rightKnee].includes(part.parent)){part.position.y*=rig.legScale;part.scale.y*=rig.legScale}
+ for(const slot of ['chest','legs','boots'])for(const p of slots[slot]){
+  if(p.parent===body)p.position.y+=rig.upperOffset;
+  else if([rig.leftLeg,rig.rightLeg,rig.leftKnee,rig.rightKnee].includes(p.parent)){p.position.y*=rig.legScale;p.scale.y*=rig.legScale}
  }
- // Apply the identical skull proportion correction to every helmet component.
- const helmetRoot=new T.Group();body.add(helmetRoot);
- for(const part of slots.helm){body.remove(part);part.position.y-=2.10;helmetRoot.add(part)}
- helmetRoot.position.y=rig.head.position.y;helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.x*=.90;
- // Default hidden until equipped.
- Object.values(slots).flat().forEach(m=>m.visible=false);
- return slots;
+ const helmetRoot=new T.Group();body.add(helmetRoot);for(const p of slots.helm){p.position.y-=2.10;helmetRoot.add(p)}helmetRoot.position.y=rig.head.position.y;helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.x*=1.0;
+ Object.values(slots).flat().forEach(p=>p.visible=false);return slots;
 }

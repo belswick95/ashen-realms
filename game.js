@@ -1,22 +1,24 @@
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261102-grip1';
-import {createPlayerHUD} from './player-hud.js?v=release-20261102-grip1';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-grip1';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261102-grip1';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-grip1';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-grip1';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-grip1';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261102-townlife1';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261102-townlife1';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261102-townlife1';
+import {createPlayerHUD} from './player-hud.js?v=release-20261102-townlife1';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-townlife1';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261102-townlife1';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-townlife1';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-townlife1';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-townlife1';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261102-grip1';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-grip1';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-grip1';
-import {buildForest} from './forest.js?v=release-20261102-grip1';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-grip1';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-grip1';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-townlife1';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-townlife1';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-townlife1';
+import {buildForest} from './forest.js?v=release-20261102-townlife1';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-townlife1';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-townlife1';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261102-grip1';
-import {createCape} from './cape.js?v=release-20261102-grip1';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-grip1';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-grip1';
+import {buildPlateArmor} from './armor.js?v=release-20261102-townlife1';
+import {createCape} from './cape.js?v=release-20261102-townlife1';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-townlife1';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-townlife1';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
@@ -24,7 +26,7 @@ const skyLight=new T.HemisphereLight(0xcfe4ff,0x5a4d33,2);scene.add(skyLight);co
 Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:.5,far:140});sun.shadow.normalBias=.10;sun.shadow.bias=-.0003;sun.shadow.camera.updateProjectionMatrix();
 // Seeded procedural canvas textures, cached and shared across meshes.
 const textureCache=new Map();
-function texture(kind,base){const key=kind+base;if(textureCache.has(key))return textureCache.get(key);const canvas=document.createElement('canvas');const groundKind=kind==='grass'||kind==='dirt';const texSize=groundKind?256:128;canvas.width=texSize;canvas.height=texSize;const ctx=canvas.getContext('2d');ctx.fillStyle='#'+base.toString(16).padStart(6,'0');ctx.fillRect(0,0,texSize,texSize);let seed=base>>>0;const rnd=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
+function texture(kind,base){if(['masonry','wood','roof','plaster','floor','cloth'].includes(kind))return surfaceTexture(T,kind,base);const key=kind+base;if(textureCache.has(key))return textureCache.get(key);const canvas=document.createElement('canvas');const groundKind=kind==='grass'||kind==='dirt';const texSize=groundKind?256:128;canvas.width=texSize;canvas.height=texSize;const ctx=canvas.getContext('2d');ctx.fillStyle='#'+base.toString(16).padStart(6,'0');ctx.fillRect(0,0,texSize,texSize);let seed=base>>>0;const rnd=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
 for(let i=0;i<750;i++){const x=rnd()*128,y=rnd()*128,r=.4+rnd()*2.7;ctx.fillStyle=rnd()>.5?'rgba(255,248,208,.075)':'rgba(18,27,18,.09)';ctx.fillRect(x,y,r,r)}
 if(kind==='water'){for(let i=0;i<180;i++){const x=rnd()*128,y=rnd()*128;ctx.strokeStyle=i%3?'#a9d1cb30':'#1f536333';ctx.lineWidth=.4+rnd()*.6;ctx.beginPath();ctx.moveTo(x,y);ctx.bezierCurveTo(x+3,y-1,x+7,y+1,x+12,y);ctx.stroke()}}
 if(kind==='wood'){for(let i=0;i<22;i++){ctx.strokeStyle=i%2?'#ffffff16':'#130d0b24';ctx.lineWidth=.5+rnd()*1.6;ctx.beginPath();const y=i*6+rnd()*3;ctx.moveTo(0,y);ctx.bezierCurveTo(36,y+3,78,y-3,128,y+2);ctx.stroke()}}
@@ -49,9 +51,9 @@ if(kind==='dirt'){
 if(kind==='leaf'){for(let i=0;i<180;i++){const x=rnd()*128,y=rnd()*128;ctx.fillStyle=rnd()>.5?'#d6e5a124':'#122b1b30';ctx.beginPath();ctx.ellipse(x,y,1+rnd()*4,1+rnd()*2,rnd()*6,0,Math.PI*2);ctx.fill()}}
 if(kind==='roof'){for(let y=0;y<128;y+=15){ctx.strokeStyle='#160f0c44';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(128,y);ctx.stroke();for(let x=(y%30?8:0);x<128;x+=24){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+15);ctx.stroke()}}}
 const t=new T.CanvasTexture(canvas);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.magFilter=T.LinearFilter;t.minFilter=T.LinearMipmapLinearFilter;t.generateMipmaps=true;t.anisotropy=groundKind?Math.min(8,renderer.capabilities.getMaxAnisotropy()):4;textureCache.set(key,t);return t}
-const materialCache=new Map();function material(c,kind='stone'){const key=c+kind;if(!materialCache.has(key))materialCache.set(key,new T.MeshLambertMaterial({map:texture(kind,c),color:0xffffff}));return materialCache.get(key)}const targets=[];
+const materialCache=new Map();function material(c,kind='stone'){const key=c+kind;if(!materialCache.has(key))materialCache.set(key,new T.MeshStandardMaterial({map:texture(kind,c),bumpMap:['masonry','roof','wood','plaster','floor'].includes(kind)?texture(kind,c):null,bumpScale:kind==='masonry'?.045:.018,roughness:kind==='wood'?.86:.95,color:0xffffff}));return materialCache.get(key)}const targets=[];
 renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
-function box(w,h,d,c,x,y,z,p=scene,kind='stone'){const o=new T.Mesh(new T.BoxGeometry(w,h,d),material(c,kind));o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;p.add(o);return o}
+function box(w,h,d,c,x,y,z,p=scene,kind='stone'){const o=new T.Mesh(scaleSurfaceUV(new T.BoxGeometry(w,h,d),w,h,d),material(c,kind));o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;p.add(o);return o}
 function sphere(r,c,x,y,z,p=scene){const o=new T.Mesh(new T.SphereGeometry(r,10,8),material(c));o.position.set(x,y,z);o.castShadow=true;p.add(o);return o}
 function cone(r,h,c,x,y,z,p=scene,kind='leaf'){const o=new T.Mesh(new T.ConeGeometry(r,h,7),material(c,kind));o.position.set(x,y,z);o.castShadow=true;p.add(o);return o}
 const groundTexture=texture('grass',0x69865b).clone();
@@ -114,7 +116,7 @@ function rock(x,z){
 }
 const houseInteriors=[];const mapProps=[];
 function house(x,z,c,scale=1.65,rotation=0,options={}){
- const sx=scale*(options.width||1),sz=scale*(options.depth||1),wallKind=options.stone?'masonry':'stone',roofColor=options.roof||0x634332;
+ const sx=scale*(options.width||1),sz=scale*(options.depth||1),wallKind=options.stone?'masonry':'plaster',roofColor=options.roof||0x634332;
  // Keep full building footprints ashore, including existing lakeside hamlets.
  const radius=2.4*Math.hypot(sx,sz);
  const dry=(px,pz)=>[-1,0,1].every(a=>[-1,0,1].every(b=>landscape.waterAt(px+a*radius,pz+b*radius)<=0));
@@ -128,13 +130,21 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  // competing in the depth buffer as the camera moves. Keep the floor top
  // at .125 so doorway clearance and the existing walk-in room stay aligned.
  box(4.18,.7,3.94,0x777568,0,-.25,0,group,'stone');
- box(4,.085,3.7,0x81684c,0,.0825,0,group,'wood');
+ box(4,.085,3.7,0x81684c,0,.0825,0,group,options.stone?'masonry':'floor');
  // Walls meet at edges. Overlapping box caps used to compete in the depth
  // buffer along the corners, independently of the grass/foundation seam.
  box(3.64,3,.18,c,0,1.5,-1.83,group,wallKind);
  for(const side of [-1,1])box(.18,3,3.84,c,side*1.91,1.5,0,group,wallKind);
  for(const side of [-1,1])box(1.30,3,.18,c,side*1.17,1.5,1.83,group,wallKind);
  box(1.04,.75,.18,c,0,2.625,1.83,group,wallKind);
+ for(const side of [-1,1]){
+  box(.07,.38,3.42,0x69513b,side*1.79,.32,0,group,'wood');
+  box(.14,2.8,.16,0x66503c,side*1.77,1.5,-1.65,group,'wood');
+ }
+ box(3.45,.38,.07,0x69513b,0,.32,-1.69,group,'wood');
+ box(1.1,.025,1.8,options.stone?0x6b4d43:0x65715c,0,.14,.25,group,'cloth');
+ box(1.0,.08,.38,0x75543a,-.75,1.28,-1.56,group,'wood');
+ for(let i=0;i<4;i++)box(.12,.22+(i%2)*.10,.20,[0x80504a,0x697b66,0x9f875c][i%3],-1.08+i*.2,1.43,-1.55,group,'cloth');
  const roofParts=[];
  for(const side of [-1,1]){
   const trim=options.stone?0xc2bfae:0x715139;
@@ -201,6 +211,22 @@ for(const h of houseInteriors){
  const street=new T.Mesh(geo,pathMaterial);street.receiveShadow=true;street.userData.terrainFixed=true;scene.add(street);
 }
 house(-60,42,0xb7a08c);house(-54,48,0xaaa38a);house(73,-58,0xc3b29b);house(78,-51,0x99866c);house(-105,-91,0x9a9b87);house(102,103,0xb8a48d);house(-210,145,0xbda78a);house(-205,151,0xa8a089);house(260,-185,0xbda78a);house(265,-180,0xaaa08a);house(225,215,0xbaa78e);house(-275,-215,0xbda88d);
+
+// Outlying settlements now have a proper inn, workshop and communal building.
+const settlementNames=['Northwatch','Eastmarch','Farwatch','Westmere','Suncrest','Greenwatch','Ashen Reach','Moonmere','Silverfin','Pinehollow','Stonebridge'];
+landscapeSettlements.slice(1).forEach(([cx,cz],i)=>{
+ if(i===6)return; // Preserve the ruined settlement's open silhouette.
+ const name=settlementNames[i],slate=i%3===0;
+ const plans=[[-13,-12,'inn','Wayfarer Inn',false],[15,-9,'forge','Workshop',true],[-14,14,i%2?'chapel':'hall',i%2?'Chapel':'Guildhall',true]];
+ for(const [dx,dz,type,title,stone] of plans){
+  const x=cx+dx,z=cz+dz,rotation=Math.atan2(cx-x,cz-z);
+  const h=house(x,z,stone?0xa2a49b:0xbda98c,1.45,rotation,{type,name:name+' '+title,stone,open:true,roof:slate?0x536269:0x78543c});
+  const door=new T.Vector3(0,0,2.5);h.group.localToWorld(door);
+  const points=Array.from({length:17},(_,j)=>[cx+(door.x-cx)*j/16,cz+(door.z-cz)*j/16]);
+  const geometry=ribbonGeometry(T,points,1.8),p=geometry.attributes.position;for(let j=0;j<p.count;j++)p.setY(j,landscape.heightAt(p.getX(j),p.getZ(j))+.05);geometry.computeVertexNormals();
+  const lane=new T.Mesh(geometry,pathMaterial);lane.receiveShadow=true;lane.userData.terrainFixed=true;scene.add(lane);
+ }
+});
 
 const places=[['Oakcross · Main Town',0,0],['Northwatch',-60,45],['Eastmarch',75,-55],['Old Cairn',132,26],['Farwatch',105,103],['Westmere',-210,145],['Suncrest',260,-185],['Greenwatch',225,215],['Ashen Ruins',-275,-215]];
 // Lakeside settlements and landmarks. Water is a visible, discoverable world feature.
@@ -550,7 +576,7 @@ if(state.starterChestClaimed&&!saved.starterShieldsGranted){
 }
 const pieces=buildPlateArmor(T,body,avatar);
 const cape=createCape(T,body,{color:0x81394b});
-function refreshArmor(){for(const hair of avatar.hairMeshes)hair.visible=!state.equipped.helm;avatar.torso.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
+function refreshArmor(){for(const hair of avatar.hairMeshes)hair.visible=!state.equipped.helm;avatar.torso.visible=!state.equipped.chest;for(const part of avatar.clothingMeshes)part.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
 refreshArmor();
 const weaponMeshes=new Map();
 for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);attachWeapon(avatar,model,key);model.visible=false;weaponMeshes.set(key,model)}
@@ -780,18 +806,38 @@ function spawnNPC(profile,index){
  const hairs=[0x39271f,0x6d4831,0xa17a4b,0x241e1d];
  const model=buildHumanoid(T,root,{skin:palettes[index%palettes.length],shirt:profile.color,pants:0x474442,hairColor:hairs[index%hairs.length],hair:['Short crop','Side swept','Spiky','Buzz cut','Long'][index%5]});
  if(/guard|warden|sentinel|soldier/i.test(profile.role+' '+profile.name)){
-  const plates=buildPlateArmor(T,root,model);for(const slot of ['chest','legs','boots'])for(const part of plates[slot])part.visible=true;model.torso.visible=false;
+  const plates=buildPlateArmor(T,root,model);for(const slot of ['chest','legs','boots'])for(const part of plates[slot])part.visible=true;model.torso.visible=false;for(const part of model.clothingMeshes)part.visible=false;
   const weapon=makeWeapon(T,'longsword');attachWeapon(model,weapon,'longsword');root.userData.armed=true;
  }
+ const activity=profile.activity||({smith:'smith',banker:'read',herbalist:'garden',merchant:'trade',innkeeper:'trade',steward:'read'}[profile.role]);
+ profile.activity=activity;
+ let workProp=null;
+ if(activity==='carry'||activity==='read'){
+  workProp=new T.Group();root.add(workProp);workProp.position.set(0,1.48,.38);
+  box(activity==='carry'?.52:.40,activity==='carry'?.34:.055,.28,activity==='carry'?0x795737:0xb7a781,0,0,0,workProp,activity==='carry'?'wood':'cloth');
+  if(activity==='carry')for(const x of [-.20,.20])box(.035,.36,.30,0x4f3e2e,x,0,0,workProp,'wood');
+ }else if(['smith','sweep','garden'].includes(activity)){
+  workProp=new T.Group();model.rightHand.add(workProp);workProp.rotation.x=activity==='smith'?1.3:.18;
+  box(.045,activity==='smith'?.40:1.15,.045,0x705537,0,activity==='smith'?.06:-.12,0,workProp,'wood');
+  box(activity==='smith'?.27:.32,activity==='sweep'?.16:.10,.12,activity==='sweep'?0xa99a66:0x66777c,0,activity==='smith'?.23:-.67,0,workProp,activity==='sweep'?'cloth':'stone');
+ }
+
  // Clothing accents give each NPC a recognizable silhouette without changing the animation rig.
- if(index%3===0){box(.62,.11,.44,0x5e422d,0,1.365,0,root,'wood');box(.24,.16,.07,0xc5a46b,0,1.365,.245,root)}
- if(index%3===1){box(.52,.62,.045,0xb3a17b,0,1.775,.223,root,'cloth');box(.54,.12,.45,0x6b4c33,0,1.385,0,root,'wood')}
- if(index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.795,-.26,root,'cloth');cape.rotation.x=-.12}
+ if(!root.userData.armed&&index%3===0){box(.62,.11,.44,0x5e422d,0,1.365,0,root,'wood');box(.24,.16,.07,0xc5a46b,0,1.365,.245,root)}
+ if(!root.userData.armed&&index%3===1){box(.52,.62,.045,0xb3a17b,0,1.775,.223,root,'cloth');box(.54,.12,.45,0x6b4c33,0,1.385,0,root,'wood')}
+ if(!root.userData.armed&&index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.795,-.26,root,'cloth');cape.rotation.x=-.12}
  const hit=new T.Mesh(new T.CylinderGeometry(.68,.68,2.7,14),new T.MeshBasicMaterial({visible:false}));
  hit.position.set(0,1.38,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
- const npc={profile,root,animator:createHumanoidAnimator(model),leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,leftElbow:model.leftElbow,rightElbow:model.rightElbow,leftKnee:model.leftKnee,rightKnee:model.rightKnee,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null,patrolIndex:0};npcs.push(npc)
+ const npc={profile,root,rig:model,workProp,animator:createHumanoidAnimator(model),leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,leftElbow:model.leftElbow,rightElbow:model.rightElbow,leftKnee:model.leftKnee,rightKnee:model.rightKnee,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null,patrolIndex:0};npcs.push(npc)
 }
 npcProfiles.forEach(spawnNPC);
+const extraResidents=townResidents(landscapeSettlements),spawnedResidents=new Set();let nextResidentCheck=0;
+function ensureTownResidents(){
+ if(performance.now()<nextResidentCheck)return;nextResidentCheck=performance.now()+2000;
+ for(const h of houseInteriors)h.group.visible=Math.hypot(h.group.position.x-player.position.x,h.group.position.z-player.position.z)<155;
+ extraResidents.forEach((profile,index)=>{if(!spawnedResidents.has(index)&&Math.hypot(profile.x-player.position.x,profile.z-player.position.z)<85){spawnNPC(profile,npcProfiles.length+index);spawnedResidents.add(index)}});
+}
+ensureTownResidents();
 // Wildlife and enemies use lightweight low-poly models and simple local AI.
 const creatures=[];function creature(name,x,z,hostile=false){const root=new T.Group();root.position.set(x,0,z);scene.add(root);const fur=name==='Wolf'?0x646762:name==='Boar'?0x76553f:0x9a8062;box(.8,.65,1.3,fur,0,.65,0,root);sphere(.37,fur,0,.92,.73,root);for(const sx of [-.27,.27])for(const sz of [-.42,.42])box(.19,.52,.2,0x4e473a,sx,.26,sz,root);if(name==='Wolf'){for(const sx of [-.2,.2])cone(.15,.38,fur,sx,1.28,.7,root)}if(name==='Deer')cone(.18,.5,0xc5b28a,0,1.38,.75,root);const hit=new T.Mesh(new T.BoxGeometry(1.25,1.55,2.0),new T.MeshBasicMaterial({visible:false}));hit.position.set(0,.78,.20);root.add(hit);const mob={name,root,home:new T.Vector3(x,0,z),goal:new T.Vector3(x,0,z),hp:hostile?36:20,maxHp:hostile?36:20,hostile,alive:true,wait:2,attackCooldown:0,respawn:0};hit.userData={kind:'creature',mob};targets.push(hit);mob.hit=hit;creatures.push(mob)}
 for(let i=0;i<24;i++){const a=i*2.399,r=22+i*11;creature(i%5===0?'Wolf':i%3===0?'Boar':'Deer',Math.sin(a)*r,Math.cos(a)*r,i%5===0)}
@@ -1011,9 +1057,13 @@ if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=
 combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);playerHUD.health(combat.hp,combat.maxHp);
 for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance>=1.45&&distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>(mob.hostile&&distance<10?1.9:.4)){delta.normalize();const step=Math.min(dt*(mob.hostile&&distance<10?1.7:.8),Math.max(0,distance-1.85));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(mob.hostile&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,1.95)}}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
+ensureTownResidents();
 for(const npc of npcs){
+ npc.root.visible=npc.root.position.distanceToSquared(player.position)<85*85;
+ if(!npc.root.visible)continue;
+ if(npc.workProp)npc.workProp.visible=conversation?.profile!==npc.profile;
  if(conversation?.profile===npc.profile){faceTarget(npc.root,player.position);npc.animator.update(dt,{armed:!!npc.root.userData.armed});continue}
- npc.wait-=dt;
+ if(Math.hypot(npc.root.position.x-npc.goal.x,npc.root.position.z-npc.goal.z)<.6)npc.wait-=dt;
  if(npc.profile.behavior==='stationary'){
   npc.goal.copy(npc.home);npc.wait=4;
  }else if(npc.wait<=0){
@@ -1027,12 +1077,12 @@ for(const npc of npcs){
   npc.path=findWalkPath(previous,npc.goal,1400);
   npc.pathGoal=npc.goal.clone();
  }
- if(npc.path.length&&npc.path[0].distanceToSquared(previous)<.20)npc.path.shift();
+ if(npc.path.length&&Math.hypot(npc.path[0].x-previous.x,npc.path[0].z-previous.z)<.44)npc.path.shift();
  const waypoint=npc.path[0]||npc.goal;
  const toward=waypoint.clone().sub(previous);toward.y=0;
  if(toward.length()>.22){
   toward.normalize();
-  const stepSize=Math.min(npc.pace*dt,previous.distanceTo(waypoint));
+  const stepSize=Math.min(npc.pace*dt,Math.hypot(previous.x-waypoint.x,previous.z-waypoint.z));
   const proposed=previous.clone().addScaledVector(toward,stepSize);
   const crowded=npcs.some(other=>other!==npc&&other.root.position.distanceToSquared(proposed)<1.05*1.05)||player.position.distanceToSquared(proposed)<.85*.85;
   if(!walkAllowed(previous,proposed).blocked&&!crowded){
@@ -1044,6 +1094,7 @@ for(const npc of npcs){
  if(actualDistance<.0001&&toward.lengthSq()>.1){npc.stuck+=dt;if(npc.stuck>1.5){npc.goal.copy(npc.home);npc.path=[];npc.pathGoal=null;npc.wait=1;npc.stuck=0}}
  else npc.stuck=0;
  npc.animator.update(dt,{distance:actualDistance,speed:actualDistance/Math.max(dt,.001),armed:!!npc.root.userData.armed});
+ animateTownActivity(npc.rig,npc.profile.activity,performance.now()*.001+npc.phase,actualDistance>.0001);
  if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position);
 }
 player.position.y=landscape.walkHeight(player.position.x,player.position.z);

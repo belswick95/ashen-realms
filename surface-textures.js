@@ -1,0 +1,34 @@
+// Small, original, seamless material maps shared across the town. No remote assets.
+const caches=new WeakMap();
+export function surfaceTexture(T,kind,color){
+ if(typeof document==='undefined')return null;
+ let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}const key=kind+':'+color;if(cache.has(key))return cache.get(key);
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=256;const c=canvas.getContext('2d'),base=new T.Color(color);let seed=(color^0x98af731)>>>0;const rnd=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
+ const paint=(delta=0)=>{const v=base.clone().offsetHSL(0,0,delta);return '#'+v.getHexString(T.SRGBColorSpace)};
+ c.fillStyle=paint();c.fillRect(0,0,256,256);
+ if(kind==='masonry'||kind==='roof'||kind==='floor'){
+  const masonry=kind==='masonry',floor=kind==='floor',h=floor?32:masonry?43:32,w=floor?128:masonry?86:48;
+  c.fillStyle=paint(-.17);c.fillRect(0,0,256,256);
+  for(let row=-1;row<9;row++)for(let col=-1;col<7;col++){
+   const x=col*w+(row%2)*w/2,y=row*h;c.fillStyle=paint((rnd()-.5)*.13);c.fillRect(x+2,y+2,w-4,h-4);
+   c.fillStyle=paint(.09);c.fillRect(x+3,y+2,w-6,2);c.fillStyle=paint(-.12);c.fillRect(x+3,y+h-4,w-6,2);
+   if(!floor){c.strokeStyle=paint(-.07);c.lineWidth=1;c.beginPath();c.moveTo(x+w*.68,y+2);c.lineTo(x+w*.61,y+h*.35);c.lineTo(x+w*.65,y+h*.52);c.stroke()}
+  }
+ }else if(kind==='wood'){
+  for(let x=0;x<256;x+=32){c.fillStyle=paint((rnd()-.5)*.10);c.fillRect(x,0,32,256);c.fillStyle=paint(-.20);c.fillRect(x,0,2,256);c.fillStyle=paint(.10);c.fillRect(x+2,0,1,256);
+   for(let i=0;i<28;i++){const px=x+4+rnd()*25,y=rnd()*256;c.strokeStyle=paint((rnd()-.5)*.18);c.lineWidth=.4+rnd()*.9;c.beginPath();c.moveTo(px,y-70);c.bezierCurveTo(px-3,y-12,px+4,y+17,px,y+85);c.stroke()}
+   const y=rnd()*220+18;c.strokeStyle=paint(-.14);for(let r=2;r<7;r+=2){c.beginPath();c.ellipse(x+16,y,r,r*2.8,0,0,Math.PI*2);c.stroke()}
+  }
+ }else if(kind==='plaster'){
+  for(let i=0;i<45;i++){c.fillStyle=paint((rnd()-.5)*.055);c.beginPath();c.ellipse(rnd()*256,rnd()*256,4+rnd()*22,3+rnd()*14,rnd()*6,0,7);c.fill()}
+  for(let i=0;i<8;i++){let x=rnd()*256,y=rnd()*256;c.strokeStyle=paint(-.06);c.lineWidth=.6;c.beginPath();c.moveTo(x,y);for(let j=0;j<4;j++){x+=(rnd()-.5)*14;y+=rnd()*10;c.lineTo(x,y)}c.stroke()}
+ }else if(kind==='cloth'){
+  for(let i=0;i<256;i+=3){c.fillStyle=paint(i%2?.035:-.035);c.fillRect(i,0,1,256);c.fillRect(0,i,256,1)}
+ }else if(kind==='metal'){
+  for(let i=0;i<320;i++){c.strokeStyle='rgba(20,30,35,'+(.015+rnd()*.025)+')';c.beginPath();const x=rnd()*256,y=rnd()*256;c.moveTo(x,y);c.lineTo(x+2+rnd()*24,y+(rnd()-.5)*2);c.stroke()}
+ }
+ const pixels=c.getImageData(0,0,256,256);for(let i=0;i<pixels.data.length;i+=4){const noise=(rnd()-.5)*(kind==='metal'?4:13);for(let j=0;j<3;j++)pixels.data[i+j]+=noise}c.putImageData(pixels,0,0);
+ const texture=new T.CanvasTexture(canvas);texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=4;texture.userData.eldervaleShared=true;cache.set(key,texture);return texture;
+}
+// Each box face uses world-sized repeats, so stone blocks and timber grain retain scale.
+export function scaleSurfaceUV(geometry,w,h,d){const uv=geometry.attributes.uv;for(let face=0;face<6;face++){const a=face<2?d:w,b=face<2?h:face<4?d:h;for(let j=0;j<4;j++){const i=face*4+j;uv.setXY(i,uv.getX(i)*a/2,uv.getY(i)*b/2)}}return geometry}

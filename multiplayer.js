@@ -1,4 +1,4 @@
-import {publicCharacter} from './character-display.js?v=release-20261102-grip1';
+import {publicCharacter} from './character-display.js?v=release-20261102-townlife1';
 
 const validId=value=>typeof value==='string'&&value.length>0&&value.length<160;
 function playerState(value){
