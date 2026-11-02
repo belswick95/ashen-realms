@@ -138,12 +138,15 @@ export function buildHumanoid(T,root,look={}){
  // Dedicated attachment anchors prevent weapons and shields from floating or
  // swapping hands as shoulder and elbow joints animate.
  const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
- // Gameplay camera follows from behind: right-hand weapon appears on the player's right.
- leftArm.position.set(-.455,1.84,0);rightArm.position.set(.455,1.84,0);
+ // Facing +Z, the anatomical right is -X when viewed from the front.
+ // From the chase camera behind the character, the right-hand weapon appears on screen-left.
+ // This matches the requested reference and avoids swapping hands by screen position.
+ // Previously these anchors were swapped, making right-hand weapons appear left-handed.
+ leftArm.position.set(.455,1.84,0);rightArm.position.set(-.455,1.84,0);
  leftLeg.position.set(-.165,.985,0);rightLeg.position.set(.165,.985,0);
  root.add(leftArm,rightArm,leftLeg,rightLeg);
  const leftElbow=new T.Group(),rightElbow=new T.Group(),leftKnee=new T.Group(),rightKnee=new T.Group();
- for(const [arm,side,elbow] of [[leftArm,-1,leftElbow],[rightArm,1,rightElbow]]){
+ for(const [arm,side,elbow] of [[leftArm,1,leftElbow],[rightArm,-1,rightElbow]]){
   mesh(geo('tailoredSleeveV2',()=>loftGeometry(T,[[-.445,.100,.095],[-.34,.117,.105],[-.20,.139,.122],[-.09,.151,.132],[-.015,.166,.142],[.055,.140,.12],[.105,.065,.065]])),cloth,arm,0,0,0);
   elbow.position.set(side*.018,-.46,0);arm.add(elbow);
   mesh(sphere,faceMat,elbow,0,0,0,.11,.12,.115);
@@ -164,7 +167,8 @@ export function buildHumanoid(T,root,look={}){
  }
  // Attachment points follow the wrist joints, not the upper-arm pivots.
  const leftHand=new T.Group(),rightHand=new T.Group();
- leftHand.position.set(-.012,-.33,.015);rightHand.position.set(.012,-.33,.015);
+ // Mirror wrist anchors with the corrected anatomical arm labels.
+ leftHand.position.set(.012,-.33,.015);rightHand.position.set(-.012,-.33,.015);
  leftElbow.add(leftHand);rightElbow.add(rightHand);
  // Adult silhouette: longer articulated legs, lifted pelvis/torso and a seven-head stature.
  const upperOffset=.295,legScale=1.3;
@@ -179,7 +183,7 @@ export function buildHumanoid(T,root,look={}){
  function solveArm(side,target,weaponUp=new T.Vector3(0,1,0)){
   const arm=side==='left'?leftArm:rightArm,elbow=side==='left'?leftElbow:rightElbow,hand=side==='left'?leftHand:rightHand;
   const upper=elbow.position.clone(),lower=hand.position.clone(),l1=upper.length(),l2=lower.length(),toward=target.clone().sub(arm.position),distance=Math.min(l1+l2-.001,Math.max(.02,toward.length()));
-  const direction=toward.normalize(),pole=new T.Vector3(side==='left'?-.7:.7,-.1,-.4);pole.addScaledVector(direction,-pole.dot(direction)).normalize();
+  const direction=toward.normalize(),pole=new T.Vector3(side==='left'?.7:-.7,-.1,-.4);pole.addScaledVector(direction,-pole.dot(direction)).normalize();
   const along=(l1*l1-l2*l2+distance*distance)/(2*distance),bend=Math.sqrt(Math.max(0,l1*l1-along*along));
   const elbowDelta=direction.clone().multiplyScalar(along).addScaledVector(pole,bend);
   arm.quaternion.setFromUnitVectors(upper.clone().normalize(),elbowDelta.clone().normalize());

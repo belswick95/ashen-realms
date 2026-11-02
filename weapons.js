@@ -16,10 +16,24 @@ export function makeWeapon(T,key){
  function mesh(g,m,x,y,z){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;group.add(o);return o}
  function box(w,h,d,m,x,y,z){return mesh(new T.BoxGeometry(w,h,d),m,x,y,z)}
  function blade(length,width,curved=false){
-  const shape=new T.Shape();shape.moveTo(-width/2,0);shape.lineTo(width/2,0);
-  shape.lineTo(width/2+(curved?.11:0),length*.68);shape.lineTo(curved?.06:0,length);shape.lineTo(-width*.35+(curved?.08:0),length*.77);shape.closePath();
-  const g=new T.ExtrudeGeometry(shape,{depth:.065,bevelEnabled:true,bevelThickness:.012,bevelSize:.012,bevelSegments:1,steps:1});
-  mesh(g,steel,0,.17,-.033);box(.018,length*.70,.077,highlight,curved?.025:0,length*.50+.17,.025)
+  // Low-poly sword blade: tapered silhouette, bevelled steel faces and a
+  // narrow central fuller. The grip is at local Y=0; the tip points +Y.
+  const shape=new T.Shape(),sweep=curved?.095:0;
+  shape.moveTo(-width*.49,0);
+  shape.lineTo(width*.49,0);
+  shape.lineTo(width*.43+sweep*.60,length*.57);
+  shape.lineTo(width*.23+sweep,length*.88);
+  shape.lineTo(sweep*.92,length);
+  shape.lineTo(-width*.24+sweep*.48,length*.84);
+  shape.lineTo(-width*.43+sweep*.18,length*.55);
+  shape.closePath();
+  const g=new T.ExtrudeGeometry(shape,{depth:.043,bevelEnabled:true,bevelThickness:.014,bevelSize:.011,bevelSegments:1,steps:1});
+  mesh(g,steel,0,.17,-.022);
+  // A slender raised ridge reads as forged steel without the thick rectangular
+  // bar that previously obscured the sword's taper and point.
+  const ridge=new T.Mesh(new T.CylinderGeometry(.008,.012,length*.72,4),highlight);
+  ridge.position.set(sweep*.20,.17+length*.42,.038);
+  ridge.rotation.z=curved?-.075:0;ridge.castShadow=true;group.add(ridge);
  }
  const isTool=key==='pickaxe'||key==='axe';
  const handle=key==='twohand'? .8:isTool?.85:.39;
