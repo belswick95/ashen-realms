@@ -5,11 +5,11 @@ import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-
 import {addSystemMessage,renderFeed} from './chat-feed.js?v=staff-crown-20261102';
 import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-worldtime4';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261102-worldtime4';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-gripfix7';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-handedness10';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-handedness10';
 import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-worldtime4';
 import {buildForest} from './forest.js?v=release-20261102-worldtime4';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-gripfix7';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-handedness10';
 import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-worldtime4';
 const landscape=createLandscape();
 import {buildPlateArmor} from './armor.js?v=release-20261102-worldtime4';
