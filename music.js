@@ -11,16 +11,18 @@ export function startMusic(){
  const regionOffsets={'Oakcross':0,'Northwatch':-2,'Eastmarch':2,'Old Cairn':-5,'Farwatch':4,'Westmere':-3,'Stonebridge':5,'Suncrest':7,'Greenwatch':-1,'Ashen Ruins':-7};
  window.eldervaleSetAudioRegion=(name)=>{desiredRegion=Object.hasOwn(townThemes,name)?name:'Wilderness'};
  const settingsToggle=document.querySelector('#settings-music-toggle'),settingsVolume=document.querySelector('#settings-music-volume');
- const ambientVolume=document.querySelector('#ambient-volume');let ambienceGain,windSource;
+ const ambientVolume=document.querySelector('#ambient-volume');let ambienceGain,windSource,townGain,townSource;
  function startAmbience(){
   if(!ctx||ambienceGain)return;
   const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),data=buffer.getChannelData(0);
   // Deterministic low-level wind noise; generated locally, no network audio files.
   let seed=1234567;for(let i=0;i<data.length;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;data[i]=(seed/2147483648-1)*.3}
   const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter();source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=320;
-  ambienceGain=ctx.createGain();source.connect(filter);filter.connect(ambienceGain);ambienceGain.connect(ctx.destination);source.start();windSource=source;updateAmbience();
+  ambienceGain=ctx.createGain();source.connect(filter);filter.connect(ambienceGain);ambienceGain.connect(ctx.destination);source.start();windSource=source;
+  // Soft market-square murmur, independent from the musical score.
+  const townFilter=ctx.createBiquadFilter();townFilter.type='bandpass';townFilter.frequency.value=490;townFilter.Q.value=.38;townGain=ctx.createGain();townGain.gain.value=0;source.connect(townFilter);townFilter.connect(townGain);townGain.connect(ctx.destination);townSource=source;updateAmbience();
  }
- function updateAmbience(){if(ambienceGain&&ctx){const v=ambientVolume?Number(ambientVolume.value)/100:.3;ambienceGain.gain.setTargetAtTime(region==='Wilderness'?v*.28:v*.18,ctx.currentTime,.8)}}
+ function updateAmbience(){if(ambienceGain&&ctx){const v=ambientVolume?Number(ambientVolume.value)/100:.3;ambienceGain.gain.setTargetAtTime(v*(region==='Wilderness'?.30:.19),ctx.currentTime,.8);townGain?.gain.setTargetAtTime(region==='Wilderness'?0:v*.055,ctx.currentTime,.8)}}
  if(ambientVolume){const stored=localStorage.getItem('eldervale-ambient-volume');ambientVolume.value=stored===null?'30':stored;ambientVolume.addEventListener('input',()=>{localStorage.setItem('eldervale-ambient-volume',ambientVolume.value);updateAmbience()})}
  // Four-bar phrases in concert pitch; quarter-note melody with rests and sustained cadences.
  const songs=[
@@ -69,7 +71,7 @@ export function startMusic(){
  function schedule(){
   if(!playing||!ctx)return;
   while(nextTime<ctx.currentTime+.4){
-   if(region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;updateAmbience();label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name}
+   if(region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;step=0;updateAmbience();label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name}
    const quarter=60/songs[track].bpm;
    const currentSong=songs[track],i=step%32,bar=Math.floor(i/4),transpose=regionOffsets[region]||0,root=currentSong.roots[bar]+transpose;
    // Bass line and two supporting voices give the march a full brass-ensemble texture.
