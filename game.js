@@ -546,8 +546,8 @@ function drawMap(ctx,canvas,scale){
  // Sample the identical 840-unit terrain atlas in both map views.
  const originX=scale?0:player.position.x,originZ=scale?0:player.position.z;
  const sourceX=(originX-extent/2+420)/840*terrainAtlas.width;
- const sourceY=(originZ-extent/2+420)/840*terrainAtlas.height;
- const sourceW=extent/840*terrainAtlas.width,sourceH=extent/840*terrainAtlas.height;
+ const sourceY=(originZ-extent*h/w/2+420)/840*terrainAtlas.height;
+ const sourceW=extent/840*terrainAtlas.width,sourceH=extent*h/w/840*terrainAtlas.height;
  ctx.fillStyle='#415d39';ctx.fillRect(0,0,w,h);
  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
  const clipX=Math.max(0,sourceX),clipY=Math.max(0,sourceY),clipR=Math.min(terrainAtlas.width,sourceX+sourceW),clipB=Math.min(terrainAtlas.height,sourceY+sourceH);
@@ -575,13 +575,29 @@ for(const lake of worldLakes){ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z
   const corners=[[-halfW,-halfD],[halfW,-halfD],[halfW,halfD],[-halfW,halfD]];
   const c=Math.cos(g.rotation.y),sn=Math.sin(g.rotation.y);
   ctx.beginPath();corners.forEach(([x,z],i)=>{const wx=g.position.x+x*c+z*sn,wz=g.position.z-x*sn+z*c;i?ctx.lineTo(toX(wx),toY(wz)):ctx.moveTo(toX(wx),toY(wz))});ctx.closePath();
-  ctx.fillStyle='#8b775b';ctx.strokeStyle='#332c25';ctx.lineWidth=scale?1.5:1;ctx.fill();ctx.stroke();
+  // Roof silhouette and shingles: distinguish actual houses from map markers.
+  ctx.fillStyle='#483a29';ctx.strokeStyle='#d2b47e';ctx.lineWidth=scale?1.2:1.8;ctx.fill();ctx.stroke();
+  ctx.save();ctx.clip();
+  const roofTone=Math.abs(Math.floor(g.position.x*13+g.position.z*7))%3;
+  ctx.fillStyle=['#a15c35','#a36d3f','#865537'][roofTone];ctx.fillRect(cx-halfW*pxPerUnit*2,cy-halfD*pzPerUnit*2,halfW*pxPerUnit*4,halfD*pzPerUnit*4);
+  ctx.strokeStyle='#d39a59';ctx.lineWidth=scale?.7:1;
+  const step=Math.max(3,scale?3.2:6);
+  for(let yy=cy-halfD*pzPerUnit*2;yy<cy+halfD*pzPerUnit*2;yy+=step){
+   ctx.beginPath();ctx.moveTo(cx-halfW*pxPerUnit*2,yy);ctx.lineTo(cx+halfW*pxPerUnit*2,yy);ctx.stroke();
+  }
+  ctx.restore();
+  ctx.strokeStyle='#392b20';ctx.lineWidth=scale?1:1.5;ctx.stroke();
   const doorX=g.position.x+1.86*worldScale*sn,doorZ=g.position.z+1.86*worldScale*c;
-  ctx.fillStyle='#e34b40';ctx.beginPath();ctx.arc(toX(doorX),toY(doorZ),scale?2.8:3.4,0,Math.PI*2);ctx.fill();
+  if(!scale){ctx.fillStyle='#d8bc83';ctx.beginPath();ctx.arc(toX(doorX),toY(doorZ),2.2,0,Math.PI*2);ctx.fill();}
  }
  // World props are represented by small map symbols at their actual world coordinates.
  for(const prop of mapProps){const x=toX(prop.x),y=toY(prop.z);if(x<0||x>w||y<0||y>h)continue;ctx.fillStyle=prop.color;ctx.beginPath();ctx.arc(x,y,scale?1.7:2.2,0,Math.PI*2);ctx.fill()}
- for(const [name,x,z] of places){const px=toX(x),py=toY(z);if(px<0||px>w||py<0||py>h)continue;ctx.fillStyle='#e6c988';ctx.beginPath();ctx.arc(px,py,scale?4:3,0,Math.PI*2);ctx.fill();if(scale){ctx.font='13px Georgia';ctx.fillText(name,px+8,py-5)}}
+ for(const [name,x,z] of places){const px=toX(x),py=toY(z);if(px<0||px>w||py<0||py>h)continue;ctx.fillStyle='#e6c988';ctx.beginPath();ctx.arc(px,py,scale?4:3,0,Math.PI*2);ctx.fill();if(scale){
+  ctx.font='bold 13px Georgia';ctx.textAlign='center';ctx.lineJoin='round';
+  ctx.strokeStyle='#263025';ctx.lineWidth=3;ctx.strokeText(name,px,py-11);
+  ctx.fillStyle='#f0dbad';ctx.fillText(name,px,py-11);
+  ctx.textAlign='start';
+ }}
  ctx.fillStyle='#f5f5e4';ctx.strokeStyle='#18281d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(toX(player.position.x),toY(player.position.z),5,0,Math.PI*2);ctx.fill();ctx.stroke();
 }
 // Click-to-walk on both map sizes. Coordinates use the exact transform used by drawMap.
