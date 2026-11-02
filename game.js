@@ -43,6 +43,9 @@ sphere(.29,skin,0,2.38,0,body);const hair=sphere(.32,hairColor,0,2.63,-.05,body)
 sphere(.037,0x24201d,-.115,2.43,.264,body);sphere(.037,0x24201d,.115,2.43,.264,body);
 function joint(x,y,w,h,c){const g=new T.Group();g.position.set(x,y,0);body.add(g);box(w,h,.3,c,0,-h/2,0,g);return g}
 const la=joint(-.48,1.95,.23,.91,shirt),ra=joint(.48,1.95,.23,.91,shirt),ll=joint(-.21,1,.27,.86,pants),rl=joint(.21,1,.27,.86,pants);
+// More natural low-poly silhouette: broad shoulders, short sleeves, bare forearms and hands.
+box(.36,.32,.5,shirt,-.48,1.77,0,body);box(.36,.32,.5,shirt,.48,1.77,0,body);
+for(const arm of [la,ra]){box(.22,.43,.3,skin,0,-.72,0,arm);sphere(.15,skin,0,-.97,.02,arm)}
 box(.33,.27,.48,0x382b25,0,-.84,.07,ll);box(.33,.27,.48,0x382b25,0,-.84,.07,rl);
 const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
 const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0};
