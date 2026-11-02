@@ -140,6 +140,7 @@ const villageBuildings=[
 for(const [x,z,c,scale,rot] of villageBuildings)house(x,z,c,scale,rot);
 house(-60,42,0xb7a08c);house(-54,48,0xaaa38a);house(73,-58,0xc3b29b);house(78,-51,0x99866c);house(-105,-91,0x9a9b87);house(102,103,0xb8a48d);house(-210,145,0xbda78a);house(-205,151,0xa8a089);house(260,-185,0xbda78a);house(265,-180,0xaaa08a);house(225,215,0xbaa78e);house(-275,-215,0xbda88d);
 
+const places=[['Oakcross',0,0],['Northwatch',-60,45],['Eastmarch',75,-55],['Old Cairn',132,26],['Farwatch',105,103],['Westmere',-210,145],['Suncrest',260,-185],['Greenwatch',225,215],['Ashen Ruins',-275,-215]];
 // Lakeside settlements and landmarks. Water is a visible, discoverable world feature.
 const worldLakes=[{x:-91,z:80,rx:18,rz:12,name:'Moonmere Lake'},{x:157,z:77,rx:24,rz:16,name:'Silverfin Lake'},{x:244,z:175,rx:16,rz:12,name:'Greenwatch Pond'}];
 for(const lake of worldLakes){
@@ -445,7 +446,7 @@ if(saved.x!==undefined)player.position.set(saved.x,0,saved.z);
 const stats=document.querySelector('#stats'),inventory=document.querySelector('#inventory'),log=document.querySelector('#log'),equipment=document.querySelector('#equipment'),menu=document.querySelector('#contextmenu');
 let activeTab='inventory',mapOpen=false;const mapCanvas=document.querySelector('#minimap'),largeMap=document.querySelector('#worldmap'),mapPanel=document.querySelector('#map-panel');
 const mapCtx=mapCanvas.getContext('2d'),largeCtx=largeMap.getContext('2d');
-const places=[['Oakcross',0,0],['Northwatch',-60,45],['Eastmarch',75,-55],['Old Cairn',132,26],['Farwatch',105,103],['Westmere',-210,145],['Suncrest',260,-185],['Greenwatch',225,215],['Ashen Ruins',-275,-215]];
+
 function drawMap(ctx,canvas,scale){
  const w=canvas.width,h=canvas.height,extent=scale?840:90,pxPerUnit=w/extent,pzPerUnit=h/extent;
  const toX=x=>w/2+(x-(scale?0:player.position.x))*pxPerUnit,toY=z=>h/2+(z-(scale?0:player.position.z))*pzPerUnit;
