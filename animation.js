@@ -12,20 +12,24 @@ export function createHumanoidAnimator(rig){
   impact=Math.max(incoming,impact*Math.exp(-9*dt));
   const moving=distance>1e-6;
   blend+=(moving?1-blend:-blend)*(1-Math.exp(-12*dt));
-  const run=Math.max(0,Math.min(1,(speed-2)/3));
-  // A full cycle spans two steps; cadence scales with distance and stride length.
-  phase+=distance*Math.PI*2/(1.7+run*1.4);
-  const gait=Math.sin(phase),opposite=-gait;
-  const stride=(.40+run*.24)*blend;
+  const run=Math.max(0,Math.min(1,(speed-2.8)/2.5));
+  // Slow townsfolk take shorter steps; fast movement lengthens the stride.
+  const pace=Math.max(0,Math.min(1,speed/2.4));
+  const strideAngle=.20+.16*pace+.10*run;
+  phase+=distance*Math.PI*2/(4*1.18*Math.sin(strideAngle));
+  const gait=Math.sin(phase),opposite=-gait,stride=strideAngle*blend;
   rig.leftLeg.rotation.x=gait*stride;rig.rightLeg.rotation.x=opposite*stride;
-  rig.leftKnee.rotation.x=Math.max(0,-gait)*(.62+run*.48)*blend;
-  rig.rightKnee.rotation.x=Math.max(0,gait)*(.62+run*.48)*blend;
+  // Bend on recovery, then straighten before the forward foot plants.
+  // The old sine timing bent a knee during its planted backward sweep.
+  const recovery=Math.cos(phase),lift=(.34+run*.24)*blend;
+  rig.leftKnee.rotation.x=Math.max(0,-recovery)*lift;
+  rig.rightKnee.rotation.x=Math.max(0,recovery)*lift;
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
-  rig.leftArm.rotation.x=-gait*stride*.65+Math.sin(time*1.7)*.018*(1-blend);
-  rig.rightArm.rotation.x=gait*stride*.65-Math.sin(time*1.7)*.018*(1-blend);
-  rig.leftElbow.rotation.x=-.12-run*.35*blend-Math.max(0,gait)*.2*blend;
-  rig.rightElbow.rotation.x=-.12-run*.35*blend-Math.max(0,-gait)*.2*blend;
+  rig.leftArm.rotation.x=-gait*stride*.46+Math.sin(time*1.7)*.018*(1-blend);
+  rig.rightArm.rotation.x=gait*stride*.46-Math.sin(time*1.7)*.018*(1-blend);
+  rig.leftElbow.rotation.x=-.12-run*.18*blend-Math.max(0,gait)*.10*blend;
+  rig.rightElbow.rotation.x=-.12-run*.18*blend-Math.max(0,-gait)*.10*blend;
   // Armed idle: elbows forward, right hand presenting the blade diagonally ahead,
   // left forearm carrying the shield ahead of the torso. Blend out during attack.
   if(armed&&!twoHanded&&attack<=0){

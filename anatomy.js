@@ -1,6 +1,6 @@
 // Elliptical anatomical cross-sections: reusable low-poly meshes with clean UVs,
 // outward normals and closed ends. Coordinates remain local to the existing rig.
-export function loftGeometry(T,rings,sides=8){
+export function loftGeometry(T,rings,sides=12){
  const positions=[],uv=[],indices=[],span=rings.at(-1)[0]-rings[0][0]||1;
  for(const [y,rx,rz,cx=0,cz=0] of rings)for(let j=0;j<=sides;j++){const angle=j/sides*Math.PI*2;positions.push(cx+Math.cos(angle)*rx,y,cz+Math.sin(angle)*rz);uv.push(j/sides,(y-rings[0][0])/span)}
  const stride=sides+1;
@@ -15,7 +15,7 @@ export function loftGeometry(T,rings,sides=8){
 }
 export function fabricMaterial(T,color,cache){
  const key='wovenFabric:'+color;if(cache.has(key))return cache.get(key);
- const material=new T.MeshStandardMaterial({color,roughness:.93,flatShading:true});
+ const material=new T.MeshStandardMaterial({color,roughness:.93,flatShading:false});
  // Node geometry checks have no DOM; browser builds add the shared woven texture.
  if(typeof document!=='undefined'){
   let texture=cache.get('wovenFabricTexture');
