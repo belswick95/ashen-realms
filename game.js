@@ -2,7 +2,7 @@ import {createPlayerHUD} from './player-hud.js?v=release-20261102-worldtime4';
 import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-worldtime4';
 import {stabilizeSun} from './sun-shadow.js?v=release-20261102-worldtime4';
 import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-worldtime4';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-worldtime4';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=staff-crown-20261102';
 import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-worldtime4';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {buildHumanoid} from './humanoid.js?v=release-20261102-worldtime4';
