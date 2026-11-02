@@ -34,3 +34,5 @@ body.compact-layout input,body.compact-layout select{font-size:16px!important}
 body.compact-layout #map-widget .map-head{font-size:9px;letter-spacing:.3px;gap:3px}body.compact-layout #map-widget .map-head>span{min-width:0}body.compact-layout #map-widget .map-head button{font-size:10px;padding:5px;min-height:36px;flex-shrink:0}body.compact-layout #map-widget small{display:none}
 
 body.compact-layout #map-widget .map-head>span{display:none}body.compact-layout #map-widget .map-head button{width:100%}body.compact-layout #worldmap{width:min(100%,65dvh);height:auto;max-height:none;object-fit:fill;margin:8px auto}
+
+@media(pointer:coarse),(max-width:900px){[aria-label="Character preview controls"] button{min-width:44px;min-height:44px}}
