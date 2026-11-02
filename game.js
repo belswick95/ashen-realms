@@ -171,20 +171,64 @@ function houseLocal(h,p){return h.group.worldToLocal(p.clone())}
 function housePoint(h,x,z){return h.group.localToWorld(new T.Vector3(x,0,z))}
 function insideHouse(h,p){const q=houseLocal(h,p);return Math.abs(q.x)<1.92&&Math.abs(q.z)<1.82}
 function walkAllowed(from,to){
- const radius=.28;
+ // Swept movement sampled at sub-character intervals prevents tunneling through thin walls.
+ const distance=from.distanceTo(to),samples=Math.max(1,Math.ceil(distance/.18));
  for(const h of houseInteriors){
   const a=houseLocal(h,from),b=houseLocal(h,to);
-  const ix=Math.abs(b.x)<1.91+radius,iz=Math.abs(b.z)<1.83+radius;
-  if(!ix||!iz)continue;
-  // Only the front doorway is traversable; the rest of the walls are solid.
-  const doorway=Math.abs(b.x)<.43&&Math.abs(a.x)<.43;
-  const throughFront=a.z>1.4&&b.z>1.4;
-  if(throughFront&&doorway&&h.open)continue;
-  if(insideHouse(h,from)&&insideHouse(h,to))continue;
-  return {blocked:true,house:h,doorway:throughFront&&doorway};
+  const radius=.26,limitX=1.91+radius,limitZ=1.83+radius;
+  let previous=a;
+  for(let i=1;i<=samples;i++){
+   const q=a.clone().lerp(b,i/samples);
+   const inFootprint=Math.abs(q.x)<limitX&&Math.abs(q.z)<limitZ;
+   if(!inFootprint){previous=q;continue}
+   const interior=Math.abs(q.x)<1.91-radius&&Math.abs(q.z)<1.83-radius;
+   const prevInterior=Math.abs(previous.x)<1.91-radius&&Math.abs(previous.z)<1.83-radius;
+   if(interior&&prevInterior){previous=q;continue}
+   // The front entrance is the only permitted crossing.
+   const doorway=Math.abs(q.x)<.43&&Math.abs(previous.x)<.43;
+   const nearFront=q.z>1.32&&previous.z>1.32;
+   if(h.open&&doorway&&nearFront){previous=q;continue}
+   return {blocked:true,house:h,doorway};
+  }
  }
  return {blocked:false};
 }
+// Lightweight A* on a local 1.5m grid. Replans on goal changes, not every frame.
+function findWalkPath(start,goal,maxCells=2500){
+ if(walkAllowed(start,goal).blocked===false)return [goal.clone()];
+ const cell=1.5,originX=Math.min(start.x,goal.x)-18,originZ=Math.min(start.z,goal.z)-18;
+ const cols=Math.min(100,Math.ceil((Math.abs(start.x-goal.x)+36)/cell));
+ const rows=Math.min(100,Math.ceil((Math.abs(start.z-goal.z)+36)/cell));
+ const coord=p=>[Math.max(0,Math.min(cols-1,Math.round((p.x-originX)/cell))),Math.max(0,Math.min(rows-1,Math.round((p.z-originZ)/cell)))];
+ const point=(x,z)=>new T.Vector3(originX+x*cell,0,originZ+z*cell);
+ const [sx,sz]=coord(start),[gx,gz]=coord(goal);
+ const key=(x,z)=>z*cols+x;
+ const startKey=key(sx,sz),goalKey=key(gx,gz);
+ const nodes=new Map([[startKey,{x:sx,z:sz,g:0,f:0,prev:null}]]),open=[startKey],closed=new Set();
+ const directions=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]];
+ let best=startKey,bestH=Infinity,iterations=0;
+ while(open.length&&iterations++<maxCells){
+  let at=0;for(let j=1;j<open.length;j++)if(nodes.get(open[j]).f<nodes.get(open[at]).f)at=j;
+  const id=open.splice(at,1)[0],n=nodes.get(id);if(closed.has(id))continue;closed.add(id);
+  const h=Math.hypot(n.x-gx,n.z-gz);
+  if(h<bestH){bestH=h;best=id}
+  if(id===goalKey)break;
+  for(const [dx,dz] of directions){
+   const x=n.x+dx,z=n.z+dz;if(x<0||z<0||x>=cols||z>=rows)continue;
+   const nid=key(x,z);if(closed.has(nid))continue;
+   if(walkAllowed(point(n.x,n.z),point(x,z)).blocked)continue;
+   const g=n.g+Math.hypot(dx,dz),existing=nodes.get(nid);
+   if(!existing||g<existing.g){nodes.set(nid,{x,z,g,f:g+Math.hypot(x-gx,z-gz),prev:id});open.push(nid)}
+  }
+ }
+ if(best===startKey)return [];
+ const result=[];let id=best;
+ while(id!==startKey&&result.length<100){const n=nodes.get(id);result.push(point(n.x,n.z));id=n.prev;if(id==null)break}
+ result.reverse();
+ if(best===goalKey&&!walkAllowed(result[result.length-1]||start,goal).blocked)result.push(goal.clone());
+ return result;
+}
+
 function routeTo(target){
  const goal=target.clone();goal.y=0;
  const h=houseInteriors.find(h=>insideHouse(h,goal));
