@@ -5,7 +5,7 @@ import {SKINS,HAIRS,SHIRTS,PANTS,HAIRSTYLES,FACES,BEARDS,safeAppearance} from '.
 import {toPlayerRow,fromPlayerRow} from './player-save.js?v=release-20261102-gripfix7';
 import {createSaveCoordinator} from './cloud-save.js?v=release-20261102-gripfix7';
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm';
-const db=createClient('https://aojccnhmvxurrnnzteej.supabase.co','sb_publishable_pfcppa_7V_9lvHsL1aAM8Q_px5bXnY8',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const db=createClient('https://aojccnhmvxurrnnzteej.supabase.co','sb_publishable_pfcppa_7V_9lvHsL1aAM8Q_px5bXnY8',{auth:{persistSession:true,storage:sessionStorage,autoRefreshToken:true,detectSessionInUrl:true}});
 const overlay=document.querySelector('#auth-screen'),form=document.querySelector('#auth-form'),status=document.querySelector('#auth-status'),title=document.querySelector('#auth-title'),modeBtn=document.querySelector('#auth-mode'),username=document.querySelector('#auth-username'),email=document.querySelector('#auth-email'),password=document.querySelector('#auth-password');
 let signup=false,user=null,pending=null,loading=false,saveTimer=null,started=false;
 // Initialize audio while the login screen is visible so the first user gesture
@@ -61,4 +61,37 @@ document.querySelector('#logout').onclick=async()=>{
  const {error}=await db.auth.signOut();if(error){cloudStatus('Could not sign out — please retry',true);return}
  started=false;localStorage.removeItem('eldervale-save');localStorage.removeItem('ashen-realms-save');location.reload();
 };
+// Security: sessions survive refreshes in the same tab but not closing the tab.
+// Supabase's default localStorage persists beyond browser closure, so use sessionStorage.
+const IDLE_LIMIT_MS=5*60*1000;
+let lastActivity=Date.now(),logoutInProgress=false,hiddenSince=document.hidden?Date.now():0;
+function recordActivity(){if(!document.hidden)lastActivity=Date.now()}
+for(const event of ['pointerdown','keydown','touchstart','wheel'])addEventListener(event,recordActivity,{passive:true});
+async function autoLogout(reason){
+ if(logoutInProgress||!user)return;
+ logoutInProgress=true;clearTimeout(saveTimer);
+ try{
+  window.eldervaleCaptureSave?.();
+  saves.stash();
+  // Attempt cloud persistence before revoking the session; keep the local
+  // snapshot if network access is unavailable.
+  await Promise.race([flush(),new Promise(resolve=>setTimeout(resolve,2500))]);
+ }catch(e){console.warn('Final save before auto logout:',e)}
+ try{await db.auth.signOut({scope:'local'})}catch(e){console.warn('Auto logout:',e)}
+ started=false;user=null;
+ // Session tokens must not be available after inactivity even if signOut fails.
+ for(const key of Object.keys(sessionStorage))if(/^sb-.*-auth-token$/.test(key))sessionStorage.removeItem(key);
+ location.reload();
+}
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){hiddenSince=Date.now();try{window.eldervaleCaptureSave?.();saves.stash()}catch{}}
+ else if(user){if(Date.now()-lastActivity>=IDLE_LIMIT_MS||hiddenSince&&Date.now()-hiddenSince>=IDLE_LIMIT_MS)void autoLogout('inactive');else recordActivity();hiddenSince=0}
+});
+setInterval(()=>{if(!user||logoutInProgress)return;const now=Date.now();if(now-lastActivity>=IDLE_LIMIT_MS||document.hidden&&hiddenSince&&now-hiddenSince>=IDLE_LIMIT_MS)void autoLogout('inactive')},10000);
+addEventListener('pagehide',()=>{
+ // A pagehide also fires during refresh: preserve same-tab reloads.
+ // sessionStorage is discarded when the tab is closed, preventing auto-login.
+ if(!user)return;
+ try{window.eldervaleCaptureSave?.();saves.stash()}catch{}
+});
 const {data:{session}}=await db.auth.getSession();if(session?.user)await enter(session.user);else message('Sign in to continue your adventure.');
