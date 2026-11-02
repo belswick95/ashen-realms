@@ -20,7 +20,7 @@ export function startMusic(){
   const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter();source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=320;
   ambienceGain=ctx.createGain();source.connect(filter);filter.connect(ambienceGain);ambienceGain.connect(ctx.destination);source.start();windSource=source;updateAmbience();
  }
- function updateAmbience(){if(ambienceGain&&ctx){const v=ambientVolume?Number(ambientVolume.value)/100:.3;ambienceGain.gain.setTargetAtTime(region==='Wilderness'?v*.15:v*.035,ctx.currentTime,.8)}}
+ function updateAmbience(){if(ambienceGain&&ctx){const v=ambientVolume?Number(ambientVolume.value)/100:.3;ambienceGain.gain.setTargetAtTime(region==='Wilderness'?v*.28:v*.18,ctx.currentTime,.8)}}
  if(ambientVolume){const stored=localStorage.getItem('eldervale-ambient-volume');ambientVolume.value=stored===null?'30':stored;ambientVolume.addEventListener('input',()=>{localStorage.setItem('eldervale-ambient-volume',ambientVolume.value);updateAmbience()})}
  // Four-bar phrases in concert pitch; quarter-note melody with rests and sustained cadences.
  const songs=[
@@ -94,14 +94,17 @@ export function startMusic(){
    button.textContent=musicMuted?'Music Off':'Music On';button.setAttribute('aria-pressed',String(!musicMuted));if(settingsToggle){settingsToggle.textContent=musicMuted?'Unmute music':'Mute music';settingsToggle.setAttribute('aria-pressed',String(!musicMuted))}label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name;
   }catch(err){label.textContent='Audio unavailable';console.warn('Eldervale music:',err)}
  }
+ window.eldervaleEnableAudio=async()=>{if(!playing){await toggle()}else if(ctx?.state!=='running'){await ctx.resume()}if(musicMuted){musicMuted=false;localStorage.setItem('eldervale-music-muted','false');master?.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.08);button.textContent='Music On';settingsToggle.textContent='Mute music';settingsToggle.setAttribute('aria-pressed','true')}document.querySelector('#enable-game-audio')?.remove();};
  button.addEventListener('click',toggle);
  settingsToggle?.addEventListener('click',toggle);
  // Start music on the first user interaction permitted by the browser.
  document.addEventListener('pointerdown',event=>{if(!playing&&!event.target.closest('#music-toggle, #settings-music-toggle'))toggle()},{once:true});
+ document.addEventListener('touchstart',()=>{if(!playing)toggle()},{once:true,passive:true});
  document.addEventListener('keydown',event=>{if(!playing&&!event.repeat&&!event.target.closest('#music-toggle, #settings-music-toggle'))toggle()},{once:true});
  slider.addEventListener('input',()=>{if(settingsVolume)settingsVolume.value=slider.value;localStorage.setItem('eldervale-music-volume',slider.value);if(ctx&&master)master.gain.setTargetAtTime(musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,.04)});
  settingsVolume?.addEventListener('input',()=>{slider.value=settingsVolume.value;slider.dispatchEvent(new Event('input',{bubbles:true}))});
  if(settingsToggle){settingsToggle.textContent=musicMuted?'Unmute music':'Mute music';settingsToggle.setAttribute('aria-pressed',String(!musicMuted))}
  const stored=localStorage.getItem('eldervale-music-volume');const saved=stored===null?45:Number(stored);slider.value=Number.isFinite(saved)&&saved>=0&&saved<=100?String(saved):'45';if(settingsVolume)settingsVolume.value=slider.value;
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ctx?.state==='suspended')ctx.resume().catch(()=>{})});
  window.addEventListener('pagehide',()=>{playing=false;clearInterval(timer);windSource?.stop();ctx?.close()},{once:true});
 }
