@@ -1,6 +1,6 @@
-import {createPlayerHUD} from './player-hud.js?v=hud-20261102';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=hud-20261102';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=hud-20261102';
+import {createPlayerHUD} from './player-hud.js?v=hud-20261102-recovery';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=hud-20261102-recovery';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=hud-20261102-recovery';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {buildHumanoid} from './humanoid.js';
 import {createHumanoidAnimator} from './animation.js';
