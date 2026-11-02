@@ -427,15 +427,46 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeDi
 document.addEventListener('contextmenu',e=>{if(e.target.closest('#game-ui')||e.target===renderer.domElement)e.preventDefault()});
 // Animated ground-click markers: amber for walking and crimson for interactions.
 const markers=[];function markClick(x,z,kind='walk'){const group=new T.Group();group.position.set(x,.11,z);const color=kind==='walk'?0xffd05b:0xe64c46;const ring=new T.Mesh(new T.RingGeometry(.45,.62,32),new T.MeshBasicMaterial({color,transparent:true,opacity:.95,side:T.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;group.add(ring);const dot=new T.Mesh(new T.CircleGeometry(.12,20),new T.MeshBasicMaterial({color,transparent:true,opacity:.85,side:T.DoubleSide,depthWrite:false}));dot.rotation.x=-Math.PI/2;dot.position.y=.005;group.add(dot);scene.add(group);markers.push({group,ring,dot,age:0});}
+// Job stations make villagers inhabit believable places rather than random spawn circles.
+function workCounter(x,z,kind){
+ const g=new T.Group();g.position.set(x,0,z);scene.add(g);
+ box(3.1,.22,1.05,0x86613d,0,1.08,0,g,'wood');
+ for(const dx of [-1.28,1.28])box(.16,1,.18,0x59422e,dx,.55,0,g,'wood');
+ if(kind==='bank'){
+  for(let i=0;i<4;i++){const coin=new T.Mesh(new T.CylinderGeometry(.21,.21,.09,10),material(0xd8ad4b,'stone'));coin.position.set(-.95+i*.55,1.25,0);g.add(coin)}
+  box(.75,.55,.48,0x6e482b,1.02,1.45,-.2,g,'wood');
+ }else if(kind==='forge'){
+  for(let i=0;i<3;i++)box(.36,.12,.13,0x9fa5a2,-.7+i*.6,1.27,0,g,'stone');
+  box(.8,.5,.8,0x565552,1.1,.5,-.9,g,'stone');
+ }else if(kind==='herbs'){
+  for(let i=0;i<5;i++){const pot=new T.Mesh(new T.CylinderGeometry(.16,.12,.24,7),material(0x977450,'stone'));pot.position.set(-1+i*.5,1.3,0);g.add(pot);cone(.18,.38,i%2?0x4d8051:0x7b9960,-1+i*.5,1.6,0,g)}
+ }else{
+  for(let i=0;i<5;i++)box(.32,.16,.28,i%2?0xb88d53:0x79935e,-1+i*.5,1.28,0,g,'wood');
+ }
+}
+function workSign(x,z,caption){
+ const g=new T.Group();g.position.set(x,0,z);scene.add(g);
+ box(2.7,.6,.13,0x67472d,0,2.5,0,g,'wood');
+ const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;
+ const ctx=canvas.getContext('2d');ctx.fillStyle='#e9d19b';ctx.font='bold 52px Georgia';ctx.textAlign='center';ctx.fillText(caption,256,83);
+ const texture=new T.CanvasTexture(canvas),sign=new T.Mesh(new T.PlaneGeometry(2.5,.58),new T.MeshBasicMaterial({map:texture,transparent:true,side:T.DoubleSide}));
+ sign.position.set(0,2.5,.08);g.add(sign);
+}
+workCounter(-12,5,'herbs');workCounter(12,4,'goods');
+workCounter(-8,-10,'bank');workSign(-8,-10,'OAKCROSS BANK');
+workCounter(18,-1,'forge');workSign(18,-1,'THE FORGE');
+workSign(-12,5,'HERBALIST');workSign(12,4,'MARKET');
 const npcProfiles=[
-{name:'Edda the Guide',role:'guide',x:3,z:3,color:0x4b6d8d,lines:['Welcome to Eldervale, traveler. These roads lead to villages and forgotten ruins.','Gather wood and ore to earn gold. Explore beyond Oakcross to discover more of our world.']},
-{name:'Sir Rowan',role:'guard',x:8,z:-1,color:0x9a9da6,lines:['Keep your blade ready beyond the village. The roads are safer than the wilderness.','Northwatch lies northwest. Its watchmen always need supplies.']},
-{name:'Mira the Herbalist',role:'herbalist',x:-8,z:4,color:0x548c66,lines:['The forests are alive with useful plants. We will need herbs for potions one day.','Be mindful of the old ruins. Some things are better left undisturbed.']},
-{name:'Bram the Woodsman',role:'woodsman',x:-56,z:43,color:0x855f3c,lines:['The tall pines near Northwatch make fine timber.','I have spent years learning these forests.']},
-{name:'Lysa the Scout',role:'scout',x:74,z:-51,color:0x74628b,lines:['Eastmarch is growing quickly. More adventurers arrive every day.','The eastern roads wind toward Suncrest.']},
-{name:'Torren the Smith',role:'smith',x:102,z:99,color:0x806e65,lines:['Iron makes dependable armor, but a good smith can do far more.','Come back when crafting is ready and I will put that ore to work.']},
-{name:'Fen the Ranger',role:'ranger',x:-208,z:146,color:0x3d7155,lines:['Westmere has the quietest woods in the realm.','Keep your eyes open for landmarks on your map.']},
-{name:'Nara the Wanderer',role:'wanderer',x:258,z:-181,color:0x916d6d,lines:['Suncrest is a long way from Oakcross. You made it!','I hear the western ruins are older than the kingdoms themselves.']}
+{name:'Edda the Guide',role:'guide',x:3,z:8,color:0x4b6d8d,station:'guide',behavior:'stationary',lines:['Welcome to Oakcross! The bank is northwest, the market is east, and the forge is near the eastern gate.','Open a house door before entering. The armory has equipment for new adventurers.']},
+{name:'Sir Rowan',role:'guard',x:24,z:-3,color:0x9a9da6,station:'guard',behavior:'patrol',patrol:[[24,-3],[28,3],[24,8],[20,4]],lines:['I patrol the eastern gate and keep the roads safe.','Keep your blade ready beyond the village.']},
+{name:'Mira the Herbalist',role:'herbalist',x:-12,z:7.5,color:0x548c66,station:'herbs',behavior:'stationary',lines:['Welcome to my herb stall. Fresh greens and remedies from the forest.','The forests are alive with useful plants.']},
+{name:'Bram the Woodsman',role:'woodsman',x:-56,z:43,color:0x855f3c,station:'woodland',behavior:'patrol',patrol:[[-56,43],[-50,40],[-48,45],[-55,47]],lines:['I collect timber beside Northwatch, not in the middle of town.','The tall pines make fine beams.']},
+{name:'Lysa the Scout',role:'scout',x:74,z:-51,color:0x74628b,station:'scout',behavior:'patrol',patrol:[[74,-51],[80,-48],[83,-54],[76,-55]],lines:['I keep watch over Eastmarch and its roads.','The eastern roads wind toward Suncrest.']},
+{name:'Torren the Smith',role:'smith',x:18,z:1.5,color:0x806e65,station:'forge',behavior:'stationary',lines:['Welcome to my forge. I keep blades and tools ready for travelers.','Bring me ore when smithing is available.']},
+{name:'Fen the Ranger',role:'ranger',x:-208,z:146,color:0x3d7155,station:'ranger',behavior:'patrol',patrol:[[-208,146],[-201,141],[-205,136],[-213,141]],lines:['I patrol Westmere and watch the forest trails.','Keep your eyes open for landmarks.']},
+{name:'Nara the Wanderer',role:'wanderer',x:258,z:-181,color:0x916d6d,station:'traveler',behavior:'patrol',patrol:[[258,-181],[265,-178],[268,-183],[260,-188]],lines:['I am resting near Suncrest before my next journey.','The western ruins are older than the kingdoms themselves.']},
+{name:'Garrick the Banker',role:'banker',x:-8,z:-8.1,color:0x5b6586,station:'bank',behavior:'stationary',lines:['Welcome to Oakcross Bank. Your valuables deserve a safe place.','Bank storage is coming soon; for now, keep your gold secure.']},
+{name:'Pella the Merchant',role:'merchant',x:12,z:6.5,color:0xa7784b,station:'market',behavior:'stationary',lines:['Welcome to my market stall! Look at the goods on my table.','Travelers always need provisions for the road.']}
 ];
 const npcs=[];
 function spawnNPC(profile,index){
@@ -449,7 +480,7 @@ function spawnNPC(profile,index){
  if(index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.50,-.26,root,'cloth');cape.rotation.x=-.12}
  const hit=new T.Mesh(new T.SphereGeometry(.48,8,6),new T.MeshBasicMaterial({visible:false}));
  hit.position.set(0,1.42,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
- const npc={profile,root,leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null};npcs.push(npc)
+ const npc={profile,root,leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null,patrolIndex:0};npcs.push(npc)
 }
 npcProfiles.forEach(spawnNPC);
 // Wildlife and enemies use lightweight low-poly models and simple local AI.
@@ -558,10 +589,13 @@ for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mo
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 for(const npc of npcs){
  npc.wait-=dt;
- if(npc.wait<=0){
-  const a=npc.phase*2.4+npc.wait;
-  npc.goal.set(npc.home.x+Math.cos(a)*3.2,0,npc.home.z+Math.sin(a)*3.2);
-  npc.wait=4+(npc.phase%4)*1.3;npc.phase++;npc.path=[];npc.pathGoal=null;
+ if(npc.profile.behavior==='stationary'){
+  npc.goal.copy(npc.home);npc.wait=4;
+ }else if(npc.wait<=0){
+  const points=npc.profile.patrol||[[npc.home.x,npc.home.z]];
+  npc.patrolIndex=(npc.patrolIndex+1)%points.length;
+  const [x,z]=points[npc.patrolIndex];
+  npc.goal.set(x,0,z);npc.wait=7+(npc.phase%3)*2;npc.phase++;npc.path=[];npc.pathGoal=null;
  }
  const previous=npc.root.position.clone();
  if(!npc.pathGoal||npc.pathGoal.distanceToSquared(npc.goal)>.5){
