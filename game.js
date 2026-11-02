@@ -470,10 +470,60 @@ const stats=document.querySelector('#stats'),inventory=document.querySelector('#
 let activeTab='inventory',mapOpen=false;const mapCanvas=document.querySelector('#minimap'),largeMap=document.querySelector('#worldmap'),mapPanel=document.querySelector('#map-panel');
 const mapCtx=mapCanvas.getContext('2d'),largeCtx=largeMap.getContext('2d');
 
+// One deterministic terrain atlas is shared by the minimap and world map.
+// It is generated once, rather than redrawing thousands of details each frame.
+const terrainAtlas=document.createElement('canvas');terrainAtlas.width=1024;terrainAtlas.height=1024;
+const terrainCtx=terrainAtlas.getContext('2d');
+const terrainSeed=(x,z)=>{const n=Math.sin(x*127.1+z*311.7)*43758.5453;return n-Math.floor(n)};
+function terrainNoise(x,z){const xi=Math.floor(x),zi=Math.floor(z),u=x-xi,v=z-zi;const smooth=t=>t*t*(3-2*t);const a=terrainSeed(xi,zi),b=terrainSeed(xi+1,zi),d=terrainSeed(xi,zi+1),e=terrainSeed(xi+1,zi+1);return (a+(b-a)*smooth(u))*(1-smooth(v))+(d+(e-d)*smooth(u))*smooth(v)}
+(function paintTerrain(){
+ const size=1024,im=terrainCtx.createImageData(size,size),data=im.data;
+ for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+  const wx=(x/size-.5)*840,wz=(y/size-.5)*840;
+  const broad=terrainNoise(wx/130,wz/130),detail=terrainNoise(wx/34,wz/34),grain=terrainNoise(wx/5,wz/5);
+  const woodland=terrainNoise(wx/90+17,wz/90-11);
+  const hill=terrainNoise(wx/170-22,wz/170+7);
+  let rgb;
+  if(hill>.73&&broad>.48)rgb=[112,108,94]; // rocky highlands
+  else if(woodland>.59)rgb=[46,85,48]; // dense forest
+  else if(broad<.31)rgb=[112,105,64]; // dry heath and soil
+  else if(detail>.67)rgb=[98,121,68]; // grassy clearings
+  else rgb=[77,112,61];
+  const shade=(detail-.5)*26+(grain-.5)*20+(hill-.5)*18;
+  const i=(y*size+x)*4;for(let k=0;k<3;k++)data[i+k]=Math.max(0,Math.min(255,rgb[k]+shade));data[i+3]=255;
+ }
+ terrainCtx.putImageData(im,0,0);
+ // Tree canopies and rocky outcrops remain visible at larger zoom levels.
+ for(let i=0;i<10000;i++){
+  const x=terrainSeed(i,9)*size,y=terrainSeed(i,29)*size;
+  const wx=(x/size-.5)*840,wz=(y/size-.5)*840;
+  const woodland=terrainNoise(wx/90+17,wz/90-11);
+  if(woodland<.58)continue;
+  const radius=1.2+terrainSeed(i,47)*3;
+  terrainCtx.fillStyle=terrainSeed(i,81)>.5?'#274d2b':'#3c6635';
+  terrainCtx.beginPath();terrainCtx.arc(x,y,radius,0,Math.PI*2);terrainCtx.fill();
+ }
+ for(let i=0;i<900;i++){
+  const x=terrainSeed(i,37)*size,y=terrainSeed(i,71)*size;
+  const wx=(x/size-.5)*840,wz=(y/size-.5)*840;
+  if(terrainNoise(wx/170-22,wz/170+7)<.69)continue;
+  terrainCtx.fillStyle=i%2?'#8b8771':'#6c6b61';terrainCtx.fillRect(x,y,1+terrainSeed(i,41)*3,1+terrainSeed(i,43)*2);
+ }
+})();
 function drawMap(ctx,canvas,scale){
  const w=canvas.width,h=canvas.height,extent=scale?840:90,pxPerUnit=w/extent,pzPerUnit=h/extent;
  const toX=x=>w/2+(x-(scale?0:player.position.x))*pxPerUnit,toY=z=>h/2+(z-(scale?0:player.position.z))*pzPerUnit;
- ctx.clearRect(0,0,w,h);ctx.fillStyle='#536d4c';ctx.fillRect(0,0,w,h);for(const lake of worldLakes){ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit,lake.rz*pzPerUnit,0,0,Math.PI*2);ctx.fillStyle='#b4a478';ctx.fill();ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit*.95,lake.rz*pzPerUnit*.95,0,0,Math.PI*2);ctx.fillStyle='#3b8495';ctx.fill()}
+ ctx.clearRect(0,0,w,h);
+ // Sample the identical 840-unit terrain atlas in both map views.
+ const originX=scale?0:player.position.x,originZ=scale?0:player.position.z;
+ const sourceX=(originX-extent/2+420)/840*terrainAtlas.width;
+ const sourceY=(originZ-extent/2+420)/840*terrainAtlas.height;
+ const sourceW=extent/840*terrainAtlas.width,sourceH=extent/840*terrainAtlas.height;
+ ctx.fillStyle='#415d39';ctx.fillRect(0,0,w,h);
+ ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+ const clipX=Math.max(0,sourceX),clipY=Math.max(0,sourceY),clipR=Math.min(terrainAtlas.width,sourceX+sourceW),clipB=Math.min(terrainAtlas.height,sourceY+sourceH);
+ if(clipR>clipX&&clipB>clipY)ctx.drawImage(terrainAtlas,clipX,clipY,clipR-clipX,clipB-clipY,(clipX-sourceX)/sourceW*w,(clipY-sourceY)/sourceH*h,(clipR-clipX)/sourceW*w,(clipB-clipY)/sourceH*h);
+for(const lake of worldLakes){ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit,lake.rz*pzPerUnit,0,0,Math.PI*2);ctx.fillStyle='#b4a478';ctx.fill();ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit*.95,lake.rz*pzPerUnit*.95,0,0,Math.PI*2);ctx.fillStyle='#3b8495';ctx.fill()}
  const roads=[[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
  ctx.strokeStyle='#a9936c';ctx.lineWidth=scale?4:3;
  for(const [a,b] of roads){ctx.beginPath();ctx.moveTo(toX(a[0]),toY(a[1]));ctx.lineTo(toX(b[0]),toY(b[1]));ctx.stroke()}
