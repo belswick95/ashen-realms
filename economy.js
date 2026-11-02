@@ -1,9 +1,9 @@
-import {weaponCatalog,iconForWeapon} from './weapons.js?v=release-20261102-gaits2';
-import {shieldCatalog} from './shields.js?v=release-20261102-gaits2';
-import {jewelryCatalog} from './jewelry.js?v=release-20261102-gaits2';
+import {weaponCatalog,iconForWeapon} from './weapons.js?v=release-20261102-turns1';
+import {shieldCatalog} from './shields.js?v=release-20261102-turns1';
+import {jewelryCatalog} from './jewelry.js?v=release-20261102-turns1';
 const armor={helm:'Iron full helm',chest:'Iron platebody',legs:'Iron platelegs',boots:'Iron boots',cape:'Crimson cape'};
 export const goods={wood:{name:'Logs',buy:6,sell:3,icon:'🪵'},ore:{name:'Iron ore',buy:10,sell:5,icon:'🪨'}};
-for(const [key,item] of Object.entries(weaponCatalog))goods['weapon:'+key]={name:item.name,buy:key==='twohand'?120:key==='dagger'?20:45,sell:key==='twohand'?40:12,icon:iconForWeapon(key),field:'weaponsOwned',key};
+for(const [key,item] of Object.entries(weaponCatalog))goods['weapon:'+key]={name:item.name,buy:key==='twohand'?120:key==='battleaxe'?90:key==='dagger'?20:45,sell:key==='twohand'?40:key==='battleaxe'?30:12,icon:iconForWeapon(key),field:'weaponsOwned',key};
 for(const [key,name] of Object.entries(armor))goods['armor:'+key]={name,buy:60,sell:18,icon:key==='helm'?'⛑':key==='boots'?'🥾':key==='cape'?'🧣':'🛡',field:'armorOwned',key};
 for(const [key,item] of Object.entries(shieldCatalog))goods['shield:'+key]={name:item.name,buy:40,sell:12,icon:'🛡',field:'shieldsOwned',key};
 for(const [key,item] of Object.entries(jewelryCatalog))goods['jewelry:'+key]={name:item.name,buy:75,sell:20,icon:item.icon,field:'jewelryOwned',key};

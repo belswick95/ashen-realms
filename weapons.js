@@ -1,13 +1,15 @@
 // Procedural low-poly iron equipment. Meshes share materials and are attached to the right hand.
 export const weaponCatalog={
- dagger:{name:'Iron dagger',kind:'weapon',damage:5,speed:.50,reach:1.7,desc:'A light blade for quick thrusts.'},
- scimitar:{name:'Iron scimitar',kind:'weapon',damage:7,speed:.72,reach:2.4,desc:'A swift curved iron blade.'},
- longsword:{name:'Iron longsword',kind:'weapon',damage:10,speed:1.05,reach:2.5,desc:'A balanced straight iron sword.'},
- twohand:{name:'Iron 2h sword',kind:'weapon',damage:16,speed:1.55,reach:2.8,desc:'A heavy two-handed iron sword.'},
- shortsword:{name:'Iron shortsword',kind:'weapon',damage:6,speed:.63,reach:2.1,desc:'A fast close-range iron sword.'},
- pickaxe:{name:'Iron pickaxe',kind:'tool',damage:4,speed:1.05,reach:2.1,desc:'An iron pick for mining ore.'},
- axe:{name:'Iron axe',kind:'tool',damage:5,speed:.95,reach:2.1,desc:'An iron axe for cutting trees.'}
+ battleaxe:{name:'Iron battleaxe',kind:'weapon',damage:14,attack:16,speed:2.8,reach:2.2,desc:'A one-handed double-headed iron battleaxe.'},
+ dagger:{name:'Iron dagger',kind:'weapon',damage:5,attack:8,speed:1.4,reach:1.7,desc:'A light blade for quick thrusts.'},
+ scimitar:{name:'Iron scimitar',kind:'weapon',damage:7,attack:12,speed:1.7,reach:2.4,desc:'A swift curved iron blade.'},
+ longsword:{name:'Iron longsword',kind:'weapon',damage:10,attack:14,speed:2.3,reach:2.5,desc:'A balanced straight iron sword.'},
+ twohand:{name:'Iron 2h sword',kind:'weapon',damage:16,attack:20,speed:3.2,reach:2.8,desc:'A heavy two-handed iron sword.'},
+ shortsword:{name:'Iron shortsword',kind:'weapon',damage:6,attack:10,speed:1.6,reach:2.1,desc:'A fast close-range iron sword.'},
+ pickaxe:{name:'Iron pickaxe',kind:'tool',damage:4,attack:3,speed:2.5,reach:2.1,desc:'An iron pick for mining ore.'},
+ axe:{name:'Iron axe',kind:'tool',damage:5,attack:4,speed:2.4,reach:2.1,desc:'An iron axe for cutting trees.'}
 };
+for(const item of Object.values(weaponCatalog))item.desc+=' Attack +'+item.attack+' · Damage +'+item.damage+' · Attack turn '+item.speed+'s.';
 export function makeWeapon(T,key){
  const group=new T.Group();
  const steel=new T.MeshStandardMaterial({color:0xaebac0,metalness:.7,roughness:.34,flatShading:true});
@@ -36,18 +38,20 @@ export function makeWeapon(T,key){
   ridge.position.set(sweep*.20,.17+length*.42,.038);
   ridge.rotation.z=curved?-.075:0;ridge.castShadow=true;group.add(ridge);
  }
- const isTool=key==='pickaxe'||key==='axe';
+ const isTool=key==='pickaxe'||key==='axe'||key==='battleaxe';
  const handle=key==='twohand'? .8:isTool?.85:key==='dagger'?.30:.39;
  box(.09,handle,.095,grip,0,handle/2-.18,0);
  box(.12,.09,.12,brass,0,-.19,0);
  if(isTool){
   box(.12,.12,.12,brass,0,handle-.23,0);
-  if(key==='axe'){
+  if(key==='battleaxe'){
+   for(const side of [-1,1]){const shape=new T.Shape();shape.moveTo(side*.04,0);shape.lineTo(side*.34,-.10);shape.lineTo(side*.46,.12);shape.lineTo(side*.36,.40);shape.lineTo(side*.04,.30);shape.closePath();const head=mesh(new T.ExtrudeGeometry(shape,{depth:.075,bevelEnabled:true,bevelSize:.014,bevelThickness:.014,bevelSegments:1}),steel,0,handle-.42,-.04);head.geometry.translate(0,-.15,0);head.position.y+=.15;head.name='axe-blade';head.rotation.y=Math.PI/2}
+  }else if(key==='axe'){
    const shape=new T.Shape();shape.moveTo(-.04,0);shape.lineTo(.34,.13);shape.lineTo(.44,.30);shape.lineTo(.34,.48);shape.lineTo(-.04,.56);shape.closePath();
-   mesh(new T.ExtrudeGeometry(shape,{depth:.075,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:1}),steel,0,handle-.51,-.04)
+   const head=mesh(new T.ExtrudeGeometry(shape,{depth:.075,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:1}),steel,0,handle-.51,-.04);head.geometry.translate(0,-.28,0);head.position.y+=.28;head.name='axe-blade';head.rotation.y=-Math.PI/2
   }else{
    const shape=new T.Shape();shape.moveTo(-.52,.04);shape.lineTo(-.22,.20);shape.lineTo(.25,.20);shape.lineTo(.53,.04);shape.lineTo(.25,.10);shape.lineTo(-.22,.10);shape.closePath();
-   mesh(new T.ExtrudeGeometry(shape,{depth:.075,bevelEnabled:true,bevelSize:.01,bevelThickness:.01,bevelSegments:1}),steel,0,handle-.24,-.04)
+   const head=mesh(new T.ExtrudeGeometry(shape,{depth:.075,bevelEnabled:true,bevelSize:.01,bevelThickness:.01,bevelSegments:1}),steel,0,handle-.24,-.04);head.geometry.translate(0,-.12,0);head.position.y+=.12;head.name='pick-head';head.rotation.y=Math.PI/2
   }
  }else{
   box(key==='twohand'?.44:.34,.065,.13,brass,0,handle-.12,0);
@@ -61,6 +65,7 @@ export function makeWeapon(T,key){
  return group
 }
 export const weaponIcons={
+ battleaxe:'<path d="M22 5H27V44H22Z" fill="#936c35"/><path d="M22 12L9 6L4 15L8 27L22 21M27 12L40 6L45 15L41 27L27 21" fill="#9baeb6" stroke="#e1e7dc" stroke-width="2"/>',
  dagger:'<path d="M22 10L26 10L28 27L24 32L20 27Z" fill="#b9c8cf" stroke="#edf3e7" stroke-width="2"/><path d="M15 29H33M24 29V43" stroke="#b18d56" stroke-width="4"/>',
  scimitar:'<path d="M11 39Q33 26 37 5Q44 27 15 43Z" fill="#bccbd0" stroke="#f4e8c8" stroke-width="2"/><path d="M12 35L5 42M7 34L17 43" stroke="#ac8952" stroke-width="4"/>',
  longsword:'<path d="M22 5L26 5L28 30L24 37L20 30Z" fill="#b9c8cf" stroke="#edf3e7" stroke-width="2"/><path d="M12 32H36M24 32V44" stroke="#b18d56" stroke-width="4"/>',

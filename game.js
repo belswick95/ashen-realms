@@ -1,29 +1,31 @@
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261102-gaits2';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261102-gaits2';
-import {sanitizeBank,createServicePanel} from './economy.js?v=release-20261102-gaits2';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261102-gaits2';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261102-gaits2';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261102-gaits2';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261102-gaits2';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261102-gaits2';
-import {createPlayerHUD} from './player-hud.js?v=release-20261102-gaits2';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-gaits2';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261102-gaits2';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-gaits2';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-gaits2';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-gaits2';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261102-turns1';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261102-turns1';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261102-turns1';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261102-turns1';
+import {sanitizeBank,createServicePanel} from './economy.js?v=release-20261102-turns1';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261102-turns1';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261102-turns1';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261102-turns1';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261102-turns1';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261102-turns1';
+import {createPlayerHUD} from './player-hud.js?v=release-20261102-turns1';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-turns1';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261102-turns1';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-turns1';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-turns1';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-turns1';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261102-gaits2';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-gaits2';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-gaits2';
-import {buildForest} from './forest.js?v=release-20261102-gaits2';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-gaits2';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-gaits2';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-turns1';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-turns1';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-turns1';
+import {buildForest} from './forest.js?v=release-20261102-turns1';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-turns1';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-turns1';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261102-gaits2';
-import {createCape} from './cape.js?v=release-20261102-gaits2';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-gaits2';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-gaits2';
+import {buildPlateArmor} from './armor.js?v=release-20261102-turns1';
+import {createCape} from './cape.js?v=release-20261102-turns1';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-turns1';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-turns1';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
@@ -299,8 +301,9 @@ targets.push(chestHit);
 // Visible golden glow highlights the interactable supply chest inside the armory.
 const chestGlow=new T.PointLight(0xffc46b,2.0,6);chestGlow.position.set(0,1.25,.15);chestRoot.add(chestGlow);
 function openArmoryChest(){
+ if(!state.starterBattleaxeGranted){if(!state.weaponsOwned.includes('battleaxe'))state.weaponsOwned.push('battleaxe');state.starterBattleaxeGranted=true}
  if(!state.starterJewelryGranted){for(const key of Object.keys(jewelryCatalog))if(!state.jewelryOwned.includes(key))state.jewelryOwned.push(key);state.starterJewelryGranted=true}
- if(state.starterChestClaimed){if(!state.starterDaggerGranted){if(!state.weaponsOwned.includes('dagger'))state.weaponsOwned.push('dagger');state.starterDaggerGranted=true}save();draw();say('Starter supplies already claimed. Any new starter jewelry or dagger has been added once.');return}
+ if(state.starterChestClaimed){if(!state.starterDaggerGranted){if(!state.weaponsOwned.includes('dagger'))state.weaponsOwned.push('dagger');state.starterDaggerGranted=true}save();draw();say('Starter supplies already claimed. Any new starter jewelry, dagger or battleaxe has been added once.');return}
  state.starterChestClaimed=true;state.starterDaggerGranted=true;state.starterShieldsGranted=true;
  for(const key of armorKeys)if(!state.armorOwned.includes(key))state.armorOwned.push(key);
  for(const key of Object.keys(weaponCatalog))if(!state.weaponsOwned.includes(key))state.weaponsOwned.push(key);
@@ -399,6 +402,7 @@ function routeTo(target){
 }
 let walkQueue=[],mapDestination=null;
 function setWalkDestination(point){
+ if(action?.kind!=='creature')combatTurns.cancel();
  const target=routeTo(point);
  const stops=[target,...walkQueue];
  walkQueue=[];
@@ -560,13 +564,6 @@ function updateOverheadChat(){
 }
 const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
 const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0,attackAnim:0,hitAnim:0,blockAnim:0,stanceTimer:0};
-const armorCatalog={
-  helm:{name:'Iron full helm',slot:'Head',desc:'A sturdy iron helmet.'},
-  chest:{name:'Iron platebody',slot:'Body',desc:'A solid iron breastplate.'},
-  legs:{name:'Iron platelegs',slot:'Legs',desc:'Heavy iron leg protection.'},
-  boots:{name:'Iron boots',slot:'Feet',desc:'Iron-plated boots.'},
-  cape:{name:'Crimson Adventurer Cape',slot:'Back',desc:'A long crimson cape with gold clasps. It flows as you walk.'}
-};
 const armorKeys=Object.keys(armorCatalog);
 const state={wood:saved.wood||0,ore:saved.ore||0,gold:saved.gold||0,woodXP:saved.woodXP||0,miningXP:saved.miningXP||0,
 armorOwned:Array.isArray(saved.armorOwned)?saved.armorOwned.filter(k=>armorCatalog[k]):[],
@@ -574,7 +571,7 @@ equipped:(saved.equipped&&typeof saved.equipped==='object')?saved.equipped:{},we
 for(const key of ['attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP'])state[key]=Number.isFinite(Number(saved[key]))?Math.max(0,Math.floor(Number(saved[key]))):0;
 state.jewelryOwned=Array.isArray(saved.jewelryOwned)?saved.jewelryOwned.filter(k=>jewelryCatalog[k]):[];for(const slot of ['amulet','trinket'])state[slot]=state.jewelryOwned.includes(saved[slot])&&jewelryCatalog[saved[slot]]?.slot===slot?saved[slot]:null;
 state.bank=sanitizeBank(saved.bank);state.runEnergy=Number.isFinite(saved.runEnergy)?Math.max(0,Math.min(100,saved.runEnergy)):100;
-state.starterJewelryGranted=!!saved.starterJewelryGranted||state.jewelryOwned.length>0||Object.keys(state.bank).some(k=>k.startsWith('jewelry:'));state.starterDaggerGranted=!!saved.starterDaggerGranted||state.weaponsOwned.includes('dagger')||!!state.bank['weapon:dagger'];
+state.starterJewelryGranted=!!saved.starterJewelryGranted||state.jewelryOwned.length>0||Object.keys(state.bank).some(k=>k.startsWith('jewelry:'));state.starterBattleaxeGranted=!!saved.starterBattleaxeGranted||state.weaponsOwned.includes('battleaxe')||!!state.bank['weapon:battleaxe'];state.starterDaggerGranted=!!saved.starterDaggerGranted||state.weaponsOwned.includes('dagger')||!!state.bank['weapon:dagger'];
 for(const k of armorKeys)if(state.equipped[k]&&!state.armorOwned.includes(k))state.armorOwned.push(k);
 // Existing adventurers already claimed the starter chest before shields existed.
 // Grant the new starter shields once without reopening or resetting their chest.
@@ -601,7 +598,7 @@ refreshWeapon();
 if(Number.isFinite(saved.x)&&Number.isFinite(saved.z)){const p=landscape.nearestDryPoint(saved.x,saved.z);player.position.set(p.x,0,p.z);if(Math.hypot(p.x,p.z)<2.5)player.position.z=5}else player.position.set(0,0,5);
 const stats=document.querySelector('#stats'),inventory=document.querySelector('#inventory'),log=document.querySelector('#log'),equipment=document.querySelector('#equipment'),menu=document.querySelector('#contextmenu');
 const inventoryGold=document.createElement('div');inventoryGold.id='inventory-gold';inventory.before(inventoryGold);
-const services=createServicePanel(state,{onChange:()=>{save();draw()},onOpen:()=>{dest=null;walkQueue=[];mapDestination=null;action=null;closeDialog()}});
+const services=createServicePanel(state,{onChange:()=>{save();draw()},onOpen:()=>{dest=null;walkQueue=[];mapDestination=null;action=null;combatTurns.cancel();closeDialog()}});
 let serviceBuilding=null;
 let activeTab='inventory',mapOpen=false;const mapCanvas=document.querySelector('#minimap'),largeMap=document.querySelector('#worldmap'),mapPanel=document.querySelector('#map-panel');
 let minimapExtent=90,running=false;
@@ -895,23 +892,31 @@ function combatSound(kind){if(localStorage.getItem('eldervale-audio-enabled')===
 }
 function faceTarget(object,target){const dx=target.x-object.position.x,dz=target.z-object.position.z;if(dx*dx+dz*dz>.0001)object.rotation.y=Math.atan2(dx,dz)}
 const hitNumbers=createHitNumbers(T,camera);
-function strike(mob,rng=Math.random){
- if(!mob.alive||combat.attackTimer>0)return;
- combat.attackTimer=state.equippedWeapon?weaponCatalog[state.equippedWeapon].speed:.85;combat.attackAnim=.55;combat.stanceTimer=2;faceTarget(player,mob.root.position);
- const hit=resolveHit(6+(state.equippedWeapon?weaponCatalog[state.equippedWeapon].damage:0)+Math.floor(rng()*7),mob.hostile?.12:.07,rng);
+function applyPlayerHit(mob,rng=Math.random,weaponKey=state.equippedWeapon){
+ if(!mob.alive)return;
+ combat.stanceTimer=2;faceTarget(player,mob.root.position);
+ const hit=meleeRoll(weaponStats(weaponKey),{blockChance:mob.hostile?.16:.11,reduction:mob.hostile?1:0},rng);
  hitNumbers.show(mob.root,hit.damage,hit.blocked,1.7);
- if(hit.blocked){mob.blockAnim=.4;combatSound('metal');combatMessage(mob.name+' blocks your attack.');return}
+ if(hit.blocked){mob.blockAnim=.65;combatSound('metal');combatMessage(mob.name+' blocks your attack.');return}
  mob.hitAnim=.3;mob.hp=Math.max(0,mob.hp-hit.damage);combatSound(/axe|hatchet/i.test(String(state.equippedWeapon||''))?'axe':'slash');combatMessage('You hit '+mob.name+' for '+hit.damage+' damage');
  if(mob.hp<=0){mob.alive=false;mob.root.visible=false;mob.respawn=22;combat.kills++;combat.xp+=30;state.attackXP+=10;state.strengthXP+=10;state.defenceXP+=5;state.hitpointsXP+=5;state.gold+=mob.hostile?8:2;combatMessage('Defeated '+mob.name+'! +30 combat XP');action=null;dest=null;save();draw()}
 }
 function playerHit(mob,rng=Math.random){
- combat.stanceTimer=2;const defense=Object.values(state.equipped).filter(Boolean).length,chance=state.equippedShield?.30:state.equippedWeapon?.14:.05;
- const hit=resolveHit(Math.max(1,6+Math.floor(rng()*5)-defense),chance,rng);mob.attackAnim=.4;faceTarget(mob.root,player.position);
+ combat.stanceTimer=2;combat.attackAnim=0;combat.blockAnim=.65;
+ const protection=meleeProtection(state),defense=protection.defence,hit=meleeRoll({damage:mob.hostile?6:3,attack:mob.hostile?10:5},protection,rng);faceTarget(mob.root,player.position);
  hitNumbers.show(player,hit.damage,hit.blocked,2.8);
- if(hit.blocked){combat.blockAnim=.42;combatSound('metal');combatMessage('You block '+mob.name+'’s attack.');return}
- combat.hp=Math.max(0,combat.hp-hit.damage);combat.hitAnim=.35;combatSound(defense?'metal':'axe');combatMessage(mob.name+' hits you for '+hit.damage);draw();
- if(combat.hp<=0){combat.hp=100;player.position.set(0,0,5);dest=null;walkQueue=[];action=null;state.gold=Math.max(0,state.gold-10);combatMessage('You fell in battle and returned to Oakcross.');save();draw()}
+ if(hit.blocked){combat.blockAnim=.65;combatSound('metal');combatMessage('You block '+mob.name+'’s attack.');return}
+ combat.hp=Math.max(0,combat.hp-hit.damage);combat.hitAnim=.45;combatSound(defense?'metal':'axe');combatMessage(mob.name+' hits you for '+hit.damage);draw();
+ if(combat.hp<=0){combatTurns.cancel();combat.hp=100;player.position.set(0,0,5);dest=null;walkQueue=[];action=null;state.gold=Math.max(0,state.gold-10);combatMessage('You fell in battle and returned to Oakcross.');save();draw()}
 }
+let combatRng=Math.random,swingWeapon=null;
+const combatTurns=createCombatTurns({
+ interval:side=>side==='player'?weaponStats(state.equippedWeapon).speed:2.2,
+ onWindup(side,mob){combat.stanceTimer=3;faceTarget(player,mob.root.position);faceTarget(mob.root,player.position);combatNotice.dataset.turn=side;if(side==='player'){swingWeapon=state.equippedWeapon;combat.attackAnim=.55;combat.blockAnim=0;combat.attackTimer=weaponStats(swingWeapon).speed;combatMessage('Your turn — '+weaponStats(swingWeapon).name)}else{mob.attackAnim=.55;combat.attackAnim=0;combat.blockAnim=1.15;combatMessage(mob.name+' attacks — prepare to defend')}},
+ onImpact(side,mob){if(side==='player')applyPlayerHit(mob,combatRng,swingWeapon);else playerHit(mob,combatRng)},
+ onEnd(mob){if(action?.kind==='creature'&&action.mob===mob){action=null;dest=null;walkQueue=[]}}
+});
+function strike(mob,rng=Math.random){if(combatTurns.target===mob)return;combatRng=rng;combatTurns.engage(mob)}
 const dialoguePortrait=createDialoguePortrait(T,renderer,document.querySelector('#dialog-portrait'));
 const dialog=document.querySelector('#dialog'),dialogName=document.querySelector('#dialog-name'),dialogText=document.querySelector('#dialog-text'),dialogNext=document.querySelector('#dialog-next');let conversation=null;
 function closeDialog(){conversation=null;dialoguePortrait.close();dialog.hidden=true;document.body.classList.remove('npc-conversation')}
@@ -921,7 +926,7 @@ dialogNext.onclick=()=>{if(!conversation)return;if(++conversation.index>=convers
 function closeMenu(){menu.hidden=true;menu.innerHTML=''}
 function showMenu(x,y,items){menu.innerHTML='';for(const [label,fn] of items){const b=document.createElement('button');b.textContent=label;b.onclick=()=>{closeMenu();fn()};menu.append(b)}menu.hidden=false;menu.style.left=Math.min(x,innerWidth-190)+'px';menu.style.top=Math.min(y,innerHeight-180)+'px'}
 function toggleArmor(k){if(!state.armorOwned.includes(k))return;state.equipped[k]=!state.equipped[k];refreshArmor();say((state.equipped[k]?'Equipped ':'Removed ')+armorCatalog[k].name);save();draw()}
-function examine(k){say(armorCatalog[k].name+': '+armorCatalog[k].desc)}
+function examine(k){say(armorCatalog[k].name+': '+armorCatalog[k].desc+' Melee defence +'+armorCatalog[k].defence+' · Damage absorption '+armorCatalog[k].reduction)}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{activeTab=b.dataset.tab;draw();closeMenu()});
 
 // Player-local graphics and interface preferences (no changes to cloud saves).
@@ -1003,7 +1008,7 @@ function draw(){
  legs:'<svg viewBox="0 0 48 48"><path d="M12 5H36L33 42H25L24 22L23 42H15Z" fill="#a1adb4" stroke="#e4d6a9" stroke-width="2"/><path d="M13 14H35" stroke="#64717b" stroke-width="4"/></svg>',
  boots:'<svg viewBox="0 0 48 48"><path d="M9 7H20V29L25 34V41H5V34L9 27ZM28 7H39V29L44 34V41H24V34L28 27Z" fill="#7e8d96" stroke="#c3bfa7" stroke-width="2"/></svg>'
  };
- const weaponSlot=document.createElement('button');weaponSlot.className='equip-slot';weaponSlot.setAttribute('aria-label','Weapon: '+(state.equippedWeapon?weaponCatalog[state.equippedWeapon].name:'Empty'));const weaponIcon=document.createElement('span');weaponIcon.className='item-icon';weaponIcon.innerHTML=state.equippedWeapon?iconForWeapon(state.equippedWeapon):'＋';const weaponLabel=document.createElement('span');weaponLabel.className='equip-caption';weaponLabel.textContent='Weapon';weaponSlot.append(weaponIcon,weaponLabel);weaponSlot.disabled=!state.equippedWeapon;weaponSlot.onclick=()=>state.equippedWeapon&&equipWeapon(state.equippedWeapon);equipment.append(weaponSlot);
+ const weaponSlot=document.createElement('button');weaponSlot.className='equip-slot';weaponSlot.setAttribute('aria-label','Weapon: '+(state.equippedWeapon?weaponCatalog[state.equippedWeapon].name:'Empty'));const weaponIcon=document.createElement('span');weaponIcon.className='item-icon';weaponIcon.innerHTML=state.equippedWeapon?iconForWeapon(state.equippedWeapon):'＋';const weaponLabel=document.createElement('span');weaponLabel.className='equip-caption';weaponLabel.textContent='Weapon';weaponSlot.append(weaponIcon,weaponLabel);weaponSlot.title='Attack +'+weaponStats(state.equippedWeapon).attack+' · Damage +'+weaponStats(state.equippedWeapon).damage+' · Turn '+weaponStats(state.equippedWeapon).speed+'s';weaponSlot.disabled=!state.equippedWeapon;weaponSlot.onclick=()=>state.equippedWeapon&&equipWeapon(state.equippedWeapon);equipment.append(weaponSlot);
  const shieldSlot=document.createElement('button');shieldSlot.className='equip-slot';shieldSlot.textContent=state.equippedShield?shieldCatalog[state.equippedShield].name:'Shield (empty)';shieldSlot.disabled=!state.equippedShield;shieldSlot.onclick=()=>state.equippedShield&&equipShield(state.equippedShield);equipment.append(shieldSlot);
  for(const k of armorKeys){const item=document.createElement('button');item.className='equip-slot';
   item.setAttribute('aria-label',armorCatalog[k].slot+': '+(state.equipped[k]?armorCatalog[k].name:'Empty'));
@@ -1011,11 +1016,13 @@ function draw(){
   if(state.equipped[k])icon.innerHTML=equipmentIcons[k];else icon.textContent='＋';
   const caption=document.createElement('span');caption.className='equip-caption';caption.textContent=armorCatalog[k].slot;
   item.append(icon,caption);
-  item.disabled=!state.equipped[k];item.title=state.equipped[k]?'Click to unequip • Right-click for options':'No item equipped';
+  item.disabled=!state.equipped[k];item.title=armorCatalog[k].desc+' Melee defence +'+armorCatalog[k].defence+' · Damage absorption '+armorCatalog[k].reduction+(state.equipped[k]?' · Click to unequip':' · Not worn');
   item.onclick=()=>toggleArmor(k);
   item.oncontextmenu=e=>{e.preventDefault();if(state.equipped[k])showMenu(e.clientX,e.clientY,[['Remove '+armorCatalog[k].name,()=>toggleArmor(k)],['Examine',()=>examine(k)]])};
   equipment.append(item);
  }
+ const protection=meleeProtection(state),attack=weaponStats(state.equippedWeapon),summary=document.createElement('p');summary.className='equipment-combat-stats';summary.textContent='Attack +'+attack.attack+' · Damage +'+attack.damage+' · '+attack.speed+'s turn · Melee defence '+protection.defence+' · Absorption '+protection.reduction;equipment.append(summary);
+
 }
 function equipJewelry(key){const item=jewelryCatalog[key];if(!item||!state.jewelryOwned.includes(key))return;state[item.slot]=state[item.slot]===key?null:key;save();draw();say(state[item.slot]?item.name+' equipped. '+item.description:'Removed '+item.name)}
 function say(s){addSystemMessage(s)}function captureSave(){const snapshot={...saved,...state,appearance,hp:combat.hp,combatXP:combat.xp,kills:combat.kills,x:player.position.x,z:player.position.z};localStorage.setItem('eldervale-save',JSON.stringify(snapshot));return snapshot}
@@ -1085,14 +1092,15 @@ function updateWorldSky(){
 }
 const clock=new T.Clock();let lastAutosave=performance.now();
 function frame(){requestAnimationFrame(frame);updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
-if(action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<2.6){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
-if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min((running?4.2:1.9)*dt,distance));
+if(action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<weaponStats(state.equippedWeapon).reach){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
+if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?weaponStats(state.equippedWeapon).reach*.88:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min((running?SPRINT_SPEED:WALK_SPEED)*dt,distance));
  const collision=walkAllowed(player.position,proposed);
  if(!collision.blocked)player.position.copy(proposed);
  else{dest=null;walkQueue=[];action=null;if(collision.house&&!collision.house.open)say('Door closed — click the door to open it.');else say('A building blocks the way. Walk around it.')}
  player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(walkQueue.length){dest=walkQueue.shift();}else if(action){const a=action;action=null;if(a.kind==='door'){if(a.house.type==='bank'){if(!a.house.open)toggleHouseDoor(a.house);services.open('bank',a.house.name)}else toggleHouseDoor(a.house)}else if(a.kind==='creature'){if(a.mob.alive){strike(a.mob);if(a.mob.alive){action=a;dest=a.mob.root.position.clone()}}}else if(a.kind==='npc'){talkTo(a.profile)}else if(a.kind==='chest'){openArmoryChest()}else if(a.kind==='merchant'){services.open('shop','Traveling merchant');}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;const gained=gatheringXP(state,'woodXP');state.woodXP+=gained;say('You chop logs. +'+gained+' XP')}else{state.ore++;const gained=gatheringXP(state,'miningXP');state.miningXP+=gained;say('You mine ore. +'+gained+' XP')}save();draw()}}}
 combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);combat.blockAnim=Math.max(0,combat.blockAnim-dt);combat.stanceTimer=Math.max(0,combat.stanceTimer-dt);playerHUD.health(combat.hp,combat.maxHp);
-for(const mob of creatures){mob.attackAnim=Math.max(0,(mob.attackAnim||0)-dt);mob.blockAnim=Math.max(0,(mob.blockAnim||0)-dt);mob.hitAnim=Math.max(0,(mob.hitAnim||0)-dt);mob.root.rotation.x=mob.attackAnim>0?-Math.sin((1-mob.attackAnim/.4)*Math.PI)*.15:0;mob.root.rotation.z=mob.blockAnim>0?.12:mob.hitAnim>0?-.10:0;if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance>=1.45&&distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>(mob.hostile&&distance<10?1.9:.4)){delta.normalize();const step=Math.min(dt*(mob.hostile&&distance<10?1.7:.8),Math.max(0,distance-1.85));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(mob.hostile&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,1.95)}}
+for(const mob of creatures){mob.attackAnim=Math.max(0,(mob.attackAnim||0)-dt);mob.blockAnim=Math.max(0,(mob.blockAnim||0)-dt);mob.hitAnim=Math.max(0,(mob.hitAnim||0)-dt);mob.root.rotation.x=mob.attackAnim>0?-Math.sin((1-mob.attackAnim/.55)*Math.PI)*.15:0;mob.root.rotation.z=mob.blockAnim>0?.12:mob.hitAnim>0?-.10:0;if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if((mob.hostile||combatTurns.target===mob)&&distance<10){mob.goal.copy(player.position);if(distance<2.5&&!combatTurns.target&&!services.isOpen){combatRng=Math.random;combatTurns.engage(mob,true)}}const meleeDistance=Math.min(1.85,weaponStats(state.equippedWeapon).reach*.9),delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>((mob.hostile||combatTurns.target===mob)&&distance<10?meleeDistance:.4)){delta.normalize();const step=Math.min(dt*((mob.hostile||combatTurns.target===mob)&&distance<10?1.7:.8),Math.max(0,distance-meleeDistance));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if((mob.hostile||combatTurns.target===mob)&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,weaponStats(state.equippedWeapon).reach*.85)}}
+if(combatTurns.target){const target=combatTurns.target;combat.stanceTimer=3;const range=combatTurns.side==='player'?weaponStats(combatTurns.phase==='ready'?state.equippedWeapon:swingWeapon||state.equippedWeapon).reach:2.5;combatTurns.tick(dt,{inRange:player.position.distanceTo(target.root.position)<=range,playerAlive:combat.hp>0})}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 ensureTownResidents();
 for(const npc of npcs){
