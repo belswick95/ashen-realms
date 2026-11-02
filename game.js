@@ -1,4 +1,5 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+import {buildHumanoid} from './humanoid.js';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const tint=(hex,fallback)=>/^#[0-9a-f]{6}$/i.test(hex||'')?parseInt(hex.slice(1),16):fallback;
 const skin=tint(appearance.skin,0xd9a783),shirt=tint(appearance.shirt,0x315b76),pants=tint(appearance.pants,0x424750),hairColor=tint(appearance.hairColor,0x3b2b22);
@@ -38,15 +39,8 @@ for(let i=0;i<60;i++){const a=i*2.4,r=12+i*.8;const x=250+Math.sin(a)*r,z=-180+M
 for(let i=0;i<16;i++){const a=i*Math.PI/8;box(1.8,1.2+i%3,1.8,0x74776e,-285+Math.cos(a)*13,.8,-220+Math.sin(a)*13)}
 const merchant=new T.Group();merchant.position.set(-3,0,7);scene.add(merchant);box(.7,1.2,.4,0x6b3b6c,0,1.3,0,merchant);sphere(.34,0xd8a57e,0,2.2,0,merchant);const mh=box(.95,.15,.75,0x7e4c2d,0,2.72,0,merchant);mh.userData={kind:'merchant',x:-3,z:7};targets.push(mh);box(2.5,.25,1,0x805832,-3,1,9);
 const player=new T.Group();scene.add(player);const body=new T.Group();player.add(body);
-box(.76,1.04,.4,shirt,0,1.5,0,body);box(.89,.15,.51,0x62452c,0,1.04,0,body);box(.15,.18,.06,0xd2b36d,0,1.04,.29,body);
-sphere(.29,skin,0,2.38,0,body);const hair=sphere(.32,hairColor,0,2.63,-.05,body);hair.scale.y=appearance.hair==='Buzz cut'?.24:appearance.hair==='Long'?.65:.45;if(appearance.hair==='Spiky'){for(let i=0;i<5;i++)cone(.095,.27,hairColor,-.23+i*.115,2.81,-.03,body)}if(appearance.hair==='Long'){box(.12,.5,.29,hairColor,-.29,2.28,-.04,body);box(.12,.5,.29,hairColor,.29,2.28,-.04,body)}if(appearance.hair==='Side swept'){const fringe=box(.37,.11,.19,hairColor,-.13,2.68,.2,body);fringe.rotation.z=-.25}
-sphere(.037,0x24201d,-.115,2.43,.264,body);sphere(.037,0x24201d,.115,2.43,.264,body);
-function joint(x,y,w,h,c){const g=new T.Group();g.position.set(x,y,0);body.add(g);box(w,h,.3,c,0,-h/2,0,g);return g}
-const la=joint(-.48,1.95,.23,.91,shirt),ra=joint(.48,1.95,.23,.91,shirt),ll=joint(-.21,1,.27,.86,pants),rl=joint(.21,1,.27,.86,pants);
-// More natural low-poly silhouette: broad shoulders, short sleeves, bare forearms and hands.
-box(.36,.32,.5,shirt,-.48,1.77,0,body);box(.36,.32,.5,shirt,.48,1.77,0,body);
-for(const arm of [la,ra]){box(.22,.43,.3,skin,0,-.72,0,arm);sphere(.15,skin,0,-.97,.02,arm)}
-box(.33,.27,.48,0x382b25,0,-.84,.07,ll);box(.33,.27,.48,0x382b25,0,-.84,.07,rl);
+const avatar=buildHumanoid(T,body,{skin:appearance.skin,shirt:appearance.shirt,pants:appearance.pants,hairColor:appearance.hairColor,hair:appearance.hair});
+const {leftArm:la,rightArm:ra,leftLeg:ll,rightLeg:rl}=avatar;
 const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
 const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0};
 const armorCatalog={
@@ -96,7 +90,15 @@ const npcProfiles=[
 {name:'Nara the Wanderer',role:'wanderer',x:258,z:-181,color:0x916d6d,lines:['Suncrest is a long way from Oakcross. You made it!','I hear the western ruins are older than the kingdoms themselves.']}
 ];
 const npcs=[];
-function spawnNPC(profile,index){const root=new T.Group();root.position.set(profile.x,0,profile.z);scene.add(root);box(.72,.95,.42,profile.color,0,1.45,0,root);sphere(.29,0xd5a582,0,2.25,0,root);const hair=sphere(.31,index%2?0x463323:0x735337,0,2.5,-.05,root);hair.scale.y=.45;const leftLeg=new T.Group(),rightLeg=new T.Group();leftLeg.position.set(-.23,.98,0);rightLeg.position.set(.23,.98,0);root.add(leftLeg,rightLeg);box(.23,.84,.25,0x4a433e,0,-.42,0,leftLeg);box(.23,.84,.25,0x4a433e,0,-.42,0,rightLeg);const leftArm=new T.Group(),rightArm=new T.Group();leftArm.position.set(-.49,1.83,0);rightArm.position.set(.49,1.83,0);root.add(leftArm,rightArm);box(.19,.82,.25,profile.color,0,-.4,0,leftArm);box(.19,.82,.25,profile.color,0,-.4,0,rightArm);const hit=sphere(.42,0xd5a582,0,2.24,0,root);hit.userData={kind:'npc',profile,root};targets.push(hit);const npc={profile,root,leftArm,rightArm,leftLeg,rightLeg,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index};npcs.push(npc)}
+function spawnNPC(profile,index){
+ const root=new T.Group();root.position.set(profile.x,0,profile.z);scene.add(root);
+ const palettes=[0xc9916b,0xe0b48e,0x966247,0x67402f,0xb98362];
+ const hairs=[0x39271f,0x6d4831,0xa17a4b,0x241e1d];
+ const model=buildHumanoid(T,root,{skin:palettes[index%palettes.length],shirt:profile.color,pants:0x474442,hairColor:hairs[index%hairs.length],hair:['Short crop','Side swept','Spiky','Buzz cut','Long'][index%5]});
+ const hit=new T.Mesh(new T.SphereGeometry(.48,8,6),new T.MeshBasicMaterial({visible:false}));
+ hit.position.set(0,1.42,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
+ const npc={profile,root,leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index};npcs.push(npc)
+}
 npcProfiles.forEach(spawnNPC);
 // Wildlife and enemies use lightweight low-poly models and simple local AI.
 const creatures=[];function creature(name,x,z,hostile=false){const root=new T.Group();root.position.set(x,0,z);scene.add(root);const fur=name==='Wolf'?0x646762:name==='Boar'?0x76553f:0x9a8062;box(.8,.65,1.3,fur,0,.65,0,root);sphere(.37,fur,0,.92,.73,root);for(const sx of [-.27,.27])for(const sz of [-.42,.42])box(.19,.52,.2,0x4e473a,sx,.26,sz,root);if(name==='Wolf'){for(const sx of [-.2,.2])cone(.15,.38,fur,sx,1.28,.7,root)}if(name==='Deer')cone(.18,.5,0xc5b28a,0,1.38,.75,root);const hit=sphere(.38,fur,0,.95,.75,root);const mob={name,root,home:new T.Vector3(x,0,z),goal:new T.Vector3(x,0,z),hp:hostile?36:20,maxHp:hostile?36:20,hostile,alive:true,wait:2,attackCooldown:0,respawn:0};hit.userData={kind:'creature',mob};targets.push(hit);mob.hit=hit;creatures.push(mob)}
