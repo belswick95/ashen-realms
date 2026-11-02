@@ -97,6 +97,29 @@ box(2.5,.25,1,0x805832,-3,1,9,scene,'wood');
 const player=new T.Group();scene.add(player);const body=new T.Group();player.add(body);
 const avatar=buildHumanoid(T,body,{skin:appearance.skin,shirt:appearance.shirt,pants:appearance.pants,hairColor:appearance.hairColor,hair:appearance.hair});
 const {leftArm:la,rightArm:ra,leftLeg:ll,rightLeg:rl}=avatar;
+// Other online adventurers and short-lived overhead chat bubbles.
+const remotePlayers=new Map(),chatBubbles=new Map();
+const bubbleLayer=document.createElement('div');bubbleLayer.id='overhead-chat-layer';bubbleLayer.style.cssText='position:fixed;inset:0;z-index:45;pointer-events:none;overflow:hidden';document.body.append(bubbleLayer);
+window.eldervaleGetPlayerPosition=()=>({x:Math.round(player.position.x*10)/10,z:Math.round(player.position.z*10)/10,yaw:player.rotation.y});
+window.eldervaleUpdatePlayers=entries=>{
+ const seen=new Set();
+ for(const entry of entries){if(!entry.id||!Number.isFinite(entry.x)||!Number.isFinite(entry.z))continue;seen.add(entry.id);
+ let other=remotePlayers.get(entry.id);
+ if(!other){const root=new T.Group();scene.add(root);buildHumanoid(T,root,{});const tag=document.createElement('div');tag.style.cssText='position:fixed;padding:3px 7px;background:#14221cdd;color:#f4e2ba;border:1px solid #9b8659;border-radius:5px;font:12px Arial;white-space:nowrap;pointer-events:none';tag.textContent=String(entry.username||'Adventurer').slice(0,24);bubbleLayer.append(tag);other={root,tag};remotePlayers.set(entry.id,other)}
+ other.root.position.set(entry.x,0,entry.z);other.root.rotation.y=entry.yaw||0;
+ }
+ for(const [id,other] of remotePlayers)if(!seen.has(id)){scene.remove(other.root);other.tag.remove();remotePlayers.delete(id);const bubble=chatBubbles.get(id);bubble?.node.remove();chatBubbles.delete(id)}
+};
+window.eldervaleShowChatBubble=(id,name,message)=>{
+ if(!id||!message)return;const old=chatBubbles.get(id);old?.node.remove();
+ const node=document.createElement('div');node.style.cssText='position:fixed;max-width:230px;padding:7px 10px;border:1px solid #d1b878;border-radius:12px;background:#f5e8c9;color:#29251d;box-shadow:0 3px 12px #0009;text-align:center;font:12px Arial;overflow-wrap:anywhere;pointer-events:none';
+ const strong=document.createElement('strong');strong.textContent=String(name||'Adventurer').slice(0,24);const text=document.createElement('div');text.textContent=String(message).slice(0,240);node.append(strong,text);bubbleLayer.append(node);chatBubbles.set(id,{node,expires:performance.now()+6500});
+};
+function updateOverheadChat(){
+ const selfId=window.eldervaleUserId;const projected=new T.Vector3();
+ for(const [id,other] of remotePlayers){projected.set(other.root.position.x,3.05,other.root.position.z).project(camera);const visible=projected.z<1&&projected.z>-1&&other.root.position.distanceTo(player.position)<75;other.tag.style.display=visible?'block':'none';if(visible){other.tag.style.left=((projected.x+1)*innerWidth/2-other.tag.offsetWidth/2)+'px';other.tag.style.top=((1-projected.y)*innerHeight/2)+'px'}}
+ for(const [id,bubble] of chatBubbles){if(performance.now()>bubble.expires){bubble.node.remove();chatBubbles.delete(id);continue}const other=id===selfId?player:remotePlayers.get(id)?.root;if(!other){bubble.node.style.display='none';continue}projected.set(other.position.x,3.65,other.position.z).project(camera);const visible=projected.z<1&&projected.z>-1&&other.position.distanceTo(player.position)<75;bubble.node.style.display=visible?'block':'none';if(visible){bubble.node.style.left=((projected.x+1)*innerWidth/2-bubble.node.offsetWidth/2)+'px';bubble.node.style.top=((1-projected.y)*innerHeight/2-bubble.node.offsetHeight)+'px'}}
+}
 const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
 const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0,attackAnim:0,hitAnim:0};
 const armorCatalog={
@@ -251,5 +274,5 @@ for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mo
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 for(const npc of npcs){npc.wait-=dt;if(npc.wait<=0){const a=npc.phase*2.4+npc.wait;npc.goal.set(npc.home.x+Math.cos(a)*3.2,0,npc.home.z+Math.sin(a)*3.2);npc.wait=4+(npc.phase%4)*1.3;npc.phase++}const d=npc.goal.clone().sub(npc.root.position);const walking=d.length()>.3;if(walking){d.normalize();const step=d.clone().multiplyScalar(dt*.55);const proposed=npc.root.position.clone().add(step);const crowded=npcs.some(other=>other!==npc&&other.root.position.distanceToSquared(proposed)<1.15*1.15)||player.position.distanceToSquared(proposed)<1.0*1.0;if(!crowded)npc.root.position.add(step);npc.root.rotation.y=Math.atan2(d.x,d.z)}const gait=walking?Math.sin(performance.now()*.005+npc.phase)*.45:0;npc.leftLeg.rotation.x=gait;npc.rightLeg.rotation.x=-gait;npc.leftArm.rotation.x=-gait*.65+Math.sin(performance.now()*.001+npc.phase)*.035;npc.rightArm.rotation.x=gait*.65;if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position)}
 blend=T.MathUtils.lerp(blend,moving?1:0,1-Math.exp(-12*dt));if(moving)phase+=dt*10;const swing=Math.sin(phase)*.65*blend;ll.rotation.x=swing;rl.rotation.x=-swing;la.rotation.x=-swing*.7;ra.rotation.x=swing*.7;if(combat.attackAnim>0){const t=1-combat.attackAnim/.55;ra.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;ra.rotation.z=-.32;body.rotation.y=Math.sin(t*Math.PI)*-.15}else{ra.rotation.z=T.MathUtils.lerp(ra.rotation.z,0,dt*12);body.rotation.y=T.MathUtils.lerp(body.rotation.y,0,dt*10)}if(combat.hitAnim>0){body.rotation.z=Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12}else body.rotation.z=T.MathUtils.lerp(body.rotation.z,0,dt*12);body.position.y=Math.abs(Math.sin(phase))*.06*blend;
-const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);saveTick+=dt;if(saveTick>4){saveTick=0;save()}renderer.render(scene,camera);if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
+const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);saveTick+=dt;if(saveTick>4){saveTick=0;save()}renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();
