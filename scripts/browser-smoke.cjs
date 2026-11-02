@@ -25,6 +25,16 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req
  await page.waitForFunction(()=>window.testGameReady,{},{timeout:30000});
  await page.locator('[data-tab="equipment"]').click();
  assert.equal(await page.getByRole('button',{name:'Head: Iron full helm',exact:true}).isVisible(),true);
+ assert.equal(await page.locator('#special-attack').isDisabled(),true);
+ assert.equal(await page.locator('#map-widget .minimap-brand').innerText(),'ELDERVALE');
+ assert.equal(await page.locator('#character-panel').isVisible(),false);
+ assert.equal(await page.locator('[data-settings-panel="audio"] #music-controls').count(),1);
+ assert.ok(await page.locator('#world-chat-lines').innerText().then(s=>s.includes('Welcome to Eldervale!')));
+ const helmetPortrait=await page.locator('#player-portrait').evaluate(c=>c.toDataURL());
+ await page.getByRole('button',{name:'Head: Iron full helm',exact:true}).click();
+ assert.notEqual(await page.locator('#player-portrait').evaluate(c=>c.toDataURL()),helmetPortrait,'portrait follows equipped helmet');
+ await page.locator('[data-tab="inventory"]').click();await page.getByRole('button',{name:'Iron full helm',exact:true}).click();await page.locator('[data-tab="equipment"]').click();
+
  await page.locator('#map-toggle').click();assert.equal(await page.locator('#map-panel').isVisible(),true);
  await page.locator('#map-close').click();
  const start=await page.evaluate(()=>window.eldervaleGetPlayerPosition());
@@ -43,7 +53,7 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req
  const wideDock=await page.locator('#side').boundingBox();assert.ok(wideDock.width<=320&&wideDock.height<=60,'wide touch landscape still uses a collapsed compact dock');
  const nativeBlocked=await page.evaluate(()=>{const gesture=new Event('gesturestart',{bubbles:true,cancelable:true});document.dispatchEvent(gesture);const move=new Event('touchmove',{bubbles:true,cancelable:true});Object.defineProperty(move,'touches',{value:[{},{}]});document.dispatchEvent(move);return gesture.defaultPrevented&&move.defaultPrevented});assert.equal(nativeBlocked,true,'Safari page gestures are cancelled during gameplay');
  await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>document.body.classList.contains('landscape-required'));assert.equal(await page.locator('#rotate-phone').isVisible(),true);await page.setViewportSize({width:844,height:390});await page.waitForFunction(()=>!document.body.classList.contains('landscape-required'));
- const layout=await page.evaluate(()=>{const a=document.querySelector('#side').getBoundingClientRect(),b=document.querySelector('#social-panel').getBoundingClientRect();return {separate:b.bottom<=a.top,chat:document.querySelector('#social-panel').classList.contains('collapsed')}});assert.equal(layout.chat,true);assert.equal(layout.separate,true);
+ const layout=await page.evaluate(()=>{const a=document.querySelector('#side').getBoundingClientRect(),b=document.querySelector('#social-panel').getBoundingClientRect();return {separate:b.right<=a.left||b.bottom<=a.top,chat:document.querySelector('#social-panel').classList.contains('collapsed')}});assert.equal(layout.chat,true);assert.equal(layout.separate,true);
  const quality=await page.evaluate(()=>({preset:document.querySelector('#graphics-preset').value,scale:document.querySelector('#render-scale').value,ratio:window.offlineWorld.renderer.getPixelRatio()}));assert.equal(quality.preset,'auto');assert.ok(['0.8','0.65'].includes(quality.scale));assert.ok(quality.ratio<=1.5);
  await page.locator('#map-toggle').click();const atlasBounds=await page.locator('#worldmap').boundingBox();assert.ok(Math.abs(atlasBounds.width-atlasBounds.height)<1,'phone atlas preserves coordinate aspect ratio');await page.locator('#map-close').click();
  const touch=await page.context().newCDPSession(page),beforeZoom=await page.evaluate(()=>window.offlineWorld.getZoom()),beforeHud=await page.locator('#side').boundingBox();
