@@ -1,44 +1,82 @@
-// Lightweight faceted RPG adventurers: shared geometries and materials, tapered anatomy.
+// Eldervale's shared stylized-human rig. The same geometry powers players,
+// NPCs, remote adventurers and the live character-creation preview.
+// Rig pivots are preserved for existing movement, equipment and combat animations.
 export function buildHumanoid(T,root,look={}){
- const color=(v,d)=>/^#[0-9a-f]{6}$/i.test(v||'')?parseInt(v.slice(1),16):typeof v==='number'?v:d;
- const palette={skin:color(look.skin,0xc9916b),shirt:color(look.shirt,0x426e68),pants:color(look.pants,0x45494d),hair:color(look.hairColor,0x3a2920)};
+ const parse=(v,f)=>typeof v==='number'?v:/^#[0-9a-f]{6}$/i.test(v||'')?parseInt(v.slice(1),16):f;
+ const skin=parse(look.skin,0xc9916b),shirt=parse(look.shirt,0x426e68),pants=parse(look.pants,0x353b3e),hairColor=parse(look.hairColor,0x392820);
  const cache=buildHumanoid.cache||(buildHumanoid.cache=new Map());
- const material=(c)=>{if(!cache.has('m'+c))cache.set('m'+c,new T.MeshStandardMaterial({color:c,roughness:.83,flatShading:false}));return cache.get('m'+c)};
- const geometry=(key,fn)=>{if(!cache.has(key))cache.set(key,fn());return cache.get(key)};
- function mesh(geo,c,parent,x,y,z,sx=1,sy=1,sz=1){const m=new T.Mesh(geo,material(c));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
- const sphere=geometry('sphere10',()=>new T.SphereGeometry(1,20,14));
- const torsoGeo=geometry('torso',()=>new T.CylinderGeometry(.40,.30,.9,20,1));
- const limbGeo=geometry('limb',()=>new T.CylinderGeometry(1,.78,1,16,1));
- const headGeo=geometry('head',()=>new T.SphereGeometry(1,24,16));
- const shoeGeo=geometry('shoe',()=>new T.SphereGeometry(1,20,12));
- const torso=mesh(torsoGeo,palette.shirt,root,0,1.49,0,1,1,.62);
- mesh(geometry('waist',()=>new T.CylinderGeometry(.31,.30,.15,18)),0x574333,root,0,1.01,0,1,1,.65);
- const neck=mesh(geometry('neck',()=>new T.CylinderGeometry(.11,.12,.17,16)),palette.skin,root,0,2.00,0);
- const face=mesh(headGeo,palette.skin,root,0,2.29,.025,.30,.36,.28);
+ function mat(color,rough=.85){const k='mat'+color+':'+rough;if(!cache.has(k))cache.set(k,new T.MeshStandardMaterial({color,roughness:rough,flatShading:true}));return cache.get(k)}
+ function geo(key,make){if(!cache.has(key))cache.set(key,make());return cache.get(key)}
+ const faceMat=mat(skin),cloth=mat(shirt),trousers=mat(pants),hairMat=mat(hairColor),boots=mat(0x272523),beltMat=mat(0x57362a);
+ function mesh(g,m,parent,x,y,z,sx=1,sy=1,sz=1){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
+ const sphere=geo('humanSphere',()=>new T.SphereGeometry(1,12,8));
+ const box=(w,h,d)=>geo('humanBox'+w+':'+h+':'+d,()=>new T.BoxGeometry(w,h,d));
+ // Tailored torso: broad shoulders, natural taper to the waist, curved chest/back.
+ const torsoShape=geo('humanTailoredTorso',()=>new T.LatheGeometry([
+  new T.Vector2(.255,0),new T.Vector2(.30,.09),new T.Vector2(.325,.25),
+  new T.Vector2(.355,.48),new T.Vector2(.395,.66),new T.Vector2(.385,.81),
+  new T.Vector2(.285,.88)
+ ],14));
+ const torso=mesh(torsoShape,cloth,root,0,1.08,0,1,1,.77);
+ // Collar and belt avoid the separated "floating toy" silhouette.
+ mesh(geo('humanCollar',()=>new T.CylinderGeometry(.16,.18,.085,12)),mat(0x4e4035),root,0,1.965,0,1,1,.80);
+ mesh(geo('humanBelt',()=>new T.CylinderGeometry(.312,.295,.11,14)),beltMat,root,0,1.075,0,1,1,.82);
+ mesh(box(.115,.10,.035),mat(0xb8a075,.6),root,0,1.075,.253);
+ // Pelvis fills the gap between the torso and two distinct articulated legs.
+ mesh(sphere,trousers,root,0,.985,0,.30,.21,.235);
+ const neck=mesh(geo('humanNeck',()=>new T.CylinderGeometry(.108,.125,.20,12)),faceMat,root,0,2.02,0);
+ // Angular human head: tapered jaw, cheeks, chin, brow and projected nose.
+ const headShape=geo('humanHead',()=>new T.LatheGeometry([
+  new T.Vector2(.09,0),new T.Vector2(.17,.055),new T.Vector2(.235,.17),
+  new T.Vector2(.275,.32),new T.Vector2(.265,.48),new T.Vector2(.225,.59),
+  new T.Vector2(.125,.64)
+ ],12));
+ const face=mesh(headShape,faceMat,root,0,2.095,.018,1,1,1.02);
+ // Face front points toward +Z, matching the existing game movement rig.
  for(const side of [-1,1]){
-  mesh(sphere,0x241e1c,root,side*.115,2.32,.286,.024,.018,.012);
-  mesh(geometry('brow',()=>new T.BoxGeometry(.09,.025,.025)),0x493229,root,side*.115,2.415,.275);
-  mesh(sphere,palette.skin,root,side*.287,2.265,0,.06,.08,.07)
+  mesh(sphere,faceMat,root,side*.265,2.39,0,.055,.095,.07);
+  mesh(box(.09,.024,.018),mat(0x32251f),root,side*.125,2.493,.266).rotation.z=side*-.10;
+  mesh(box(.07,.018,.015),mat(0x2c2926),root,side*.125,2.455,.278);
+  mesh(sphere,mat(0xf1e5d2),root,side*.125,2.456,.283,.028,.012,.008);
  }
- mesh(geometry('nose',()=>new T.ConeGeometry(.065,.15,5)),palette.skin,root,0,2.225,.305,.65,.75,.65).rotation.x=Math.PI/2;
- mesh(geometry('mouth',()=>new T.BoxGeometry(.13,.017,.012)),0x754b40,root,0,2.13,.289);
- const hair=look.hair||'Side swept';
- mesh(sphere,palette.hair,root,0,2.52,-.012,.31,hair==='Buzz cut'?.075:.15,.28);
- if(hair==='Side swept'){const f=mesh(geometry('fringe',()=>new T.BoxGeometry(.34,.085,.15)),palette.hair,root,-.08,2.53,.205);f.rotation.z=-.22}
- if(hair==='Short crop')mesh(geometry('crop',()=>new T.BoxGeometry(.40,.085,.18)),palette.hair,root,0,2.53,.16);
- if(hair==='Spiky')for(let i=-2;i<=2;i++)mesh(geometry('spike',()=>new T.ConeGeometry(.09,.23,5)),palette.hair,root,i*.1,2.7,-.015).rotation.z=i*.13;
- if(hair==='Long')for(const side of [-1,1])mesh(limbGeo,palette.hair,root,side*.25,2.31,-.085,.095,.38,.13);
+ const nose=mesh(geo('humanNose',()=>new T.ConeGeometry(.072,.185,5)),faceMat,root,0,2.385,.30,.8,1,.8);
+ nose.rotation.x=Math.PI/2;
+ mesh(box(.105,.016,.012),mat(0x805349),root,0,2.295,.254);
+ // Hair is cut as a fitted cap, not a floating round helmet.
+ const style=look.hair||'Side swept';
+ const hairCap=mesh(geo('humanHairCap',()=>new T.SphereGeometry(1,14,8,0,Math.PI*2,0,Math.PI*.56)),hairMat,root,0,2.635,.005,.269,style==='Buzz cut'?.085:.155,.274);
+ if(style==='Side swept'){
+  const fringe=mesh(box(.29,.09,.13),hairMat,root,-.09,2.618,.215);fringe.rotation.z=-.24;
+ }else if(style==='Short crop'){
+  mesh(box(.38,.065,.13),hairMat,root,0,2.632,.19);
+ }else if(style==='Spiky'){
+  for(let i=-2;i<=2;i++){const tuft=mesh(geo('humanSpike',()=>new T.ConeGeometry(.065,.18,5)),hairMat,root,i*.105,2.76,-.005);tuft.rotation.z=i*-.16}
+ }else if(style==='Long'){
+  for(const side of [-1,1])mesh(sphere,hairMat,root,side*.225,2.37,-.10,.105,.30,.145);
+  mesh(sphere,hairMat,root,0,2.40,-.20,.23,.30,.12);
+ }
  const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
- leftArm.position.set(-.45,1.86,0);rightArm.position.set(.45,1.86,0);
- leftLeg.position.set(-.17,.99,0);rightLeg.position.set(.17,.99,0);root.add(leftArm,rightArm,leftLeg,rightLeg);
- for(const arm of [leftArm,rightArm]){
-  mesh(limbGeo,palette.shirt,arm,0,-.19,0,.205,.37,.22);
-  mesh(limbGeo,palette.skin,arm,0,-.50,0,.135,.40,.15);
-  mesh(sphere,palette.skin,arm,0,-.75,.01,.12,.13,.12);
+ leftArm.position.set(-.455,1.84,0);rightArm.position.set(.455,1.84,0);
+ leftLeg.position.set(-.165,.985,0);rightLeg.position.set(.165,.985,0);
+ root.add(leftArm,rightArm,leftLeg,rightLeg);
+ const limb=(top,bottom,len,key)=>geo(key,()=>new T.CylinderGeometry(top,bottom,len,12,1));
+ for(const [arm,side] of [[leftArm,-1],[rightArm,1]]){
+  // Shoulders transition into tapered upper arms and narrower forearms.
+  mesh(sphere,cloth,arm,0,-.09,0,.18,.17,.20);
+  const upper=mesh(limb(.155,.115,.37,'humanUpperArm'),cloth,arm,side*.012,-.275,0);upper.rotation.z=side*.055;
+  mesh(sphere,faceMat,arm,side*.022,-.46,0,.116,.125,.12);
+  const fore=mesh(limb(.115,.084,.31,'humanForearm'),faceMat,arm,side*.025,-.59,0);fore.rotation.z=side*.035;
+  // Human-sized hands remain at the exact attachment level used by weapons.
+  mesh(sphere,faceMat,arm,side*.03,-.78,.018,.092,.12,.095);
  }
- for(const leg of [leftLeg,rightLeg]){
-  mesh(limbGeo,palette.pants,leg,0,-.38,0,.185,.78,.20);
-  mesh(shoeGeo,0x302b28,leg,0,-.83,.10,.19,.13,.31);
+ for(const [leg,side] of [[leftLeg,-1],[rightLeg,1]]){
+  const thigh=mesh(limb(.17,.135,.47,'humanThigh'),trousers,leg,side*.015,-.245,0);thigh.rotation.z=side*.025;
+  mesh(sphere,trousers,leg,side*.025,-.49,.01,.14,.125,.15);
+  const calf=mesh(limb(.137,.095,.37,'humanCalf'),trousers,leg,side*.02,-.67,-.005);calf.rotation.z=-side*.018;
+  mesh(geo('humanBootCuff',()=>new T.CylinderGeometry(.13,.13,.09,12)),beltMat,leg,side*.025,-.84,.005);
+  const shoe=mesh(sphere,boots,leg,side*.025,-.91,.13,.165,.115,.29);
+  shoe.rotation.x=-.07;
+  mesh(box(.28,.055,.34),boots,leg,side*.025,-.975,.16);
  }
  return {root,body:root,leftArm,rightArm,leftLeg,rightLeg,torso,neck,face};
 }
