@@ -29,9 +29,9 @@ export function createHumanoidAnimator(rig){
   // Armed idle: elbows forward, right hand presenting the blade diagonally ahead,
   // left forearm carrying the shield ahead of the torso. Blend out during attack.
   if(armed&&!twoHanded&&attack<=0){
-   rig.rightArm.rotation.x=-.95-gait*.04*blend;
-   rig.rightArm.rotation.z=-.20;
-   rig.rightElbow.rotation.x=-.38;
+   rig.rightArm.rotation.x=-.24-gait*.035*blend;
+   rig.rightArm.rotation.z=-.10;
+   rig.rightElbow.rotation.x=-.22;
    rig.rightHand?.rotation.set(0,0,0);
   }
   // Reset combat channels every frame so interrupted attacks cannot leave a pose stuck.
@@ -41,7 +41,7 @@ export function createHumanoidAnimator(rig){
    rig.rightArm.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;
    rig.rightArm.rotation.z=-.32;rig.rightElbow.rotation.x=-.55;
   }
-  if(shield&&!twoHanded){rig.leftArm.rotation.x=-.30-gait*.03*blend;rig.leftArm.rotation.z=.28;rig.leftElbow.rotation.x=-.38;rig.leftHand?.rotation.set(0,0,0)}
+  if(shield&&!twoHanded){rig.leftArm.rotation.x=-.06-gait*.03*blend;rig.leftArm.rotation.z=.14;rig.leftElbow.rotation.x=-.16;rig.leftHand?.rotation.set(0,0,0)}
   if(twoHanded&&rig.solveArm){
    const t=attack>0?Math.max(0,Math.min(1,1-attack/.55)):0,swing=attack>0?Math.sin(t*Math.PI):0;
    const V=rig.root.position.constructor,angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle));
