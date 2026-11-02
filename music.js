@@ -3,7 +3,7 @@ export function startMusic(){
  const button=document.querySelector('#music-toggle'),slider=document.querySelector('#music-volume'),label=document.querySelector('#music-track');
  if(!button||!slider)return;button.textContent='Music Off';
  let ctx,master,timer,playing=false,step=0,track=0,nextTime=0;
- let region='Oakcross',desiredRegion='Oakcross';
+ let region=window.eldervaleAudioRegion||'Oakcross',desiredRegion=region;
  const townThemes={'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1,'Suncrest':1,'Greenwatch':0,'Ashen Ruins':2};
  const regionOffsets={'Oakcross':0,'Northwatch':-2,'Eastmarch':2,'Old Cairn':-5,'Farwatch':4,'Westmere':-3,'Stonebridge':5,'Suncrest':7,'Greenwatch':-1,'Ashen Ruins':-7};
  window.eldervaleSetAudioRegion=(name)=>{desiredRegion=Object.hasOwn(townThemes,name)?name:'Wilderness'};
@@ -65,16 +65,16 @@ export function startMusic(){
    if(step%32===0&&region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;updateAmbience();label.textContent=region==='Wilderness'?'Wilderness · ambient score':region+' · '+songs[track].name}
    const i=step%32,bar=Math.floor(i/4),transpose=regionOffsets[region]||0,root=song.roots[bar]+transpose;
    // Bass line and two supporting voices give the march a full brass-ensemble texture.
-   brass(root-12,nextTime,quarter*.90,'tuba',.085);
-   if(i%2===0){brass(root,nextTime,quarter*1.78,'horn',.043);brass(root+7,nextTime,quarter*1.7,'horn',.028)}
-   if(i%4===0){brass(root+12,nextTime,quarter*2.6,'horn',.032);if(region!=='Wilderness')percussion(nextTime,true)}
+   if(region!=='Wilderness')brass(root-12,nextTime,quarter*.90,'tuba',.085);
+   if(i%2===0&&region!=='Wilderness'){brass(root,nextTime,quarter*1.78,'horn',.043);brass(root+7,nextTime,quarter*1.7,'horn',.028)}
+   if(i%4===0&&region!=='Wilderness'){brass(root+12,nextTime,quarter*2.6,'horn',.032);percussion(nextTime,true)}
    else if(i%2===0&&region!=='Wilderness')percussion(nextTime,false);
    if(i%8===0&&region!=='Wilderness')percussion(nextTime,false,'cymbal');
    const note=song.melody[i];
    if(note!=null&&region!=='Wilderness')brass(note+transpose,nextTime,quarter*(i%8===6?1.7:.84),'trumpet',.084);
-   if(song.counter[i]!=null)brass(song.counter[i]+transpose,nextTime,quarter*1.8,'horn',region==='Wilderness'?.018:.044);
+   if(song.counter[i]!=null&&region!=='Wilderness')brass(song.counter[i]+transpose,nextTime,quarter*1.8,'horn',.044);
    step++;nextTime+=quarter;
-   if(step%64===0&&region==='Wilderness'){track=(track+1)%songs.length;label.textContent='Wilderness · '+songs[track].name}
+   if(region==='Wilderness')label.textContent='Wilderness ambience';
   }
  }
  async function toggle(){
@@ -83,7 +83,7 @@ export function startMusic(){
    if(playing){playing=false;clearInterval(timer);await ctx.suspend();button.textContent='Music Off';button.setAttribute('aria-pressed','false');return}
    await ctx.resume();startAmbience();master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.05);
    nextTime=ctx.currentTime+.08;playing=true;timer=setInterval(schedule,90);schedule();
-   button.textContent='Music On';button.setAttribute('aria-pressed','true');label.textContent=songs[track].name;
+   button.textContent='Music On';button.setAttribute('aria-pressed','true');label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name;
   }catch(err){label.textContent='Audio unavailable';console.warn('Eldervale music:',err)}
  }
  button.addEventListener('click',toggle);
