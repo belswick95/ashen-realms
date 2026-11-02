@@ -1,4 +1,7 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
+const tint=(hex,fallback)=>/^#[0-9a-f]{6}$/i.test(hex||'')?parseInt(hex.slice(1),16):fallback;
+const skin=tint(appearance.skin,0xd9a783),shirt=tint(appearance.shirt,0x315b76),pants=tint(appearance.pants,0x424750),hairColor=tint(appearance.hairColor,0x3b2b22);
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
 scene.add(new T.HemisphereLight(0xcfe4ff,0x5a4d33,2));const sun=new T.DirectionalLight(0xffe9b6,2.3);sun.position.set(12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
@@ -35,11 +38,11 @@ for(let i=0;i<60;i++){const a=i*2.4,r=12+i*.8;const x=250+Math.sin(a)*r,z=-180+M
 for(let i=0;i<16;i++){const a=i*Math.PI/8;box(1.8,1.2+i%3,1.8,0x74776e,-285+Math.cos(a)*13,.8,-220+Math.sin(a)*13)}
 const merchant=new T.Group();merchant.position.set(-3,0,7);scene.add(merchant);box(.7,1.2,.4,0x6b3b6c,0,1.3,0,merchant);sphere(.34,0xd8a57e,0,2.2,0,merchant);const mh=box(.95,.15,.75,0x7e4c2d,0,2.72,0,merchant);mh.userData={kind:'merchant',x:-3,z:7};targets.push(mh);box(2.5,.25,1,0x805832,-3,1,9);
 const player=new T.Group();scene.add(player);const body=new T.Group();player.add(body);
-box(.76,1.04,.4,0x315b76,0,1.5,0,body);box(.89,.15,.51,0x62452c,0,1.04,0,body);box(.15,.18,.06,0xd2b36d,0,1.04,.29,body);
-sphere(.29,0xd9a783,0,2.38,0,body);const hair=sphere(.31,0x3b2b22,0,2.63,-.05,body);hair.scale.y=.45;
+box(.76,1.04,.4,shirt,0,1.5,0,body);box(.89,.15,.51,0x62452c,0,1.04,0,body);box(.15,.18,.06,0xd2b36d,0,1.04,.29,body);
+sphere(.29,skin,0,2.38,0,body);const hair=sphere(.32,hairColor,0,2.63,-.05,body);hair.scale.y=appearance.hair==='Buzz cut'?.24:appearance.hair==='Long'?.65:.45;if(appearance.hair==='Spiky'){for(let i=0;i<5;i++)cone(.095,.27,hairColor,-.23+i*.115,2.81,-.03,body)}if(appearance.hair==='Long'){box(.12,.5,.29,hairColor,-.29,2.28,-.04,body);box(.12,.5,.29,hairColor,.29,2.28,-.04,body)}if(appearance.hair==='Side swept'){const fringe=box(.37,.11,.19,hairColor,-.13,2.68,.2,body);fringe.rotation.z=-.25}
 sphere(.037,0x24201d,-.115,2.43,.264,body);sphere(.037,0x24201d,.115,2.43,.264,body);
 function joint(x,y,w,h,c){const g=new T.Group();g.position.set(x,y,0);body.add(g);box(w,h,.3,c,0,-h/2,0,g);return g}
-const la=joint(-.48,1.95,.23,.91,0x49738a),ra=joint(.48,1.95,.23,.91,0x49738a),ll=joint(-.21,1,.27,.86,0x424750),rl=joint(.21,1,.27,.86,0x424750);
+const la=joint(-.48,1.95,.23,.91,shirt),ra=joint(.48,1.95,.23,.91,shirt),ll=joint(-.21,1,.27,.86,pants),rl=joint(.21,1,.27,.86,pants);
 box(.33,.27,.48,0x382b25,0,-.84,.07,ll);box(.33,.27,.48,0x382b25,0,-.84,.07,rl);
 const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
 const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0};
@@ -138,7 +141,7 @@ const level=x=>1+Math.floor(Math.sqrt(x/50));function draw(){
   equipment.append(item);
  }
 }
-function say(s){const d=document.createElement('div');d.textContent=s;log.prepend(d)}function save(){localStorage.setItem('eldervale-save',JSON.stringify({...state,hp:combat.hp,combatXP:combat.xp,kills:combat.kills,x:player.position.x,z:player.position.z}));window.eldervaleSave?.()}
+function say(s){const d=document.createElement('div');d.textContent=s;log.prepend(d)}function save(){localStorage.setItem('eldervale-save',JSON.stringify({...state,appearance,hp:combat.hp,combatXP:combat.xp,kills:combat.kills,x:player.position.x,z:player.position.z}));window.eldervaleSave?.()}
 document.querySelector('#reset').onclick=()=>window.eldervaleReset?.();
 let dest=null,action=null,yaw=.75,pitch=.8,zoom=24,drag=false,down=null;const ray=new T.Raycaster(),pointer=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),0);
 renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
