@@ -66,8 +66,8 @@ export function startMusic(){
  function schedule(){
   if(!playing||!ctx)return;
   while(nextTime<ctx.currentTime+.4){
-   const quarter=60/songs[track].bpm;
    if(region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;updateAmbience();label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name}
+   const quarter=60/songs[track].bpm;
    const currentSong=songs[track],i=step%32,bar=Math.floor(i/4),transpose=regionOffsets[region]||0,root=currentSong.roots[bar]+transpose;
    // Bass line and two supporting voices give the march a full brass-ensemble texture.
    if(region!=='Wilderness')brass(root-12,nextTime,quarter*.90,'tuba',.085);
