@@ -60,23 +60,26 @@ export function buildHumanoid(T,root,look={}){
  leftLeg.position.set(-.165,.985,0);rightLeg.position.set(.165,.985,0);
  root.add(leftArm,rightArm,leftLeg,rightLeg);
  const limb=(top,bottom,len,key)=>geo(key,()=>new T.CylinderGeometry(top,bottom,len,12,1));
- for(const [arm,side] of [[leftArm,-1],[rightArm,1]]){
-  // Shoulders transition into tapered upper arms and narrower forearms.
-  mesh(sphere,cloth,arm,0,-.09,0,.18,.17,.20);
-  const upper=mesh(limb(.155,.115,.37,'humanUpperArm'),cloth,arm,side*.012,-.275,0);upper.rotation.z=side*.055;
-  mesh(sphere,faceMat,arm,side*.022,-.46,0,.116,.125,.12);
-  const fore=mesh(limb(.115,.084,.31,'humanForearm'),faceMat,arm,side*.025,-.59,0);fore.rotation.z=side*.035;
-  // Human-sized hands remain at the exact attachment level used by weapons.
-  mesh(sphere,faceMat,arm,side*.03,-.78,.018,.092,.12,.095);
+ const leftElbow=new T.Group(),rightElbow=new T.Group(),leftKnee=new T.Group(),rightKnee=new T.Group();
+ for(const [arm,side,elbow] of [[leftArm,-1,leftElbow],[rightArm,1,rightElbow]]){
+  mesh(sphere,cloth,arm,0,-.09,0,.17,.16,.18);
+  const upper=mesh(limb(.145,.115,.38,'humanUpperArm'),cloth,arm,side*.01,-.27,0);
+  upper.rotation.z=side*.05;
+  elbow.position.set(side*.018,-.46,0);arm.add(elbow);
+  mesh(sphere,faceMat,elbow,0,0,0,.11,.12,.115);
+  mesh(limb(.11,.08,.31,'humanForearm'),faceMat,elbow,side*.006,-.14,0);
+  mesh(sphere,faceMat,elbow,side*.012,-.33,.015,.085,.11,.085);
  }
- for(const [leg,side] of [[leftLeg,-1],[rightLeg,1]]){
-  const thigh=mesh(limb(.17,.135,.47,'humanThigh'),trousers,leg,side*.015,-.245,0);thigh.rotation.z=side*.025;
-  mesh(sphere,trousers,leg,side*.025,-.49,.01,.14,.125,.15);
-  const calf=mesh(limb(.137,.095,.37,'humanCalf'),trousers,leg,side*.02,-.67,-.005);calf.rotation.z=-side*.018;
-  mesh(geo('humanBootCuff',()=>new T.CylinderGeometry(.13,.13,.09,12)),beltMat,leg,side*.025,-.84,.005);
-  const shoe=mesh(sphere,boots,leg,side*.025,-.91,.13,.165,.115,.29);
+ for(const [leg,side,knee] of [[leftLeg,-1,leftKnee],[rightLeg,1,rightKnee]]){
+  mesh(limb(.17,.13,.48,'humanThigh'),trousers,leg,side*.012,-.245,0);
+  knee.position.set(side*.016,-.49,0);leg.add(knee);
+  mesh(sphere,trousers,knee,0,0,0,.135,.12,.14);
+  mesh(limb(.13,.095,.37,'humanCalf'),trousers,knee,side*.005,-.17,-.005);
+  mesh(geo('humanBootCuff',()=>new T.CylinderGeometry(.13,.13,.09,12)),beltMat,knee,side*.01,-.35,.005);
+  const shoe=mesh(sphere,boots,knee,side*.01,-.42,.13,.16,.11,.27);
   shoe.rotation.x=-.07;
-  mesh(box(.28,.055,.34),boots,leg,side*.025,-.975,.16);
+  mesh(box(.27,.05,.33),boots,knee,side*.01,-.485,.16);
  }
- return {root,body:root,leftArm,rightArm,leftLeg,rightLeg,torso,neck,face};
+ // Shared anatomical joints can be animated independently by the player and NPC rigs.
+ return {root,body:root,leftArm,rightArm,leftLeg,rightLeg,leftElbow,rightElbow,leftKnee,rightKnee,torso,neck,face};
 }
