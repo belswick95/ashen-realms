@@ -1,4 +1,4 @@
-import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261102-townlife1';
+import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261102-walk2';
 // Eldervale's shared low-poly human rig. The same geometry powers players,
 // NPCs, remote adventurers and the live character-creation preview.
 // Rig pivots are preserved for existing movement, equipment and combat animations.
@@ -7,7 +7,7 @@ export function buildHumanoid(T,root,look={}){
  const skin=parse(look.skin,0xc9916b),shirt=parse(look.shirt,0x426e68),pants=parse(look.pants,0x353b3e),hairColor=parse(look.hairColor,0x392820);
  const caches=buildHumanoid.caches||(buildHumanoid.caches=new WeakMap());
  let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
- function mat(color,rough=.85){const k='mat'+color+':'+rough;if(!cache.has(k))cache.set(k,new T.MeshStandardMaterial({color,roughness:rough,flatShading:true}));return cache.get(k)}
+ function mat(color,rough=.85){const k='mat'+color+':'+rough;if(!cache.has(k))cache.set(k,new T.MeshStandardMaterial({color,roughness:rough,flatShading:false}));return cache.get(k)}
  function geo(key,make){if(!cache.has(key))cache.set(key,make());return cache.get(key)}
  const faceMat=mat(skin),cloth=fabricMaterial(T,shirt,cache),trousers=fabricMaterial(T,pants,cache),hairMat=mat(hairColor),boots=mat(0x272523),beltMat=mat(0x57362a);
  function mesh(g,m,parent,x,y,z,sx=1,sy=1,sz=1){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;if(parent===root&&y>1.07&&y<1.98)o.userData.tunic=true;parent.add(o);return o}
@@ -18,7 +18,7 @@ export function buildHumanoid(T,root,look={}){
   new T.Vector2(.255,0),new T.Vector2(.30,.09),new T.Vector2(.325,.25),
   new T.Vector2(.355,.48),new T.Vector2(.395,.66),new T.Vector2(.36,.81),
   new T.Vector2(.285,.88)
- ],8));
+ ],12));
  const torso=mesh(torsoShape,cloth,root,0,1.08,0,1,1,.77);
  // Collar and belt avoid the separated "floating toy" silhouette.
  mesh(geo('humanCollar',()=>new T.CylinderGeometry(.14,.16,.045,12)),cloth,root,0,1.965,0,1,1,.80);
@@ -49,7 +49,7 @@ export function buildHumanoid(T,root,look={}){
    [.315,.249,.228,-.007],[.365,.244,.229,-.007],[.40,.247,.238,-.010],
    [.47,.245,.237,-.013],[.53,.224,.218,-.016],[.59,.170,.180,-.020],[.64,.080,.090,-.025]
   ];
-  const positions=[],indices=[],sides=10;
+  const positions=[],indices=[],sides=14;
   for(const [y,rx,rz,off] of rings)for(let j=0;j<sides;j++){
    const a=j/sides*Math.PI*2;
    const front=Math.sin(a),x=Math.cos(a)*rx*(faceStyle==='Broad'?1.10:faceStyle==='Angular'&&y<.22?.88:1);

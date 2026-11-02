@@ -1,10 +1,10 @@
-import {loftGeometry} from './anatomy.js?v=release-20261102-townlife1';
-import {surfaceTexture} from './surface-textures.js?v=release-20261102-townlife1';
+import {loftGeometry} from './anatomy.js?v=release-20261102-walk2';
+import {surfaceTexture} from './surface-textures.js?v=release-20261102-walk2';
 // Original, closed low-poly plate harness: angular steel, articulated lames and
 // tapered limbs. Every piece follows the existing wrist/knee rig and loadout.
 export function buildPlateArmor(T,body,rig){
  const caches=buildPlateArmor.caches||(buildPlateArmor.caches=new WeakMap());let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
- const material=(name,color,metalness=.55,roughness=.64)=>{if(!cache.has(name)){const map=surfaceTexture(T,'metal',0xffffff);cache.set(name,new T.MeshStandardMaterial({color,metalness,roughness,flatShading:true,map,bumpMap:map,bumpScale:.002}))}cache.get(name).userData.eldervaleShared=true;return cache.get(name)};
+ const material=(name,color,metalness=.55,roughness=.64)=>{if(!cache.has(name)){const map=surfaceTexture(T,'metal',0xffffff);cache.set(name,new T.MeshStandardMaterial({color,metalness,roughness,flatShading:false,map,bumpMap:map,bumpScale:.002}))}cache.get(name).userData.eldervaleShared=true;return cache.get(name)};
  const steel=material('steel',0x607e87),edge=material('edges',0x91a7aa),dark=material('recesses',0x293b41),leather=material('leather',0x4b3529,0,.95),plume=material('crest',0x6d3450,0,.96);
  const slots={helm:[],chest:[],legs:[],boots:[]};
  function add(g,m,parent,slot,x=0,y=0,z=0){const key=g.type+':'+JSON.stringify(g.parameters||Array.from(g.attributes.position.array));if(cache.has(key)){g.dispose();g=cache.get(key)}else cache.set(key,g);g.userData.eldervaleShared=true;const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;parent.add(o);slots[slot].push(o);return o}
