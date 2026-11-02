@@ -78,8 +78,8 @@ function rock(x,z){
  const smaller=new T.Mesh(new T.DodecahedronGeometry(.36,0),material(0x6f7770,'stone'));smaller.position.set(.68,.24,.18);smaller.castShadow=true;root.add(smaller);
  m.userData={kind:'rock',x,z};targets.push(m)
 }
-function house(x,z,c){
- const group=new T.Group();group.position.set(x,0,z);scene.add(group);
+function house(x,z,c,scale=1.65,rotation=0){
+ const group=new T.Group();group.position.set(x,0,z);group.scale.setScalar(scale);group.rotation.y=rotation;scene.add(group);
  box(4,3,3.7,c,0,1.5,0,group,'stone');
  for(const side of [-1,1]){
   box(.18,3.15,.2,0x715139,side*1.94,1.55,1.83,group,'wood');
@@ -112,7 +112,49 @@ function house(x,z,c){
  for(let i=0;i<4;i++)box(.36,.21,.29,0x858479,-1.55+i*.95,.12,1.96,group,'stone');
 }
 for(let i=0;i<520;i++){const a=i*2.399,r=14+Math.sqrt(i)*17,x=Math.sin(a)*r,z=Math.cos(a)*r;if(i%4===0)rock(x,z);else tree(x,z)}
-house(-7,-5,0xb8a480);house(7,-6,0x9d967f);house(8,7,0xc1aa82);house(-60,42,0xb7a08c);house(-54,48,0xaaa38a);house(73,-58,0xc3b29b);house(78,-51,0x99866c);house(-105,-91,0x9a9b87);house(102,103,0xb8a48d);house(-210,145,0xbda78a);house(-205,151,0xa8a089);house(260,-185,0xbda78a);house(265,-180,0xaaa08a);house(225,215,0xbaa78e);house(-275,-215,0xbda88d);
+// Oakcross: a walkable settlement, with a clear central square and houses around its edges.
+const villageBuildings=[
+ [-16,-13,0xb8a480,1.65,.18],[-5,-18,0x9d967f,1.7,0],[9,-17,0xc1aa82,1.65,-.1],
+ [20,-8,0xb4a48d,1.65,-.3],[21,9,0xa7a18c,1.75,-.2],
+ [13,22,0xb8a78b,1.65,Math.PI],[-1,24,0xb9a58b,1.75,Math.PI],
+ [-17,17,0xaaa38a,1.65,2.9],[-23,2,0xbca98d,1.7,Math.PI/2],
+ [-30,-19,0xa6a18c,1.7,.35],[32,21,0xbca88a,1.65,-.35]
+];
+for(const [x,z,c,scale,rot] of villageBuildings)house(x,z,c,scale,rot);
+house(-60,42,0xb7a08c);house(-54,48,0xaaa38a);house(73,-58,0xc3b29b);house(78,-51,0x99866c);house(-105,-91,0x9a9b87);house(102,103,0xb8a48d);house(-210,145,0xbda78a);house(-205,151,0xa8a089);house(260,-185,0xbda78a);house(265,-180,0xaaa08a);house(225,215,0xbaa78e);house(-275,-215,0xbda88d);
+// Shared scenery primitives: low-poly timber, market awnings, wells and village clutter.
+function villageCrate(x,z,rotation=0){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=rotation;scene.add(g);
+ box(.9,.75,.85,0x8c653f,0,.39,0,g,'wood');
+ for(const side of [-1,1]){box(.09,.8,.92,0x63452e,side*.42,.4,0,g,'wood');box(.95,.09,.91,0x64462d,0,side*.33+.4,0,g,'wood')}
+}
+function villageBarrel(x,z){const g=new T.Group();g.position.set(x,0,z);scene.add(g);
+ const b=new T.Mesh(new T.CylinderGeometry(.38,.34,.9,9),material(0x765235,'wood'));b.position.y=.48;b.castShadow=true;g.add(b);
+ for(const y of [.17,.75]){const band=new T.Mesh(new T.CylinderGeometry(.392,.392,.065,9),material(0x626361,'stone'));band.position.y=y;g.add(band)}
+}
+function marketStall(x,z,cloth=0x8e563f){const g=new T.Group();g.position.set(x,0,z);scene.add(g);
+ for(const dx of [-1.45,1.45])for(const dz of [-.85,.85])box(.15,2.5,.15,0x62462c,dx,1.25,dz,g,'wood');
+ box(3.25,.18,2.05,cloth,0,2.55,0,g,'wood');box(3,.13,1.25,0x805d3b,0,1.12,0,g,'wood');
+ for(let i=0;i<5;i++){const basket=new T.Mesh(new T.DodecahedronGeometry(.2,0),material(i%2?0xb38b4b:0x72934e,'stone'));basket.position.set(-1.05+i*.51,1.37,0);g.add(basket)}
+}
+function villageWell(x,z){const g=new T.Group();g.position.set(x,0,z);scene.add(g);
+ const rim=new T.Mesh(new T.CylinderGeometry(1.05,1.15,.95,10,1,true),material(0x8c8a78,'stone'));rim.position.y=.5;g.add(rim);
+ const water=new T.Mesh(new T.CircleGeometry(.86,12),new T.MeshLambertMaterial({color:0x527b87}));water.rotation.x=-Math.PI/2;water.position.y=.67;g.add(water);
+ for(const dx of [-.9,.9])box(.13,2.2,.13,0x705038,dx,1.55,0,g,'wood');
+ box(2.3,.13,1.6,0x62452e,0,2.55,0,g,'roof');
+}
+function villageFence(x,z,length=5,rotation=0){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=rotation;scene.add(g);
+ for(let i=0;i<=length;i++)box(.16,1.2,.18,0x735239,i-length/2,.6,0,g,'wood');
+ for(const y of [.4,.92])box(length+.2,.13,.15,0x8b6746,0,y,0,g,'wood');
+}
+function signpost(x,z){const g=new T.Group();g.position.set(x,0,z);scene.add(g);
+ box(.16,2.5,.17,0x64462d,0,1.25,0,g,'wood');box(2.1,.48,.15,0x9c7848,.35,2.05,0,g,'wood');
+ box(.5,.12,.2,0xc3a469,1.55,2.05,0,g,'wood')
+}
+villageWell(2,-1);marketStall(-10,6,0x9e5b43);marketStall(10,5,0x4f7d64);
+for(const [x,z] of [[-13,9],[-9,9],[8,9],[13,9],[-20,-5],[22,16],[-8,-11],[15,-12]])villageCrate(x,z,x*.2);
+for(const [x,z] of [[-12,11],[-11,11],[12,10],[13,10],[-22,-8],[25,13]])villageBarrel(x,z);
+villageFence(-25,-10,8,.05);villageFence(26,-12,7,-.25);villageFence(-23,24,8,.1);
+signpost(4,-12);
 // Forest glades and distant ruins make the expanded wilderness feel distinct.
 for(let i=0;i<16;i++){const a=i*Math.PI*2/16;box(1.6,1.1+(i%4)*.4,1.5,0x6d716b,132+Math.cos(a)*9,.7,26+Math.sin(a)*9)}
 // Additional regions: winding roads, villages, groves and landmarks.
