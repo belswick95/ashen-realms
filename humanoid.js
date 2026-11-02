@@ -1,40 +1,44 @@
-// Shared, deliberately separated low-poly humanoid geometry for players and NPCs.
+// Lightweight faceted RPG adventurers: shared geometries and materials, tapered anatomy.
 export function buildHumanoid(T,root,look={}){
  const color=(v,d)=>/^#[0-9a-f]{6}$/i.test(v||'')?parseInt(v.slice(1),16):typeof v==='number'?v:d;
- const skin=color(look.skin,0xc9916b),shirt=color(look.shirt,0x426e68),pants=color(look.pants,0x45494d),hair=color(look.hairColor,0x3a2920);
- const mat=c=>new T.MeshStandardMaterial({color:c,roughness:.9,metalness:0,flatShading:true});
- function mesh(geometry,c,parent,x,y,z){const m=new T.Mesh(geometry,mat(c));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
- const cube=(w,h,d,c,p,x,y,z)=>mesh(new T.BoxGeometry(w,h,d),c,p,x,y,z);
- const round=(r,c,p,x,y,z)=>mesh(new T.IcosahedronGeometry(r,1),c,p,x,y,z);
- const torso=cube(.75,.87,.39,shirt,root,0,1.47,0);
- cube(.69,.14,.42,0x574333,root,0,.99,0);
- const neck=cube(.18,.17,.18,skin,root,0,2.00,0);
- const face=mesh(new T.IcosahedronGeometry(.31,1),skin,root,0,2.29,.025);face.scale.set(.91,1.12,.85);
- // Front is positive Z; face features sit beyond the head surface.
- for(const side of [-1,1]){round(.034,0x211e1c,root,side*.12,2.32,.286);cube(.08,.026,.025,0x493229,root,side*.12,2.41,.28)}
- cube(.085,.065,.09,skin,root,0,2.235,.303);
- cube(.14,.024,.015,0x754b40,root,0,2.145,.289);
- for(const side of [-1,1])round(.07,skin,root,side*.293,2.27,0);
- const hairstyle=look.hair||'Side swept';
- const cap=mesh(new T.IcosahedronGeometry(.319,1),hair,root,0,2.505,-.012);
- cap.scale.set(.98,hairstyle==='Buzz cut'?.24:.44,.9);
- if(hairstyle==='Side swept'){const f=cube(.36,.10,.18,hair,root,-.11,2.53,.22);f.rotation.z=-.18}
- if(hairstyle==='Short crop')cube(.46,.11,.21,hair,root,0,2.52,.16);
- if(hairstyle==='Spiky')for(let i=-2;i<=2;i++){const spike=mesh(new T.ConeGeometry(.10,.27,5),hair,root,i*.105,2.76,-.01);spike.rotation.z=i*.10}
- if(hairstyle==='Long')for(const side of [-1,1])cube(.13,.45,.24,hair,root,side*.27,2.30,-.07);
+ const palette={skin:color(look.skin,0xc9916b),shirt:color(look.shirt,0x426e68),pants:color(look.pants,0x45494d),hair:color(look.hairColor,0x3a2920)};
+ const cache=buildHumanoid.cache||(buildHumanoid.cache=new Map());
+ const material=(c)=>{if(!cache.has('m'+c))cache.set('m'+c,new T.MeshStandardMaterial({color:c,roughness:.84,flatShading:true}));return cache.get('m'+c)};
+ const geometry=(key,fn)=>{if(!cache.has(key))cache.set(key,fn());return cache.get(key)};
+ function mesh(geo,c,parent,x,y,z,sx=1,sy=1,sz=1){const m=new T.Mesh(geo,material(c));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
+ const sphere=geometry('sphere10',()=>new T.SphereGeometry(1,10,7));
+ const torsoGeo=geometry('torso',()=>new T.CylinderGeometry(.43,.32,.9,8,1));
+ const limbGeo=geometry('limb',()=>new T.CylinderGeometry(1,.78,1,8,1));
+ const headGeo=geometry('head',()=>new T.IcosahedronGeometry(1,2));
+ const shoeGeo=geometry('shoe',()=>new T.SphereGeometry(1,8,6));
+ const torso=mesh(torsoGeo,palette.shirt,root,0,1.49,0,1,1,.62);
+ mesh(geometry('waist',()=>new T.CylinderGeometry(.32,.31,.15,8)),0x574333,root,0,1.01,0,1,1,.65);
+ const neck=mesh(geometry('neck',()=>new T.CylinderGeometry(.11,.12,.17,8)),palette.skin,root,0,2.00,0);
+ const face=mesh(headGeo,palette.skin,root,0,2.29,.025,.30,.36,.28);
+ for(const side of [-1,1]){
+  mesh(sphere,0x241e1c,root,side*.115,2.32,.286,.024,.018,.012);
+  mesh(geometry('brow',()=>new T.BoxGeometry(.09,.025,.025)),0x493229,root,side*.115,2.415,.275);
+  mesh(sphere,palette.skin,root,side*.287,2.265,0,.06,.08,.07)
+ }
+ mesh(geometry('nose',()=>new T.ConeGeometry(.065,.15,5)),palette.skin,root,0,2.225,.305,.65,.75,.65).rotation.x=Math.PI/2;
+ mesh(geometry('mouth',()=>new T.BoxGeometry(.13,.017,.012)),0x754b40,root,0,2.13,.289);
+ const hair=look.hair||'Side swept';
+ mesh(sphere,palette.hair,root,0,2.52,-.012,.31,hair==='Buzz cut'?.075:.15,.28);
+ if(hair==='Side swept'){const f=mesh(geometry('fringe',()=>new T.BoxGeometry(.34,.085,.15)),palette.hair,root,-.08,2.53,.205);f.rotation.z=-.22}
+ if(hair==='Short crop')mesh(geometry('crop',()=>new T.BoxGeometry(.40,.085,.18)),palette.hair,root,0,2.53,.16);
+ if(hair==='Spiky')for(let i=-2;i<=2;i++)mesh(geometry('spike',()=>new T.ConeGeometry(.09,.23,5)),palette.hair,root,i*.1,2.7,-.015).rotation.z=i*.13;
+ if(hair==='Long')for(const side of [-1,1])mesh(limbGeo,palette.hair,root,side*.25,2.31,-.085,.095,.38,.13);
  const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
- leftArm.position.set(-.51,1.86,0);rightArm.position.set(.51,1.86,0);
- leftLeg.position.set(-.205,.99,0);rightLeg.position.set(.205,.99,0);
- root.add(leftArm,rightArm,leftLeg,rightLeg);
+ leftArm.position.set(-.45,1.86,0);rightArm.position.set(.45,1.86,0);
+ leftLeg.position.set(-.17,.99,0);rightLeg.position.set(.17,.99,0);root.add(leftArm,rightArm,leftLeg,rightLeg);
  for(const arm of [leftArm,rightArm]){
-  cube(.26,.31,.33,shirt,arm,0,-.16,0);
-  cube(.19,.42,.23,skin,arm,0,-.52,0);
-  round(.13,skin,arm,0,-.77,.015);
+  mesh(limbGeo,palette.shirt,arm,0,-.19,0,.205,.37,.22);
+  mesh(limbGeo,palette.skin,arm,0,-.50,0,.135,.40,.15);
+  mesh(sphere,palette.skin,arm,0,-.75,.01,.12,.13,.12);
  }
  for(const leg of [leftLeg,rightLeg]){
-  cube(.30,.79,.32,pants,leg,0,-.40,0);
-  cube(.33,.18,.48,0x302b28,leg,0,-.84,.085);
+  mesh(limbGeo,palette.pants,leg,0,-.38,0,.185,.78,.20);
+  mesh(shoeGeo,0x302b28,leg,0,-.83,.10,.19,.13,.31);
  }
- // Bounding spheres are separate, invisible interaction targets.
  return {root,body:root,leftArm,rightArm,leftLeg,rightLeg,torso,neck,face};
 }
