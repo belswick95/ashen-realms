@@ -71,6 +71,8 @@ export function startMusic(){
   }catch(err){label.textContent='Audio unavailable';console.warn('Eldervale music:',err)}
  }
  button.addEventListener('click',toggle);
+ // Start music on the first user interaction permitted by the browser.
+ document.addEventListener('pointerdown',()=>{if(!playing)toggle()},{once:true});
  slider.addEventListener('input',()=>{localStorage.setItem('eldervale-music-volume',slider.value);if(ctx&&master)master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.04)});
  const saved=Number(localStorage.getItem('eldervale-music-volume'));slider.value=Number.isFinite(saved)&&saved>=0&&saved<=100?String(saved):'45';
  window.addEventListener('pagehide',()=>{playing=false;clearInterval(timer);ctx?.close()},{once:true});
