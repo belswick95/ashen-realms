@@ -1,0 +1,35 @@
+// One distance-driven locomotion controller for every human in Eldervale.
+// This module has no renderer or account dependencies and can be regression tested.
+export function createHumanoidAnimator(rig){
+ let phase=0,blend=0,time=0;
+ return {update(dt,{distance=0,speed=0,attack=0,hit=0}={}){
+  if(!Number.isFinite(dt)||dt<=0)return;
+  dt=Math.min(dt,.1);time+=dt;
+  distance=Number.isFinite(distance)?Math.max(0,distance):0;
+  speed=Number.isFinite(speed)?Math.max(0,speed):0;
+  const moving=distance>1e-6;
+  blend+=(moving?1-blend:-blend)*(1-Math.exp(-12*dt));
+  const run=Math.max(0,Math.min(1,(speed-2)/3));
+  // A full cycle spans two steps; cadence scales with distance and stride length.
+  phase+=distance*Math.PI*2/(1.7+run*1.4);
+  const gait=Math.sin(phase),opposite=-gait;
+  const stride=(.40+run*.24)*blend;
+  rig.leftLeg.rotation.x=gait*stride;rig.rightLeg.rotation.x=opposite*stride;
+  rig.leftKnee.rotation.x=Math.max(0,-gait)*(.62+run*.48)*blend;
+  rig.rightKnee.rotation.x=Math.max(0,gait)*(.62+run*.48)*blend;
+  rig.leftArm.rotation.x=-gait*stride*.65+Math.sin(time*1.7)*.018*(1-blend);
+  rig.rightArm.rotation.x=gait*stride*.65-Math.sin(time*1.7)*.018*(1-blend);
+  rig.leftElbow.rotation.x=-.12-run*.35*blend-Math.max(0,gait)*.2*blend;
+  rig.rightElbow.rotation.x=-.12-run*.35*blend-Math.max(0,-gait)*.2*blend;
+  // Reset combat channels every frame so interrupted attacks cannot leave a pose stuck.
+  rig.rightArm.rotation.z=0;
+  if(attack>0){
+   const t=Math.max(0,Math.min(1,1-attack/.55));
+   rig.rightArm.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;
+   rig.rightArm.rotation.z=-.32;rig.rightElbow.rotation.x=-.55;
+  }
+  // Never translate the whole rig: grounded feet and gameplay root stay stable.
+  if(rig.torso)rig.torso.scale.y=1+Math.sin(time*1.7)*.004*(1-blend);
+  return {blend,run,attack:attack>0,hit:hit>0};
+ }};
+}

@@ -64,6 +64,10 @@ export function buildPlateArmor(T,body,rig){
   plate(knee,'boots',[[-.17,-.33],[.17,-.33],[.14,-.46],[0,-.51],[-.14,-.46]],.18,.10,steel);
   strip(knee,'boots',.28,.025,.22,[0,-.40,.25],edge);
  }
+ // Apply the identical skull proportion correction to every helmet component.
+ const helmetRoot=new T.Group();body.add(helmetRoot);
+ for(const part of slots.helm){body.remove(part);part.position.y-=2.10;helmetRoot.add(part)}
+ helmetRoot.position.y=2.10;helmetRoot.scale.set(.74,.72,.78);
  // Default hidden until equipped.
  Object.values(slots).flat().forEach(m=>m.visible=false);
  return slots;

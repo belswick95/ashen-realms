@@ -1,5 +1,8 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {buildHumanoid} from './humanoid.js';
+import {createHumanoidAnimator} from './animation.js';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry} from './geography.js';
+import {buildForest} from './forest.js';
 import {buildPlateArmor} from './armor.js';
 import {createCape} from './cape.js';
 import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js';
@@ -47,8 +50,12 @@ function texturedPatch(radius,x,z,tint=0x789362){
  const patch=new T.Mesh(geom,mat);patch.rotation.x=-Math.PI/2;patch.position.set(x,.013,z);scene.add(patch)
 }
 function disk(r,c,x,z){const m=new T.Mesh(new T.CircleGeometry(r,28),material(c));m.rotation.x=-Math.PI/2;m.position.set(x,.018,z);scene.add(m)}
-function trail(ax,az,bx,bz,width=2.7){const len=Math.hypot(bx-ax,bz-az);const pathMap=dirtTexture.clone();pathMap.repeat.set(Math.max(1,width/3),Math.max(1,len/3));pathMap.needsUpdate=true;const m=new T.Mesh(new T.PlaneGeometry(width,len),new T.MeshLambertMaterial({map:pathMap}));m.rotation.x=-Math.PI/2;m.rotation.z=-Math.atan2(bx-ax,bz-az);m.position.set((ax+bx)/2,.025,(az+bz)/2);scene.add(m)}
-trail(0,0,-60,45);trail(0,0,75,-55);trail(0,0,105,103);trail(-60,45,-105,-91);texturedPatch(13,0,0,0x8a9870);
+for(const [a,b] of worldRoads){
+ const points=roadPoints(a,b);
+ const verge=new T.Mesh(ribbonGeometry(T,points,3.8),material(0x79785a,'dirt'));verge.position.y=.020;verge.receiveShadow=true;scene.add(verge);
+ const path=new T.Mesh(ribbonGeometry(T,points,2.7),pathMaterial);path.position.y=.027;path.receiveShadow=true;scene.add(path);
+}
+texturedPatch(13,0,0,0x8a9870);
 for(let i=0;i<480;i++){const a=i*2.399963,r=8+Math.sqrt(i)*9.1,x=Math.sin(a)*r,z=Math.cos(a)*r;if(Math.abs(x)<410&&Math.abs(z)<410){const g=box(.11,.14,.11,i%3?0x79955b:0x9baa70,x,.08,z);g.rotation.y=a}}
 // Draw-call-efficient tufts add near-ground depth without thousands of meshes.
 const tuftGeometry=new T.ConeGeometry(.095,.32,3);
@@ -63,15 +70,14 @@ for(let i=0;i<tuftCount;i++){
 }
 tufts.instanceMatrix.needsUpdate=true;tufts.frustumCulled=false;scene.add(tufts);
 for(let i=0;i<38;i++){const a=i*2.4,r=17+i*3.8,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<405&&Math.abs(z)<405){const stone=sphere(.3+i%3*.12,0x8d8e7c,x,.16,z);stone.scale.y=.5}}
+const forestTrees=[];
+const treeHitGeometry=new T.ConeGeometry(2.35,6.5,8);
+const treeHitMaterial=new T.MeshBasicMaterial({visible:false});
 function tree(x,z){
- const seed=Math.abs(Math.sin(x*12.9898+z*78.233));
- const trunk=box(.53,3.7,.53,0x65472f,x,1.85,z,scene,'wood');trunk.rotation.y=seed*2;
- for(let i=0;i<3;i++){const branch=box(.12,1.1,.12,0x65472f,x+(i-1)*.42,3.25+i*.38,z+(i%2?.3:-.3),scene,'wood');branch.rotation.z=(i-1)*.65}
- const crownColors=[0x356f47,0x3f8051,0x4c8952,0x2e6846];
- const hit=cone(2.35,3.6,crownColors[Math.floor(seed*4)],x,4.0,z);hit.userData={kind:'tree',x,z};targets.push(hit);
- cone(1.9,2.9,crownColors[(Math.floor(seed*4)+1)%4],x,5.25,z);
- cone(1.25,2.4,crownColors[(Math.floor(seed*4)+2)%4],x,6.35,z);
- for(let i=0;i<4;i++){const a=i*2.4+seed*4;const leaf=cone(.65,1.2,crownColors[i],x+Math.cos(a)*1.15,4.2+i*.24,z+Math.sin(a)*1.15);leaf.rotation.z=Math.cos(a)*.28}
+ forestTrees.push({x,z});
+ // Retain individual harvest targets and world coordinates independently of rendering.
+ const hit=new T.Mesh(treeHitGeometry,treeHitMaterial);hit.position.set(x,4,z);scene.add(hit);
+ hit.userData={kind:'tree',x,z};targets.push(hit);
 }
 function rock(x,z){
  const root=new T.Group();root.position.set(x,0,z);scene.add(root);
@@ -145,10 +151,13 @@ const places=[['Oakcross',0,0],['Northwatch',-60,45],['Eastmarch',75,-55],['Old 
 // Lakeside settlements and landmarks. Water is a visible, discoverable world feature.
 const worldLakes=[{x:-91,z:80,rx:18,rz:12,name:'Moonmere Lake'},{x:157,z:77,rx:24,rz:16,name:'Silverfin Lake'},{x:244,z:175,rx:16,rz:12,name:'Greenwatch Pond'}];
 for(const lake of worldLakes){
- const water=new T.Mesh(new T.CircleGeometry(1,64),new T.MeshStandardMaterial({color:0x397f91,metalness:.18,roughness:.27,transparent:true,opacity:.9,side:T.DoubleSide}));
- water.rotation.x=-Math.PI/2;water.scale.set(lake.rx,lake.rz,1);water.position.set(lake.x,.065,lake.z);scene.add(water);
- const shore=new T.Mesh(new T.RingGeometry(.98,1.09,64),new T.MeshStandardMaterial({color:0xb6a47a,roughness:1,side:T.DoubleSide}));
- shore.rotation.x=-Math.PI/2;shore.scale.set(lake.rx,lake.rz,1);shore.position.set(lake.x,.045,lake.z);scene.add(shore);
+ const outlineGeometry=factor=>{const shape=new T.Shape();lakeOutline(lake,factor).forEach(([x,z],i)=>i?shape.lineTo(x,-z):shape.moveTo(x,-z));shape.closePath();return new T.ShapeGeometry(shape)};
+ const shore=new T.Mesh(outlineGeometry(1.08),new T.MeshStandardMaterial({color:0xb6a47a,roughness:1,side:T.DoubleSide}));
+ shore.rotation.x=-Math.PI/2;shore.position.y=.045;shore.receiveShadow=true;scene.add(shore);
+ for(const [factor,color,y] of [[1,0x477b81,.060],[.84,0x367184,.063],[.58,0x2d6278,.066]]){
+  const water=new T.Mesh(outlineGeometry(factor),new T.MeshStandardMaterial({color,metalness:.18,roughness:.27,side:T.DoubleSide}));
+  water.rotation.x=-Math.PI/2;water.position.y=y;scene.add(water);
+ }
  for(let i=0;i<12;i++){const a=i*Math.PI/6;const x=lake.x+Math.cos(a)*lake.rx*1.13,z=lake.z+Math.sin(a)*lake.rz*1.13;if(i%3===0)rock(x,z);else if(i%3===1)tree(x,z)}
  // Wooden fishing dock reaches from the eastern bank toward the lake.
  const dx=lake.x+lake.rx*.88;
@@ -156,6 +165,7 @@ for(const lake of worldLakes){
  for(const x of [dx-2,dx+2])for(const z of [lake.z-1,lake.z+1])box(.2,.75,.2,0x5a402d,x,.35,z,scene,'wood');
  mapProps.push({x:dx,z:lake.z,color:'#e5c37c'});
 }
+buildForest(T,scene,forestTrees,{wood:material(0x665039,'wood'),leaf:material(0xffffff,'leaf')});
 const extraSettlements=[
  {name:'Moonmere',x:-114,z:82,color:0xb4a18a},
  {name:'Silverfin',x:187,z:74,color:0xc3ae92},
@@ -393,7 +403,7 @@ birds(0,0);
 // Forest glades and distant ruins make the expanded wilderness feel distinct.
 for(let i=0;i<16;i++){const a=i*Math.PI*2/16;box(1.6,1.1+(i%4)*.4,1.5,0x6d716b,132+Math.cos(a)*9,.7,26+Math.sin(a)*9)}
 // Additional regions: winding roads, villages, groves and landmarks.
-trail(-60,45,-210,145,3.4);trail(75,-55,260,-185,3.4);trail(105,103,225,215,3.4);trail(-105,-91,-275,-215,3.4);
+
 for(const [x,z,r,c] of [[-190,155,18,0x537d55],[245,-170,25,0x6b8052],[210,230,19,0x78926b],[-260,-220,22,0x708660]])disk(r,c,x,z);
 for(let i=0;i<60;i++){const a=i*2.4,r=12+i*.8;const x=250+Math.sin(a)*r,z=-180+Math.cos(a)*r;const stone=sphere(.6+i%4*.16,0x797f76,x,.32,z);stone.scale.y=.55}
 for(let i=0;i<16;i++){const a=i*Math.PI/8;box(1.8,1.2+i%3,1.8,0x74776e,-285+Math.cos(a)*13,.8,-220+Math.sin(a)*13)}
@@ -405,17 +415,24 @@ const mh=new T.Mesh(new T.SphereGeometry(.43,8,6),new T.MeshBasicMaterial({visib
 box(2.5,.25,1,0x805832,-3,1,9,scene,'wood');
 const player=new T.Group();scene.add(player);const body=new T.Group();player.add(body);
 const avatar=buildHumanoid(T,body,{skin:appearance.skin,shirt:appearance.shirt,pants:appearance.pants,hairColor:appearance.hairColor,hair:appearance.hair});
-const {leftArm:la,rightArm:ra,leftLeg:ll,rightLeg:rl,leftElbow:le,rightElbow:re,leftKnee:lk,rightKnee:rk}=avatar;
+const playerAnimator=createHumanoidAnimator(avatar);
+const merchantAnimator=createHumanoidAnimator(trader);
 // Other online adventurers and short-lived overhead chat bubbles.
 const remotePlayers=new Map(),chatBubbles=new Map();
+// Compact chat on narrow screens leaves the playfield and inventory accessible.
+const mobileLayout=matchMedia('(max-width:700px)');
+function compactMobileChat(){if(!mobileLayout.matches)return;document.querySelector('#social-panel')?.classList.add('collapsed');const toggle=document.querySelector('#social-toggle');if(toggle)toggle.textContent='Show Chat'}
+mobileLayout.addEventListener('change',compactMobileChat);compactMobileChat();
 const bubbleLayer=document.createElement('div');bubbleLayer.id='overhead-chat-layer';bubbleLayer.style.cssText='position:fixed;inset:0;z-index:45;pointer-events:none;overflow:hidden';document.body.append(bubbleLayer);
 window.eldervaleGetPlayerPosition=()=>({x:Math.round(player.position.x*10)/10,z:Math.round(player.position.z*10)/10,yaw:player.rotation.y});
 window.eldervaleUpdatePlayers=entries=>{
  const seen=new Set();
  for(const entry of entries){if(!entry.id||!Number.isFinite(entry.x)||!Number.isFinite(entry.z))continue;seen.add(entry.id);
  let other=remotePlayers.get(entry.id);
- if(!other){const root=new T.Group();scene.add(root);buildHumanoid(T,root,{});const tag=document.createElement('div');tag.style.cssText='position:fixed;padding:3px 7px;background:#14221cdd;color:#f4e2ba;border:1px solid #9b8659;border-radius:5px;font:12px Arial;white-space:nowrap;pointer-events:none';tag.textContent=String(entry.username||'Adventurer').slice(0,24);bubbleLayer.append(tag);other={root,tag};remotePlayers.set(entry.id,other)}
- other.root.position.set(entry.x,0,entry.z);other.root.rotation.y=entry.yaw||0;
+ if(!other){const root=new T.Group();scene.add(root);const rig=buildHumanoid(T,root,{});const tag=document.createElement('div');tag.style.cssText='position:fixed;padding:3px 7px;background:#14221cdd;color:#f4e2ba;border:1px solid #9b8659;border-radius:5px;font:12px Arial;white-space:nowrap;pointer-events:none';tag.textContent=String(entry.username||'Adventurer').slice(0,24);bubbleLayer.append(tag);other={root,tag,animator:createHumanoidAnimator(rig),target:new T.Vector3(entry.x,0,entry.z),yaw:0};root.position.copy(other.target);remotePlayers.set(entry.id,other)}
+ other.target.set(entry.x,0,entry.z);other.yaw=Number.isFinite(entry.yaw)?entry.yaw:0;
+ // Treat long jumps as teleports rather than animating across the whole map.
+ if(other.root.position.distanceToSquared(other.target)>400)other.root.position.copy(other.target);
  }
  for(const [id,other] of remotePlayers)if(!seen.has(id)){scene.remove(other.root);other.tag.remove();remotePlayers.delete(id);const bubble=chatBubbles.get(id);bubble?.node.remove();chatBubbles.delete(id)}
 };
@@ -453,7 +470,7 @@ if(state.starterChestClaimed&&!saved.starterShieldsGranted){
 }
 const pieces=buildPlateArmor(T,body,avatar);
 const cape=createCape(T,body,{color:0x81394b});
-function refreshArmor(){avatar.torso.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
+function refreshArmor(){for(const hair of avatar.hairMeshes)hair.visible=!state.equipped.helm;avatar.torso.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
 refreshArmor();
 const weaponMeshes=new Map();
 for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,0,.025);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
@@ -556,27 +573,17 @@ for(const lake of worldLakes){
   // Irregular shorelines and depth shading, seeded by world coordinates.
   const cx=toX(lake.x),cy=toY(lake.z),rx=lake.rx*pxPerUnit,ry=lake.rz*pzPerUnit;
   if(cx+rx<0||cy+ry<0||cx-rx>w||cy-ry>h)continue;
-  function shore(factor){ctx.beginPath();for(let i=0;i<=64;i++){
-   const a=i/64*Math.PI*2;
-   const wobble=1+.085*Math.sin(a*5+lake.x*.17)+.055*Math.sin(a*9+lake.z*.13)+.025*Math.sin(a*17);
-   const px=cx+Math.cos(a)*rx*wobble*factor,py=cy+Math.sin(a)*ry*wobble*factor;
-   i?ctx.lineTo(px,py):ctx.moveTo(px,py);
-  }ctx.closePath()}
+  function shore(factor){ctx.beginPath();lakeOutline(lake,factor).forEach(([x,z],i)=>i?ctx.lineTo(toX(x),toY(z)):ctx.moveTo(toX(x),toY(z)));ctx.closePath()}
   shore(1.08);ctx.fillStyle='#a5a278';ctx.fill();
   shore(1);ctx.fillStyle='#477b81';ctx.fill();
   shore(.84);ctx.fillStyle='#367184';ctx.fill();
   shore(.58);ctx.fillStyle='#2d6278';ctx.fill();
   ctx.strokeStyle='rgba(172,207,190,.5)';ctx.lineWidth=scale?1:1.5;shore(.96);ctx.stroke();
  }
- const roads=[[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
- // Layered, gently curved roads with earthen verges, not straight diagram lines.
- for(const [a,b] of roads){
-  const x1=toX(a[0]),y1=toY(a[1]),x2=toX(b[0]),y2=toY(b[1]);
-  const dx=x2-x1,dy=y2-y1,length=Math.hypot(dx,dy)||1;
-  const bend=Math.min(length*.12,scale?9:13);
-  const side=terrainSeed(a[0],b[1])>.5?1:-1;
-  const mx=(x1+x2)/2-dy/length*bend*side,my=(y1+y2)/2+dx/length*bend*side;
-  const trace=()=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(mx,my,x2,y2)};
+ // The exact same road centerlines are used in the 3D world.
+ for(const [a,b] of worldRoads){
+  const points=roadPoints(a,b);
+  const trace=()=>{ctx.beginPath();points.forEach(([x,z],i)=>i?ctx.lineTo(toX(x),toY(z)):ctx.moveTo(toX(x),toY(z)))};
   ctx.lineCap='round';ctx.lineJoin='round';
   trace();ctx.strokeStyle='#536044';ctx.lineWidth=scale?6:9;ctx.stroke();
   trace();ctx.strokeStyle='#8c7852';ctx.lineWidth=scale?4:6;ctx.stroke();
@@ -623,7 +630,7 @@ for(const lake of worldLakes){
    ctx.fillStyle='#244c2e';ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.fill();
    ctx.fillStyle='#528044';ctx.beginPath();ctx.arc(x-radius*.25,y-radius*.28,radius*.65,0,Math.PI*2);ctx.fill();
   }else{
-   ctx.fillStyle='rgba(31,33,23,.38)';ctx.beginPath();ctx.ellipse(x+1,y+1.5,radius*.9,radius*.65,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='rgba(31,33,23,.38)';ctx.beginPath();ctx.ellipse(x+1,y+1.5,radius*.9,radius*.65,0,0,Math.PI*2);ctx.fill();
    ctx.fillStyle=prop.color||'#8c8a72';ctx.beginPath();ctx.moveTo(x-radius,y+radius*.4);ctx.lineTo(x-radius*.5,y-radius*.7);ctx.lineTo(x+radius*.45,y-radius);ctx.lineTo(x+radius,y+radius*.4);ctx.closePath();ctx.fill();
    ctx.strokeStyle='rgba(235,220,170,.3)';ctx.lineWidth=.8;ctx.stroke();
   }
@@ -717,7 +724,7 @@ function spawnNPC(profile,index){
  if(index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.50,-.26,root,'cloth');cape.rotation.x=-.12}
  const hit=new T.Mesh(new T.CylinderGeometry(.68,.68,2.7,14),new T.MeshBasicMaterial({visible:false}));
  hit.position.set(0,1.38,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
- const npc={profile,root,leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,leftElbow:model.leftElbow,rightElbow:model.rightElbow,leftKnee:model.leftKnee,rightKnee:model.rightKnee,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null,patrolIndex:0};npcs.push(npc)
+ const npc={profile,root,animator:createHumanoidAnimator(model),leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,leftElbow:model.leftElbow,rightElbow:model.rightElbow,leftKnee:model.leftKnee,rightKnee:model.rightKnee,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null,patrolIndex:0};npcs.push(npc)
 }
 npcProfiles.forEach(spawnNPC);
 // Wildlife and enemies use lightweight low-poly models and simple local AI.
@@ -866,13 +873,13 @@ if(e.button===2){
 }
 if(hits.length){action=hits[0].object.userData;const goal=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):new T.Vector3(action.x,0,action.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){action=null;setWalkDestination(point);closeDialog();if(dest)markClick(dest.x,dest.z,'walk')}});
 renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.deltaY*.015,9,42)},{passive:true});
-const clock=new T.Clock();let phase=0,blend=0,saveTick=0;
-function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);fpsSamples++;fpsSeconds+=dt;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}let moving=false;
+const clock=new T.Clock();let lastAutosave=performance.now();
+function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);fpsSamples++;fpsSeconds+=dt;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
 if(action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<2.6){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
-if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){moving=true;delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(5*dt,distance));
+if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(5*dt,distance));
  const collision=walkAllowed(player.position,proposed);
  if(!collision.blocked)player.position.copy(proposed);
- else{moving=false;dest=null;walkQueue=[];action=null;if(collision.house&&!collision.house.open)say('Door closed — click the door to open it.');else say('A building blocks the way. Walk around it.')}
+ else{dest=null;walkQueue=[];action=null;if(collision.house&&!collision.house.open)say('Door closed — click the door to open it.');else say('A building blocks the way. Walk around it.')}
  player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(walkQueue.length){dest=walkQueue.shift();}else if(action){const a=action;action=null;if(a.kind==='door'){toggleHouseDoor(a.house)}else if(a.kind==='creature'){if(a.mob.alive){strike(a.mob);if(a.mob.alive){action=a;dest=a.mob.root.position.clone()}}}else if(a.kind==='npc'){talkTo(a.profile)}else if(a.kind==='chest'){openArmoryChest()}else if(a.kind==='merchant'){const earned=state.wood*3+state.ore*5;state.gold+=earned;state.wood=0;state.ore=0;say(earned?'Sold resources for '+earned+' gold!':'Merchant: Bring me logs or ore.')}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;state.woodXP+=25;say('You chop logs. +25 XP')}else{state.ore++;state.miningXP+=25;say('You mine ore. +25 XP')}save();draw()}}}
 combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);healthBar.style.width=(combat.hp/combat.maxHp*100)+'%';
 for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance>=1.45&&distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>(mob.hostile&&distance<10?1.9:.4)){delta.normalize();const step=Math.min(dt*(mob.hostile&&distance<10?1.7:.8),Math.max(0,distance-1.85));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(mob.hostile&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,1.95)}}
@@ -908,21 +915,21 @@ for(const npc of npcs){
  const actualDistance=npc.root.position.distanceTo(previous);
  if(actualDistance<.0001&&toward.lengthSq()>.1){npc.stuck+=dt;if(npc.stuck>1.5){npc.goal.copy(npc.home);npc.path=[];npc.pathGoal=null;npc.wait=1;npc.stuck=0}}
  else npc.stuck=0;
- // Foot cadence follows actual distance traveled, not wall-clock time.
- const speed=actualDistance/Math.max(dt,.001);
- const intensity=T.MathUtils.clamp(speed/.65,0,1);
- npc.walkBlend=T.MathUtils.lerp(npc.walkBlend,intensity,1-Math.exp(-9*dt));
- npc.walkPhase+=actualDistance*8.5;
- const gait=Math.sin(npc.walkPhase)*.48*npc.walkBlend;
- npc.leftLeg.rotation.x=gait;npc.rightLeg.rotation.x=-gait;
- npc.leftArm.rotation.x=-gait*.65+Math.sin(performance.now()*.001+npc.phase)*.025;
- npc.rightArm.rotation.x=gait*.65;
- npc.leftKnee.rotation.x=Math.max(0,-gait)*.9;
- npc.rightKnee.rotation.x=Math.max(0,gait)*.9;
- npc.leftElbow.rotation.x=-.10-Math.max(0,gait)*.25;
- npc.rightElbow.rotation.x=-.10-Math.max(0,-gait)*.25;
+ npc.animator.update(dt,{distance:actualDistance,speed:actualDistance/Math.max(dt,.001)});
  if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position);
 }
-blend=T.MathUtils.lerp(blend,moving?1:0,1-Math.exp(-12*dt));if(moving)phase+=dt*10;const swing=Math.sin(phase)*.53*blend;ll.rotation.x=swing;rl.rotation.x=-swing;la.rotation.x=-swing*.7;ra.rotation.x=swing*.7;if(combat.attackAnim>0){const t=1-combat.attackAnim/.55;ra.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;ra.rotation.z=-.32;body.rotation.y=Math.sin(t*Math.PI)*-.15}else{ra.rotation.z=T.MathUtils.lerp(ra.rotation.z,0,dt*12);body.rotation.y=T.MathUtils.lerp(body.rotation.y,0,dt*10)}if(combat.hitAnim>0){body.rotation.z=Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12}else body.rotation.z=T.MathUtils.lerp(body.rotation.z,0,dt*12);body.position.y=Math.abs(Math.sin(phase))*.045*blend+Math.sin(performance.now()*.0017)*.006*(1-blend);lk.rotation.x=Math.max(0,-swing)*.9;rk.rotation.x=Math.max(0,swing)*.9;le.rotation.x=-.12-Math.max(0,swing)*.22;re.rotation.x=combat.attackAnim>0?-.55:-.12-Math.max(0,-swing)*.22;cape.update(dt,blend);
-const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);saveTick+=dt;if(saveTick>4){saveTick=0;save()}for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
+const traveled=player.position.distanceTo(frameStart);
+const pose=playerAnimator.update(dt,{distance:traveled,speed:traveled/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim});
+body.rotation.y=combat.attackAnim>0?Math.sin((1-combat.attackAnim/.55)*Math.PI)*-.15:T.MathUtils.lerp(body.rotation.y,0,1-Math.exp(-10*dt));
+body.rotation.z=combat.hitAnim>0?Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12:T.MathUtils.lerp(body.rotation.z,0,1-Math.exp(-12*dt));
+body.position.y=0;cape.update(dt,pose?.blend||0);merchantAnimator.update(dt);
+for(const other of remotePlayers.values()){
+ const before=other.root.position.clone();
+ other.root.position.lerp(other.target,1-Math.exp(-12*dt));
+ const delta=Math.atan2(Math.sin(other.yaw-other.root.rotation.y),Math.cos(other.yaw-other.root.rotation.y));
+ other.root.rotation.y+=delta*(1-Math.exp(-12*dt));
+ const distance=before.distanceTo(other.root.position);
+ other.animator.update(dt,{distance,speed:distance/Math.max(dt,.001)});
+}
+const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();
