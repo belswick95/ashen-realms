@@ -3,6 +3,9 @@ export function startMusic(){
  const button=document.querySelector('#music-toggle'),slider=document.querySelector('#music-volume'),label=document.querySelector('#music-track');
  if(!button||!slider)return;button.textContent='Music Off';
  let ctx,master,timer,playing=false,step=0,track=0,nextTime=0;
+ let region='Oakcross',desiredRegion='Oakcross';
+ const townThemes={'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1};
+ window.eldervaleSetAudioRegion=(name)=>{desiredRegion=Object.hasOwn(townThemes,name)?name:'Wilderness'};
  // Four-bar phrases in concert pitch; quarter-note melody with rests and sustained cadences.
  const songs=[
  {name:'Banner of Oakcross',bpm:106,key:0,roots:[48,53,55,48,57,53,55,48],
@@ -47,18 +50,19 @@ export function startMusic(){
   if(!playing||!ctx)return;
   const song=songs[track],quarter=60/song.bpm;
   while(nextTime<ctx.currentTime+.4){
+   if(step%32===0&&region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;label.textContent=region==='Wilderness'?'Wilderness · ambient score':region+' · '+songs[track].name}
    const i=step%32,bar=Math.floor(i/4),root=song.roots[bar];
    // Bass line and two supporting voices give the march a full brass-ensemble texture.
    brass(root-12,nextTime,quarter*.90,'tuba',.085);
    if(i%2===0){brass(root,nextTime,quarter*1.78,'horn',.043);brass(root+7,nextTime,quarter*1.7,'horn',.028)}
-   if(i%4===0){brass(root+12,nextTime,quarter*2.6,'horn',.032);percussion(nextTime,true)}
+   if(i%4===0){brass(root+12,nextTime,quarter*2.6,'horn',.032);if(region!=='Wilderness')percussion(nextTime,true)}
    else if(i%2===0)percussion(nextTime,false);
    if(i%8===0)percussion(nextTime,false,'cymbal');
    const note=song.melody[i];
    if(note!=null)brass(note,nextTime,quarter*(i%8===6?1.7:.84),'trumpet',.084);
    if(song.counter[i]!=null)brass(song.counter[i],nextTime,quarter*1.8,'horn',.044);
    step++;nextTime+=quarter;
-   if(step%64===0){track=(track+1)%songs.length;label.textContent=songs[track].name}
+   if(step%64===0&&region==='Wilderness'){track=(track+1)%songs.length;label.textContent='Wilderness · '+songs[track].name}
   }
  }
  async function toggle(){
