@@ -18,7 +18,7 @@ jobs:
       - name: Check out Eldervale
         uses: actions/checkout@v4
         with:
-          ref: feature/materials-character-animation
+          ref: main
 
       - name: Verify deployment configuration
         env:

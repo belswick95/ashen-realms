@@ -1,0 +1,102 @@
+.compact-close,.compact-panel-title{display:none}
+body.compact-layout{overscroll-behavior:none}
+body.compact-layout #side{left:auto;right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));width:min(320px,calc(100vw - 16px));max-width:none;height:58px;padding:6px;z-index:65}
+body.compact-layout #side>.tabs{margin:0;gap:5px}
+body.compact-layout #side>.tabs button{min-height:44px!important}
+body.compact-layout:not(.compact-panel-open) #side>:not(.tabs){display:none!important}
+body.compact-layout.compact-panel-open #side{width:min(320px,42vw);height:min(300px,calc(100dvh - 24px));padding-top:50px}
+body.compact-layout.compact-panel-open .compact-close{display:block;position:absolute;right:6px;top:3px;min-width:44px;min-height:44px;margin:0}
+body.compact-layout #inventory{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:52px;align-content:start}
+body.compact-layout .slot{height:52px}
+body.compact-layout #social-panel{bottom:78px!important;max-height:min(300px,45dvh)}
+body.compact-layout #social-panel.collapsed{left:8px!important;transform:none;width:145px!important}
+body.compact-layout #account-bar{bottom:127px;top:auto;left:8px;transform:none;font:10px Arial}
+body.compact-layout #music-controls{bottom:177px!important;left:8px!important;max-width:150px}
+body.compact-layout #music-controls>div{display:none}
+body.compact-layout #log{bottom:217px;max-height:55px;width:145px;font-size:10px;pointer-events:none;opacity:.8}
+body.compact-layout #map-widget{width:132px;top:max(8px,env(safe-area-inset-top))!important;right:max(8px,env(safe-area-inset-right))!important;left:auto!important;bottom:auto!important}
+body.compact-layout #minimap{width:116px;height:100px}
+body.compact-layout #character-panel{top:max(8px,env(safe-area-inset-top));width:175px;min-width:0;font-size:11px;padding:8px}
+body.compact-layout #character-panel h1{font-size:17px}
+body.compact-layout #character-panel>p,body.compact-layout #reset{display:none}
+body.compact-layout #health-hud{top:149px;width:175px}
+body.compact-layout.compact-panel-open #social-panel:not(.collapsed){visibility:hidden}
+body.compact-layout #worldmap{max-height:65dvh;object-fit:contain}
+body.compact-layout #dialog:not([hidden]){bottom:78px;max-height:55dvh}
+body.compact-layout #contextmenu button{min-height:44px}
+body.compact-layout input,body.compact-layout select{font-size:16px!important}
+@media(max-height:550px){body.compact-layout #character-panel{width:155px}body.compact-layout #stats{max-height:54px;overflow:auto}body.compact-layout #health-hud{top:105px;width:155px}body.compact-layout #log,body.compact-layout #music-controls{display:none}body.compact-layout #account-bar{bottom:128px}body.compact-layout.compact-panel-open #social-panel{visibility:hidden}}
+
+#rotate-phone{display:none}body.landscape-required #rotate-phone{display:grid;position:fixed;inset:0;z-index:30000;place-items:center;background:#15241e;color:#ead8ac;text-align:center;padding:30px;font:16px/1.6 Georgia,serif;touch-action:none}#rotate-phone strong{font-size:28px}#rotate-phone small{color:#bcbda9}body.landscape-required #game-ui,body.landscape-required #social-panel,body.landscape-required #account-bar{visibility:hidden}
+
+@media(max-height:550px){#character-creator{padding:8px;place-items:start center}.creator-card{grid-template-columns:minmax(180px,40%) 1fr;max-height:calc(100dvh - 16px)}.creator-preview{padding:8px}.creator-heading{font-size:17px}.creator-controls{padding:14px;max-height:calc(100dvh - 16px);overflow-y:auto}.creator-preview #avatar-preview{height:clamp(160px,55dvh,240px)!important}.creator-preview p{display:none}}
+
+body.compact-layout #map-widget .map-head{font-size:9px;letter-spacing:.3px;gap:3px}body.compact-layout #map-widget .map-head>span{min-width:0}body.compact-layout #map-widget .map-head button{font-size:10px;padding:5px;min-height:36px;flex-shrink:0}body.compact-layout #map-widget small{display:none}
+
+body.compact-layout #map-widget .map-head>span{display:none}body.compact-layout #map-widget .map-head button{width:100%}body.compact-layout #worldmap{width:min(100%,65dvh);height:auto;max-height:none;object-fit:fill;margin:8px auto}
+
+@media(pointer:coarse),(max-width:900px){[aria-label="Character preview controls"] button{min-width:44px;min-height:44px}}
+
+/* Short landscape screens must keep sign-in and account creation reachable. */
+@media(max-height:550px){#auth-screen{overflow-y:auto;place-items:start center;padding:12px}.auth-card{width:min(560px,calc(100vw - 24px));padding:16px}.auth-card h2{font-size:26px}.auth-card p{margin:8px 0}.auth-card #auth-status{min-height:20px}}
+
+body.compact-layout.compact-panel-open .compact-panel-title{display:block;position:absolute;left:12px;top:18px;color:#ead7a4;font:700 14px Georgia}
+body.compact-layout.compact-panel-open #map-widget{visibility:hidden}
+body.compact-layout #side,body.compact-layout #side button{touch-action:pan-y}
+body.compact-layout #side>.tabs{gap:3px}
+body.compact-layout #side>.tabs button{min-width:0}
+body.compact-layout #inventory{margin-top:6px;gap:4px;grid-auto-rows:48px}
+body.compact-layout .slot{height:48px;min-height:44px}
+
+/* Consolidated HUD: map branding, one player frame, one shared chat timeline. */
+#character-panel,#log{display:none!important}
+#map-widget .minimap-brand{display:block;color:#e4c57f;font:700 19px Georgia;letter-spacing:2px;margin:0 0 5px}
+#health-hud,body.compact-layout #health-hud{position:fixed;top:auto;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);width:340px;padding:7px;display:flex;align-items:center;gap:8px;z-index:30;background:linear-gradient(140deg,#26352def,#101c17f5);border:2px solid #9d8554;border-radius:40px 8px 8px 40px}
+#player-portrait{width:72px;height:72px;flex:0 0 72px;border:2px solid #b79d60;border-radius:50%;background:#16241e}
+.player-vitals{flex:1;min-width:0}.player-vitals>strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 14px Georgia;color:#ecd49b;margin-bottom:5px}
+#health-hud .health-track{height:18px;position:relative;border:1px solid #172b17;background:#35201e;overflow:hidden;border-radius:3px}
+#health-hud #health-fill{height:100%;background:linear-gradient(#77b956,#2b7c36)}
+#hud-health{position:absolute;inset:0;text-align:center;font:11px/16px Arial;color:white;text-shadow:0 1px 2px #000}
+.xp-track{height:7px;background:#37311c;border:1px solid #1d2016;border-radius:2px;margin:4px 0}.xp-track>div{height:100%;background:linear-gradient(#e4cb60,#ae8b2f)}
+#hud-info{font:10px Arial;color:#d4ceb6}
+#special-attack{width:44px;min-height:44px;flex:0 0 44px;font:10px Arial;padding:3px;margin:0;border-radius:6px}#special-attack:disabled{opacity:.4;cursor:default;filter:grayscale(1)}
+#settings-tab #music-controls{position:static!important;display:block!important;max-width:none;width:100%;padding:8px;margin:8px 0;box-shadow:none}#settings-tab #music-controls>div{display:block!important}#settings-tab #music-volume{max-width:100%;width:100%}
+#social-panel,body.compact-layout #social-panel{position:fixed!important;left:max(8px,env(safe-area-inset-left))!important;bottom:max(8px,env(safe-area-inset-bottom))!important;top:auto!important;transform:none!important;width:min(340px,28vw)!important;max-height:min(240px,35dvh);font:12px Arial}
+#social-panel .social-head{padding:5px 7px}#social-panel .social-head strong{font:700 12px Georgia}
+#social-panel.collapsed,body.compact-layout #social-panel.collapsed{width:min(340px,28vw)!important}
+#social-panel.collapsed #social-chat{display:block!important}#social-panel.collapsed #world-chat-form{display:none!important}
+#world-chat-lines{height:110px!important;max-height:18dvh;overflow-y:auto;overflow-wrap:anywhere}
+#social-panel.collapsed #world-chat-lines{height:48px!important;max-height:48px;padding:3px 6px}
+#social-panel .world-line{font:11px/1.4 Arial;margin:2px 0}.game-line{color:#bfc8b1}.game-line strong{color:#d1b978}
+#social-toggle{margin:0;min-height:32px;padding:4px 7px;font:11px Arial}
+#account-bar,body.compact-layout #account-bar{top:8px;bottom:auto;left:8px;transform:none;font:11px Arial}
+body.compact-layout #health-hud{width:min(180px,22vw);padding:5px;gap:4px;border-radius:6px;left:calc(50% - 4px)}
+body.compact-layout #player-portrait{display:none}body.compact-layout .player-vitals>strong{font-size:11px;margin-bottom:3px}body.compact-layout #special-attack{width:34px;flex-basis:34px;font-size:9px}
+body.compact-layout #health-hud .health-track{height:13px}body.compact-layout #hud-health{font-size:9px;line-height:11px}body.compact-layout #hud-info{font-size:9px}body.compact-layout .xp-track{height:5px;margin:3px 0}
+body.compact-layout #social-panel,body.compact-layout #social-panel.collapsed{width:min(220px,26vw)!important;max-height:52dvh}
+body.compact-layout #social-panel .social-head strong{font-size:10px}body.compact-layout #social-panel .world-line{font-size:10px}body.compact-layout #social-panel.collapsed #world-chat-lines{height:32px!important}
+body.compact-layout #map-widget .minimap-brand{font-size:13px;letter-spacing:1px}
+body.compact-layout.compact-panel-open #social-panel{visibility:visible}
+#social-panel.collapsed,body.compact-layout #social-panel.collapsed{max-height:none;overflow:visible}
+#social-panel.collapsed .social-content{display:block;padding:0}
+#social-panel.collapsed .social-tabs,#social-panel.collapsed #social-friends,#social-panel.collapsed #social-note,#social-panel.collapsed #social-chat>small{display:none!important}
+body.compact-layout.compact-panel-open #social-panel:not(.collapsed){visibility:visible}
+
+/* Conversations keep the speaker, text and controls together on small screens. */
+#dialog{width:min(670px,calc(100vw - 32px));border-radius:10px;max-height:70dvh;overflow:auto}
+.dialog-body{display:grid;grid-template-columns:128px minmax(0,1fr);gap:18px;align-items:center;margin-top:14px}
+#dialog-portrait{width:128px;height:128px;aspect-ratio:1;border:2px solid #b99c62;border-radius:8px;background:#263c32;box-shadow:inset 0 0 15px #0005}
+#dialog-text{margin:0;overflow-wrap:anywhere}
+#dialog-next{min-height:44px}
+body.npc-conversation #side,body.npc-conversation #health-hud{visibility:hidden}
+body.npc-conversation #social-panel{visibility:hidden!important}
+body.compact-layout #dialog:not([hidden]){bottom:max(8px,env(safe-area-inset-bottom));max-height:calc(100dvh - 20px);width:min(600px,calc(100vw - 24px))}
+body.compact-layout .dialog-body{grid-template-columns:88px minmax(0,1fr);gap:12px;margin-top:8px}
+body.compact-layout #dialog-portrait{width:88px;height:88px}
+body.compact-layout #dialog-text{font-size:14px;line-height:1.4}
+body.compact-layout #dialog .dialog-top{padding-bottom:6px}
+body.compact-layout #dialog-next{margin-top:7px}
+
+#multiplayer-status{display:inline-block;margin-left:10px;color:#c1dda7;font:11px Arial;white-space:nowrap}
+#multiplayer-status[data-state=connecting],#multiplayer-status[data-state=reconnecting]{color:#efd28f}
+#multiplayer-status[data-state=offline]{color:#edab9a}

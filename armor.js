@@ -1,0 +1,79 @@
+// Eldervale plate armor: fitted, beveled low-poly meshes, not oversized cubes.
+// All coordinates are local to the shared 2.7-unit humanoid rig.
+export function buildPlateArmor(T,body,rig){
+ const steel=new T.MeshStandardMaterial({color:0xb8c3ca,metalness:.72,roughness:.32,flatShading:false});
+ const shade=new T.MeshStandardMaterial({color:0x59646c,metalness:.66,roughness:.4,flatShading:true});
+ const edge=new T.MeshStandardMaterial({color:0xe1e5df,metalness:.76,roughness:.28,flatShading:true});
+ const leather=new T.MeshStandardMaterial({color:0x593b32,roughness:.87});
+ const gold=new T.MeshStandardMaterial({color:0xbca06a,metalness:.68,roughness:.35});
+ const plume=new T.MeshStandardMaterial({color:0x743d3b,roughness:.9,flatShading:true,side:T.DoubleSide});
+ const slots={helm:[],chest:[],legs:[],boots:[]};
+ function add(geo,mat,parent,pos,slot){const m=new T.Mesh(geo,mat);m.position.set(...pos);m.castShadow=true;m.receiveShadow=true;parent.add(m);slots[slot].push(m);return m}
+ function plate(parent,slot,points,z,depth=.09,mat=steel,bevel=.025){
+  const s=new T.Shape();points.forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y));s.closePath();
+  const geo=new T.ExtrudeGeometry(s,{depth,bevelEnabled:bevel>0,bevelThickness:bevel,bevelSize:bevel,bevelSegments:1,steps:1,curveSegments:1});
+  geo.computeVertexNormals();return add(geo,mat,parent,[0,0,z],slot);
+ }
+ function cylinder(parent,slot,r1,r2,h,pos,mat=steel,segments=16){return add(new T.CylinderGeometry(r1,r2,h,segments,1),mat,parent,pos,slot)}
+ function strip(parent,slot,w,h,d,pos,mat=edge){return add(new T.BoxGeometry(w,h,d),mat,parent,pos,slot)}
+ // Helmet: shaped shell, dark recessed visor, cheek plates, brow and red horsehair crest.
+ const helmet=add(new T.SphereGeometry(.347,24,16,0,Math.PI*2,0,Math.PI*.74),steel,body,[0,2.38,0],'helm');
+ helmet.scale.set(1.07,1.1,1.06);
+ plate(body,'helm',[[-.33,2.45],[.33,2.45],[.30,2.18],[.20,2.11],[.14,2.22],[-.14,2.22],[-.20,2.11],[-.30,2.18]],.24,.055,steel);
+ plate(body,'helm',[[-.20,2.35],[.20,2.35],[.16,2.25],[-.16,2.25]],.322,.009,shade,.006);
+ plate(body,'helm',[[-.055,2.37],[.055,2.37],[.095,2.14],[0,2.06],[-.095,2.14]],.349,.035,edge,.012);
+ const brow=cylinder(body,'helm',.347,.347,.055,[0,2.47,0],edge,24);brow.scale.z=1.08;
+ for(const side of [-1,1]){
+  plate(body,'helm',[[side*.23,2.38],[side*.34,2.34],[side*.31,2.11],[side*.23,2.07]],.18,.09,steel);
+  cylinder(body,'helm',.04,.04,.04,[side*.31,2.32,.25],gold,8)
+ }
+ const crest=cylinder(body,'helm',.055,.055,.32,[0,2.73,-.035],shade);
+ for(let i=0;i<7;i++){const a=i/6;plate(body,'helm',[[-.035,2.72-a*.08],[-.065,2.96-a*.08],[.065,2.96-a*.08],[.035,2.72-a*.08]],.03-i*.038,.012,plume,.005)}
+ // Chest: a closed cuirass covers both front and back, preventing the underlying torso from showing through.
+ const backShell=cylinder(body,'chest',.445,.355,.86,[0,1.49,0],steel,24);backShell.scale.z=.79;
+ // Chest: tapered cuirass with layered breastplate, collar, waist faulds and gold accents.
+ plate(body,'chest',[[-.41,1.91],[.41,1.91],[.43,1.66],[.30,1.17],[.20,1.10],[-.20,1.10],[-.30,1.17],[-.43,1.66]],.23,.10,steel);
+ plate(body,'chest',[[-.38,1.87],[0,1.92],[.38,1.87],[.31,1.55],[0,1.39],[-.31,1.55]],.34,.055,edge);
+ plate(body,'chest',[[-.29,1.50],[0,1.35],[.29,1.50],[.24,1.25],[0,1.15],[-.24,1.25]],.32,.055,steel);
+ plate(body,'chest',[[-.13,1.99],[.13,1.99],[.20,1.86],[-.20,1.86]],.29,.08,shade);
+ for(const side of [-1,1]){
+  const arm=side<0?rig.leftArm:rig.rightArm;
+  // Pauldrons attach to shoulders so they animate with the arms.
+  const shoulder=add(new T.SphereGeometry(.24,20,12,0,Math.PI*2,0,Math.PI*.66),steel,arm,[0,-.16,0],'chest');shoulder.scale.set(1.12,.84,1.06);shoulder.rotation.z=side*.16;
+  const rim=cylinder(arm,'chest',.235,.22,.045,[0,-.30,0],edge,18);
+  // Upper-arm plates rotate with the shoulder, while forearm guards follow the elbow.
+  cylinder(arm,'chest',.165,.14,.26,[0,-.33,0],shade,16);
+  const elbow=side<0?rig.leftElbow:rig.rightElbow;
+  cylinder(elbow,'chest',.17,.15,.13,[0,-.025,0],edge,16);
+  cylinder(elbow,'chest',.157,.112,.29,[0,-.17,0],steel,20);
+  cylinder(elbow,'chest',.15,.12,.10,[0,-.31,0],steel,16);
+  cylinder(body,'chest',.025,.025,.43,[side*.36,1.53,.26],shade,12)
+ }
+ for(let i=0;i<3;i++)plate(body,'chest',[[-.33+i*.03,1.17-i*.095],[.33-i*.03,1.17-i*.095],[.29-i*.03,1.08-i*.095],[-.29+i*.03,1.08-i*.095]],.29-i*.025,.035,i===1?edge:steel,.008);
+ const belt=cylinder(body,'chest',.345,.33,.09,[0,1.10,0],leather,24);belt.scale.z=.85;
+ cylinder(body,'chest',.075,.075,.045,[0,1.10,.42],gold);
+ // Leg armor: fitted thigh plates and separate articulated knee / shin guards.
+ for(const [leg,knee] of [[rig.leftLeg,rig.leftKnee],[rig.rightLeg,rig.rightKnee]]){
+  cylinder(leg,'legs',.185,.15,.42,[0,-.25,0],steel,16);
+  plate(leg,'legs',[[-.16,-.09],[.16,-.09],[.15,-.43],[0,-.48],[-.15,-.43]],.16,.04,edge);
+  cylinder(knee,'legs',.18,.16,.15,[0,-.025,.035],steel,18);
+  plate(knee,'legs',[[-.15,.03],[.15,.03],[.13,-.14],[0,-.19],[-.13,-.14]],.17,.04,edge);
+  cylinder(knee,'legs',.15,.115,.32,[0,-.20,0],shade,16);
+  // Sabatons follow the lower leg rather than stretching during knee flexion.
+  const shoe=add(new T.SphereGeometry(.19,16,12),steel,knee,[0,-.42,.14],'boots');shoe.scale.set(1.08,.62,1.55);
+  plate(knee,'boots',[[-.17,-.33],[.17,-.33],[.14,-.46],[0,-.51],[-.14,-.46]],.18,.10,steel);
+  strip(knee,'boots',.28,.025,.22,[0,-.40,.25],edge);
+ }
+ // Follow the same adult skeleton proportions as the base character.
+ for(const slot of ['chest','legs','boots'])for(const part of slots[slot]){
+  if(part.parent===body)part.position.y+=rig.upperOffset;
+  else if([rig.leftLeg,rig.rightLeg,rig.leftKnee,rig.rightKnee].includes(part.parent)){part.position.y*=rig.legScale;part.scale.y*=rig.legScale}
+ }
+ // Apply the identical skull proportion correction to every helmet component.
+ const helmetRoot=new T.Group();body.add(helmetRoot);
+ for(const part of slots.helm){body.remove(part);part.position.y-=2.10;helmetRoot.add(part)}
+ helmetRoot.position.y=rig.head.position.y;helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.x*=.84;
+ // Default hidden until equipped.
+ Object.values(slots).flat().forEach(m=>m.visible=false);
+ return slots;
+}
