@@ -98,7 +98,7 @@ const player=new T.Group();scene.add(player);const body=new T.Group();player.add
 const avatar=buildHumanoid(T,body,{skin:appearance.skin,shirt:appearance.shirt,pants:appearance.pants,hairColor:appearance.hairColor,hair:appearance.hair});
 const {leftArm:la,rightArm:ra,leftLeg:ll,rightLeg:rl}=avatar;
 const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
-const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0};
+const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0,attackAnim:0,hitAnim:0};
 const armorCatalog={
   helm:{name:'Iron full helm',slot:'Head',desc:'A sturdy iron helmet.'},
   chest:{name:'Iron platebody',slot:'Body',desc:'A solid iron breastplate.'},
@@ -158,8 +158,8 @@ const creatures=[];function creature(name,x,z,hostile=false){const root=new T.Gr
 for(let i=0;i<24;i++){const a=i*2.399,r=22+i*11;creature(i%5===0?'Wolf':i%3===0?'Boar':'Deer',Math.sin(a)*r,Math.cos(a)*r,i%5===0)}
 const healthBar=document.querySelector('#health-fill'),combatNotice=document.querySelector('#combat-notice');
 function combatMessage(msg){combatNotice.textContent=msg;combatNotice.hidden=false;clearTimeout(combatMessage.timer);combatMessage.timer=setTimeout(()=>combatNotice.hidden=true,1800)}
-function strike(mob){if(!mob.alive||combat.attackTimer>0)return;combat.attackTimer=.85;const damage=6+Math.floor(Math.random()*7);mob.hp-=damage;combatMessage('You hit '+mob.name+' for '+damage+' damage');if(mob.hp<=0){mob.alive=false;mob.root.visible=false;mob.respawn=22;combat.kills++;combat.xp+=30;state.gold+=mob.hostile?8:2;combatMessage('Defeated '+mob.name+'! +30 combat XP');action=null;dest=null;save();draw()}}
-function playerHit(mob){const defense=Object.values(state.equipped).filter(Boolean).length;const damage=Math.max(1,6+Math.floor(Math.random()*5)-defense);combat.hp=Math.max(0,combat.hp-damage);combatMessage(mob.name+' hits you for '+damage);draw();if(combat.hp<=0){combat.hp=100;player.position.set(0,0,0);dest=null;action=null;state.gold=Math.max(0,state.gold-10);combatMessage('You fell in battle and returned to Oakcross.');save();draw()}}
+function strike(mob){if(!mob.alive||combat.attackTimer>0)return;combat.attackTimer=.85;combat.attackAnim=.55;const damage=6+Math.floor(Math.random()*7);mob.hp-=damage;combatMessage('You hit '+mob.name+' for '+damage+' damage');if(mob.hp<=0){mob.alive=false;mob.root.visible=false;mob.respawn=22;combat.kills++;combat.xp+=30;state.attackXP=(state.attackXP||0)+10;state.strengthXP=(state.strengthXP||0)+10;state.defenceXP=(state.defenceXP||0)+5;state.hitpointsXP=(state.hitpointsXP||0)+5;state.gold+=mob.hostile?8:2;combatMessage('Defeated '+mob.name+'! +30 combat XP');action=null;dest=null;save();draw()}}
+function playerHit(mob){const defense=Object.values(state.equipped).filter(Boolean).length;const damage=Math.max(1,6+Math.floor(Math.random()*5)-defense);combat.hp=Math.max(0,combat.hp-damage);combat.hitAnim=.35;combatMessage(mob.name+' hits you for '+damage);draw();if(combat.hp<=0){combat.hp=100;player.position.set(0,0,0);dest=null;action=null;state.gold=Math.max(0,state.gold-10);combatMessage('You fell in battle and returned to Oakcross.');save();draw()}}
 
 const dialog=document.querySelector('#dialog'),dialogName=document.querySelector('#dialog-name'),dialogText=document.querySelector('#dialog-text'),dialogNext=document.querySelector('#dialog-next');let conversation=null;
 function closeDialog(){conversation=null;dialog.hidden=true}
@@ -172,11 +172,29 @@ function toggleArmor(k){if(!state.armorOwned.includes(k))return;state.equipped[k
 function examine(k){say(armorCatalog[k].name+': '+armorCatalog[k].desc)}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{activeTab=b.dataset.tab;draw();closeMenu()});
 document.addEventListener('pointerdown',e=>{if(!menu.contains(e.target))closeMenu()});
-const level=x=>1+Math.floor(Math.sqrt(x/50));function draw(){
+const level=x=>1+Math.floor(Math.sqrt(x/50));
+const skillDefinitions=[['⚔','Attack','attackXP'],['💪','Strength','strengthXP'],['🛡','Defence','defenceXP'],['❤️','Hitpoints','hitpointsXP'],['🏹','Ranged','rangedXP'],['✨','Magic','magicXP'],['🙏','Prayer','prayerXP'],['🌳','Woodcutting','woodXP'],['⛏','Mining','miningXP'],['🔥','Firemaking','firemakingXP'],['🎣','Fishing','fishingXP'],['🍳','Cooking','cookingXP'],['🔨','Smithing','smithingXP'],['🛠','Crafting','craftingXP'],['🌿','Herblore','herbloreXP'],['🌱','Farming','farmingXP'],['🏃','Agility','agilityXP'],['🗝','Thieving','thievingXP']];
+const skillsPanel=document.querySelector('#skills');
+function drawSkills(){
+ skillsPanel.replaceChildren();
+ for(const [icon,name,key] of skillDefinitions){
+  const xp=Math.max(0,Number(state[key])||0),lv=level(xp),prev=50*(lv-1)*(lv-1),next=50*lv*lv;
+  const row=document.createElement('div');row.className='skill-row';
+  const glyph=document.createElement('span');glyph.className='skill-icon';glyph.textContent=icon;
+  const detail=document.createElement('div'),title=document.createElement('strong');title.textContent=name;
+  const meta=document.createElement('small');meta.textContent=' '+xp.toLocaleString()+' XP';
+  const progress=document.createElement('div');progress.className='skill-progress';
+  const fill=document.createElement('span');fill.style.width=(Math.min(100,Math.max(0,(xp-prev)/(next-prev)*100)))+'%';progress.append(fill);
+  detail.append(title,meta,progress);
+  const rank=document.createElement('span');rank.className='skill-level';rank.textContent=lv;
+  row.title=name+': '+xp+' XP · Next level at '+next+' XP';row.append(glyph,detail,rank);skillsPanel.append(row)
+ }
+}
+function draw(){
  stats.innerHTML='<p><strong>Health: '+Math.ceil(combat.hp)+' / '+combat.maxHp+'</strong><br>Combat: '+level(combat.xp)+' ('+combat.xp+' XP)<br>Defeated: '+combat.kills+'<br>Gold: '+state.gold+'<br>Woodcutting: '+level(state.woodXP)+' ('+state.woodXP+' XP)<br>Mining: '+level(state.miningXP)+' ('+state.miningXP+' XP)</p>';
  inventory.innerHTML='';equipment.innerHTML='';
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.tab===activeTab));
- inventory.hidden=activeTab!=='inventory';equipment.hidden=activeTab!=='equipment';
+ inventory.hidden=activeTab!=='inventory';equipment.hidden=activeTab!=='equipment';skillsPanel.hidden=activeTab!=='skills';if(activeTab==='skills')drawSkills();
  const slots=[];
  for(const k of armorKeys)if(state.armorOwned.includes(k)&&!state.equipped[k])slots.push({kind:'armor',key:k});
  for(let i=0;i<state.wood;i++)slots.push({kind:'log'});
@@ -217,10 +235,10 @@ renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.d
 const clock=new T.Clock();let phase=0,blend=0,saveTick=0;
 function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);let moving=false;
 if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){moving=true;delta.normalize();player.position.addScaledVector(delta,Math.min(5*dt,distance));player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(action){const a=action;action=null;if(a.kind==='creature'){if(a.mob.alive){strike(a.mob);if(a.mob.alive){action=a;dest=a.mob.root.position.clone()}}}else if(a.kind==='npc'){talkTo(a.profile)}else if(a.kind==='merchant'){const earned=state.wood*3+state.ore*5;state.gold+=earned;state.wood=0;state.ore=0;say(earned?'Sold resources for '+earned+' gold!':'Merchant: Bring me logs or ore.')}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;state.woodXP+=25;say('You chop logs. +25 XP')}else{state.ore++;state.miningXP+=25;say('You mine ore. +25 XP')}save();draw()}}}
-combat.attackTimer=Math.max(0,combat.attackTimer-dt);healthBar.style.width=(combat.hp/combat.maxHp*100)+'%';
+combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);healthBar.style.width=(combat.hp/combat.maxHp*100)+'%';
 for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>.4){delta.normalize();mob.root.position.addScaledVector(delta,dt*(mob.hostile&&distance<10?1.7:.8));mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(action?.kind==='creature'&&action.mob===mob&&dest)dest.copy(mob.root.position)}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 for(const npc of npcs){npc.wait-=dt;if(npc.wait<=0){const a=npc.phase*2.4+npc.wait;npc.goal.set(npc.home.x+Math.cos(a)*3.2,0,npc.home.z+Math.sin(a)*3.2);npc.wait=4+(npc.phase%4)*1.3;npc.phase++}const d=npc.goal.clone().sub(npc.root.position);const walking=d.length()>.3;if(walking){d.normalize();const step=d.clone().multiplyScalar(dt*.55);const proposed=npc.root.position.clone().add(step);const crowded=npcs.some(other=>other!==npc&&other.root.position.distanceToSquared(proposed)<1.15*1.15)||player.position.distanceToSquared(proposed)<1.0*1.0;if(!crowded)npc.root.position.add(step);npc.root.rotation.y=Math.atan2(d.x,d.z)}const gait=walking?Math.sin(performance.now()*.005+npc.phase)*.45:0;npc.leftLeg.rotation.x=gait;npc.rightLeg.rotation.x=-gait;npc.leftArm.rotation.x=-gait*.65+Math.sin(performance.now()*.001+npc.phase)*.035;npc.rightArm.rotation.x=gait*.65;if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position)}
-blend=T.MathUtils.lerp(blend,moving?1:0,1-Math.exp(-12*dt));if(moving)phase+=dt*10;const swing=Math.sin(phase)*.65*blend;ll.rotation.x=swing;rl.rotation.x=-swing;la.rotation.x=-swing*.7;ra.rotation.x=swing*.7;body.position.y=Math.abs(Math.sin(phase))*.06*blend;
+blend=T.MathUtils.lerp(blend,moving?1:0,1-Math.exp(-12*dt));if(moving)phase+=dt*10;const swing=Math.sin(phase)*.65*blend;ll.rotation.x=swing;rl.rotation.x=-swing;la.rotation.x=-swing*.7;ra.rotation.x=swing*.7;if(combat.attackAnim>0){const t=1-combat.attackAnim/.55;ra.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;ra.rotation.z=-.32;body.rotation.y=Math.sin(t*Math.PI)*-.15}else{ra.rotation.z=T.MathUtils.lerp(ra.rotation.z,0,dt*12);body.rotation.y=T.MathUtils.lerp(body.rotation.y,0,dt*10)}if(combat.hitAnim>0){body.rotation.z=Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12}else body.rotation.z=T.MathUtils.lerp(body.rotation.z,0,dt*12);body.position.y=Math.abs(Math.sin(phase))*.06*blend;
 const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);saveTick+=dt;if(saveTick>4){saveTick=0;save()}renderer.render(scene,camera);if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();
