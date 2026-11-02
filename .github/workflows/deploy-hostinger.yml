@@ -2,9 +2,6 @@ name: Deploy Eldervale to Hostinger
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feature/materials-character-animation
 
 permissions:
   contents: read
@@ -20,6 +17,8 @@ jobs:
     steps:
       - name: Check out Eldervale
         uses: actions/checkout@v4
+        with:
+          ref: feature/materials-character-animation
 
       - name: Verify deployment configuration
         env:
