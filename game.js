@@ -595,7 +595,7 @@ for(const lake of worldLakes){
   ctx.save();ctx.clip();
   const roofTone=Math.abs(Math.floor(g.position.x*13+g.position.z*7))%3;
   ctx.fillStyle=['#a15c35','#a36d3f','#865537'][roofTone];ctx.fillRect(cx-halfW*pxPerUnit*2,cy-halfD*pzPerUnit*2,halfW*pxPerUnit*4,halfD*pzPerUnit*4);
-  ctx.strokeStyle='#d39a59';ctx.lineWidth=scale?.7:1;
+  ctx.strokeStyle='#d39a59';ctx.lineWidth=scale?0.7:1;
   const step=Math.max(3,scale?3.2:6);
   for(let yy=cy-halfD*pzPerUnit*2;yy<cy+halfD*pzPerUnit*2;yy+=step){
    ctx.beginPath();ctx.moveTo(cx-halfW*pxPerUnit*2,yy);ctx.lineTo(cx+halfW*pxPerUnit*2,yy);ctx.stroke();
