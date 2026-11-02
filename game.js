@@ -117,7 +117,7 @@ function house(x,z,c,scale=1.65,rotation=0){
  doorHit.position.set(0,.95,1.86);group.add(doorHit);
  const houseRecord={group,roofParts,inside:false,open:false,doorPivot,doorHit};
  doorHit.userData={kind:'door',house:houseRecord};
- targets.push(doorHit);
+ doorMesh.userData={kind:'door',house:houseRecord};targets.push(doorMesh);
  for(const side of [-1,1]){
   box(.79,.82,.12,0x89aeb8,side*1.25,1.92,1.92,group);
   box(.1,.91,.17,0x614832,side*1.25,1.92,2.02,group,'wood');
@@ -210,8 +210,8 @@ function walkAllowed(from,to){
    const prevInterior=Math.abs(previous.x)<1.91-radius&&Math.abs(previous.z)<1.83-radius;
    if(interior&&prevInterior){previous=q;continue}
    // The front entrance is the only permitted crossing.
-   const doorway=Math.abs(q.x)<.43&&Math.abs(previous.x)<.43;
-   const nearFront=q.z>1.32&&previous.z>1.32;
+   const doorway=Math.abs(q.x)<.49&&Math.abs(previous.x)<.49;
+   const nearFront=q.z>1.20&&previous.z>1.20;
    if(h.open&&doorway&&nearFront){previous=q;continue}
    return {blocked:true,house:h,doorway};
   }
@@ -260,15 +260,15 @@ function routeTo(target){
  const goal=target.clone();goal.y=0;
  const h=houseInteriors.find(h=>insideHouse(h,goal));
  if(h&&!insideHouse(h,player.position)){
-  const door=housePoint(h,0,2.38),threshold=housePoint(h,0,1.30);
-  if(!h.open){say('The door is closed. Click the door to open it.');return door}
+  const door=housePoint(h,0,2.48),threshold=housePoint(h,0,1.08);
+  if(!h.open){say('The door is closed. Click the door to open it.');return player.position.clone()}
   // Enter through the doorway, then continue to the clicked destination.
   walkQueue=[threshold,goal];return door;
  }
  const current=houseInteriors.find(h=>insideHouse(h,player.position));
  if(current&&!insideHouse(current,goal)){
-  const threshold=housePoint(current,0,1.30),door=housePoint(current,0,2.38);
-  if(!current.open){say('Open the door before leaving.');return threshold}
+  const threshold=housePoint(current,0,1.08),door=housePoint(current,0,2.48);
+  if(!current.open){say('Open the door before leaving.');return player.position.clone()}
   walkQueue=[door,goal];return threshold;
  }
  return goal;
@@ -467,7 +467,18 @@ function drawMap(ctx,canvas,scale){
  for(const [name,x,z] of places){const px=toX(x),py=toY(z);if(px<0||px>w||py<0||py>h)continue;ctx.fillStyle='#e6c988';ctx.beginPath();ctx.arc(px,py,scale?4:3,0,Math.PI*2);ctx.fill();if(scale){ctx.font='13px Georgia';ctx.fillText(name,px+8,py-5)}}
  ctx.fillStyle='#f5f5e4';ctx.strokeStyle='#18281d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(toX(player.position.x),toY(player.position.z),5,0,Math.PI*2);ctx.fill();ctx.stroke();
 }
-mapCanvas.title='Click to enlarge world map';mapCanvas.style.cursor='pointer';mapCanvas.addEventListener('click',()=>{mapOpen=true;mapPanel.hidden=false;drawMap(largeCtx,largeMap,true)});
+// Click-to-walk on both map sizes. Coordinates use the exact transform used by drawMap.
+function walkFromMap(e,canvas,worldView){
+ const rect=canvas.getBoundingClientRect(),u=(e.clientX-rect.left)/rect.width,v=(e.clientY-rect.top)/rect.height;
+ const extent=worldView?840:90;
+ const x=(worldView?0:player.position.x)+(u-.5)*extent;
+ const z=(worldView?0:player.position.z)+(v-.5)*extent*(canvas.height/canvas.width);
+ action=null;closeDialog();setWalkDestination(new T.Vector3(x,0,z));if(dest)markClick(x,z,'walk');
+}
+mapCanvas.title='Click anywhere to walk · MAP button opens world map';mapCanvas.style.cursor='crosshair';
+mapCanvas.addEventListener('click',e=>walkFromMap(e,mapCanvas,false));
+largeMap.style.cursor='crosshair';largeMap.title='Click a destination to walk';
+largeMap.addEventListener('click',e=>walkFromMap(e,largeMap,true));
 document.querySelector('#map-toggle').onclick=()=>{mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)};
 document.querySelector('#map-close').onclick=()=>{mapOpen=false;mapPanel.hidden=true};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeDialog();mapOpen=false;mapPanel.hidden=true}if(!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&e.key.toLowerCase()==='m'&&!e.repeat){mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)}});
