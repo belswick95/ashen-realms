@@ -1,5 +1,5 @@
-import {createFortressFire} from './login-fire.js?v=release-20261102-services1';
-import {startMusic} from './music.js?v=release-20261102-services1';
+import {createFortressFire} from './login-fire.js?v=release-20261102-gaits2';
+import {startMusic} from './music.js?v=release-20261102-gaits2';
 const screen=document.querySelector('#auth-screen'),canvas=document.querySelector('#login-fire'),image=document.querySelector('#login-art');
 let fire=null;
 function scene(){if(!screen||screen.hidden)return;if(!fire){try{fire=createFortressFire(canvas,image)}catch(error){console.warn('Login fire unavailable:',error)}}}
