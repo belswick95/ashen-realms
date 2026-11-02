@@ -1,21 +1,21 @@
-import {createPlayerHUD} from './player-hud.js?v=release-20261102-worldtime4';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-worldtime4';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261102-worldtime4';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-worldtime4';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=staff-crown-20261102';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-worldtime4';
+import {createPlayerHUD} from './player-hud.js?v=release-20261102-fortress4';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-fortress4';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261102-fortress4';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-fortress4';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-fortress4';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-fortress4';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261102-handedness10';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-handedness10';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-worldtime4';
-import {buildForest} from './forest.js?v=release-20261102-worldtime4';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-poseaudit30';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-worldtime4';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-fortress4';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-fortress4';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-fortress4';
+import {buildForest} from './forest.js?v=release-20261102-fortress4';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-fortress4';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-fortress4';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261102-worldtime4';
-import {createCape} from './cape.js?v=release-20261102-worldtime4';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-handedness11';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-side-shield12';
+import {buildPlateArmor} from './armor.js?v=release-20261102-fortress4';
+import {createCape} from './cape.js?v=release-20261102-fortress4';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-fortress4';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-fortress4';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
@@ -796,14 +796,9 @@ const creatures=[];function creature(name,x,z,hostile=false){const root=new T.Gr
 for(let i=0;i<24;i++){const a=i*2.399,r=22+i*11;creature(i%5===0?'Wolf':i%3===0?'Boar':'Deer',Math.sin(a)*r,Math.cos(a)*r,i%5===0)}
 // Consolidate screen furniture before creating the shared portrait/status panel.
 const audioSettings=document.querySelector('[data-settings-panel="audio"]');
-// Keep the native audio controls visible; the legacy floating widget remains hidden.
-const legacyMusicControls=document.querySelector('#music-controls');
-legacyMusicControls.style.display='none';
-const musicVolumeLabel=document.querySelector('#settings-music-volume').closest('label');
-musicVolumeLabel.style.display='block';
-audioSettings.querySelector('p').textContent='Music plays in towns. Adjust music and environmental ambience independently. On iPhone or iPad, tap Enable audio once to unlock sound.';
-const enableAudio=document.createElement('button');enableAudio.type='button';enableAudio.id='enable-game-audio';enableAudio.textContent='Enable audio';enableAudio.addEventListener('click',()=>window.eldervaleEnableAudio?.());
-audioSettings.prepend(enableAudio);
+const oldAudioVolume=document.querySelector('#settings-music-volume').closest('label');oldAudioVolume.style.display='none';
+audioSettings.querySelector('p')?.remove();audioSettings.append(document.querySelector('#music-controls'));
+const environmentControls=document.createElement('div');environmentControls.id='environment-controls';environmentControls.innerHTML='<h4>Environment</h4><button id="environment-toggle" type="button" aria-pressed="true">Environment on</button><label for="environment-volume">Wind, wildlife & water</label><input id="environment-volume" type="range" min="0" max="100" value="35" aria-label="Environment volume"><small>Natural sound is separate from the soundtrack.</small><a href="/credits.html" target="_blank" rel="noopener">Soundtrack credits</a>';audioSettings.append(environmentControls);
 const gameplaySettings=document.querySelector('[data-settings-panel="gameplay"]');gameplaySettings.append(document.querySelector('#stats'),document.querySelector('#reset'));
 document.querySelector('#character-panel').hidden=true;
 const brand=document.createElement('strong');brand.className='minimap-brand';brand.textContent='ELDERVALE';document.querySelector('#map-widget').prepend(brand);
@@ -814,7 +809,7 @@ const healthBar=document.querySelector('#health-fill'),combatNotice=document.que
 function combatMessage(msg){combatNotice.textContent=msg;combatNotice.hidden=false;clearTimeout(combatMessage.timer);combatMessage.timer=setTimeout(()=>combatNotice.hidden=true,1800)}
 // Procedural, non-looping combat effects; unlocked by player input on first combat.
 let combatAudio=null;
-function combatSound(kind){
+function combatSound(kind){if(localStorage.getItem('eldervale-audio-enabled')==='false')return;
  try{
   combatAudio??=new (window.AudioContext||window.webkitAudioContext)();
   if(combatAudio.state==='suspended')combatAudio.resume().catch(()=>{});
@@ -1005,17 +1000,7 @@ function updateWorldSky(){
  window.eldervaleSetTimeOfDay?.(hour,daylight);
 }
 const clock=new T.Clock();let lastAutosave=performance.now();
-// Update music regions at a low frequency, avoiding audio work in the render loop.
-let nextAudioRegionCheck=0,lastAudioRegion='';
-function updateAudioRegion(){
- const now=performance.now();if(now<nextAudioRegionCheck)return;nextAudioRegionCheck=now+1500;
- let nearest='Wilderness',distance=Infinity;
- for(const [name,x,z] of places){const d=Math.hypot(player.position.x-x,player.position.z-z);if(d<distance){distance=d;nearest=name.split(' · ')[0]}}
- if(distance>30)nearest='Wilderness';
- if(nearest!==lastAudioRegion){lastAudioRegion=nearest;window.eldervaleAudioRegion=nearest;window.eldervaleSetAudioRegion?.(nearest)}
-}
-
-function frame(){requestAnimationFrame(frame);updateAudioRegion();updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
+function frame(){requestAnimationFrame(frame);updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
 if(action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<2.6){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
 if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(5*dt,distance));
  const collision=walkAllowed(player.position,proposed);

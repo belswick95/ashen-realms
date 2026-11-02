@@ -167,3 +167,28 @@ runtime regression test. This is why syntax checks alone are insufficient.
   `npm run test:multiplayer` uses two real game contexts in an isolated random
   Realtime topic; it writes no accounts, chat messages or saved progress.
 - Bank storage work was paused while this live multiplayer issue was prioritized.
+
+## Fortress login and regional audio
+
+- The sign-in scene uses original fortress-gate artwork with live, rising
+  turbulence-based flames over the brazier bowls, independently flickering
+  firelight, and airborne embers. The overlay follows the background cover crop
+  and pauses when the login is hidden; reduced-motion mode holds the fire still.
+- Responsive account tabs, labeled email/password/name fields, password visibility,
+  keyboard focus states and mobile portrait/landscape layouts keep the existing
+  authentication, cloud-save and account-creation flows.
+- Sound defaults to enabled at an audible volume. Playback is attempted on load
+  and unlocked on the first interaction when browser autoplay policy requires it;
+  explicit user mute/zero-volume preferences remain respected.
+- Thirteen actual Kevin MacLeod recordings replace the procedural brass score:
+  an edited Stoneworld Battle login cue and a distinct recording for every
+  settlement. Credits, composer source URLs, CC BY 4.0 license links, and changes
+  are recorded in assets/audio/credits.json, assets/LICENSES.md and credits.html.
+- Music follows shared world settlement coordinates, with boundary hysteresis
+  and short crossfades. Wilderness has no music track; synthesized wind, vegetation,
+  wildlife and water use an independent environmental bus and separate settings.
+- The login browser suite verifies actual flame pixel changes, reduced motion,
+  account modes, password visibility, sound defaults and gesture unlock, mute,
+  desktop/iPad/phone layouts and music/environment region transitions. Existing
+  auth/save regression coverage continues to use a fake transport and touches no
+  real accounts or saved progress.

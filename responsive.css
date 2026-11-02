@@ -100,3 +100,7 @@ body.compact-layout #dialog-next{margin-top:7px}
 #multiplayer-status{display:inline-block;margin-left:10px;color:#c1dda7;font:11px Arial;white-space:nowrap}
 #multiplayer-status[data-state=connecting],#multiplayer-status[data-state=reconnecting]{color:#efd28f}
 #multiplayer-status[data-state=offline]{color:#edab9a}
+
+#environment-controls{margin:14px 0 0;padding:10px 8px;border-top:1px solid #8b754e77;font:12px Arial}#environment-controls h4{margin:0 0 8px;color:#dfc994}#environment-controls button{margin:0 0 10px}#environment-controls label{display:block;margin:4px 0}#environment-controls input{width:100%}#environment-controls small{display:block;line-height:1.5;color:#aeb6a6}#environment-controls a{display:inline-block;color:#d4bc87;margin-top:10px;font-size:11px}
+
+#game-ui #settings-tab #music-controls{display:block!important}
