@@ -435,7 +435,7 @@ function spawnNPC(profile,index){
  if(index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.50,-.26,root,'cloth');cape.rotation.x=-.12}
  const hit=new T.Mesh(new T.SphereGeometry(.48,8,6),new T.MeshBasicMaterial({visible:false}));
  hit.position.set(0,1.42,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
- const npc={profile,root,leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075};npcs.push(npc)
+ const npc={profile,root,leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null};npcs.push(npc)
 }
 npcProfiles.forEach(spawnNPC);
 // Wildlife and enemies use lightweight low-poly models and simple local AI.
@@ -547,31 +547,28 @@ for(const npc of npcs){
  if(npc.wait<=0){
   const a=npc.phase*2.4+npc.wait;
   npc.goal.set(npc.home.x+Math.cos(a)*3.2,0,npc.home.z+Math.sin(a)*3.2);
-  npc.wait=4+(npc.phase%4)*1.3;npc.phase++;
+  npc.wait=4+(npc.phase%4)*1.3;npc.phase++;npc.path=[];npc.pathGoal=null;
  }
- const previous=npc.root.position.clone(),toward=npc.goal.clone().sub(previous);toward.y=0;
- let desiredSpeed=0;
- if(toward.length()>.24){
+ const previous=npc.root.position.clone();
+ if(!npc.pathGoal||npc.pathGoal.distanceToSquared(npc.goal)>.5){
+  npc.path=findWalkPath(previous,npc.goal,1400);
+  npc.pathGoal=npc.goal.clone();
+ }
+ if(npc.path.length&&npc.path[0].distanceToSquared(previous)<.20)npc.path.shift();
+ const waypoint=npc.path[0]||npc.goal;
+ const toward=waypoint.clone().sub(previous);toward.y=0;
+ if(toward.length()>.22){
   toward.normalize();
-  const stepSize=Math.min(npc.pace*dt,npc.root.position.distanceTo(npc.goal));
-  // Try the desired heading, then gentle left/right detours around solid houses.
-  const heading=Math.atan2(toward.x,toward.z),angles=[0,.42,-.42,.85,-.85,1.3,-1.3,Math.PI];
-  for(const offset of angles){
-   const angle=heading+offset;
-   const direction=new T.Vector3(Math.sin(angle),0,Math.cos(angle));
-   const proposed=previous.clone().addScaledVector(direction,stepSize);
-   const blocked=walkAllowed(previous,proposed).blocked;
-   const crowded=npcs.some(other=>other!==npc&&other.root.position.distanceToSquared(proposed)<1.1*1.1)||player.position.distanceToSquared(proposed)<.85*.85;
-   if(!blocked&&!crowded){
-    npc.root.position.copy(proposed);
-    npc.root.rotation.y=angle;
-    desiredSpeed=stepSize/Math.max(dt,.001);
-    break;
-   }
+  const stepSize=Math.min(npc.pace*dt,previous.distanceTo(waypoint));
+  const proposed=previous.clone().addScaledVector(toward,stepSize);
+  const crowded=npcs.some(other=>other!==npc&&other.root.position.distanceToSquared(proposed)<1.05*1.05)||player.position.distanceToSquared(proposed)<.85*.85;
+  if(!walkAllowed(previous,proposed).blocked&&!crowded){
+   npc.root.position.copy(proposed);
+   npc.root.rotation.y=Math.atan2(toward.x,toward.z);
   }
  }
  const actualDistance=npc.root.position.distanceTo(previous);
- if(actualDistance<.0001&&toward.lengthSq()>.1){npc.stuck+=dt;if(npc.stuck>1.5){npc.goal.copy(npc.home);npc.wait=1;npc.stuck=0}}
+ if(actualDistance<.0001&&toward.lengthSq()>.1){npc.stuck+=dt;if(npc.stuck>1.5){npc.goal.copy(npc.home);npc.path=[];npc.pathGoal=null;npc.wait=1;npc.stuck=0}}
  else npc.stuck=0;
  // Foot cadence follows actual distance traveled, not wall-clock time.
  const speed=actualDistance/Math.max(dt,.001);
