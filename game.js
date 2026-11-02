@@ -641,7 +641,8 @@ for(const lake of worldLakes){
 }
 // Click-to-walk on both map sizes. Coordinates use the exact transform used by drawMap.
 function walkFromMap(e,canvas,worldView){
- const rect=canvas.getBoundingClientRect(),u=(e.clientX-rect.left)/rect.width,v=(e.clientY-rect.top)/rect.height;
+ const rect=canvas.getBoundingClientRect();if(!rect.width||!rect.height)return;
+ const u=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width)),v=Math.max(0,Math.min(1,(e.clientY-rect.top)/rect.height));
  const extent=worldView?840:90;
  const x=(worldView?0:player.position.x)+(u-.5)*extent;
  const z=(worldView?0:player.position.z)+(v-.5)*extent*(canvas.height/canvas.width);
