@@ -2,7 +2,7 @@
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
  let phase=0,blend=0,time=0,impact=0;
- return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false}={}){
+ return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false}={}){
   if(!Number.isFinite(dt)||dt<=0)return;
   dt=Math.min(dt,.1);time+=dt;
   distance=Number.isFinite(distance)?Math.max(0,distance):0;
@@ -26,14 +26,22 @@ export function createHumanoidAnimator(rig){
   rig.rightArm.rotation.x=gait*stride*.65-Math.sin(time*1.7)*.018*(1-blend);
   rig.leftElbow.rotation.x=-.12-run*.35*blend-Math.max(0,gait)*.2*blend;
   rig.rightElbow.rotation.x=-.12-run*.35*blend-Math.max(0,-gait)*.2*blend;
+  // Armed idle: elbows forward, right hand presenting the blade diagonally ahead,
+  // left forearm carrying the shield ahead of the torso. Blend out during attack.
+  if(armed&&!twoHanded&&attack<=0){
+   rig.rightArm.rotation.x=-.68-gait*.06*blend;
+   rig.rightArm.rotation.z=-.16;
+   rig.rightElbow.rotation.x=-.92;
+   rig.rightHand?.rotation.set(-.38,0,-.16);
+  }
   // Reset combat channels every frame so interrupted attacks cannot leave a pose stuck.
-  rig.rightArm.rotation.z=0;
+  if(!armed||twoHanded||attack>0)rig.rightArm.rotation.z=0;
   if(attack>0){
    const t=Math.max(0,Math.min(1,1-attack/.55));
    rig.rightArm.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;
    rig.rightArm.rotation.z=-.32;rig.rightElbow.rotation.x=-.55;
   }
-  if(shield&&!twoHanded){rig.leftArm.rotation.x=-.25-gait*.07*blend;rig.leftArm.rotation.z=.08;rig.leftElbow.rotation.x=-.60}
+  if(shield&&!twoHanded){rig.leftArm.rotation.x=-.72-gait*.05*blend;rig.leftArm.rotation.z=.20;rig.leftElbow.rotation.x=-.95;rig.leftHand?.rotation.set(-.20,-.18,.08)}
   if(twoHanded&&rig.solveArm){
    const t=attack>0?Math.max(0,Math.min(1,1-attack/.55)):0,swing=attack>0?Math.sin(t*Math.PI):0;
    const V=rig.root.position.constructor,angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle));
