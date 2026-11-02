@@ -47,7 +47,6 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req
  await touch.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5});
  await page.evaluate(()=>{window.touchTrace=[];for(const type of ['pointerdown','pointermove','pointerup'])window.addEventListener(type,e=>{if(e.pointerType==='touch')window.touchTrace.push({type,id:e.pointerId,x:e.clientX,y:e.clientY,target:e.target.tagName})},{capture:true})});
  const sendTouch=(type,points)=>touch.send('Input.dispatchTouchEvent',{type,touchPoints:points.map((point,i)=>({...point,id:i+1}))});
- await sendTouch('touchStart',[{x:390,y:195}]);
  await sendTouch('touchStart',[{x:390,y:195},{x:450,y:195}]);
  await sendTouch('touchMove',[{x:375,y:195},{x:465,y:195}]);
  try{await page.waitForFunction(before=>window.offlineWorld.getZoom()<before,beforeZoom)}catch(error){console.error('Touch diagnostics:',await page.evaluate(()=>({trace:window.touchTrace,zoom:window.offlineWorld.getZoom(),target:document.elementFromPoint(420,195)?.outerHTML.slice(0,250)})));fs.mkdirSync(path.join(root,'test-results'),{recursive:true});await page.screenshot({path:path.join(root,'test-results','touch-failure.png')});throw error}
