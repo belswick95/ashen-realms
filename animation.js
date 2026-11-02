@@ -1,8 +1,8 @@
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
- let phase=0,blend=0,time=0,impact=0;const restY=new WeakMap();
- return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false,weapon=null,block=0}={}){
+ let phase=0,blend=0,time=0,impact=0;const restY=new WeakMap();let combatBlend=0,runBlend=0;
+ return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false,weapon=null,block=0,locomotion=null}={}){
   if(!Number.isFinite(dt)||dt<=0)return;
   dt=Math.min(dt,.1);time+=dt;
   distance=Number.isFinite(distance)?Math.max(0,distance):0;
@@ -12,36 +12,50 @@ export function createHumanoidAnimator(rig){
   impact=Math.max(incoming,impact*Math.exp(-9*dt));
   const moving=distance>1e-6;
   blend+=(moving?1-blend:-blend)*(1-Math.exp(-12*dt));
-  const run=Math.max(0,Math.min(1,(speed-2.4)/1.8));
-  const pace=Math.min(1,speed/1.9),stance=.60-run*.10;
-  const strideLength=1.1+.45*pace+.85*run;
-  phase+=distance*Math.PI*2/strideLength;
+  const mode=locomotion||(attack>0||block>0?'combat':speed>2.8?'run':'walk');
+  const transition=1-Math.exp(-12*dt);
+  combatBlend+=((mode==='combat'?1:0)-combatBlend)*transition;
+  runBlend+=((mode==='run'&&moving?1:0)-runBlend)*transition;
+  const walkBlend=Math.max(0,1-combatBlend-runBlend),run=runBlend,pace=Math.min(1,speed/1.9);
+  // Combat keeps the existing short, planted approach. Walking has an extended
+  // recovery and low foot lift; running has a flight phase and high recovery.
+  const stance=.60*combatBlend+.52*walkBlend+.40*runBlend;
+  const strideLength=(1.1+.45*pace)*combatBlend+(1.50+.30*pace)*walkBlend+2.65*runBlend;
+  const footLift=.12*combatBlend+.065*walkBlend+.28*runBlend;
+  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?2.65:1.50+.30*pace;
+  phase+=distance*Math.PI*2/cycleLength;
   const gait=Math.sin(phase),stride=(.24+run*.12)*blend;
   const upper=Math.abs(rig.leftKnee.position.y),lower=rig.leftAnkle?Math.abs(rig.leftAnkle.position.y):.42*(rig.legScale||1.3),length=upper+lower;
-  const reach=strideLength*stance/(2*rig.root.scale.z),down=Math.sqrt(Math.max(.1,length*length-reach*reach))-.002;
+  const reach=strideLength*stance/(2*rig.root.scale.z),baseDown=Math.sqrt(Math.max(.1,length*length-reach*reach))-.002;
+  const phases=[((phase/(Math.PI*2))%1+1)%1,((phase/(Math.PI*2)+.5)%1+1)%1],contacts=phases.filter(u=>u<stance);
+  const plantedReach=contacts.length?Math.max(...contacts.map(u=>Math.abs(reach*(1-2*u/stance)))):reach;
+  const extendedDown=Math.sqrt(Math.max(.1,length*length-plantedReach*plantedReach))-.002;
+  const down=baseDown*combatBlend+extendedDown*(1-combatBlend),flight=contacts.length===0?runBlend*.055:0;
   for(const [leg,knee,ankle,offset] of [[rig.leftLeg,rig.leftKnee,rig.leftAnkle,0],[rig.rightLeg,rig.rightKnee,rig.rightAnkle,.5]]){
    const u=((phase/(Math.PI*2)+offset)%1+1)%1,swing=u>=stance,t=swing?(u-stance)/(1-stance):u/stance;
-   const ease=t*t*(3-2*t),forward=swing?reach*(2*ease-1):reach*(1-2*t),lift=swing?Math.sin(t*Math.PI)*(.12+run*.10):0;
+   const ease=t*t*(3-2*t),forward=swing?reach*(2*ease-1):reach*(1-2*t),lift=swing?Math.sin(t*Math.PI)*footLift:0;
    const y=down-lift,d=Math.min(length-.00001,Math.hypot(forward,y));
    const bend=Math.acos(Math.max(-1,Math.min(1,(d*d-upper*upper-lower*lower)/(2*upper*lower))));
    const hip=Math.atan2(-forward,y)-Math.atan2(lower*Math.sin(bend),upper+lower*Math.cos(bend));
    leg.rotation.x=hip*blend;knee.rotation.x=bend*blend;
-   if(ankle)ankle.rotation.x=-(hip+bend)*blend;
+   if(ankle)ankle.rotation.x=-(hip+bend)*blend+(swing?Math.sin(t*Math.PI)*.16*runBlend*blend:0);
   }
   // Visual pelvis compression keeps contact feet at their standing ground height.
   // Physics, saved positions and pathfinding roots are never translated.
-  const bob=(down-length)*blend;
+  const bob=(down-length+flight)*blend;rig.root.rotation.x=-.10*runBlend*blend;
   for(const child of rig.root.children){if(!restY.has(child))restY.set(child,child.position.y);child.position.y=restY.get(child)+bob}
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
-  rig.leftArm.rotation.x=-gait*stride*.46+Math.sin(time*1.7)*.018*(1-blend);
-  rig.rightArm.rotation.x=gait*stride*.46-Math.sin(time*1.7)*.018*(1-blend);
-  rig.leftElbow.rotation.x=-.12-run*.18*blend-Math.max(0,gait)*.10*blend;
-  rig.rightElbow.rotation.x=-.12-run*.18*blend-Math.max(0,-gait)*.10*blend;
+  const armSwing=(.11*combatBlend+.13*walkBlend+.55*runBlend)*blend;
+  rig.leftArm.rotation.x=-gait*armSwing+Math.sin(time*1.7)*.018*(1-blend);
+  rig.rightArm.rotation.x=gait*armSwing-Math.sin(time*1.7)*.018*(1-blend);
+  const elbow=-.10-.78*runBlend*blend;
+  rig.leftElbow.rotation.x=elbow-Math.max(0,gait)*.06*blend;
+  rig.rightElbow.rotation.x=elbow-Math.max(0,-gait)*.06*blend;
   // Armed idle: elbows forward, right hand presenting the blade diagonally ahead,
   // left forearm carrying the shield ahead of the torso. Blend out during attack.
   if(armed&&!twoHanded&&attack<=0){
-   rig.rightArm.rotation.x=-.24-gait*.035*blend;
+   rig.rightArm.rotation.x=-.24-gait*(.035*combatBlend+.055*walkBlend+.12*runBlend)*blend;
    rig.rightArm.rotation.z=-.10;
    rig.rightElbow.rotation.x=-.22;
    rig.rightHand?.rotation.set(0,0,0);
@@ -81,6 +95,6 @@ export function createHumanoidAnimator(rig){
    rig.torso.scale.y=1+Math.sin(time*1.7)*.004*(1-blend);
    rig.torso.rotation.x=impact*.045;rig.torso.rotation.z=-impact*.025;
   }
-  return {blend,run,contacts:{left:((phase/(Math.PI*2))%1+1)%1<stance,right:((phase/(Math.PI*2)+.5)%1+1)%1<stance},attack:attack>0,hit:impact>0.01};
+  return {blend,run,gait:mode,flight:contacts.length===0&&runBlend>.8,contacts:{left:((phase/(Math.PI*2))%1+1)%1<stance,right:((phase/(Math.PI*2)+.5)%1+1)%1<stance},attack:attack>0,hit:impact>0.01};
  }};
 }

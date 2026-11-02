@@ -1,29 +1,29 @@
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261102-services1';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261102-services1';
-import {sanitizeBank,createServicePanel} from './economy.js?v=release-20261102-services1';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261102-services1';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261102-services1';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261102-services1';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261102-services1';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261102-services1';
-import {createPlayerHUD} from './player-hud.js?v=release-20261102-services1';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-services1';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261102-services1';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-services1';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-services1';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-services1';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261102-gaits2';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261102-gaits2';
+import {sanitizeBank,createServicePanel} from './economy.js?v=release-20261102-gaits2';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261102-gaits2';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261102-gaits2';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261102-gaits2';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261102-gaits2';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261102-gaits2';
+import {createPlayerHUD} from './player-hud.js?v=release-20261102-gaits2';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-gaits2';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261102-gaits2';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-gaits2';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-gaits2';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-gaits2';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261102-services1';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-services1';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-services1';
-import {buildForest} from './forest.js?v=release-20261102-services1';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-services1';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-services1';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-gaits2';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-gaits2';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-gaits2';
+import {buildForest} from './forest.js?v=release-20261102-gaits2';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-gaits2';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-gaits2';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261102-services1';
-import {createCape} from './cape.js?v=release-20261102-services1';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-services1';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-services1';
+import {buildPlateArmor} from './armor.js?v=release-20261102-gaits2';
+import {createCape} from './cape.js?v=release-20261102-gaits2';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-gaits2';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-gaits2';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
@@ -559,7 +559,7 @@ function updateOverheadChat(){
  for(const [id,bubble] of chatBubbles){if(performance.now()>bubble.expires){bubble.node.remove();chatBubbles.delete(id);continue}const other=id===selfId?player:remotePlayers.get(id)?.root;if(!other){bubble.node.style.display='none';continue}projected.set(other.position.x,other.position.y+3.65,other.position.z).project(camera);const visible=projected.z<1&&projected.z>-1&&other.position.distanceTo(player.position)<75;bubble.node.style.display=visible?'block':'none';if(visible){bubble.node.style.left=((projected.x+1)*innerWidth/2-bubble.node.offsetWidth/2)+'px';bubble.node.style.top=((1-projected.y)*innerHeight/2-bubble.node.offsetHeight)+'px'}}
 }
 const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
-const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0,attackAnim:0,hitAnim:0,blockAnim:0};
+const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0,attackAnim:0,hitAnim:0,blockAnim:0,stanceTimer:0};
 const armorCatalog={
   helm:{name:'Iron full helm',slot:'Head',desc:'A sturdy iron helmet.'},
   chest:{name:'Iron platebody',slot:'Body',desc:'A solid iron breastplate.'},
@@ -897,7 +897,7 @@ function faceTarget(object,target){const dx=target.x-object.position.x,dz=target
 const hitNumbers=createHitNumbers(T,camera);
 function strike(mob,rng=Math.random){
  if(!mob.alive||combat.attackTimer>0)return;
- combat.attackTimer=state.equippedWeapon?weaponCatalog[state.equippedWeapon].speed:.85;combat.attackAnim=.55;faceTarget(player,mob.root.position);
+ combat.attackTimer=state.equippedWeapon?weaponCatalog[state.equippedWeapon].speed:.85;combat.attackAnim=.55;combat.stanceTimer=2;faceTarget(player,mob.root.position);
  const hit=resolveHit(6+(state.equippedWeapon?weaponCatalog[state.equippedWeapon].damage:0)+Math.floor(rng()*7),mob.hostile?.12:.07,rng);
  hitNumbers.show(mob.root,hit.damage,hit.blocked,1.7);
  if(hit.blocked){mob.blockAnim=.4;combatSound('metal');combatMessage(mob.name+' blocks your attack.');return}
@@ -905,7 +905,7 @@ function strike(mob,rng=Math.random){
  if(mob.hp<=0){mob.alive=false;mob.root.visible=false;mob.respawn=22;combat.kills++;combat.xp+=30;state.attackXP+=10;state.strengthXP+=10;state.defenceXP+=5;state.hitpointsXP+=5;state.gold+=mob.hostile?8:2;combatMessage('Defeated '+mob.name+'! +30 combat XP');action=null;dest=null;save();draw()}
 }
 function playerHit(mob,rng=Math.random){
- const defense=Object.values(state.equipped).filter(Boolean).length,chance=state.equippedShield?.30:state.equippedWeapon?.14:.05;
+ combat.stanceTimer=2;const defense=Object.values(state.equipped).filter(Boolean).length,chance=state.equippedShield?.30:state.equippedWeapon?.14:.05;
  const hit=resolveHit(Math.max(1,6+Math.floor(rng()*5)-defense),chance,rng);mob.attackAnim=.4;faceTarget(mob.root,player.position);
  hitNumbers.show(player,hit.damage,hit.blocked,2.8);
  if(hit.blocked){combat.blockAnim=.42;combatSound('metal');combatMessage('You block '+mob.name+'’s attack.');return}
@@ -1091,7 +1091,7 @@ if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=
  if(!collision.blocked)player.position.copy(proposed);
  else{dest=null;walkQueue=[];action=null;if(collision.house&&!collision.house.open)say('Door closed — click the door to open it.');else say('A building blocks the way. Walk around it.')}
  player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(walkQueue.length){dest=walkQueue.shift();}else if(action){const a=action;action=null;if(a.kind==='door'){if(a.house.type==='bank'){if(!a.house.open)toggleHouseDoor(a.house);services.open('bank',a.house.name)}else toggleHouseDoor(a.house)}else if(a.kind==='creature'){if(a.mob.alive){strike(a.mob);if(a.mob.alive){action=a;dest=a.mob.root.position.clone()}}}else if(a.kind==='npc'){talkTo(a.profile)}else if(a.kind==='chest'){openArmoryChest()}else if(a.kind==='merchant'){services.open('shop','Traveling merchant');}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;const gained=gatheringXP(state,'woodXP');state.woodXP+=gained;say('You chop logs. +'+gained+' XP')}else{state.ore++;const gained=gatheringXP(state,'miningXP');state.miningXP+=gained;say('You mine ore. +'+gained+' XP')}save();draw()}}}
-combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);combat.blockAnim=Math.max(0,combat.blockAnim-dt);playerHUD.health(combat.hp,combat.maxHp);
+combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);combat.blockAnim=Math.max(0,combat.blockAnim-dt);combat.stanceTimer=Math.max(0,combat.stanceTimer-dt);playerHUD.health(combat.hp,combat.maxHp);
 for(const mob of creatures){mob.attackAnim=Math.max(0,(mob.attackAnim||0)-dt);mob.blockAnim=Math.max(0,(mob.blockAnim||0)-dt);mob.hitAnim=Math.max(0,(mob.hitAnim||0)-dt);mob.root.rotation.x=mob.attackAnim>0?-Math.sin((1-mob.attackAnim/.4)*Math.PI)*.15:0;mob.root.rotation.z=mob.blockAnim>0?.12:mob.hitAnim>0?-.10:0;if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance>=1.45&&distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>(mob.hostile&&distance<10?1.9:.4)){delta.normalize();const step=Math.min(dt*(mob.hostile&&distance<10?1.7:.8),Math.max(0,distance-1.85));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(mob.hostile&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,1.95)}}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 ensureTownResidents();
@@ -1140,7 +1140,7 @@ for(const mob of creatures)mob.root.position.y=landscape.walkHeight(mob.root.pos
 if(!dest&&!walkQueue.length)mapDestination=null;
 const traveled=Math.hypot(player.position.x-frameStart.x,player.position.z-frameStart.z);
 const energyStep=stepEnergy(state.runEnergy,running,traveled>.001,dt);state.runEnergy=energyStep.energy;running=energyStep.running;if(energyStep.exhausted)say('You are out of energy and slow to a walk.');updateRunButton();
-const pose=playerAnimator.update(dt,{weapon:state.equippedWeapon,block:combat.blockAnim,distance:traveled,speed:traveled/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim,twoHanded:state.equippedWeapon==='twohand',shield:!!state.equippedShield,armed:!!state.equippedWeapon});
+const pose=playerAnimator.update(dt,{locomotion:(action?.kind==='creature'&&!running)||combat.stanceTimer>0?'combat':running?'run':'walk',weapon:state.equippedWeapon,block:combat.blockAnim,distance:traveled,speed:traveled/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim,twoHanded:state.equippedWeapon==='twohand',shield:!!state.equippedShield,armed:!!state.equippedWeapon});
 body.rotation.y=combat.attackAnim>0?Math.sin((1-combat.attackAnim/.55)*Math.PI)*-.15:T.MathUtils.lerp(body.rotation.y,0,1-Math.exp(-10*dt));
 body.rotation.z=combat.hitAnim>0?Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12:T.MathUtils.lerp(body.rotation.z,0,1-Math.exp(-12*dt));
 body.position.y=0;cape.update(dt,pose?.blend||0);merchantAnimator.update(dt);
