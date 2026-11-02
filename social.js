@@ -1,4 +1,5 @@
-import {setChatMessages,setFeedIdentity} from './chat-feed.js?v=release-20261102-oakcross2';
+import {startMultiplayer} from './multiplayer.js?v=release-20261102-multiplayer3';
+import {setChatMessages,setFeedIdentity} from './chat-feed.js?v=release-20261102-multiplayer3';
 // Eldervale social panel. Only authenticated players can use these features.
 export function startSocial(db,user){
 const panel=document.querySelector('#social-panel'),tabs=panel.querySelectorAll('[data-social-tab]'),chatList=panel.querySelector('#world-chat-lines'),chatForm=panel.querySelector('#world-chat-form'),chatInput=panel.querySelector('#world-chat-input'),friendList=panel.querySelector('#friend-list'),search=panel.querySelector('#friend-search'),searchResult=panel.querySelector('#friend-results'),note=panel.querySelector('#social-note');
@@ -17,13 +18,12 @@ panel.querySelector('#friend-search-button').onclick=findPlayers;search.addEvent
 const toggle=panel.querySelector('#social-toggle');
 toggle.onclick=()=>{panel.classList.toggle('collapsed');toggle.textContent=panel.classList.contains('collapsed')?'Show Chat':'Hide Chat';if(!panel.classList.contains('collapsed'))show(active)};
 const chatChannel=db.channel('eldervale-world-chat').on('postgres_changes',{event:'INSERT',schema:'public',table:'world_chat'},payload=>{refreshChat();const row=payload.new;if(row?.sender_id&&row.sender_id!==user.id)window.eldervaleShowChatBubble?.(row.sender_id,row.sender_name,row.body)}).subscribe();
-// Ephemeral presence shares nearby avatar positions without writing positions to the database.
-const presence=db.channel('eldervale-world-presence',{config:{presence:{key:user.id}}});
-presence.on('presence',{event:'sync'},()=>{const all=presence.presenceState();const nearby=[];for(const [id,entries] of Object.entries(all)){if(id!==user.id&&entries?.length){const latest=entries[entries.length-1];if(latest&&typeof latest==='object'&&Number.isFinite(latest.x)&&Number.isFinite(latest.z))nearby.push({...latest,id})}}window.eldervaleUpdatePlayers?.(nearby)});
-presence.subscribe(async status=>{if(status==='SUBSCRIBED'){const p=window.eldervaleGetPlayerPosition?.();if(p)await presence.track({username:name,...p})}});
-const positionTimer=setInterval(()=>{const p=window.eldervaleGetPlayerPosition?.();if(p)presence.track({username:name,...p}).catch(()=>{})},2500);
+// Position broadcasts are separate from infrequent Presence membership updates.
+let connection=document.querySelector('#multiplayer-status');if(!connection){connection=document.createElement('span');connection.id='multiplayer-status';connection.setAttribute('role','status');connection.setAttribute('aria-live','polite');document.querySelector('#account-bar').append(connection)}
+const multiplayer=startMultiplayer({db,user,getPosition:()=>window.eldervaleGetPlayerPosition?.(),onPlayers:players=>window.eldervaleUpdatePlayers?.(players),onStatus:status=>{connection.dataset.state=status.state;const text=status.state==='connected'?'Online · '+status.players:(status.state==='offline'?'Offline':status.state==='connecting'?'Connecting…':'Reconnecting…');if(connection.textContent!==text)connection.textContent=text;connection.title=status.state==='connected'?'Adventurers connected to the shared Heartlands world':status.detail||'Connecting to the shared world'}});
 const friendChannel=db.channel('eldervale-friends-'+user.id).on('postgres_changes',{event:'*',schema:'public',table:'player_friendships'},()=>{if(active==='friends')refreshFriends()}).subscribe();
 const refreshTimer=setInterval(()=>{if(active==='chat')refreshChat()},30000);
-window.addEventListener('pagehide',()=>{clearInterval(refreshTimer);clearInterval(positionTimer);db.removeChannel(presence);db.removeChannel(chatChannel);db.removeChannel(friendChannel)},{once:true});
+window.addEventListener('pagehide',event=>{if(event.persisted)return;clearInterval(refreshTimer);multiplayer.dispose();db.removeChannel(chatChannel);db.removeChannel(friendChannel)});
 show('chat');refreshChat();
+return {multiplayer};
 }
