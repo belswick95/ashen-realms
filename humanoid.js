@@ -181,7 +181,7 @@ export function buildHumanoid(T,root,look={}){
  function solveArm(side,target,weaponUp=new T.Vector3(0,1,0)){
   const arm=side==='left'?leftArm:rightArm,elbow=side==='left'?leftElbow:rightElbow,hand=side==='left'?leftHand:rightHand;
   const upper=elbow.position.clone(),lower=hand.position.clone(),l1=upper.length(),l2=lower.length(),toward=target.clone().sub(arm.position),distance=Math.min(l1+l2-.001,Math.max(.02,toward.length()));
-  const direction=toward.normalize(),pole=new T.Vector3(side==='left'?-.7:.7,-.1,-.4);pole.addScaledVector(direction,-pole.dot(direction)).normalize();
+  const direction=toward.normalize(),pole=new T.Vector3(side==='left'?.7:-.7,-.1,-.4);pole.addScaledVector(direction,-pole.dot(direction)).normalize();
   const along=(l1*l1-l2*l2+distance*distance)/(2*distance),bend=Math.sqrt(Math.max(0,l1*l1-along*along));
   const elbowDelta=direction.clone().multiplyScalar(along).addScaledVector(pole,bend);
   arm.quaternion.setFromUnitVectors(upper.clone().normalize(),elbowDelta.clone().normalize());
