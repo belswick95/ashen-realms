@@ -41,25 +41,28 @@ export function buildPlateArmor(T,body,rig){
   // Pauldrons attach to shoulders so they animate with the arms.
   const shoulder=add(new T.SphereGeometry(.24,20,12,0,Math.PI*2,0,Math.PI*.66),steel,arm,[0,-.16,0],'chest');shoulder.scale.set(1.12,.84,1.06);shoulder.rotation.z=side*.16;
   const rim=cylinder(arm,'chest',.235,.22,.045,[0,-.30,0],edge,18);
-  cylinder(arm,'chest',.17,.135,.29,[0,-.51,0],shade,16);
-  const vambrace=cylinder(arm,'chest',.158,.112,.34,[0,-.59,0],steel,20);
-  cylinder(arm,'chest',.16,.13,.11,[0,-.79,0],steel,16);
+  // Upper-arm plates rotate with the shoulder, while forearm guards follow the elbow.
+  cylinder(arm,'chest',.165,.14,.26,[0,-.33,0],shade,16);
+  const elbow=side<0?rig.leftElbow:rig.rightElbow;
+  cylinder(elbow,'chest',.17,.15,.13,[0,-.025,0],edge,16);
+  cylinder(elbow,'chest',.157,.112,.29,[0,-.17,0],steel,20);
+  cylinder(elbow,'chest',.15,.12,.10,[0,-.31,0],steel,16);
   cylinder(body,'chest',.025,.025,.43,[side*.36,1.53,.26],shade,12)
  }
  for(let i=0;i<3;i++)plate(body,'chest',[[-.33+i*.03,1.17-i*.095],[.33-i*.03,1.17-i*.095],[.29-i*.03,1.08-i*.095],[-.29+i*.03,1.08-i*.095]],.29-i*.025,.035,i===1?edge:steel,.008);
  const belt=cylinder(body,'chest',.345,.33,.09,[0,1.10,0],leather,24);belt.scale.z=.85;
  cylinder(body,'chest',.075,.075,.045,[0,1.10,.42],gold);
  // Leg armor: fitted thigh plates and separate articulated knee / shin guards.
- for(const leg of [rig.leftLeg,rig.rightLeg]){
-  cylinder(leg,'legs',.205,.175,.45,[0,-.25,0],steel,16);
-  plate(leg,'legs',[[-.18,-.10],[.18,-.10],[.16,-.47],[0,-.53],[-.16,-.47]],.18,.05,edge);
-  cylinder(leg,'legs',.22,.20,.18,[0,-.56,.03],steel,18);
-  plate(leg,'legs',[[-.16,-.54],[.16,-.54],[.13,-.70],[0,-.77],[-.13,-.70]],.22,.055,steel);
-  cylinder(leg,'legs',.165,.135,.29,[0,-.73,0],shade,16);
-  // Sabatons follow the leg pivots; overlapping plates form a pointed toe.
-  const shoe=add(new T.SphereGeometry(.20,20,12),steel,leg,[0,-.88,.14],'boots');shoe.scale.set(1.12,.65,1.65);
-  plate(leg,'boots',[[-.19,-.80],[.19,-.80],[.15,-.95],[0,-1.00],[-.15,-.95]],.19,.12,steel);
-  strip(leg,'boots',.30,.025,.25,[0,-.87,.27],edge)
+ for(const [leg,knee] of [[rig.leftLeg,rig.leftKnee],[rig.rightLeg,rig.rightKnee]]){
+  cylinder(leg,'legs',.185,.15,.42,[0,-.25,0],steel,16);
+  plate(leg,'legs',[[-.16,-.09],[.16,-.09],[.15,-.43],[0,-.48],[-.15,-.43]],.16,.04,edge);
+  cylinder(knee,'legs',.18,.16,.15,[0,-.025,.035],steel,18);
+  plate(knee,'legs',[[-.15,.03],[.15,.03],[.13,-.14],[0,-.19],[-.13,-.14]],.17,.04,edge);
+  cylinder(knee,'legs',.15,.115,.32,[0,-.20,0],shade,16);
+  // Sabatons follow the lower leg rather than stretching during knee flexion.
+  const shoe=add(new T.SphereGeometry(.19,16,12),steel,knee,[0,-.42,.14],'boots');shoe.scale.set(1.08,.62,1.55);
+  plate(knee,'boots',[[-.17,-.33],[.17,-.33],[.14,-.46],[0,-.51],[-.14,-.46]],.18,.10,steel);
+  strip(knee,'boots',.28,.025,.22,[0,-.40,.25],edge);
  }
  // Default hidden until equipped.
  Object.values(slots).flat().forEach(m=>m.visible=false);
