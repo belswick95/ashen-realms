@@ -6,15 +6,15 @@ import {addSystemMessage,renderFeed} from './chat-feed.js?v=staff-crown-20261102
 import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-worldtime4';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {buildHumanoid} from './humanoid.js?v=release-20261102-worldtime4';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-combatstance6';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-gripfix7';
 import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-worldtime4';
 import {buildForest} from './forest.js?v=release-20261102-worldtime4';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-worldtime4';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-gripfix7';
 import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-worldtime4';
 const landscape=createLandscape();
 import {buildPlateArmor} from './armor.js?v=release-20261102-worldtime4';
 import {createCape} from './cape.js?v=release-20261102-worldtime4';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-worldtime4';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-gripfix7';
 import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-worldtime4';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
