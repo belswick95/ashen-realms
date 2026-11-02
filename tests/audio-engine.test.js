@@ -37,6 +37,7 @@ test('music settings mute preserves ambient audio context',async()=>{
  assert.equal(elements['settings-music-toggle'].textContent,'Unmute music');
  assert.equal(audioContexts[0].suspended,false,'muting music must not suspend ambient audio');
  window.eldervaleSetAudioRegion('Wilderness');
+ audioContexts[0].currentTime=3; // advance the mocked clock beyond scheduled notes
  for(const tick of timers.values())tick();
  assert.equal(elements['music-track'].textContent,'Wilderness ambience');
  await elements['settings-music-toggle'].handlers.click();
