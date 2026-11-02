@@ -210,8 +210,18 @@ function draw(){
     [['Examine',()=>say(item.kind==='log'?'Freshly cut logs.':'Unrefined ore.')]])};
   }else{d.disabled=true}inventory.append(d);
  }
+ const equipmentIcons={
+ helm:'<svg viewBox="0 0 48 48"><path d="M10 26V19Q10 5 24 5T38 19V26L33 37H28V25H20V37H15Z" fill="#a9b5bb" stroke="#e4d6a9" stroke-width="2"/><path d="M13 22H35" stroke="#5d6972" stroke-width="4"/></svg>',
+ chest:'<svg viewBox="0 0 48 48"><path d="M14 5L6 14L11 26L16 23V42H32V23L37 26L42 14L34 5L28 10H20Z" fill="#9daeb8" stroke="#d8d5bd" stroke-width="2"/><path d="M16 16L24 22L32 16M24 22V39" stroke="#566a76" stroke-width="3"/></svg>',
+ legs:'<svg viewBox="0 0 48 48"><path d="M12 5H36L33 42H25L24 22L23 42H15Z" fill="#a1adb4" stroke="#e4d6a9" stroke-width="2"/><path d="M13 14H35" stroke="#64717b" stroke-width="4"/></svg>',
+ boots:'<svg viewBox="0 0 48 48"><path d="M9 7H20V29L25 34V41H5V34L9 27ZM28 7H39V29L44 34V41H24V34L28 27Z" fill="#7e8d96" stroke="#c3bfa7" stroke-width="2"/></svg>'
+ };
  for(const k of armorKeys){const item=document.createElement('button');item.className='equip-slot';
-  item.textContent=armorCatalog[k].slot+': '+(state.equipped[k]?armorCatalog[k].name:'Empty');
+  item.setAttribute('aria-label',armorCatalog[k].slot+': '+(state.equipped[k]?armorCatalog[k].name:'Empty'));
+  const icon=document.createElement('span');icon.className='item-icon';icon.setAttribute('aria-hidden','true');
+  if(state.equipped[k])icon.innerHTML=equipmentIcons[k];else icon.textContent='＋';
+  const caption=document.createElement('span');caption.className='equip-caption';caption.textContent=armorCatalog[k].slot;
+  item.append(icon,caption);
   item.disabled=!state.equipped[k];item.title=state.equipped[k]?'Click to unequip • Right-click for options':'No item equipped';
   item.onclick=()=>toggleArmor(k);
   item.oncontextmenu=e=>{e.preventDefault();if(state.equipped[k])showMenu(e.clientX,e.clientY,[['Remove '+armorCatalog[k].name,()=>toggleArmor(k)],['Examine',()=>examine(k)]])};
