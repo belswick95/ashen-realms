@@ -1,0 +1,38 @@
+.compact-close{display:none}
+body.compact-layout{overscroll-behavior:none}
+body.compact-layout #side{left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));width:auto;max-width:none;height:58px;padding:6px;z-index:65}
+body.compact-layout #side>.tabs{margin:0;gap:5px}
+body.compact-layout #side>.tabs button{min-height:44px!important}
+body.compact-layout:not(.compact-panel-open) #side>:not(.tabs){display:none!important}
+body.compact-layout.compact-panel-open #side{height:min(390px,calc(var(--visible-height,100dvh) - 170px));padding-top:42px}
+body.compact-layout.compact-panel-open .compact-close{display:block;position:absolute;right:8px;top:0;min-height:36px;margin:0}
+body.compact-layout #inventory{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:52px;align-content:start}
+body.compact-layout .slot{height:52px}
+body.compact-layout #social-panel{bottom:78px!important;max-height:min(300px,45dvh)}
+body.compact-layout #social-panel.collapsed{left:8px!important;transform:none;width:145px!important}
+body.compact-layout #account-bar{bottom:127px;top:auto;left:8px;transform:none;font:10px Arial}
+body.compact-layout #music-controls{bottom:177px!important;left:8px!important;max-width:150px}
+body.compact-layout #music-controls>div{display:none}
+body.compact-layout #log{bottom:217px;max-height:55px;width:145px;font-size:10px;pointer-events:none;opacity:.8}
+body.compact-layout #map-widget{width:132px;top:max(8px,env(safe-area-inset-top))!important;right:max(8px,env(safe-area-inset-right))!important;left:auto!important;bottom:auto!important}
+body.compact-layout #minimap{width:116px;height:100px}
+body.compact-layout #character-panel{top:max(8px,env(safe-area-inset-top));width:175px;min-width:0;font-size:11px;padding:8px}
+body.compact-layout #character-panel h1{font-size:17px}
+body.compact-layout #character-panel>p,body.compact-layout #reset{display:none}
+body.compact-layout #health-hud{top:149px;width:175px}
+body.compact-layout.compact-panel-open #social-panel:not(.collapsed){visibility:hidden}
+body.compact-layout #worldmap{max-height:65dvh;object-fit:contain}
+body.compact-layout #dialog:not([hidden]){bottom:78px;max-height:55dvh}
+body.compact-layout #contextmenu button{min-height:44px}
+body.compact-layout input,body.compact-layout select{font-size:16px!important}
+@media(max-height:550px){body.compact-layout #character-panel{width:155px}body.compact-layout #stats{max-height:54px;overflow:auto}body.compact-layout #health-hud{top:105px;width:155px}body.compact-layout #log,body.compact-layout #music-controls{display:none}body.compact-layout #account-bar{bottom:128px}body.compact-layout.compact-panel-open #side{left:auto;width:min(360px,55vw);height:calc(100dvh - 16px)}body.compact-layout.compact-panel-open #social-panel{visibility:hidden}}
+
+#rotate-phone{display:none}body.landscape-required #rotate-phone{display:grid;position:fixed;inset:0;z-index:30000;place-items:center;background:#15241e;color:#ead8ac;text-align:center;padding:30px;font:16px/1.6 Georgia,serif;touch-action:none}#rotate-phone strong{font-size:28px}#rotate-phone small{color:#bcbda9}body.landscape-required #game-ui,body.landscape-required #social-panel,body.landscape-required #account-bar{visibility:hidden}
+
+@media(max-height:550px){#character-creator{padding:8px;place-items:start center}.creator-card{grid-template-columns:minmax(180px,40%) 1fr;max-height:calc(100dvh - 16px)}.creator-preview{padding:8px}.creator-heading{font-size:17px}.creator-controls{padding:14px;max-height:calc(100dvh - 16px);overflow-y:auto}.creator-preview #avatar-preview{height:clamp(160px,55dvh,240px)!important}.creator-preview p{display:none}}
+
+body.compact-layout #map-widget .map-head{font-size:9px;letter-spacing:.3px;gap:3px}body.compact-layout #map-widget .map-head>span{min-width:0}body.compact-layout #map-widget .map-head button{font-size:10px;padding:5px;min-height:36px;flex-shrink:0}body.compact-layout #map-widget small{display:none}
+
+body.compact-layout #map-widget .map-head>span{display:none}body.compact-layout #map-widget .map-head button{width:100%}body.compact-layout #worldmap{width:min(100%,65dvh);height:auto;max-height:none;object-fit:fill;margin:8px auto}
+
+@media(pointer:coarse),(max-width:900px){[aria-label="Character preview controls"] button{min-width:44px;min-height:44px}}

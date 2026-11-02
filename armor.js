@@ -28,7 +28,7 @@ export function buildPlateArmor(T,body,rig){
   cylinder(body,'helm',.04,.04,.04,[side*.31,2.32,.25],gold,8)
  }
  const crest=cylinder(body,'helm',.055,.055,.32,[0,2.73,-.035],shade);
- for(let i=0;i<7;i++){const a=i/6;const f=plate(body,'helm',[[-.07+a*.02,2.74-a*.13],[.075,2.78-a*.07],[.15+a*.16,2.69-a*.20],[.03,2.67-a*.10]],-.04-i*.018,.013,plume,.005);f.rotation.z=-a*.15}
+ for(let i=0;i<7;i++){const a=i/6;plate(body,'helm',[[-.035,2.72-a*.08],[-.065,2.96-a*.08],[.065,2.96-a*.08],[.035,2.72-a*.08]],.03-i*.038,.012,plume,.005)}
  // Chest: a closed cuirass covers both front and back, preventing the underlying torso from showing through.
  const backShell=cylinder(body,'chest',.445,.355,.86,[0,1.49,0],steel,24);backShell.scale.z=.79;
  // Chest: tapered cuirass with layered breastplate, collar, waist faulds and gold accents.
@@ -64,6 +64,15 @@ export function buildPlateArmor(T,body,rig){
   plate(knee,'boots',[[-.17,-.33],[.17,-.33],[.14,-.46],[0,-.51],[-.14,-.46]],.18,.10,steel);
   strip(knee,'boots',.28,.025,.22,[0,-.40,.25],edge);
  }
+ // Follow the same adult skeleton proportions as the base character.
+ for(const slot of ['chest','legs','boots'])for(const part of slots[slot]){
+  if(part.parent===body)part.position.y+=rig.upperOffset;
+  else if([rig.leftLeg,rig.rightLeg,rig.leftKnee,rig.rightKnee].includes(part.parent)){part.position.y*=rig.legScale;part.scale.y*=rig.legScale}
+ }
+ // Apply the identical skull proportion correction to every helmet component.
+ const helmetRoot=new T.Group();body.add(helmetRoot);
+ for(const part of slots.helm){body.remove(part);part.position.y-=2.10;helmetRoot.add(part)}
+ helmetRoot.position.y=rig.head.position.y;helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.x*=.84;
  // Default hidden until equipped.
  Object.values(slots).flat().forEach(m=>m.visible=false);
  return slots;
