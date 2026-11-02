@@ -20,12 +20,12 @@ export function createCharacterPreview(host,initial){
  let model=null,frame=0,disposed=false,dragging=false,lastX=0,rotation=-.25;
  const resize=()=>{if(disposed)return;const w=Math.max(host.clientWidth,200),h=Math.max(host.clientHeight,200);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};
  const observer=new ResizeObserver(resize);observer.observe(host);
- function update(look){if(model){turntable.remove(model);model.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose()}})}model=new T.Group();buildHumanoid(T,model,look);turntable.add(model)}
+ function update(look){if(model){turntable.remove(model);model.traverse(()=>{})}model=new T.Group();buildHumanoid(T,model,look);turntable.add(model)}
  const down=e=>{dragging=true;lastX=e.clientX;renderer.domElement.setPointerCapture(e.pointerId);renderer.domElement.style.cursor='grabbing'};
  const move=e=>{if(!dragging)return;rotation+=(e.clientX-lastX)*.012;lastX=e.clientX};
  const up=()=>{dragging=false;renderer.domElement.style.cursor='grab'};
  renderer.domElement.addEventListener('pointerdown',down);renderer.domElement.addEventListener('pointermove',move);renderer.domElement.addEventListener('pointerup',up);renderer.domElement.addEventListener('pointercancel',up);
  function tick(){if(disposed)return;turntable.rotation.y=rotation;renderer.render(scene,camera);frame=requestAnimationFrame(tick)}
  update(initial);resize();tick();
- return {update,dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(frame);observer.disconnect();up();if(model)model.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose()}});renderer.dispose();renderer.domElement.remove()}};
+ return {update,dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(frame);observer.disconnect();up();if(model)model.traverse(()=>{});renderer.dispose();renderer.domElement.remove()}};
 }
