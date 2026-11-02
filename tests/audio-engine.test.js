@@ -27,6 +27,8 @@ test('music settings mute preserves ambient audio context',async()=>{
  const timers=new Map();let nextTimer=0;
  const start=new Function('document','window','localStorage','setInterval','clearInterval',source+';return startMusic;')(document,window,localStorage,(fn)=>{timers.set(++nextTimer,fn);return nextTimer},id=>timers.delete(id));
  start();
+ start(); // repeated game initialization must not attach duplicate listeners
+ assert.equal(window.eldervaleMusicInitialized,true);
  await elements['settings-music-toggle'].handlers.click();
  assert.equal(audioContexts.length,1);
  assert.equal(elements['music-toggle'].textContent,'Music On');
