@@ -12,6 +12,9 @@ function texture(kind,base){const key=kind+base;if(textureCache.has(key))return 
 for(let i=0;i<750;i++){const x=rnd()*128,y=rnd()*128,r=.4+rnd()*2.7;ctx.fillStyle=rnd()>.5?'rgba(255,248,208,.075)':'rgba(18,27,18,.09)';ctx.fillRect(x,y,r,r)}
 if(kind==='wood'){for(let i=0;i<22;i++){ctx.strokeStyle=i%2?'#ffffff16':'#130d0b24';ctx.lineWidth=.5+rnd()*1.6;ctx.beginPath();const y=i*6+rnd()*3;ctx.moveTo(0,y);ctx.bezierCurveTo(36,y+3,78,y-3,128,y+2);ctx.stroke()}}
 if(kind==='stone'){for(let i=0;i<20;i++){ctx.strokeStyle='#18201b23';ctx.beginPath();const x=rnd()*128,y=rnd()*128;ctx.moveTo(x,y);ctx.lineTo(x+5+rnd()*17,y+2+rnd()*9);ctx.stroke()}}
+if(kind==='grass'){for(let i=0;i<135;i++){const x=rnd()*128,y=rnd()*128;ctx.strokeStyle=rnd()>.5?'#bed39736':'#254d2c35';ctx.lineWidth=.5+rnd();ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+(rnd()-.5)*4,y-2-rnd()*7);ctx.stroke()}for(let i=0;i<18;i++){ctx.fillStyle='#d4bc8d44';ctx.fillRect(rnd()*128,rnd()*128,1+rnd()*2,1+rnd()*2)}}
+if(kind==='dirt'){for(let i=0;i<210;i++){const x=rnd()*128,y=rnd()*128,r=1+rnd()*3;ctx.fillStyle=rnd()>.5?'#3c32212a':'#f3d6a72e';ctx.beginPath();ctx.ellipse(x,y,r,r*.65,rnd()*6,0,Math.PI*2);ctx.fill()}}
+if(kind==='leaf'){for(let i=0;i<180;i++){const x=rnd()*128,y=rnd()*128;ctx.fillStyle=rnd()>.5?'#d6e5a124':'#122b1b30';ctx.beginPath();ctx.ellipse(x,y,1+rnd()*4,1+rnd()*2,rnd()*6,0,Math.PI*2);ctx.fill()}}
 if(kind==='roof'){for(let y=0;y<128;y+=15){ctx.strokeStyle='#160f0c44';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(128,y);ctx.stroke();for(let x=(y%30?8:0);x<128;x+=24){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+15);ctx.stroke()}}}
 const t=new T.CanvasTexture(canvas);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=4;textureCache.set(key,t);return t}
 const materialCache=new Map();function material(c,kind='stone'){const key=c+kind;if(!materialCache.has(key))materialCache.set(key,new T.MeshLambertMaterial({map:texture(kind,c),color:0xffffff}));return materialCache.get(key)}const targets=[];
@@ -19,7 +22,7 @@ renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
 function box(w,h,d,c,x,y,z,p=scene,kind='stone'){const o=new T.Mesh(new T.BoxGeometry(w,h,d),material(c,kind));o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;p.add(o);return o}
 function sphere(r,c,x,y,z,p=scene){const o=new T.Mesh(new T.SphereGeometry(r,10,8),material(c));o.position.set(x,y,z);o.castShadow=true;p.add(o);return o}
 function cone(r,h,c,x,y,z,p=scene,kind='leaf'){const o=new T.Mesh(new T.ConeGeometry(r,h,7),material(c,kind));o.position.set(x,y,z);o.castShadow=true;p.add(o);return o}
-const ground=new T.Mesh(new T.PlaneGeometry(840,840),material(0x69865b,'grass'));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+const groundTexture=texture('grass',0x69865b).clone();groundTexture.repeat.set(85,85);groundTexture.needsUpdate=true;const ground=new T.Mesh(new T.PlaneGeometry(840,840),new T.MeshLambertMaterial({map:groundTexture}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
 function disk(r,c,x,z){const m=new T.Mesh(new T.CircleGeometry(r,28),material(c));m.rotation.x=-Math.PI/2;m.position.set(x,.018,z);scene.add(m)}
 function trail(ax,az,bx,bz,width=2.7){const len=Math.hypot(bx-ax,bz-az);const m=new T.Mesh(new T.PlaneGeometry(width,len),material(0xa38b64,'dirt'));m.rotation.x=-Math.PI/2;m.rotation.z=Math.atan2(bx-ax,bz-az);m.position.set((ax+bx)/2,.025,(az+bz)/2);scene.add(m)}
 trail(0,0,-60,45);trail(0,0,75,-55);trail(0,0,105,103);trail(-60,45,-105,-91);disk(13,0x81966a,0,0);
@@ -37,7 +40,12 @@ trail(-60,45,-210,145,3.4);trail(75,-55,260,-185,3.4);trail(105,103,225,215,3.4)
 for(const [x,z,r,c] of [[-190,155,18,0x537d55],[245,-170,25,0x6b8052],[210,230,19,0x78926b],[-260,-220,22,0x708660]])disk(r,c,x,z);
 for(let i=0;i<60;i++){const a=i*2.4,r=12+i*.8;const x=250+Math.sin(a)*r,z=-180+Math.cos(a)*r;const stone=sphere(.6+i%4*.16,0x797f76,x,.32,z);stone.scale.y=.55}
 for(let i=0;i<16;i++){const a=i*Math.PI/8;box(1.8,1.2+i%3,1.8,0x74776e,-285+Math.cos(a)*13,.8,-220+Math.sin(a)*13)}
-const merchant=new T.Group();merchant.position.set(-3,0,7);scene.add(merchant);box(.7,1.2,.4,0x6b3b6c,0,1.3,0,merchant);sphere(.34,0xd8a57e,0,2.2,0,merchant);const mh=box(.95,.15,.75,0x7e4c2d,0,2.72,0,merchant);mh.userData={kind:'merchant',x:-3,z:7};targets.push(mh);box(2.5,.25,1,0x805832,-3,1,9);
+const merchant=new T.Group();merchant.position.set(-3,0,7);scene.add(merchant);
+const trader=buildHumanoid(T,merchant,{skin:0xd8a57e,shirt:0x704c77,pants:0x514638,hairColor:0x30231f,hair:'Long'});
+// The shopkeeper uses the same skeleton as other NPCs, with a distinct apron and belt.
+box(.54,.69,.045,0x9a7953,0,1.44,.225,merchant,'wood');box(.78,.12,.47,0x4b3428,0,1.01,0,merchant,'wood');
+const mh=new T.Mesh(new T.SphereGeometry(.43,8,6),new T.MeshBasicMaterial({visible:false}));mh.position.set(0,1.45,0);merchant.add(mh);mh.userData={kind:'merchant',x:-3,z:7};targets.push(mh);
+box(2.5,.25,1,0x805832,-3,1,9,scene,'wood');
 const player=new T.Group();scene.add(player);const body=new T.Group();player.add(body);
 const avatar=buildHumanoid(T,body,{skin:appearance.skin,shirt:appearance.shirt,pants:appearance.pants,hairColor:appearance.hairColor,hair:appearance.hair});
 const {leftArm:la,rightArm:ra,leftLeg:ll,rightLeg:rl}=avatar;
