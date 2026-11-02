@@ -108,15 +108,23 @@ function house(x,z,c,scale=1.65,rotation=0){
   const shape=new T.Shape();shape.moveTo(-2,3.08);shape.lineTo(2,3.08);shape.lineTo(0,4.21);shape.closePath();
   const gable=new T.Mesh(new T.ShapeGeometry(shape),material(c,'stone'));gable.position.z=z;gable.material.side=T.DoubleSide;gable.castShadow=true;group.add(gable);roofParts.push(gable);
  }
- // Open doorway: no opaque door mesh blocks the entrance.
+ // Hinged, clickable door. A closed door blocks entry.
  box(1.1,.14,.22,0x67452f,0,1.8,1.92,group,'wood');
+ const doorPivot=new T.Group();doorPivot.position.set(-.52,0,1.86);group.add(doorPivot);
+ const doorMesh=box(1.04,1.75,.13,0x654026,.52,.9,0,doorPivot,'wood');
+ box(.12,.12,.09,0xc4a15d,.88,.93,.1,doorPivot,'stone');
+ const doorHit=new T.Mesh(new T.BoxGeometry(1.15,1.95,.5),new T.MeshBasicMaterial({visible:false}));
+ doorHit.position.set(0,.95,1.86);group.add(doorHit);
+ const houseRecord={group,roofParts,inside:false,open:false,doorPivot,doorHit};
+ doorHit.userData={kind:'door',house:houseRecord};
+ targets.push(doorHit);
  for(const side of [-1,1]){
   box(.79,.82,.12,0x89aeb8,side*1.25,1.92,1.92,group);
   box(.1,.91,.17,0x614832,side*1.25,1.92,2.02,group,'wood');
   box(.85,.10,.17,0x614832,side*1.25,1.92,2.02,group,'wood')
  }
  roofParts.push(box(.4,1.2,.4,0x76665b,1.1,4.35,-.7,group,'stone'));
- houseInteriors.push({group,roofParts,inside:false});
+ houseInteriors.push(houseRecord);
  for(let i=0;i<4;i++)box(.36,.21,.29,0x858479,-1.55+i*.95,.12,1.96,group,'stone');
 }
 for(let i=0;i<520;i++){const a=i*2.399,r=14+Math.sqrt(i)*17,x=Math.sin(a)*r,z=Math.cos(a)*r;if(i%4===0)rock(x,z);else tree(x,z)}
@@ -154,6 +162,47 @@ function openArmoryChest(){
  say('Armory chest opened! Iron armor, four swords, an axe and a pickaxe added to your inventory.');
  save();draw();
 }
+function toggleHouseDoor(house){
+ house.open=!house.open;
+ house.doorPivot.rotation.y=house.open?-Math.PI*.53:0;
+ say(house.open?'You open the wooden door.':'You close the wooden door.');
+}
+function houseLocal(h,p){return h.group.worldToLocal(p.clone())}
+function housePoint(h,x,z){return h.group.localToWorld(new T.Vector3(x,0,z))}
+function insideHouse(h,p){const q=houseLocal(h,p);return Math.abs(q.x)<1.92&&Math.abs(q.z)<1.82}
+function walkAllowed(from,to){
+ const radius=.28;
+ for(const h of houseInteriors){
+  const a=houseLocal(h,from),b=houseLocal(h,to);
+  const ix=Math.abs(b.x)<1.91+radius,iz=Math.abs(b.z)<1.83+radius;
+  if(!ix||!iz)continue;
+  // Only the front doorway is traversable; the rest of the walls are solid.
+  const frontCross=(a.z>=1.83+radius&&b.z<1.83+radius)||(a.z<=1.83-radius&&b.z>1.83-radius);
+  const doorway=Math.abs(b.x)<.43&&Math.abs(a.x)<.43;
+  if(frontCross&&doorway&&h.open)continue;
+  if(insideHouse(h,from)&&insideHouse(h,to))continue;
+  return {blocked:true,house:h,doorway:frontCross&&doorway};
+ }
+ return {blocked:false};
+}
+function routeTo(target){
+ const goal=target.clone();goal.y=0;
+ const h=houseInteriors.find(h=>insideHouse(h,goal));
+ if(h&&!insideHouse(h,player.position)){
+  const door=housePoint(h,0,2.38),threshold=housePoint(h,0,1.30);
+  if(!h.open){say('The door is closed. Click the door to open it.');return door}
+  // Enter through the doorway, then continue to the clicked destination.
+  walkQueue=[threshold,goal];return door;
+ }
+ const current=houseInteriors.find(h=>insideHouse(h,player.position));
+ if(current&&!insideHouse(current,goal)){
+  const threshold=housePoint(current,0,1.30),door=housePoint(current,0,2.38);
+  if(!current.open){say('Open the door before leaving.');return threshold}
+  walkQueue=[door,goal];return threshold;
+ }
+ return goal;
+}
+let walkQueue=[];
 function updateHouseRoofs(){
  for(const house of houseInteriors){
   const local=house.group.worldToLocal(player.position.clone());
@@ -432,15 +481,19 @@ renderer.domElement.addEventListener('pointermove',e=>{if(!down)return;const dx=
 renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;if(drag)return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(targets,false);const point=new T.Vector3();const hitGround=ray.ray.intersectPlane(plane,point);
 if(e.button===2){
  const choices=[];
- if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='chest'?'Open armory chest':'Gather '+a.kind,()=>{action=a;dest=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():new T.Vector3(a.x,0,a.z);markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' ('+Math.max(0,a.mob.hp)+' HP)':a.kind==='npc'?a.profile.name+' — '+a.profile.role:a.kind==='merchant'?'A traveling trader who buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':'A harvestable '+a.kind+'.')])}
- if(hitGround)choices.push(['Walk here',()=>{dest=point.clone();action=null;closeDialog();markClick(dest.x,dest.z,'walk')}]);
+ if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;dest=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):new T.Vector3(a.x,0,a.z);markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' ('+Math.max(0,a.mob.hp)+' HP)':a.kind==='npc'?a.profile.name+' — '+a.profile.role:a.kind==='merchant'?'A traveling trader who buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':'A harvestable '+a.kind+'.')])}
+ if(hitGround)choices.push(['Walk here',()=>{walkQueue=[];dest=routeTo(point);action=null;closeDialog();markClick(dest.x,dest.z,'walk')}]);
  choices.push(['Cancel',()=>{}]);showMenu(e.clientX,e.clientY,choices);return;
 }
-if(hits.length){action=hits[0].object.userData;dest=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():new T.Vector3(action.x,0,action.z);markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){dest=point.clone();action=null;closeDialog();markClick(dest.x,dest.z,'walk')}});
+if(hits.length){action=hits[0].object.userData;dest=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):new T.Vector3(action.x,0,action.z);markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){dest=point.clone();action=null;closeDialog();markClick(dest.x,dest.z,'walk')}});
 renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.deltaY*.015,9,42)},{passive:true});
 const clock=new T.Clock();let phase=0,blend=0,saveTick=0;
 function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);let moving=false;
-if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){moving=true;delta.normalize();player.position.addScaledVector(delta,Math.min(5*dt,distance));player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(action){const a=action;action=null;if(a.kind==='creature'){if(a.mob.alive){strike(a.mob);if(a.mob.alive){action=a;dest=a.mob.root.position.clone()}}}else if(a.kind==='npc'){talkTo(a.profile)}else if(a.kind==='chest'){openArmoryChest()}else if(a.kind==='merchant'){const earned=state.wood*3+state.ore*5;state.gold+=earned;state.wood=0;state.ore=0;say(earned?'Sold resources for '+earned+' gold!':'Merchant: Bring me logs or ore.')}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;state.woodXP+=25;say('You chop logs. +25 XP')}else{state.ore++;state.miningXP+=25;say('You mine ore. +25 XP')}save();draw()}}}
+if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){moving=true;delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(5*dt,distance));
+ const collision=walkAllowed(player.position,proposed);
+ if(!collision.blocked)player.position.copy(proposed);
+ else{dest=null;walkQueue=[];action=null;if(collision.house&&!collision.house.open)say('Door closed — click the door to open it.');else say('A building blocks the way. Walk around it.')}
+ player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(walkQueue.length){dest=walkQueue.shift();}else if(action){const a=action;action=null;if(a.kind==='door'){toggleHouseDoor(a.house)}else if(a.kind==='creature'){if(a.mob.alive){strike(a.mob);if(a.mob.alive){action=a;dest=a.mob.root.position.clone()}}}else if(a.kind==='npc'){talkTo(a.profile)}else if(a.kind==='chest'){openArmoryChest()}else if(a.kind==='merchant'){const earned=state.wood*3+state.ore*5;state.gold+=earned;state.wood=0;state.ore=0;say(earned?'Sold resources for '+earned+' gold!':'Merchant: Bring me logs or ore.')}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;state.woodXP+=25;say('You chop logs. +25 XP')}else{state.ore++;state.miningXP+=25;say('You mine ore. +25 XP')}save();draw()}}}
 combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);healthBar.style.width=(combat.hp/combat.maxHp*100)+'%';
 for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>.4){delta.normalize();mob.root.position.addScaledVector(delta,dt*(mob.hostile&&distance<10?1.7:.8));mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(action?.kind==='creature'&&action.mob===mob&&dest)dest.copy(mob.root.position)}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
