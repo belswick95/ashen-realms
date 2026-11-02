@@ -15,7 +15,7 @@ const landscape=createLandscape();
 import {buildPlateArmor} from './armor.js?v=release-20261102-worldtime4';
 import {createCape} from './cape.js?v=release-20261102-worldtime4';
 import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-handedness11';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-worldtime4';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-side-shield12';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
