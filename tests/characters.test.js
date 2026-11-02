@@ -55,3 +55,24 @@ test('two-handed IK keeps both wrists on the grip through idle and attack',()=>{
  }
  a.update(.016);assert.equal(r.leftElbow.rotation.z,0);assert.equal(r.rightElbow.rotation.z,0);
 });
+
+test('hair styles use distinct low-poly silhouettes with reusable tapered geometry',()=>{
+ const styles=['Side swept','Short crop','Spiky','Buzz cut','Long'];
+ const rigs=styles.map(hair=>buildHumanoid(T,new T.Group(),{hair}));
+ const strands=rig=>rig.hairMeshes.filter(mesh=>mesh.geometry.type==='ConeGeometry');
+ assert.deepEqual(rigs.map(r=>strands(r).length),[7,7,7,0,17]);
+ assert.equal(strands(rigs[0])[0].geometry,strands(rigs[4])[0].geometry);
+ for(const rig of rigs){
+  const headBounds=new T.Box3().setFromObject(rig.head);
+  assert.ok(headBounds.min.y>1.9&&headBounds.max.y<3.0,'hair must stay attached to the head');
+ }
+});
+
+test('garment details stay attached to the body without affecting rig pivots',()=>{
+ const rig=character();
+ const details=[];rig.root.traverse(o=>{if(o.isMesh&&o.geometry.type==='CylinderGeometry'&&o.geometry.parameters.height===.46)details.push(o)});
+ assert.equal(details.length,2,'both tunic seams should exist');
+ for(const seam of details)assert.ok(Number.isFinite(seam.position.y));
+ const animator=createHumanoidAnimator(rig);animator.update(.016,{speed:5,distance:.08});
+ assert.ok(rig.leftArm.parent===rig.root&&rig.rightArm.parent===rig.root);
+});
