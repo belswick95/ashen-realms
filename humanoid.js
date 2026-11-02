@@ -57,6 +57,7 @@ export function buildHumanoid(T,root,look={}){
  const nose=mesh(geo('humanNoseV3',()=>new T.ConeGeometry(.054,.15,5)),faceMat,root,0,2.433,.258,.8,1,.9);
  nose.rotation.x=Math.PI/2;
  mesh(box(.085,.014,.014),mat(0x855d51),root,0,2.345,.221);
+ for(const side of [-1,1]){const ear=mesh(sphere,faceMat,root,side*.256,2.405,-.012,.047,.104,.064);ear.rotation.z=side*.13}
  // Close-fitted hairstyle volumes and swept strands are attached to the skull.
  const style=look.hair||'Side swept';
  const hairCap=mesh(geo('humanHairCapV3',()=>new T.SphereGeometry(1,14,9,0,Math.PI*2,0,Math.PI*.56)),hairMat,root,0,2.679,-.015,.244,style==='Buzz cut'?.075:.125,.220);
