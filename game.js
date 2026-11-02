@@ -201,18 +201,21 @@ const skillDefinitions=[['⚔','Attack','attackXP'],['💪','Strength','strength
 const skillsPanel=document.querySelector('#skills');
 function drawSkills(){
  skillsPanel.replaceChildren();
+ const grid=document.createElement('div');grid.className='skills-grid';
+ let total=0;
  for(const [icon,name,key] of skillDefinitions){
-  const xp=Math.max(0,Number(state[key])||0),lv=level(xp),prev=50*(lv-1)*(lv-1),next=50*lv*lv;
-  const row=document.createElement('div');row.className='skill-row';
-  const glyph=document.createElement('span');glyph.className='skill-icon';glyph.textContent=icon;
-  const detail=document.createElement('div'),title=document.createElement('strong');title.textContent=name;
-  const meta=document.createElement('small');meta.textContent=' '+xp.toLocaleString()+' XP';
-  const progress=document.createElement('div');progress.className='skill-progress';
-  const fill=document.createElement('span');fill.style.width=(Math.min(100,Math.max(0,(xp-prev)/(next-prev)*100)))+'%';progress.append(fill);
-  detail.append(title,meta,progress);
-  const rank=document.createElement('span');rank.className='skill-level';rank.textContent=lv;
-  row.title=name+': '+xp+' XP · Next level at '+next+' XP';row.append(glyph,detail,rank);skillsPanel.append(row)
+  const xp=Math.max(0,Number(state[key])||0),lv=level(xp),next=50*lv*lv;total+=lv;
+  const tile=document.createElement('button');tile.type='button';tile.className='skill-tile';tile.setAttribute('aria-label',name+', level '+lv+', '+xp+' experience');
+  const glyph=document.createElement('span');glyph.className='skill-tile-icon';glyph.textContent=icon;
+  const rank=document.createElement('span');rank.className='skill-tile-level';rank.textContent=lv;
+  const title=document.createElement('span');title.className='skill-tile-name';title.textContent=name;
+  tile.append(glyph,rank,title);
+  tile.title=name+' — Level '+lv+' · '+xp.toLocaleString()+' XP · Next: '+next.toLocaleString()+' XP';
+  tile.onclick=()=>{const old=skillsPanel.querySelector('.skill-detail');old?.remove();const detail=document.createElement('div');detail.className='skill-detail';const h=document.createElement('strong');h.textContent=icon+' '+name+' — Level '+lv;const p=document.createElement('p');p.textContent=xp.toLocaleString()+' XP · '+Math.max(0,next-xp).toLocaleString()+' XP until level '+(lv+1);detail.append(h,p);skillsPanel.append(detail)};
+  grid.append(tile)
  }
+ skillsPanel.append(grid);
+ const footer=document.createElement('div');footer.className='skills-footer';footer.textContent='✦ Total level '+total+'  ·  '+skillDefinitions.length+' skills';skillsPanel.append(footer);
 }
 function draw(){
  stats.innerHTML='<p><strong>Health: '+Math.ceil(combat.hp)+' / '+combat.maxHp+'</strong><br>Combat: '+level(combat.xp)+' ('+combat.xp+' XP)<br>Defeated: '+combat.kills+'<br>Gold: '+state.gold+'<br>Woodcutting: '+level(state.woodXP)+' ('+state.woodXP+' XP)<br>Mining: '+level(state.miningXP)+' ('+state.miningXP+' XP)</p>';
