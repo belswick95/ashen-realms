@@ -95,6 +95,7 @@ export function startMusic(){
   }catch(err){label.textContent='Audio unavailable';console.warn('Eldervale music:',err)}
  }
  window.eldervaleEnableAudio=async()=>{if(!playing){await toggle()}else if(ctx?.state!=='running'){await ctx.resume()}if(musicMuted){musicMuted=false;localStorage.setItem('eldervale-music-muted','false');master?.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.08);button.textContent='Music On';settingsToggle.textContent='Mute music';settingsToggle.setAttribute('aria-pressed','true')}document.querySelector('#enable-game-audio')?.remove();};
+ document.querySelector('#auth-theme-play')?.addEventListener('click',async()=>{await window.eldervaleEnableAudio?.();const b=document.querySelector('#auth-theme-play');if(b)b.textContent='♫ Entrance theme playing';});
  button.addEventListener('click',toggle);
  settingsToggle?.addEventListener('click',toggle);
  // Start music on the first user interaction permitted by the browser.
