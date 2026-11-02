@@ -982,7 +982,7 @@ function updateAudioRegion(){
  let nearest='Wilderness',distance=Infinity;
  for(const [name,x,z] of places){const d=Math.hypot(player.position.x-x,player.position.z-z);if(d<distance){distance=d;nearest=name.split(' · ')[0]}}
  if(distance>30)nearest='Wilderness';
- if(nearest!==lastAudioRegion){lastAudioRegion=nearest;window.eldervaleSetAudioRegion?.(nearest)}
+ if(nearest!==lastAudioRegion){lastAudioRegion=nearest;window.eldervaleAudioRegion=nearest;window.eldervaleSetAudioRegion?.(nearest)}
 }
 
 function frame(){requestAnimationFrame(frame);updateAudioRegion();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
