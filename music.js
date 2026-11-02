@@ -2,9 +2,9 @@
 export function startMusic(){
  const button=document.querySelector('#music-toggle'),slider=document.querySelector('#music-volume'),label=document.querySelector('#music-track');
  if(!button||!slider)return;button.textContent='Music Off';
- let ctx,master,timer,playing=false,step=0,track=0,nextTime=0;
- let region=window.eldervaleAudioRegion||'Oakcross',desiredRegion=region;
- const townThemes={'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1,'Suncrest':1,'Greenwatch':0,'Ashen Ruins':2};
+ let ctx,master,timer,playing=false,step=0,track=window.eldervaleAudioRegion?0:3,nextTime=0;
+ let region=window.eldervaleAudioRegion||'Login',desiredRegion=region;
+ const townThemes={'Login':3,'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1,'Suncrest':1,'Greenwatch':0,'Ashen Ruins':2};
  const regionOffsets={'Oakcross':0,'Northwatch':-2,'Eastmarch':2,'Old Cairn':-5,'Farwatch':4,'Westmere':-3,'Stonebridge':5,'Suncrest':7,'Greenwatch':-1,'Ashen Ruins':-7};
  window.eldervaleSetAudioRegion=(name)=>{desiredRegion=Object.hasOwn(townThemes,name)?name:'Wilderness'};
  const ambientVolume=document.querySelector('#ambient-volume');let ambienceGain,windSource;
@@ -30,6 +30,10 @@ export function startMusic(){
  melody:[69,72,76,76,74,72,69,null,71,74,77,76,74,72,71,null,72,76,81,79,77,76,74,72,74,76,77,76,72,71,69,null],
  counter:[57,null,60,null,62,null,60,null,59,null,62,null,64,null,62,null,57,null,60,null,65,null,64,null,62,null,60,null,57,null,57,null]}
  ];
+ // Original low-register modal entrance theme, distinct from the settlement marches.
+ songs.push({name:'The Gates of Eldervale',bpm:64,key:0,roots:[38,38,41,36,38,43,41,38],
+ melody:[62,null,65,null,67,null,65,null,60,null,62,null,58,null,57,null,62,null,69,null,67,null,65,null,60,null,58,null,62,null,null,null],
+ counter:[50,null,null,null,53,null,null,null,48,null,null,null,46,null,null,null,50,null,null,null,55,null,null,null,48,null,null,null,50,null,null,null]});
  const freq=n=>440*Math.pow(2,(n-69)/12);
  function brass(n,t,len,kind='trumpet',vol=.07){
   if(n==null)return;
