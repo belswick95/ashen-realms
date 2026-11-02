@@ -552,9 +552,9 @@ const cape=createCape(T,body,{color:0x81394b});
 function refreshArmor(){for(const hair of avatar.hairMeshes)hair.visible=!state.equipped.helm;avatar.torso.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
 refreshArmor();
 const weaponMeshes=new Map();
-for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.02,.035);model.rotation.set(.52,0,-.18);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
+for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.02,.035);model.rotation.set(-.95,0,-.18);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
 const shieldMeshes=new Map();
-for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);model.position.set(.29,-.06,-.035);model.rotation.set(.10,1.18,-.08);avatar.leftHand.add(model);model.visible=false;shieldMeshes.set(key,model)}
+for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);model.position.set(.12,-.06,-.09);model.rotation.set(.10,.28,-.08);avatar.leftHand.add(model);model.visible=false;shieldMeshes.set(key,model)}
 if(state.equippedWeapon==='twohand')state.equippedShield=null;
 function refreshShield(){for(const [key,model] of shieldMeshes)model.visible=state.equippedShield===key}
 function equipShield(key){if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;if(state.equippedShield&&state.equippedWeapon==='twohand'){state.equippedWeapon=null;refreshWeapon()}refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
