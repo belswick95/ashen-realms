@@ -41,7 +41,7 @@ export function createHumanoidAnimator(rig){
    rig.rightArm.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;
    rig.rightArm.rotation.z=-.32;rig.rightElbow.rotation.x=-.55;
   }
-  if(shield&&!twoHanded){rig.leftArm.rotation.x=-.06-gait*.03*blend;rig.leftArm.rotation.z=.14;rig.leftElbow.rotation.x=-.16;rig.leftHand?.rotation.set(0,0,0)}
+  if(shield&&!twoHanded){rig.leftArm.rotation.x=-.15-gait*.03*blend;rig.leftArm.rotation.z=.10;rig.leftElbow.rotation.x=-.55;rig.leftHand?.rotation.set(0,0,0)}
   if(twoHanded&&rig.solveArm){
    const t=attack>0?Math.max(0,Math.min(1,1-attack/.55)):0,swing=attack>0?Math.sin(t*Math.PI):0;
    const V=rig.root.position.constructor,angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle));

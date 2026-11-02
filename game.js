@@ -1,21 +1,22 @@
-import {createPlayerHUD} from './player-hud.js?v=release-20261102-fortress4';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-fortress4';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261102-fortress4';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-fortress4';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-fortress4';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-fortress4';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261102-grip1';
+import {createPlayerHUD} from './player-hud.js?v=release-20261102-grip1';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-grip1';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261102-grip1';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-grip1';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-grip1';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-grip1';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261102-fortress4';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-fortress4';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-fortress4';
-import {buildForest} from './forest.js?v=release-20261102-fortress4';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-fortress4';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-fortress4';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-grip1';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-grip1';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-grip1';
+import {buildForest} from './forest.js?v=release-20261102-grip1';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-grip1';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-grip1';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261102-fortress4';
-import {createCape} from './cape.js?v=release-20261102-fortress4';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-fortress4';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-fortress4';
+import {buildPlateArmor} from './armor.js?v=release-20261102-grip1';
+import {createCape} from './cape.js?v=release-20261102-grip1';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-grip1';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-grip1';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
@@ -552,9 +553,9 @@ const cape=createCape(T,body,{color:0x81394b});
 function refreshArmor(){for(const hair of avatar.hairMeshes)hair.visible=!state.equipped.helm;avatar.torso.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
 refreshArmor();
 const weaponMeshes=new Map();
-for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.02,.035);model.rotation.set(2.08,0,-.10);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
+for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);attachWeapon(avatar,model,key);model.visible=false;weaponMeshes.set(key,model)}
 const shieldMeshes=new Map();
-for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);model.position.set(.14,-.06,-.10);model.rotation.set(.06,2.82,-.08);avatar.leftHand.add(model);model.visible=false;shieldMeshes.set(key,model)}
+for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);attachShield(avatar,model);model.visible=false;shieldMeshes.set(key,model)}
 if(state.equippedWeapon==='twohand')state.equippedShield=null;
 function refreshShield(){for(const [key,model] of shieldMeshes)model.visible=state.equippedShield===key}
 function equipShield(key){if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;if(state.equippedShield&&state.equippedWeapon==='twohand'){state.equippedWeapon=null;refreshWeapon()}refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
@@ -780,7 +781,7 @@ function spawnNPC(profile,index){
  const model=buildHumanoid(T,root,{skin:palettes[index%palettes.length],shirt:profile.color,pants:0x474442,hairColor:hairs[index%hairs.length],hair:['Short crop','Side swept','Spiky','Buzz cut','Long'][index%5]});
  if(/guard|warden|sentinel|soldier/i.test(profile.role+' '+profile.name)){
   const plates=buildPlateArmor(T,root,model);for(const slot of ['chest','legs','boots'])for(const part of plates[slot])part.visible=true;model.torso.visible=false;
-  const weapon=makeWeapon(T,'longsword');model.rightHand.add(weapon);
+  const weapon=makeWeapon(T,'longsword');attachWeapon(model,weapon,'longsword');root.userData.armed=true;
  }
  // Clothing accents give each NPC a recognizable silhouette without changing the animation rig.
  if(index%3===0){box(.62,.11,.44,0x5e422d,0,1.365,0,root,'wood');box(.24,.16,.07,0xc5a46b,0,1.365,.245,root)}
@@ -1011,7 +1012,7 @@ combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(
 for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance>=1.45&&distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>(mob.hostile&&distance<10?1.9:.4)){delta.normalize();const step=Math.min(dt*(mob.hostile&&distance<10?1.7:.8),Math.max(0,distance-1.85));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(mob.hostile&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,1.95)}}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 for(const npc of npcs){
- if(conversation?.profile===npc.profile){faceTarget(npc.root,player.position);npc.animator.update(dt);continue}
+ if(conversation?.profile===npc.profile){faceTarget(npc.root,player.position);npc.animator.update(dt,{armed:!!npc.root.userData.armed});continue}
  npc.wait-=dt;
  if(npc.profile.behavior==='stationary'){
   npc.goal.copy(npc.home);npc.wait=4;
@@ -1042,7 +1043,7 @@ for(const npc of npcs){
  const actualDistance=npc.root.position.distanceTo(previous);
  if(actualDistance<.0001&&toward.lengthSq()>.1){npc.stuck+=dt;if(npc.stuck>1.5){npc.goal.copy(npc.home);npc.path=[];npc.pathGoal=null;npc.wait=1;npc.stuck=0}}
  else npc.stuck=0;
- npc.animator.update(dt,{distance:actualDistance,speed:actualDistance/Math.max(dt,.001)});
+ npc.animator.update(dt,{distance:actualDistance,speed:actualDistance/Math.max(dt,.001),armed:!!npc.root.userData.armed});
  if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position);
 }
 player.position.y=landscape.walkHeight(player.position.x,player.position.z);
