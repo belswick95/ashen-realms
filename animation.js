@@ -42,7 +42,7 @@ export function createHumanoidAnimator(rig){
   }
   // Visual pelvis compression keeps contact feet at their standing ground height.
   // Physics, saved positions and pathfinding roots are never translated.
-  const bob=(down-length+flight)*blend;rig.root.rotation.x=-.10*runBlend*blend;
+  const bob=(down-length+flight)*blend;rig.root.rotation.x=.14*runBlend*blend;
   for(const child of rig.root.children){if(!restY.has(child))restY.set(child,child.position.y);child.position.y=restY.get(child)+bob}
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
