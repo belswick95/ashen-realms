@@ -1,11 +1,11 @@
-.compact-close{display:none}
+.compact-close,.compact-panel-title{display:none}
 body.compact-layout{overscroll-behavior:none}
-body.compact-layout #side{left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));width:auto;max-width:none;height:58px;padding:6px;z-index:65}
+body.compact-layout #side{left:auto;right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));width:min(320px,calc(100vw - 16px));max-width:none;height:58px;padding:6px;z-index:65}
 body.compact-layout #side>.tabs{margin:0;gap:5px}
 body.compact-layout #side>.tabs button{min-height:44px!important}
 body.compact-layout:not(.compact-panel-open) #side>:not(.tabs){display:none!important}
-body.compact-layout.compact-panel-open #side{height:min(390px,calc(var(--visible-height,100dvh) - 170px));padding-top:42px}
-body.compact-layout.compact-panel-open .compact-close{display:block;position:absolute;right:8px;top:0;min-height:36px;margin:0}
+body.compact-layout.compact-panel-open #side{width:min(320px,42vw);height:min(300px,calc(100dvh - 24px));padding-top:50px}
+body.compact-layout.compact-panel-open .compact-close{display:block;position:absolute;right:6px;top:3px;min-width:44px;min-height:44px;margin:0}
 body.compact-layout #inventory{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:52px;align-content:start}
 body.compact-layout .slot{height:52px}
 body.compact-layout #social-panel{bottom:78px!important;max-height:min(300px,45dvh)}
@@ -25,7 +25,7 @@ body.compact-layout #worldmap{max-height:65dvh;object-fit:contain}
 body.compact-layout #dialog:not([hidden]){bottom:78px;max-height:55dvh}
 body.compact-layout #contextmenu button{min-height:44px}
 body.compact-layout input,body.compact-layout select{font-size:16px!important}
-@media(max-height:550px){body.compact-layout #character-panel{width:155px}body.compact-layout #stats{max-height:54px;overflow:auto}body.compact-layout #health-hud{top:105px;width:155px}body.compact-layout #log,body.compact-layout #music-controls{display:none}body.compact-layout #account-bar{bottom:128px}body.compact-layout.compact-panel-open #side{left:auto;width:min(360px,55vw);height:calc(100dvh - 16px)}body.compact-layout.compact-panel-open #social-panel{visibility:hidden}}
+@media(max-height:550px){body.compact-layout #character-panel{width:155px}body.compact-layout #stats{max-height:54px;overflow:auto}body.compact-layout #health-hud{top:105px;width:155px}body.compact-layout #log,body.compact-layout #music-controls{display:none}body.compact-layout #account-bar{bottom:128px}body.compact-layout.compact-panel-open #social-panel{visibility:hidden}}
 
 #rotate-phone{display:none}body.landscape-required #rotate-phone{display:grid;position:fixed;inset:0;z-index:30000;place-items:center;background:#15241e;color:#ead8ac;text-align:center;padding:30px;font:16px/1.6 Georgia,serif;touch-action:none}#rotate-phone strong{font-size:28px}#rotate-phone small{color:#bcbda9}body.landscape-required #game-ui,body.landscape-required #social-panel,body.landscape-required #account-bar{visibility:hidden}
 
@@ -39,3 +39,11 @@ body.compact-layout #map-widget .map-head>span{display:none}body.compact-layout 
 
 /* Short landscape screens must keep sign-in and account creation reachable. */
 @media(max-height:550px){#auth-screen{overflow-y:auto;place-items:start center;padding:12px}.auth-card{width:min(560px,calc(100vw - 24px));padding:16px}.auth-card h2{font-size:26px}.auth-card p{margin:8px 0}.auth-card #auth-status{min-height:20px}}
+
+body.compact-layout.compact-panel-open .compact-panel-title{display:block;position:absolute;left:12px;top:18px;color:#ead7a4;font:700 14px Georgia}
+body.compact-layout.compact-panel-open #map-widget{visibility:hidden}
+body.compact-layout #side,body.compact-layout #side button{touch-action:pan-y}
+body.compact-layout #side>.tabs{gap:3px}
+body.compact-layout #side>.tabs button{min-width:0}
+body.compact-layout #inventory{margin-top:6px;gap:4px;grid-auto-rows:48px}
+body.compact-layout .slot{height:48px;min-height:44px}
