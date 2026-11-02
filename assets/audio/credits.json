@@ -1,0 +1,145 @@
+[
+  {
+    "id": "login",
+    "title": "Stoneworld Battle",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100352",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/login.mp3",
+    "duration": 131.51,
+    "changes": "Excerpt beginning at 1:42; loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "oakcross",
+    "title": "Lord of the Land",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400022",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/oakcross.mp3",
+    "duration": 186.49,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "northwatch",
+    "title": "Night Vigil",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1900047",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/northwatch.mp3",
+    "duration": 288.29,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "eastmarch",
+    "title": "Crusade",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100884",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/eastmarch.mp3",
+    "duration": 198.74,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "farwatch",
+    "title": "Five Armies",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100875",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/farwatch.mp3",
+    "duration": 155.85,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "westmere",
+    "title": "Virtutes Instrumenti",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100801",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/westmere.mp3",
+    "duration": 262.06,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "suncrest",
+    "title": "Angevin",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200110",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/suncrest.mp3",
+    "duration": 280.56,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "greenwatch",
+    "title": "Celtic Impulse",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100297",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/greenwatch.mp3",
+    "duration": 158.23,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "moonmere",
+    "title": "Evening Fall (Harp)",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100236",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/moonmere.mp3",
+    "duration": 145.22,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "silverfin",
+    "title": "Lost Frontier",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300039",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/silverfin.mp3",
+    "duration": 264.93,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "pinehollow",
+    "title": "Willow and the Light",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100591",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/pinehollow.mp3",
+    "duration": 192.05,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "stonebridge",
+    "title": "The Britons",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2600004",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/stonebridge.mp3",
+    "duration": 306.73,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "ashen-ruins",
+    "title": "Rites",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100722",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/ashen-ruins.mp3",
+    "duration": 126.91,
+    "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  }
+]
