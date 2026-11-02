@@ -1,5 +1,5 @@
 /* Eldervale's fortress gate: the account flow stays HTML, separate from the scene. */
-#auth-screen{position:fixed;inset:0;z-index:10000;display:grid;grid-template-columns:minmax(0,1fr);place-items:center;overflow:auto;background:#090f12;color:#ede2c9;padding:26px 20px;font-family:Georgia,'Times New Roman',serif}
+#auth-screen{position:fixed;inset:0;z-index:10000;display:grid;grid-template-columns:minmax(0,1fr);place-items:center;overflow-x:hidden;overflow-y:auto;scrollbar-gutter:stable;overscroll-behavior:contain;background:#090f12;color:#ede2c9;padding:26px 20px;font-family:Georgia,'Times New Roman',serif}
 #auth-screen[hidden]{display:none}
 #auth-screen .login-scene{position:fixed;inset:0;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,#273337,#0a1014 80%)}
 #login-art{position:absolute;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.82) saturate(.78)}
@@ -13,7 +13,7 @@
 .login-brand-line{display:flex;align-items:center;justify-content:center;gap:15px;font:10px/1.5 Georgia,serif;letter-spacing:5px;margin-top:16px;color:#bba781}
 .login-brand-line span{width:45px;height:1px;background:linear-gradient(90deg,transparent,#a18b5c)}
 .login-brand-line span:last-child{transform:rotate(180deg)}
-#auth-screen .auth-card{position:relative;width:420px;max-width:100%;padding:31px 34px 0;border:1px solid #867047b3;border-radius:3px;background:linear-gradient(135deg,#1e2427f7,#10171af7 55%,#192124f7);box-shadow:0 20px 80px #000b,0 0 0 5px #0b10105c,inset 0 0 0 1px #c7af7610;text-align:left}
+#auth-screen .auth-card{position:relative;width:420px;max-width:100%;max-height:none;overflow:visible;box-sizing:border-box;flex-shrink:0;padding:31px 34px 0;border:1px solid #867047b3;border-radius:3px;background:linear-gradient(135deg,#1e2427f7,#10171af7 55%,#192124f7);box-shadow:0 20px 80px #000b,0 0 0 5px #0b10105c,inset 0 0 0 1px #c7af7610;text-align:left}
 .login-corner{position:absolute;width:16px;height:16px;border-color:#cfb27a;border-style:solid;pointer-events:none}
 .corner-tl{top:-2px;left:-2px;border-width:2px 0 0 2px}.corner-tr{top:-2px;right:-2px;border-width:2px 2px 0 0}.corner-bl{bottom:-2px;left:-2px;border-width:0 0 2px 2px}.corner-br{bottom:-2px;right:-2px;border-width:0 2px 2px 0}
 .auth-card-top{text-align:center}
