@@ -22,7 +22,7 @@ sphere(.055,0x222222,-.14,2.43,.315,body);sphere(.055,0x222222,.14,2.43,.315,bod
 function joint(x,y,w,h,c){const g=new T.Group();g.position.set(x,y,0);body.add(g);box(w,h,.3,c,0,-h/2,0,g);return g}
 const la=joint(-.55,1.97,.27,.95,0x49738a),ra=joint(.55,1.97,.27,.95,0x49738a),ll=joint(-.23,1,.32,.85,0x424750),rl=joint(.23,1,.32,.85,0x424750);
 box(.33,.27,.48,0x382b25,0,-.84,.07,ll);box(.33,.27,.48,0x382b25,0,-.84,.07,rl);
-const saved=JSON.parse(localStorage.getItem('ashen-realms-save')||'{}');
+const saved=JSON.parse(localStorage.getItem('eldervale-save')||'{}');
 const armorCatalog={
   helm:{name:'Iron full helm',slot:'Head',desc:'A sturdy iron helmet.'},
   chest:{name:'Iron platebody',slot:'Body',desc:'A solid iron breastplate.'},
@@ -80,8 +80,8 @@ const level=x=>1+Math.floor(Math.sqrt(x/50));function draw(){
   equipment.append(item);
  }
 }
-function say(s){const d=document.createElement('div');d.textContent=s;log.prepend(d)}function save(){localStorage.setItem('ashen-realms-save',JSON.stringify({...state,x:player.position.x,z:player.position.z}))}
-document.querySelector('#reset').onclick=()=>{localStorage.removeItem('ashen-realms-save');location.reload()};
+function say(s){const d=document.createElement('div');d.textContent=s;log.prepend(d)}function save(){localStorage.setItem('eldervale-save',JSON.stringify({...state,x:player.position.x,z:player.position.z}))}
+document.querySelector('#reset').onclick=()=>{localStorage.removeItem('eldervale-save');location.reload()};
 let dest=null,action=null,yaw=.75,pitch=.8,zoom=24,drag=false,down=null;const ray=new T.Raycaster(),pointer=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),0);
 renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
 renderer.domElement.addEventListener('pointerdown',e=>{if(e.button!==0&&e.button!==2)return;down=[e.clientX,e.clientY];drag=false;renderer.domElement.setPointerCapture(e.pointerId)});
@@ -100,4 +100,4 @@ function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta()
 if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?2.1:.2)){moving=true;delta.normalize();player.position.addScaledVector(delta,Math.min(5*dt,distance));player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(action){const a=action;action=null;if(a.kind==='merchant'){const earned=state.wood*3+state.ore*5;state.gold+=earned;state.wood=0;state.ore=0;say(earned?'Sold resources for '+earned+' gold!':'Merchant: Bring me logs or ore.')}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;state.woodXP+=25;say('You chop logs. +25 XP')}else{state.ore++;state.miningXP+=25;say('You mine ore. +25 XP')}save();draw()}}}
 blend=T.MathUtils.lerp(blend,moving?1:0,1-Math.exp(-12*dt));if(moving)phase+=dt*10;const swing=Math.sin(phase)*.65*blend;ll.rotation.x=swing;rl.rotation.x=-swing;la.rotation.x=-swing*.7;ra.rotation.x=swing*.7;body.position.y=Math.abs(Math.sin(phase))*.06*blend;
 const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);saveTick+=dt;if(saveTick>4){saveTick=0;save()}renderer.render(scene,camera)}
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Ashen Realms!');frame();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();
