@@ -2,7 +2,7 @@
 export function startMusic(){
  const button=document.querySelector('#music-toggle'),slider=document.querySelector('#music-volume'),label=document.querySelector('#music-track');
  if(!button||!slider)return;button.textContent='Music Off';
- let ctx,master,timer,playing=false,step=0,track=window.eldervaleAudioRegion?0:3,nextTime=0;
+ let ctx,master,timer,playing=false,musicMuted=false,step=0,track=window.eldervaleAudioRegion?0:3,nextTime=0;
  let region=window.eldervaleAudioRegion||'Login',desiredRegion=region;
  const townThemes={'Login':3,'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1,'Suncrest':1,'Greenwatch':0,'Ashen Ruins':2};
  const regionOffsets={'Oakcross':0,'Northwatch':-2,'Eastmarch':2,'Old Cairn':-5,'Farwatch':4,'Westmere':-3,'Stonebridge':5,'Suncrest':7,'Greenwatch':-1,'Ashen Ruins':-7};
@@ -84,7 +84,7 @@ export function startMusic(){
  async function toggle(){
   try{
    if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();const limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-15;limiter.ratio.value=4;master.connect(limiter);limiter.connect(ctx.destination)}
-   if(playing){playing=false;clearInterval(timer);await ctx.suspend();button.textContent='Music Off';button.setAttribute('aria-pressed','false');return}
+   if(playing){musicMuted=!musicMuted;master.gain.setTargetAtTime(musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,.08);button.textContent=musicMuted?'Music Off':'Music On';button.setAttribute('aria-pressed',String(!musicMuted));return}
    await ctx.resume();startAmbience();master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.05);
    nextTime=ctx.currentTime+.08;playing=true;timer=setInterval(schedule,90);schedule();
    button.textContent='Music On';button.setAttribute('aria-pressed','true');label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name;
@@ -94,7 +94,7 @@ export function startMusic(){
  // Start music on the first user interaction permitted by the browser.
  document.addEventListener('pointerdown',event=>{if(!playing&&!event.target.closest('#music-toggle'))toggle()},{once:true});
  document.addEventListener('keydown',event=>{if(!playing&&!event.repeat&&!event.target.closest('#music-toggle'))toggle()},{once:true});
- slider.addEventListener('input',()=>{localStorage.setItem('eldervale-music-volume',slider.value);if(ctx&&master)master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.04)});
+ slider.addEventListener('input',()=>{localStorage.setItem('eldervale-music-volume',slider.value);if(ctx&&master)master.gain.setTargetAtTime(musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,.04)});
  const stored=localStorage.getItem('eldervale-music-volume');const saved=stored===null?45:Number(stored);slider.value=Number.isFinite(saved)&&saved>=0&&saved<=100?String(saved):'45';
  window.addEventListener('pagehide',()=>{playing=false;clearInterval(timer);windSource?.stop();ctx?.close()},{once:true});
 }
