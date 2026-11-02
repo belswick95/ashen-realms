@@ -25,6 +25,17 @@ export function buildHumanoid(T,root,look={}){
  mesh(box(.115,.10,.035),mat(0xb8a075,.6),root,0,1.075,.253);
  // Pelvis fills the gap between the torso and two distinct articulated legs.
  mesh(sphere,trousers,root,0,.985,0,.30,.21,.235);
+ // Subtle stitched tunic seams and a leather strap break up the uniform torso
+ // without requiring large textures or additional draw-heavy assets.
+ const seamMat=mat(0x263c39),threadMat=mat(0x8f8064),metalMat=mat(0xb8a075,.6);
+ for(const side of [-1,1]){
+  const seam=mesh(geo('humanTunicSeamV1',()=>new T.CylinderGeometry(.008,.008,.46,5)),seamMat,root,side*.29,1.68,.155);
+  seam.rotation.z=side*.20;
+  for(let i=0;i<3;i++)mesh(box(.043,.012,.013),threadMat,root,side*(.265+i*.012),1.51+i*.12,.167);
+ }
+ const strap=mesh(box(.075,.81,.035),beltMat,root,-.08,1.55,.285);
+ strap.rotation.z=-.34;
+ mesh(box(.083,.077,.040),metalMat,root,.07,1.22,.289);
  const neck=mesh(geo('humanNeckV2',()=>new T.CylinderGeometry(.098,.12,.13,12)),faceMat,root,0,2.01,0);
  const head=new T.Group();root.add(head);
  // Sculpted low-poly head with independently controlled jaw, cheekbone and cranium widths.
