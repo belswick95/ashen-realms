@@ -445,7 +445,7 @@ if(state.starterChestClaimed&&!saved.starterShieldsGranted){
 }
 const pieces=buildPlateArmor(T,body,avatar);
 const cape=createCape(T,body,{color:0x81394b});
-function refreshArmor(){for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
+function refreshArmor(){avatar.torso.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
 refreshArmor();
 const weaponMeshes=new Map();
 for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.80,.04);ra.add(model);model.visible=false;weaponMeshes.set(key,model)}
