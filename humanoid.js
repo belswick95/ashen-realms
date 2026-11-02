@@ -1,4 +1,4 @@
-import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261102-adventure1';
+import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261102-services1';
 // Eldervale's shared low-poly human rig. The same geometry powers players,
 // NPCs, remote adventurers and the live character-creation preview.
 // Rig pivots are preserved for existing movement, equipment and combat animations.
@@ -186,7 +186,7 @@ export function buildHumanoid(T,root,look={}){
  }
  root.scale.set(.78,1,.86);
  // Two-bone arm IK keeps both palms on a two-handed grip rather than near it.
- function solveArm(side,target,weaponUp=new T.Vector3(0,1,0)){
+ function solveArm(side,target,weaponUp=new T.Vector3(0,1,0),weaponForward=null){
   const arm=side==='left'?leftArm:rightArm,elbow=side==='left'?leftElbow:rightElbow,hand=side==='left'?leftHand:rightHand;
   const upper=elbow.position.clone(),lower=hand.position.clone(),l1=upper.length(),l2=lower.length(),toward=target.clone().sub(arm.position),distance=Math.min(l1+l2-.001,Math.max(.02,toward.length()));
   const direction=toward.normalize(),pole=new T.Vector3(side==='left'?.7:-.7,-.1,-.4);pole.addScaledVector(direction,-pole.dot(direction)).normalize();
@@ -195,7 +195,9 @@ export function buildHumanoid(T,root,look={}){
   arm.quaternion.setFromUnitVectors(upper.clone().normalize(),elbowDelta.clone().normalize());
   const lowerDirection=direction.clone().multiplyScalar(distance).sub(elbowDelta).applyQuaternion(arm.quaternion.clone().invert()).normalize();
   elbow.quaternion.setFromUnitVectors(lower.clone().normalize(),lowerDirection);
-  const parentRotation=arm.quaternion.clone().multiply(elbow.quaternion);hand.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),weaponUp.clone().applyQuaternion(parentRotation.invert()).normalize());
+  const parentRotation=arm.quaternion.clone().multiply(elbow.quaternion);
+  if(weaponForward){const y=weaponUp.clone().normalize(),z=weaponForward.clone().addScaledVector(y,-weaponForward.dot(y)).normalize(),x=new T.Vector3().crossVectors(y,z).normalize(),orientation=new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z));hand.quaternion.copy(parentRotation.invert()).multiply(orientation)}
+  else hand.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),weaponUp.clone().applyQuaternion(parentRotation.invert()).normalize());
  }
  // Anatomical rig contracts used by armor and equipment.
  return {clothingMeshes:[...root.children.filter(o=>o.userData.tunic),...leftArm.children.filter(o=>o.material===cloth),...rightArm.children.filter(o=>o.material===cloth)],leftAnkle,rightAnkle,solveArm,upperOffset,legScale,root,body:root,leftArm,rightArm,leftLeg,rightLeg,leftElbow,rightElbow,leftKnee,rightKnee,leftHand,rightHand,torso,neck,face,head,hairMeshes:head.children.filter(o=>o.material===hairMat)};

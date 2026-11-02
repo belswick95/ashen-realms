@@ -2,7 +2,7 @@
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
  let phase=0,blend=0,time=0,impact=0;const restY=new WeakMap();
- return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false}={}){
+ return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false,weapon=null,block=0}={}){
   if(!Number.isFinite(dt)||dt<=0)return;
   dt=Math.min(dt,.1);time+=dt;
   distance=Number.isFinite(distance)?Math.max(0,distance):0;
@@ -48,21 +48,31 @@ export function createHumanoidAnimator(rig){
   }
   // Reset combat channels every frame so interrupted attacks cannot leave a pose stuck.
   if(!armed||twoHanded||attack>0)rig.rightArm.rotation.z=0;
-  if(attack>0){
-   const t=Math.max(0,Math.min(1,1-attack/.55));
-   rig.rightArm.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;
-   rig.rightArm.rotation.z=-.32;rig.rightElbow.rotation.x=-.55;
+  if(attack>0&&!twoHanded){
+   const t=Math.max(0,Math.min(1,1-attack/.55)),s=t*t*(3-2*t),pulse=Math.sin(t*Math.PI);
+   if(weapon==='shortsword'||weapon==='dagger'){
+    rig.rightArm.rotation.x=-.45-.55*pulse;rig.rightElbow.rotation.x=-.8+.72*pulse;rig.rightHand.rotation.x=1.25*pulse;rig.rightArm.rotation.z=-.12;
+   }else if(weapon==='scimitar'){
+    rig.rightArm.rotation.x=-.75+pulse*.35;rig.rightArm.rotation.y=-.85+s*1.7;rig.rightArm.rotation.z=-.30-pulse*.20;rig.rightElbow.rotation.x=-.40;rig.rightHand.rotation.z=-.35+s*.65;
+   }else{
+    rig.rightArm.rotation.x=-1.35+s*1.8;rig.rightArm.rotation.y=.30-s*.60;rig.rightArm.rotation.z=-.30+s*.20;rig.rightElbow.rotation.x=-.45+pulse*.15;
+   }
   }
   if(shield&&!twoHanded){rig.leftArm.rotation.x=-.15-gait*.03*blend;rig.leftArm.rotation.z=.10;rig.leftElbow.rotation.x=-.55;rig.leftHand?.rotation.set(0,0,0)}
   if(twoHanded&&rig.solveArm){
    const V=rig.root.position.constructor;
    if(attack>0){
-    const t=Math.max(0,Math.min(1,1-attack/.55)),swing=Math.sin(t*Math.PI),angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle)),target=new V(0,1.62+swing*.14,.25+swing*.08);
+    const t=Math.max(0,Math.min(1,1-attack/.55)),swing=Math.sin(t*Math.PI),angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle)),target=new V(0,1.82+swing*.10,.46+swing*.06);
     rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
    }else{
     // Carry the greatsword upright along the right shoulder; the free arm walks naturally.
-    rig.solveArm('right',new V(-.50,1.42,.12),new V(0,1,-.10).normalize());
+    rig.solveArm('right',new V(-.68,1.54,.30),new V(-.20,1,-.04).normalize(),new V(0,0,1));
    }
+  }
+  if(block>0&&attack<=0){
+   if(twoHanded&&rig.solveArm){const V=rig.root.position.constructor,direction=new V(-.65,.65,.30).normalize(),target=new V(-.12,1.88,.40);rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10),direction)}
+   else if(shield){rig.leftArm.rotation.x=-.90;rig.leftArm.rotation.z=.24;rig.leftElbow.rotation.x=-.85}
+   else{rig.rightArm.rotation.x=-.85;rig.rightElbow.rotation.x=-.7;rig.rightHand.rotation.z=-.45}
   }
   if(rig.head){rig.head.rotation.x=-gait*.012*blend-impact*.06;rig.head.rotation.z=Math.sin(time*.7)*.008*(1-blend)}
   if(rig.neck)rig.neck.scale.y=1+Math.sin(time*1.7)*.008*(1-blend);
