@@ -53,9 +53,20 @@ function house(x,z,c){
   box(.18,3.15,.2,0x715139,side*1.94,1.55,-1.83,group,'wood')
  }
  box(4.25,.18,3.9,0x74543c,0,3.07,0,group,'wood');
- // Two pitched roof slopes instead of an intersecting cone.
+ // Roof geometry: ridge x=0 at y=4.40; eaves x=±2.25 at y=3.12.
+ // Slopes descend away from the ridge, meeting cleanly at the center.
+ const roofRun=2.25,roofRise=1.28,roofLength=Math.hypot(roofRun,roofRise);
+ const roofAngle=Math.atan2(roofRise,roofRun);
  for(const side of [-1,1]){
-  const roof=box(2.95,.18,4.45,0x634332,side*1.14,3.95,0,group,'roof');roof.rotation.z=side*.58
+  const roof=box(roofLength+.04,.16,4.35,0x634332,side*roofRun/2,3.12+roofRise/2,0,group,'roof');
+  roof.rotation.z=-side*roofAngle;
+  // Thin wooden fascia follows the actual eave rather than floating above it.
+  const fascia=box(.18,.23,4.45,0x644a32,side*roofRun,3.11,0,group,'wood');
+ }
+ // Close the triangular gable walls under the roof at front and back.
+ for(const z of [-1.87,1.87]){
+  const shape=new T.Shape();shape.moveTo(-2,3.08);shape.lineTo(2,3.08);shape.lineTo(0,4.21);shape.closePath();
+  const gable=new T.Mesh(new T.ShapeGeometry(shape),material(c,'stone'));gable.position.z=z;gable.material.side=T.DoubleSide;gable.castShadow=true;group.add(gable);
  }
  box(.86,1.65,.12,0x493322,0,.84,1.92,group,'wood');
  box(.08,.08,.06,0xc7a65f,.29,.84,2.0,group);
