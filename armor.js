@@ -1,9 +1,9 @@
 // Eldervale plate armor: fitted, beveled low-poly meshes, not oversized cubes.
 // All coordinates are local to the shared 2.7-unit humanoid rig.
 export function buildPlateArmor(T,body,rig){
- const steel=new T.MeshStandardMaterial({color:0xb8c3ca,metalness:.72,roughness:.32,flatShading:false});
+ const steel=new T.MeshStandardMaterial({color:0x929ba5,metalness:.65,roughness:.48,flatShading:true});
  const shade=new T.MeshStandardMaterial({color:0x59646c,metalness:.66,roughness:.4,flatShading:true});
- const edge=new T.MeshStandardMaterial({color:0xe1e5df,metalness:.76,roughness:.28,flatShading:true});
+ const edge=new T.MeshStandardMaterial({color:0xb8c1c8,metalness:.68,roughness:.38,flatShading:true});
  const leather=new T.MeshStandardMaterial({color:0x593b32,roughness:.87});
  const gold=new T.MeshStandardMaterial({color:0xbca06a,metalness:.68,roughness:.35});
  const plume=new T.MeshStandardMaterial({color:0x743d3b,roughness:.9,flatShading:true,side:T.DoubleSide});
@@ -17,8 +17,8 @@ export function buildPlateArmor(T,body,rig){
  function cylinder(parent,slot,r1,r2,h,pos,mat=steel,segments=16){return add(new T.CylinderGeometry(r1,r2,h,segments,1),mat,parent,pos,slot)}
  function strip(parent,slot,w,h,d,pos,mat=edge){return add(new T.BoxGeometry(w,h,d),mat,parent,pos,slot)}
  // Helmet: shaped shell, dark recessed visor, cheek plates, brow and red horsehair crest.
- const helmet=add(new T.SphereGeometry(.347,24,16,0,Math.PI*2,0,Math.PI*.74),steel,body,[0,2.38,0],'helm');
- helmet.scale.set(1.07,1.1,1.06);
+ const helmet=add(new T.SphereGeometry(.347,12,8,0,Math.PI*2,0,Math.PI*.74),steel,body,[0,2.38,0],'helm');
+ helmet.scale.set(1.02,1.07,1.03);
  plate(body,'helm',[[-.33,2.45],[.33,2.45],[.30,2.18],[.20,2.11],[.14,2.22],[-.14,2.22],[-.20,2.11],[-.30,2.18]],.24,.055,steel);
  plate(body,'helm',[[-.20,2.35],[.20,2.35],[.16,2.25],[-.16,2.25]],.322,.009,shade,.006);
  plate(body,'helm',[[-.055,2.37],[.055,2.37],[.095,2.14],[0,2.06],[-.095,2.14]],.349,.035,edge,.012);
@@ -27,8 +27,8 @@ export function buildPlateArmor(T,body,rig){
   plate(body,'helm',[[side*.23,2.38],[side*.34,2.34],[side*.31,2.11],[side*.23,2.07]],.18,.09,steel);
   cylinder(body,'helm',.04,.04,.04,[side*.31,2.32,.25],gold,8)
  }
- const crest=cylinder(body,'helm',.055,.055,.32,[0,2.73,-.035],shade);
- for(let i=0;i<7;i++){const a=i/6;plate(body,'helm',[[-.035,2.72-a*.08],[-.065,2.96-a*.08],[.065,2.96-a*.08],[.035,2.72-a*.08]],.03-i*.038,.012,plume,.005)}
+ const crest=cylinder(body,'helm',.045,.045,.23,[0,2.68,-.035],shade);
+ for(let i=0;i<5;i++){const a=i/4;plate(body,'helm',[[-.035,2.72-a*.08],[-.065,2.96-a*.08],[.065,2.96-a*.08],[.035,2.72-a*.08]],.03-i*.038,.012,plume,.005)}
  // Chest: a closed cuirass covers both front and back, preventing the underlying torso from showing through.
  const backShell=cylinder(body,'chest',.445,.355,.86,[0,1.49,0],steel,24);backShell.scale.z=.79;
  // Chest: tapered cuirass with layered breastplate, collar, waist faulds and gold accents.
@@ -72,7 +72,7 @@ export function buildPlateArmor(T,body,rig){
  // Apply the identical skull proportion correction to every helmet component.
  const helmetRoot=new T.Group();body.add(helmetRoot);
  for(const part of slots.helm){body.remove(part);part.position.y-=2.10;helmetRoot.add(part)}
- helmetRoot.position.y=rig.head.position.y;helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.x*=.84;
+ helmetRoot.position.y=rig.head.position.y;helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.x*=.90;
  // Default hidden until equipped.
  Object.values(slots).flat().forEach(m=>m.visible=false);
  return slots;
