@@ -167,7 +167,8 @@ export function buildHumanoid(T,root,look={}){
  }
  // Attachment points follow the wrist joints, not the upper-arm pivots.
  const leftHand=new T.Group(),rightHand=new T.Group();
- leftHand.position.set(-.012,-.33,.015);rightHand.position.set(.012,-.33,.015);
+ // Mirror wrist anchors with the corrected anatomical arm labels.
+ leftHand.position.set(.012,-.33,.015);rightHand.position.set(-.012,-.33,.015);
  leftElbow.add(leftHand);rightElbow.add(rightHand);
  // Adult silhouette: longer articulated legs, lifted pelvis/torso and a seven-head stature.
  const upperOffset=.295,legScale=1.3;
