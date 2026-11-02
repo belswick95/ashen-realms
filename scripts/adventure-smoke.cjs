@@ -28,7 +28,7 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(new
  assert.equal(await page.evaluate(()=>window.offlineWorld.state.amulet),'woodlandAmulet');assert.equal(await page.evaluate(()=>window.offlineWorld.state.trinket),'prospectorsRing');
  await page.locator('[data-tab="equipment"]').click();await page.getByRole('button',{name:/^Amulet:/}).waitFor();await page.getByRole('button',{name:/^Trinket \(ring\):/}).waitFor();
  await page.getByRole('button',{name:'Zoom in',exact:true}).click();assert.ok(await page.evaluate(()=>window.offlineWorld.getMapExtent()<90));await page.getByRole('button',{name:'Zoom out',exact:true}).click();
- await page.getByRole('button',{name:'Toggle run',exact:true}).click();assert.equal(await page.getByRole('button',{name:'Toggle run',exact:true}).innerText(),'Run on');await page.getByRole('button',{name:'Toggle run',exact:true}).click();
+ await page.getByRole('button',{name:'Toggle run',exact:true}).click();assert.equal(await page.getByRole('button',{name:'Toggle run',exact:true}).getAttribute('aria-pressed'),'true');await page.getByRole('button',{name:'Toggle run',exact:true}).click();
  await page.evaluate(()=>window.offlineWorld.player.rotation.y=Math.PI/2);const bounds=await page.locator('#minimap').boundingBox();await page.mouse.click(bounds.x+bounds.width/2,bounds.y+bounds.height/2-15);assert.ok(await page.evaluate(()=>window.offlineWorld.getMapDestination()!==null));
  fs.mkdirSync(path.join(root,'test-results'),{recursive:true});await page.screenshot({path:path.join(root,'test-results/adventure-minimap-equipment.png')});
  await page.evaluate(()=>window.offlineWorld.equipWeapon('twohand'));await page.waitForFunction(()=>window.offlineWorld.state.equippedWeapon==='twohand');

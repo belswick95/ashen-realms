@@ -1,5 +1,6 @@
 // Procedural low-poly iron equipment. Meshes share materials and are attached to the right hand.
 export const weaponCatalog={
+ dagger:{name:'Iron dagger',kind:'weapon',damage:5,speed:.50,reach:1.7,desc:'A light blade for quick thrusts.'},
  scimitar:{name:'Iron scimitar',kind:'weapon',damage:7,speed:.72,reach:2.4,desc:'A swift curved iron blade.'},
  longsword:{name:'Iron longsword',kind:'weapon',damage:10,speed:1.05,reach:2.5,desc:'A balanced straight iron sword.'},
  twohand:{name:'Iron 2h sword',kind:'weapon',damage:16,speed:1.55,reach:2.8,desc:'A heavy two-handed iron sword.'},
@@ -36,7 +37,7 @@ export function makeWeapon(T,key){
   ridge.rotation.z=curved?-.075:0;ridge.castShadow=true;group.add(ridge);
  }
  const isTool=key==='pickaxe'||key==='axe';
- const handle=key==='twohand'? .8:isTool?.85:.39;
+ const handle=key==='twohand'? .8:isTool?.85:key==='dagger'?.30:.39;
  box(.09,handle,.095,grip,0,handle/2-.18,0);
  box(.12,.09,.12,brass,0,-.19,0);
  if(isTool){
@@ -50,7 +51,7 @@ export function makeWeapon(T,key){
   }
  }else{
   box(key==='twohand'?.44:.34,.065,.13,brass,0,handle-.12,0);
-  blade(key==='shortsword'?.56:key==='twohand'?1.22:key==='longsword'?1.0:.95,key==='twohand'?.21:key==='scimitar'?.20:.15,key==='scimitar');
+  blade(key==='dagger'?.40:key==='shortsword'?.56:key==='twohand'?1.50:key==='longsword'?1.0:.95,key==='twohand'?.21:key==='scimitar'?.20:key==='dagger'?.10:.15,key==='scimitar');
   // blade geometry starts above the crossguard
   group.children.slice(-2).forEach(o=>o.position.y+=handle-.25)
  }
@@ -60,6 +61,7 @@ export function makeWeapon(T,key){
  return group
 }
 export const weaponIcons={
+ dagger:'<path d="M22 10L26 10L28 27L24 32L20 27Z" fill="#b9c8cf" stroke="#edf3e7" stroke-width="2"/><path d="M15 29H33M24 29V43" stroke="#b18d56" stroke-width="4"/>',
  scimitar:'<path d="M11 39Q33 26 37 5Q44 27 15 43Z" fill="#bccbd0" stroke="#f4e8c8" stroke-width="2"/><path d="M12 35L5 42M7 34L17 43" stroke="#ac8952" stroke-width="4"/>',
  longsword:'<path d="M22 5L26 5L28 30L24 37L20 30Z" fill="#b9c8cf" stroke="#edf3e7" stroke-width="2"/><path d="M12 32H36M24 32V44" stroke="#b18d56" stroke-width="4"/>',
  twohand:'<path d="M22 3L26 3L30 29L24 36L18 29Z" fill="#b5c5cd" stroke="#f0f0e5" stroke-width="2"/><path d="M10 30H38M24 30V45" stroke="#a88450" stroke-width="4"/>',
