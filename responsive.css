@@ -32,3 +32,5 @@ body.compact-layout input,body.compact-layout select{font-size:16px!important}
 @media(max-height:550px){#character-creator{padding:8px;place-items:start center}.creator-card{grid-template-columns:minmax(180px,40%) 1fr;max-height:calc(100dvh - 16px)}.creator-preview{padding:8px}.creator-heading{font-size:17px}.creator-controls{padding:14px;max-height:calc(100dvh - 16px);overflow-y:auto}.creator-preview #avatar-preview{height:clamp(160px,55dvh,240px)!important}.creator-preview p{display:none}}
 
 body.compact-layout #map-widget .map-head{font-size:9px;letter-spacing:.3px;gap:3px}body.compact-layout #map-widget .map-head>span{min-width:0}body.compact-layout #map-widget .map-head button{font-size:10px;padding:5px;min-height:36px;flex-shrink:0}body.compact-layout #map-widget small{display:none}
+
+body.compact-layout #map-widget .map-head>span{display:none}body.compact-layout #map-widget .map-head button{width:100%}body.compact-layout #worldmap{width:min(100%,65dvh);height:auto;max-height:none;object-fit:fill;margin:8px auto}
