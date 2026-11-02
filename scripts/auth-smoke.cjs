@@ -22,6 +22,11 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req
  assert.ok(await page.evaluate(()=>localStorage.getItem('eldervale-pending-save:11111111-1111-4111-8111-111111111111')));
  await page.evaluate(()=>localStorage.removeItem('mock-fail'));await page.locator('#logout').click();await page.waitForFunction(()=>!document.querySelector('#auth-screen').hidden);
  const persisted=await page.evaluate(()=>JSON.parse(localStorage.getItem('mock-rows'))['11111111-1111-4111-8111-111111111111']);assert.equal(persisted.gold,145);assert.equal(persisted.equipment.shield,'kite');assert.deepEqual(persisted.inventory.shieldsOwned,['kite']);
+ await page.setViewportSize({width:844,height:390});
+ await page.locator('#auth-mode').scrollIntoViewIfNeeded();
+ const modeBounds=await page.locator('#auth-mode').boundingBox();assert.ok(modeBounds.y>=0&&modeBounds.y+modeBounds.height<=390,'account creation remains reachable on short landscape screens');
+ await page.locator('#auth-mode').click();assert.equal(await page.locator('#auth-username').isVisible(),true);
+ await page.locator('#auth-mode').click();
  await page.locator('#auth-email').fill('two@example.invalid');await page.locator('#auth-password').fill('OfflineFixture42');await page.locator('#auth-form button').click();await page.waitForFunction(()=>document.querySelector('#auth-screen').hidden&&typeof window.eldervaleCaptureSave==='function'&&!!window.offlineAuthWorld);
  const second=await page.evaluate(()=>JSON.parse(localStorage.getItem('eldervale-save')));assert.equal(second.gold,77);assert.equal(second.combatXP,777);assert.equal(await page.locator('#account-name').innerText(),'Second');
  await page.locator('#logout').click();await page.waitForFunction(()=>!document.querySelector('#auth-screen').hidden);await page.locator('#auth-mode').click();await page.locator('#auth-username').fill('Third');await page.locator('#auth-email').fill('three@example.invalid');await page.locator('#auth-password').fill('OfflineFixture42');await page.locator('#auth-form button').click();await page.locator('#character-creator').waitFor();await page.setViewportSize({width:844,height:390});
