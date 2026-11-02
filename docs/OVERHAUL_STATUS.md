@@ -148,3 +148,22 @@ runtime regression test. This is why syntax checks alone are insufficient.
   Runtime tests cover graded mesh triangles, floor footing, speaker isolation and
   stable sun projection. Full module versions are updated together.
 - Owner authorized continuing through implementation, checks and deployment.
+
+## Multiplayer presence repair
+
+- Production Realtime logs showed `ClientPresenceRateLimitReached` for both
+  players. The old client sent every position through Presence tracking and
+  ignored connection errors, leaving the world silently disconnected.
+- Presence now announces membership only on subscription. Acknowledged Broadcast
+  messages carry position, facing and sanitized character/loadout state, capped
+  at four sends per second while moving with sparse idle heartbeats.
+- Rosters retain current movement across old Presence snapshots, discard stale
+  sequence numbers and unknown senders, deduplicate tabs and remove departures.
+- Closed/error channels get a fresh subscription with backoff. Rate-limit errors
+  use a longer cooldown. Restoring a cached page or returning online rejoins.
+- The account bar displays connection status and the number of online players.
+- Unit coverage includes flood prevention, stale packets/snapshots, departures,
+  self filtering, reconnect backoff and page-cache restoration. The opt-in
+  `npm run test:multiplayer` uses two real game contexts in an isolated random
+  Realtime topic; it writes no accounts, chat messages or saved progress.
+- Bank storage work was paused while this live multiplayer issue was prioritized.

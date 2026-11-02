@@ -96,3 +96,7 @@ body.compact-layout #dialog-portrait{width:88px;height:88px}
 body.compact-layout #dialog-text{font-size:14px;line-height:1.4}
 body.compact-layout #dialog .dialog-top{padding-bottom:6px}
 body.compact-layout #dialog-next{margin-top:7px}
+
+#multiplayer-status{display:inline-block;margin-left:10px;color:#c1dda7;font:11px Arial;white-space:nowrap}
+#multiplayer-status[data-state=connecting],#multiplayer-status[data-state=reconnecting]{color:#efd28f}
+#multiplayer-status[data-state=offline]{color:#edab9a}
