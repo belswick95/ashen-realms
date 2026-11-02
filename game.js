@@ -1,23 +1,26 @@
-import {createPlayerHUD} from './player-hud.js?v=release-20261102-coherent1';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-coherent1';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-coherent1';
+import {createPlayerHUD} from './player-hud.js?v=release-20261102-oakcross2';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-oakcross2';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261102-oakcross2';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-oakcross2';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-oakcross2';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-oakcross2';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261102-coherent1';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-coherent1';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-coherent1';
-import {buildForest} from './forest.js?v=release-20261102-coherent1';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-coherent1';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-coherent1';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-oakcross2';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-oakcross2';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-oakcross2';
+import {buildForest} from './forest.js?v=release-20261102-oakcross2';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-oakcross2';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-oakcross2';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261102-coherent1';
-import {createCape} from './cape.js?v=release-20261102-coherent1';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-coherent1';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-coherent1';
+import {buildPlateArmor} from './armor.js?v=release-20261102-oakcross2';
+import {createCape} from './cape.js?v=release-20261102-oakcross2';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-oakcross2';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-oakcross2';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
 scene.add(new T.HemisphereLight(0xcfe4ff,0x5a4d33,2));const sun=new T.DirectionalLight(0xffe9b6,2.3);sun.position.set(12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);scene.add(sun.target);renderer.shadowMap.type=T.PCFSoftShadowMap;
-Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:.5,far:180});sun.shadow.normalBias=.04;sun.shadow.bias=-.00015;sun.shadow.camera.updateProjectionMatrix();
+Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:.5,far:140});sun.shadow.normalBias=.10;sun.shadow.bias=-.0003;sun.shadow.camera.updateProjectionMatrix();
 // Seeded procedural canvas textures, cached and shared across meshes.
 const textureCache=new Map();
 function texture(kind,base){const key=kind+base;if(textureCache.has(key))return textureCache.get(key);const canvas=document.createElement('canvas');const groundKind=kind==='grass'||kind==='dirt';const texSize=groundKind?256:128;canvas.width=texSize;canvas.height=texSize;const ctx=canvas.getContext('2d');ctx.fillStyle='#'+base.toString(16).padStart(6,'0');ctx.fillRect(0,0,texSize,texSize);let seed=base>>>0;const rnd=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
@@ -25,6 +28,10 @@ for(let i=0;i<750;i++){const x=rnd()*128,y=rnd()*128,r=.4+rnd()*2.7;ctx.fillStyl
 if(kind==='water'){for(let i=0;i<180;i++){const x=rnd()*128,y=rnd()*128;ctx.strokeStyle=i%3?'#a9d1cb30':'#1f536333';ctx.lineWidth=.4+rnd()*.6;ctx.beginPath();ctx.moveTo(x,y);ctx.bezierCurveTo(x+3,y-1,x+7,y+1,x+12,y);ctx.stroke()}}
 if(kind==='wood'){for(let i=0;i<22;i++){ctx.strokeStyle=i%2?'#ffffff16':'#130d0b24';ctx.lineWidth=.5+rnd()*1.6;ctx.beginPath();const y=i*6+rnd()*3;ctx.moveTo(0,y);ctx.bezierCurveTo(36,y+3,78,y-3,128,y+2);ctx.stroke()}}
 if(kind==='stone'){for(let i=0;i<20;i++){ctx.strokeStyle='#18201b23';ctx.beginPath();const x=rnd()*128,y=rnd()*128;ctx.moveTo(x,y);ctx.lineTo(x+5+rnd()*17,y+2+rnd()*9);ctx.stroke()}}
+if(kind==='masonry'){
+ ctx.lineWidth=2;ctx.strokeStyle='#363c345c';
+ for(let row=0;row<8;row++){const y=row*16;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(128,y);ctx.stroke();for(let x=(row%2?-16:0);x<128;x+=32){ctx.fillStyle=rnd()>.5?'#fff4d51a':'#17251b16';ctx.fillRect(x+2,y+2,28,12);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+16);ctx.stroke()}}
+}
 if(kind==='grass'){
  // Higher-frequency detail remains readable at gameplay camera distance.
  for(let i=0;i<7200;i++){
@@ -68,6 +75,10 @@ for(const [a,b] of worldRoads){
  const path=new T.Mesh(ribbonGeometry(T,points,2.7),pathMaterial);path.position.y=.027;path.receiveShadow=true;scene.add(path);
 }
 texturedPatch(13,0,0,0x8a9870);
+// A paved market square anchors the main town; streets meet its edges.
+const plazaTexture=texture('masonry',0xa49d88).clone();plazaTexture.repeat.set(5,5);plazaTexture.needsUpdate=true;
+const plaza=new T.Mesh(new T.CircleGeometry(10,8),new T.MeshLambertMaterial({map:plazaTexture}));
+plaza.rotation.x=-Math.PI/2;plaza.rotation.z=Math.PI/8;plaza.position.y=.065;plaza.receiveShadow=true;plaza.userData.terrainFixed=true;scene.add(plaza);
 for(let i=0;i<480;i++){const a=i*2.399963,r=8+Math.sqrt(i)*9.1,x=Math.sin(a)*r,z=Math.cos(a)*r;if(Math.abs(x)<410&&Math.abs(z)<410){const g=box(.11,.14,.11,i%3?0x79955b:0x9baa70,x,.08,z);g.rotation.y=a}}
 // Draw-call-efficient tufts add near-ground depth without thousands of meshes.
 const tuftGeometry=new T.ConeGeometry(.095,.32,3);
@@ -86,7 +97,7 @@ const forestTrees=[];
 const treeHitGeometry=new T.ConeGeometry(2.35,6.5,8);
 const treeHitMaterial=new T.MeshBasicMaterial({visible:false});
 function tree(x,z){
- if(landscape.waterAt(x,z)>.01||distanceToRoad(x,z)<4||landscapeSettlements.some(([sx,sz])=>Math.hypot(x-sx,z-sz)<32))return;
+ if(landscape.waterAt(x,z)>.01||distanceToRoad(x,z)<4||landscapeSettlements.some(([sx,sz])=>Math.hypot(x-sx,z-sz)<(sx===0&&sz===0?54:32)))return;
  forestTrees.push({x,z});
  // Retain individual harvest targets and world coordinates independently of rendering.
  const hit=new T.Mesh(treeHitGeometry,treeHitMaterial);hit.position.set(x,4,z);scene.add(hit);
@@ -101,11 +112,15 @@ function rock(x,z){
  m.userData={kind:'rock',x,z};targets.push(m)
 }
 const houseInteriors=[];const mapProps=[];
-function house(x,z,c,scale=1.65,rotation=0){
+function house(x,z,c,scale=1.65,rotation=0,options={}){
+ const sx=scale*(options.width||1),sz=scale*(options.depth||1),wallKind=options.stone?'masonry':'stone',roofColor=options.roof||0x634332;
  // Keep full building footprints ashore, including existing lakeside hamlets.
- const dry=(px,pz)=>[-1,0,1].every(a=>[-1,0,1].every(b=>landscape.waterAt(px+a*3.2*scale,pz+b*3.2*scale)<=0));
+ const radius=2.4*Math.hypot(sx,sz);
+ const dry=(px,pz)=>[-1,0,1].every(a=>[-1,0,1].every(b=>landscape.waterAt(px+a*radius,pz+b*radius)<=0));
  if(!dry(x,z)){let found=false;for(let r=2;r<=40&&!found;r+=2)for(let i=0;i<24;i++){const angle=i*Math.PI/12,px=x+Math.cos(angle)*r,pz=z+Math.sin(angle)*r;if(dry(px,pz)){x=px;z=pz;found=true;break}}}
- const group=new T.Group();group.position.set(x,0,z);group.scale.setScalar(scale);group.rotation.y=rotation;scene.add(group);
+ const group=new T.Group();group.scale.set(sx,scale,sz);group.rotation.y=rotation;
+ const plotHeight=landscape.levelBuildingPlot({x,z,scaleX:sx,scaleZ:sz,rotation,floorHeight:.125*scale});
+ group.position.set(x,plotHeight,z);group.userData.terrainFixed=true;scene.add(group);
  // Real walk-in room, with a front doorway instead of a solid wall block.
  // Sink a stone plinth into the terrain and overlap the wall bottoms. The
  // exposed lip keeps grass and the nearly coplanar floor underside from
@@ -113,14 +128,17 @@ function house(x,z,c,scale=1.65,rotation=0){
  // at .125 so doorway clearance and the existing walk-in room stay aligned.
  box(4.18,.7,3.94,0x777568,0,-.25,0,group,'stone');
  box(4,.085,3.7,0x81684c,0,.0825,0,group,'wood');
- box(4,3,.18,c,0,1.5,-1.83,group,'stone');
- for(const side of [-1,1])box(.18,3,3.7,c,side*1.91,1.5,0,group,'stone');
- for(const side of [-1,1])box(1.48,3,.18,c,side*1.26,1.5,1.83,group,'stone');
- box(1.04,.75,.18,c,0,2.625,1.83,group,'stone');
+ // Walls meet at edges. Overlapping box caps used to compete in the depth
+ // buffer along the corners, independently of the grass/foundation seam.
+ box(3.64,3,.18,c,0,1.5,-1.83,group,wallKind);
+ for(const side of [-1,1])box(.18,3,3.84,c,side*1.91,1.5,0,group,wallKind);
+ for(const side of [-1,1])box(1.30,3,.18,c,side*1.17,1.5,1.83,group,wallKind);
+ box(1.04,.75,.18,c,0,2.625,1.83,group,wallKind);
  const roofParts=[];
  for(const side of [-1,1]){
-  box(.18,3.15,.2,0x715139,side*1.94,1.55,1.83,group,'wood');
-  box(.18,3.15,.2,0x715139,side*1.94,1.55,-1.83,group,'wood')
+  const trim=options.stone?0xc2bfae:0x715139;
+  box(.20,3.15,.22,trim,side*1.94,1.55,1.83,group,options.stone?'masonry':'wood');
+  box(.20,3.15,.22,trim,side*1.94,1.55,-1.83,group,options.stone?'masonry':'wood')
  }
  roofParts.push(box(4.25,.18,3.9,0x74543c,0,3.07,0,group,'wood'));
  // Roof geometry: ridge x=0 at y=4.40; eaves x=±2.25 at y=3.12.
@@ -128,7 +146,7 @@ function house(x,z,c,scale=1.65,rotation=0){
  const roofRun=2.25,roofRise=1.28,roofLength=Math.hypot(roofRun,roofRise);
  const roofAngle=Math.atan2(roofRise,roofRun);
  for(const side of [-1,1]){
-  const roof=box(roofLength+.04,.16,4.35,0x634332,side*roofRun/2,3.12+roofRise/2,0,group,'roof');
+  const roof=box(roofLength+.04,.16,4.35,roofColor,side*roofRun/2,3.12+roofRise/2,0,group,'roof');
   roof.rotation.z=-side*roofAngle;roofParts.push(roof);
   // Thin wooden fascia follows the actual eave rather than floating above it.
   const fascia=box(.18,.23,4.45,0x644a32,side*roofRun,3.11,0,group,'wood');roofParts.push(fascia);
@@ -136,7 +154,8 @@ function house(x,z,c,scale=1.65,rotation=0){
  // Close the triangular gable walls under the roof at front and back.
  for(const z of [-1.87,1.87]){
   const shape=new T.Shape();shape.moveTo(-2,3.08);shape.lineTo(2,3.08);shape.lineTo(0,4.21);shape.closePath();
-  const gable=new T.Mesh(new T.ShapeGeometry(shape),material(c,'stone'));gable.position.z=z;gable.material.side=T.DoubleSide;gable.castShadow=true;group.add(gable);roofParts.push(gable);
+  const gableMaterial=material(c,wallKind).clone();gableMaterial.side=T.DoubleSide;
+  const gable=new T.Mesh(new T.ShapeGeometry(shape),gableMaterial);gable.position.z=z;gable.castShadow=true;group.add(gable);roofParts.push(gable);
  }
  // Hinged, clickable door. A closed door blocks entry.
  box(1.1,.14,.22,0x67452f,0,1.8,1.92,group,'wood');
@@ -145,7 +164,8 @@ function house(x,z,c,scale=1.65,rotation=0){
  box(.12,.12,.09,0xc4a15d,.88,.93,.1,doorPivot,'stone');
  const doorHit=new T.Mesh(new T.BoxGeometry(1.15,1.95,.5),new T.MeshBasicMaterial({visible:false}));
  doorHit.position.set(0,.95,1.86);group.add(doorHit);
- const houseRecord={group,roofParts,inside:false,open:false,doorPivot,doorHit};
+ const houseRecord={group,roofParts,inside:false,open:!!options.open,doorPivot,doorHit,type:options.type||'cottage',name:options.name||'Cottage',roofColor};
+ if(houseRecord.open)doorPivot.rotation.y=-Math.PI*.53;
  doorHit.userData={kind:'door',house:houseRecord};
  doorMesh.userData={kind:'door',house:houseRecord};targets.push(doorMesh);
  for(const side of [-1,1]){
@@ -156,20 +176,32 @@ function house(x,z,c,scale=1.65,rotation=0){
  roofParts.push(box(.4,1.2,.4,0x76665b,1.1,4.35,-.7,group,'stone'));
  houseInteriors.push(houseRecord);
  for(let i=0;i<4;i++)box(.36,.21,.29,0x858479,-1.55+i*.95,.12,1.96,group,'stone');
+ if(options.type){decorateTownBuilding(T,houseRecord,{box,material});if(options.type!=='armory')buildingLabel(group,options.name)}
+ return houseRecord;
+}
+function buildingLabel(group,caption){
+ const canvas=document.createElement('canvas');canvas.width=512;canvas.height=96;const ctx=canvas.getContext('2d');ctx.fillStyle='#28372e';ctx.fillRect(0,0,512,96);ctx.strokeStyle='#cbb77d';ctx.lineWidth=5;ctx.strokeRect(3,3,506,90);ctx.font='bold 31px Georgia';ctx.textAlign='center';ctx.fillStyle='#f0d99b';ctx.fillText(caption.toUpperCase(),256,60,490);
+ const sign=new T.Mesh(new T.PlaneGeometry(2.8,.46),new T.MeshBasicMaterial({map:new T.CanvasTexture(canvas)}));sign.position.set(0,2.82,1.945);group.add(sign);
 }
 for(let i=0;i<520;i++){const a=i*2.399,r=14+Math.sqrt(i)*17,x=Math.sin(a)*r,z=Math.cos(a)*r;if(i%4===0)rock(x,z);else tree(x,z)}
 // Oakcross: a walkable settlement, with a clear central square and houses around its edges.
-const villageBuildings=[
- [-16,-13,0xb8a480,1.65,.18],[-5,-18,0x9d967f,1.7,0],[9,-17,0xc1aa82,1.65,-.1],
- [20,-8,0xb4a48d,1.65,-.3],[21,9,0xa7a18c,1.75,-.2],
- [13,22,0xb8a78b,1.65,Math.PI],[-1,24,0xb9a58b,1.75,Math.PI],
- [-17,17,0xaaa38a,1.65,2.9],[-23,2,0xbca98d,1.7,Math.PI/2],
- [-30,-19,0xa6a18c,1.7,.35],[32,21,0xbca88a,1.65,-.35]
-];
-for(const [x,z,c,scale,rot] of villageBuildings)house(x,z,c,scale,rot);
+for(const building of oakcrossBuildings){
+ const rotation=building.z>15?Math.PI:building.x<-28?Math.PI/2:building.x>25?-Math.PI/2:0;
+ house(building.x,building.z,building.color,building.scale,rotation,building);
+}
+const townStreets=[];
+for(const h of houseInteriors){
+ const door=new T.Vector3(0,0,2.4);h.group.localToWorld(door);
+ const length=Math.hypot(door.x,door.z),start=[door.x*9/length,door.z*9/length];
+ townStreets.push([start,[door.x,door.z]]);
+ const points=Array.from({length:21},(_,i)=>[start[0]+(door.x-start[0])*i/20,start[1]+(door.z-start[1])*i/20]);
+ const geo=ribbonGeometry(T,points,h.type==='bank'||h.type==='hall'?3.2:2.3);
+ const p=geo.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,landscape.heightAt(p.getX(i),p.getZ(i))+.045);geo.computeVertexNormals();
+ const street=new T.Mesh(geo,pathMaterial);street.receiveShadow=true;street.userData.terrainFixed=true;scene.add(street);
+}
 house(-60,42,0xb7a08c);house(-54,48,0xaaa38a);house(73,-58,0xc3b29b);house(78,-51,0x99866c);house(-105,-91,0x9a9b87);house(102,103,0xb8a48d);house(-210,145,0xbda78a);house(-205,151,0xa8a089);house(260,-185,0xbda78a);house(265,-180,0xaaa08a);house(225,215,0xbaa78e);house(-275,-215,0xbda88d);
 
-const places=[['Oakcross',0,0],['Northwatch',-60,45],['Eastmarch',75,-55],['Old Cairn',132,26],['Farwatch',105,103],['Westmere',-210,145],['Suncrest',260,-185],['Greenwatch',225,215],['Ashen Ruins',-275,-215]];
+const places=[['Oakcross · Main Town',0,0],['Northwatch',-60,45],['Eastmarch',75,-55],['Old Cairn',132,26],['Farwatch',105,103],['Westmere',-210,145],['Suncrest',260,-185],['Greenwatch',225,215],['Ashen Ruins',-275,-215]];
 // Lakeside settlements and landmarks. Water is a visible, discoverable world feature.
 const worldLakes=landscapeLakes;
 for(const lake of worldLakes){
@@ -212,7 +244,7 @@ for(const town of extraSettlements){
  places.push([town.name,town.x,town.z]);
 }
 // Oakcross starter armory: a one-time supply chest in the northern house.
-const armoryHouse=houseInteriors[1];
+const armoryHouse=houseInteriors.find(h=>h.type==='armory');
 // Identify the starter armory from outside so players can find the chest.
 const armorySignCanvas=document.createElement('canvas');armorySignCanvas.width=512;armorySignCanvas.height=128;
 const armorySignCtx=armorySignCanvas.getContext('2d');armorySignCtx.fillStyle='#35281d';armorySignCtx.fillRect(0,0,512,128);
@@ -611,9 +643,11 @@ for(const lake of worldLakes){
   trace();ctx.strokeStyle='#c3a878';ctx.lineWidth=scale?2.3:3.5;ctx.stroke();
  }
  for(const bridge of landscape.bridges){const x=toX(bridge.x),y=toY(bridge.z);ctx.save();ctx.translate(x,y);ctx.rotate(-bridge.yaw);ctx.fillStyle='#bba37c';ctx.strokeStyle='#45392b';ctx.lineWidth=1;ctx.fillRect(-bridge.width*pxPerUnit/2,-bridge.length*pzPerUnit/2,bridge.width*pxPerUnit,bridge.length*pzPerUnit);ctx.strokeRect(-bridge.width*pxPerUnit/2,-bridge.length*pzPerUnit/2,bridge.width*pxPerUnit,bridge.length*pzPerUnit);ctx.restore()}
+ ctx.strokeStyle='#c6b08a';ctx.lineWidth=Math.max(1.1,2.3*pxPerUnit);
+ for(const [a,b] of townStreets){ctx.beginPath();ctx.moveTo(toX(a[0]),toY(a[1]));ctx.lineTo(toX(b[0]),toY(b[1]));ctx.stroke()}
  // Draw buildings from their actual world transforms, including rotated footprints and doorway positions.
  for(const h of houseInteriors){
-  const g=h.group,worldScale=g.scale.x,halfW=2*worldScale,halfD=1.85*worldScale;
+  const g=h.group,halfW=2*g.scale.x,halfD=1.85*g.scale.z;
   const cx=toX(g.position.x),cy=toY(g.position.z);
   if(cx+halfW*pxPerUnit<0||cx-halfW*pxPerUnit>w||cy+halfD*pzPerUnit<0||cy-halfD*pzPerUnit>canvas.height)continue;
   const corners=[[-halfW,-halfD],[halfW,-halfD],[halfW,halfD],[-halfW,halfD]];
@@ -623,7 +657,7 @@ for(const lake of worldLakes){
   ctx.fillStyle='#483a29';ctx.strokeStyle='#d2b47e';ctx.lineWidth=scale?1.2:1.8;ctx.fill();ctx.stroke();
   ctx.save();ctx.clip();
   const roofTone=Math.abs(Math.floor(g.position.x*13+g.position.z*7))%3;
-  ctx.fillStyle=['#a15c35','#a36d3f','#865537'][roofTone];ctx.fillRect(cx-halfW*pxPerUnit*2,cy-halfD*pzPerUnit*2,halfW*pxPerUnit*4,halfD*pzPerUnit*4);
+  ctx.fillStyle='#'+h.roofColor.toString(16).padStart(6,'0');ctx.fillRect(cx-halfW*pxPerUnit*2,cy-halfD*pzPerUnit*2,halfW*pxPerUnit*4,halfD*pzPerUnit*4);
   ctx.strokeStyle='#d39a59';ctx.lineWidth=scale?0.7:1;
   const step=Math.max(3,scale?3.2:6);
   for(let yy=cy-halfD*pzPerUnit*2;yy<cy+halfD*pzPerUnit*2;yy+=step){
@@ -637,8 +671,9 @@ for(const lake of worldLakes){
   ctx.beginPath();ctx.moveTo(...p1);ctx.lineTo(...p2);
   ctx.strokeStyle='rgba(248,202,135,.75)';ctx.lineWidth=scale?1:1.7;ctx.stroke();
   ctx.strokeStyle='#392b20';ctx.lineWidth=scale?1:1.5;ctx.stroke();
-  const doorX=g.position.x+1.86*worldScale*sn,doorZ=g.position.z+1.86*worldScale*c;
+  const doorX=g.position.x+1.86*g.scale.z*sn,doorZ=g.position.z+1.86*g.scale.z*c;
   if(!scale){ctx.fillStyle='#d8bc83';ctx.beginPath();ctx.arc(toX(doorX),toY(doorZ),2.2,0,Math.PI*2);ctx.fill();}
+  if(h.type==='bank'||h.type==='hall'){ctx.fillStyle='#f7e5a9';ctx.font=(scale?'bold 9px':'bold 10px')+' Georgia';ctx.textAlign='center';ctx.fillText(h.type==='bank'?'BANK':'HALL',cx,cy+3);ctx.textAlign='left'}
  }
  // World props are represented by small map symbols at their actual world coordinates.
  for(const prop of mapProps){
@@ -719,20 +754,23 @@ function workSign(x,z,caption){
  sign.position.set(0,2.5,.08);g.add(sign);
 }
 workCounter(-12,5,'herbs');workCounter(12,4,'goods');
-workCounter(-8,-10,'bank');workSign(-8,-10,'OAKCROSS BANK');
-workCounter(18,-1,'forge');workSign(18,-1,'THE FORGE');
+workSign(-17,-10,'OAKCROSS BANK');
+workSign(0,-12,'OAKCROSS · MAIN TOWN');
 workSign(-12,5,'HERBALIST');workSign(12,4,'MARKET');
 const npcProfiles=[
-{name:'Edda the Guide',role:'guide',x:3,z:8,color:0x4b6d8d,station:'guide',behavior:'stationary',lines:['Welcome to Oakcross! The bank is northwest, the market is east, and the forge is near the eastern gate.','Open a house door before entering. The armory has equipment for new adventurers.']},
+{name:'Edda the Guide',role:'guide',x:3,z:8,color:0x4b6d8d,station:'guide',behavior:'stationary',lines:['Welcome to Oakcross, the main town of the Heartlands! The stone bank is northwest, the town hall is north, and the inn is southeast.','Visit the market in the square, the forge to the east, or the chapel in the southwest. The northern armory has equipment for new adventurers.']},
 {name:'Sir Rowan',role:'guard',x:24,z:-3,color:0x9a9da6,station:'guard',behavior:'patrol',patrol:[[24,-3],[28,3],[24,8],[20,4]],lines:['I patrol the eastern gate and keep the roads safe.','Keep your blade ready beyond the village.']},
 {name:'Mira the Herbalist',role:'herbalist',x:-12,z:7.5,color:0x548c66,station:'herbs',behavior:'stationary',lines:['Welcome to my herb stall. Fresh greens and remedies from the forest.','The forests are alive with useful plants.']},
 {name:'Bram the Woodsman',role:'woodsman',x:-56,z:43,color:0x855f3c,station:'woodland',behavior:'patrol',patrol:[[-56,43],[-50,40],[-48,45],[-55,47]],lines:['I collect timber beside Northwatch, not in the middle of town.','The tall pines make fine beams.']},
 {name:'Lysa the Scout',role:'scout',x:74,z:-51,color:0x74628b,station:'scout',behavior:'patrol',patrol:[[74,-51],[80,-48],[83,-54],[76,-55]],lines:['I keep watch over Eastmarch and its roads.','The eastern roads wind toward Suncrest.']},
-{name:'Torren the Smith',role:'smith',x:18,z:1.5,color:0x806e65,station:'forge',behavior:'stationary',lines:['Welcome to my forge. I keep blades and tools ready for travelers.','Bring me ore when smithing is available.']},
+{name:'Torren the Smith',role:'smith',x:28,z:-10.8,color:0x806e65,station:'forge',behavior:'stationary',lines:['Welcome to the Ember Forge. These stone walls keep the heat in while I work.','I keep blades and tools ready for travelers. Bring me ore when smithing is available.']},
 {name:'Fen the Ranger',role:'ranger',x:-208,z:146,color:0x3d7155,station:'ranger',behavior:'patrol',patrol:[[-208,146],[-201,141],[-205,136],[-213,141]],lines:['I patrol Westmere and watch the forest trails.','Keep your eyes open for landmarks.']},
 {name:'Nara the Wanderer',role:'wanderer',x:258,z:-181,color:0x916d6d,station:'traveler',behavior:'patrol',patrol:[[258,-181],[265,-178],[268,-183],[260,-188]],lines:['I am resting near Suncrest before my next journey.','The western ruins are older than the kingdoms themselves.']},
-{name:'Garrick the Banker',role:'banker',x:-8,z:-8.1,color:0x5b6586,station:'bank',behavior:'stationary',lines:['Welcome to Oakcross Bank. Your valuables deserve a safe place.','Bank storage is coming soon; for now, keep your gold secure.']},
-{name:'Pella the Merchant',role:'merchant',x:12,z:6.5,color:0xa7784b,station:'market',behavior:'stationary',lines:['Welcome to my market stall! Look at the goods on my table.','Travelers always need provisions for the road.']}
+{name:'Garrick the Banker',role:'banker',x:-21.5,z:-21.7,color:0x5b6586,station:'bank',behavior:'stationary',lines:['Welcome to Oakcross Bank. Your valuables deserve a safe place.','You will find the tellers in this hall and the iron vault at the back. Personal storage is not available yet.']},
+{name:'Pella the Merchant',role:'merchant',x:12,z:6.5,color:0xa7784b,station:'market',behavior:'stationary',lines:['Welcome to my market stall! Look at the goods on my table.','Travelers always need provisions for the road.']},
+{name:'Alda the Innkeeper',role:'innkeeper',x:25,z:23.8,color:0x954d43,station:'inn',behavior:'stationary',lines:['Welcome to the Stag & Lantern! Take a seat by the tables and rest your feet.','Oakcross is the main town of the Heartlands. Everyone passes through our square sooner or later.']},
+{name:'Steward Elian',role:'steward',x:10,z:-31.7,color:0x3f617a,station:'hall',behavior:'stationary',lines:['Welcome to Oakcross Town Hall. Our town links the roads of the Heartlands.','The bank, chapel, forge, market and inn all serve the folk who call this place home.']},
+{name:'Sister Maeve',role:'cleric',x:-23,z:26.9,color:0xb5aa82,station:'chapel',behavior:'stationary',lines:['Peace to you, traveler. The Chapel of the Dawn is open to all.','You may rest among the pews before returning to the roads.']}
 ];
 const npcs=[];
 function spawnNPC(profile,index){
@@ -792,10 +830,11 @@ function faceTarget(object,target){const dx=target.x-object.position.x,dz=target
 function strike(mob){if(!mob.alive||combat.attackTimer>0)return;combat.attackTimer=state.equippedWeapon?weaponCatalog[state.equippedWeapon].speed:.85;combat.attackAnim=.55;faceTarget(player,mob.root.position);combatSound(/axe|hatchet/i.test(String(state.equippedWeapon||''))?'axe':'slash');const damage=6+(state.equippedWeapon?weaponCatalog[state.equippedWeapon].damage:0)+Math.floor(Math.random()*7);mob.hp-=damage;combatMessage('You hit '+mob.name+' for '+damage+' damage');if(mob.hp<=0){mob.alive=false;mob.root.visible=false;mob.respawn=22;combat.kills++;combat.xp+=30;state.attackXP=(state.attackXP||0)+10;state.strengthXP=(state.strengthXP||0)+10;state.defenceXP=(state.defenceXP||0)+5;state.hitpointsXP=(state.hitpointsXP||0)+5;state.gold+=mob.hostile?8:2;combatMessage('Defeated '+mob.name+'! +30 combat XP');action=null;dest=null;save();draw()}}
 function playerHit(mob){const defense=Object.values(state.equipped).filter(Boolean).length;const damage=Math.max(1,6+Math.floor(Math.random()*5)-defense);combat.hp=Math.max(0,combat.hp-damage);combat.hitAnim=.35;faceTarget(mob.root,player.position);combatSound(Object.values(state.equipped).some(Boolean)?'metal':'axe');combatMessage(mob.name+' hits you for '+damage);draw();if(combat.hp<=0){combat.hp=100;player.position.set(0,0,5);dest=null;action=null;state.gold=Math.max(0,state.gold-10);combatMessage('You fell in battle and returned to Oakcross.');save();draw()}}
 
+const dialoguePortrait=createDialoguePortrait(T,renderer,document.querySelector('#dialog-portrait'));
 const dialog=document.querySelector('#dialog'),dialogName=document.querySelector('#dialog-name'),dialogText=document.querySelector('#dialog-text'),dialogNext=document.querySelector('#dialog-next');let conversation=null;
-function closeDialog(){conversation=null;dialog.hidden=true;document.body.classList.remove('npc-conversation')}
-function talkTo(profile){conversation={profile,index:0};dialog.hidden=false;document.body.classList.add('npc-conversation');dialogName.textContent=profile.name;showDialogLine()}
-function showDialogLine(){if(!conversation)return;dialogText.textContent=conversation.profile.lines[conversation.index];dialogNext.textContent=conversation.index===conversation.profile.lines.length-1?'Close':'Continue'}
+function closeDialog(){conversation=null;dialoguePortrait.close();dialog.hidden=true;document.body.classList.remove('npc-conversation')}
+function talkTo(profile){const npc=npcs.find(n=>n.profile===profile);if(!npc)return;dialoguePortrait.open(npc.root,profile.name);conversation={profile,index:0};dialog.hidden=false;document.body.classList.add('npc-conversation');dialogName.textContent=profile.name;showDialogLine();dialogNext.focus({preventScroll:true})}
+function showDialogLine(){if(!conversation)return;dialogText.textContent=conversation.profile.lines[conversation.index];dialoguePortrait.speak(dialogText.textContent);dialogNext.textContent=conversation.index===conversation.profile.lines.length-1?'Close':'Continue'}
 dialogNext.onclick=()=>{if(!conversation)return;if(++conversation.index>=conversation.profile.lines.length)closeDialog();else showDialogLine()};
 function closeMenu(){menu.hidden=true;menu.innerHTML=''}
 function showMenu(x,y,items){menu.innerHTML='';for(const [label,fn] of items){const b=document.createElement('button');b.textContent=label;b.onclick=()=>{closeMenu();fn()};menu.append(b)}menu.hidden=false;menu.style.left=Math.min(x,innerWidth-190)+'px';menu.style.top=Math.min(y,innerHeight-180)+'px'}
@@ -911,12 +950,15 @@ if(e.button===2){
 }
 if(hits.length){action=hits[0].object.userData;const goal=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):new T.Vector3(action.x,0,action.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){action=null;setWalkDestination(point);closeDialog();if(dest)markClick(dest.x,dest.z,'walk')}});
 renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.deltaY*.015,9,42)},{passive:true});
+// Rebuild once after every building plot has been graded. The same heightfield
+// now supplies the grass mesh, building bases, streets and actor footing.
+ground.geometry.dispose();ground.geometry=landscapeGeometry(T,landscape);
 // Seat existing scenery on the heightfield. Articulated actors are updated each frame.
 for(const object of scene.children){
  if(object===ground||object===player||object.isLight||object.isInstancedMesh||object===sun.target||object.userData.terrainFixed)continue;
  object.position.y+=landscape.heightAt(object.position.x,object.position.z);
 }
-for(let i=0;i<tufts.count;i++){const matrix=new T.Matrix4();tufts.getMatrixAt(i,matrix);const x=matrix.elements[12],z=matrix.elements[14];matrix.elements[13]+=landscape.heightAt(x,z);if(landscape.waterAt(x,z)>.01)matrix.scale(new T.Vector3(0,0,0));tufts.setMatrixAt(i,matrix)}
+for(let i=0;i<tufts.count;i++){const matrix=new T.Matrix4();tufts.getMatrixAt(i,matrix);const x=matrix.elements[12],z=matrix.elements[14];matrix.elements[13]+=landscape.heightAt(x,z);if(landscape.waterAt(x,z)>.01||Math.hypot(x,z)<52||houseInteriors.some(h=>{const p=h.group.worldToLocal(new T.Vector3(x,h.group.position.y,z));return Math.abs(p.x)<2.3&&Math.abs(p.z)<2.15}))matrix.scale(new T.Vector3(0,0,0));tufts.setMatrixAt(i,matrix)}
 tufts.instanceMatrix.needsUpdate=true;tufts.computeBoundingSphere();
 for(const river of worldRivers){
  const bank=new T.Mesh(ribbonGeometry(T,river.points,river.width+3),material(0x9a9271,'dirt'));bank.position.y=.018;bank.userData.terrainFixed=true;scene.add(bank);
@@ -944,6 +986,7 @@ combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(
 for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance>=1.45&&distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>(mob.hostile&&distance<10?1.9:.4)){delta.normalize();const step=Math.min(dt*(mob.hostile&&distance<10?1.7:.8),Math.max(0,distance-1.85));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(mob.hostile&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,1.95)}}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 for(const npc of npcs){
+ if(conversation?.profile===npc.profile){faceTarget(npc.root,player.position);npc.animator.update(dt);continue}
  npc.wait-=dt;
  if(npc.profile.behavior==='stationary'){
   npc.goal.copy(npc.home);npc.wait=4;
@@ -993,5 +1036,5 @@ for(const other of remotePlayers.values()){
  const distance=before.distanceTo(other.root.position);
  other.animator.update(dt,{distance,speed:distance/Math.max(dt,.001)});
 }
-const focus=player.position;sun.position.set(focus.x+40,focus.y+65,focus.z+30);sun.target.position.copy(focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}texture('water',0x577f83).offset.y=performance.now()*.000012;for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
+const focus=player.position;stabilizeSun(T,sun,focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}texture('water',0x577f83).offset.y=performance.now()*.000012;for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();

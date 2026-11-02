@@ -1,4 +1,4 @@
-import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261102-coherent1';
+import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261102-oakcross2';
 // Eldervale's shared low-poly human rig. The same geometry powers players,
 // NPCs, remote adventurers and the live character-creation preview.
 // Rig pivots are preserved for existing movement, equipment and combat animations.
@@ -38,7 +38,7 @@ export function buildHumanoid(T,root,look={}){
  strap.rotation.z=-.34;
  mesh(box(.083,.077,.040),metalMat,root,.07,1.22,.289);
  const neck=mesh(geo('humanNeckV2',()=>new T.CylinderGeometry(.098,.12,.13,12)),faceMat,root,0,2.01,0);
- const head=new T.Group();root.add(head);
+ const head=new T.Group();head.name='character-head';root.add(head);
  // Sculpted low-poly head with independently controlled jaw, cheekbone and cranium widths.
  // An elliptical ring mesh avoids the cylindrical/ball-headed appearance.
  const faceStyle=['Balanced','Angular','Broad'].includes(look.face)?look.face:'Balanced';
@@ -87,8 +87,8 @@ export function buildHumanoid(T,root,look={}){
   g.setIndex([0,2,4,0,4,1,1,4,3,2,5,4,3,4,6,5,6,4,2,3,6,2,6,5]);g.computeVertexNormals();return g;
  });
  mesh(noseGeometry,faceMat,head,0,0,0);
- mesh(sphere,mat(0x936f5c),head,0,2.300,.244,.064,.010,.009);
- mesh(sphere,faceMat,head,0,2.285,.242,.059,.009,.010);
+ const upperLip=mesh(sphere,mat(0x936f5c),head,0,2.300,.244,.064,.010,.009);upperLip.name='upper-lip';
+ const lowerLip=mesh(sphere,faceMat,head,0,2.285,.242,.059,.009,.010);lowerLip.name='lower-lip';
  for(const side of [-1,1]){const ear=mesh(sphere,faceMat,head,side*.256,2.405,-.012,.035,.082,.047);ear.rotation.z=side*.13}
  // Close-fitted hairstyle volumes and swept strands are attached to the skull.
  const style=look.hair||'Side swept';

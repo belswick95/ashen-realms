@@ -81,3 +81,18 @@ body.compact-layout.compact-panel-open #social-panel{visibility:visible}
 #social-panel.collapsed .social-content{display:block;padding:0}
 #social-panel.collapsed .social-tabs,#social-panel.collapsed #social-friends,#social-panel.collapsed #social-note,#social-panel.collapsed #social-chat>small{display:none!important}
 body.compact-layout.compact-panel-open #social-panel:not(.collapsed){visibility:visible}
+
+/* Conversations keep the speaker, text and controls together on small screens. */
+#dialog{width:min(670px,calc(100vw - 32px));border-radius:10px;max-height:70dvh;overflow:auto}
+.dialog-body{display:grid;grid-template-columns:128px minmax(0,1fr);gap:18px;align-items:center;margin-top:14px}
+#dialog-portrait{width:128px;height:128px;aspect-ratio:1;border:2px solid #b99c62;border-radius:8px;background:#263c32;box-shadow:inset 0 0 15px #0005}
+#dialog-text{margin:0;overflow-wrap:anywhere}
+#dialog-next{min-height:44px}
+body.npc-conversation #side,body.npc-conversation #health-hud{visibility:hidden}
+body.npc-conversation #social-panel{visibility:hidden!important}
+body.compact-layout #dialog:not([hidden]){bottom:max(8px,env(safe-area-inset-bottom));max-height:calc(100dvh - 20px);width:min(600px,calc(100vw - 24px))}
+body.compact-layout .dialog-body{grid-template-columns:88px minmax(0,1fr);gap:12px;margin-top:8px}
+body.compact-layout #dialog-portrait{width:88px;height:88px}
+body.compact-layout #dialog-text{font-size:14px;line-height:1.4}
+body.compact-layout #dialog .dialog-top{padding-bottom:6px}
+body.compact-layout #dialog-next{margin-top:7px}
