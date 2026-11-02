@@ -36,3 +36,6 @@ body.compact-layout #map-widget .map-head{font-size:9px;letter-spacing:.3px;gap:
 body.compact-layout #map-widget .map-head>span{display:none}body.compact-layout #map-widget .map-head button{width:100%}body.compact-layout #worldmap{width:min(100%,65dvh);height:auto;max-height:none;object-fit:fill;margin:8px auto}
 
 @media(pointer:coarse),(max-width:900px){[aria-label="Character preview controls"] button{min-width:44px;min-height:44px}}
+
+/* Short landscape screens must keep sign-in and account creation reachable. */
+@media(max-height:550px){#auth-screen{overflow-y:auto;place-items:start center;padding:12px}.auth-card{width:min(560px,calc(100vw - 24px));padding:16px}.auth-card h2{font-size:26px}.auth-card p{margin:8px 0}.auth-card #auth-status{min-height:20px}}
