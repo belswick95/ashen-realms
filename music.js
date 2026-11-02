@@ -1,7 +1,7 @@
 // Eldervale original medieval-fantasy brass band score. Generated locally with Web Audio.
 export function startMusic(){
  const button=document.querySelector('#music-toggle'),slider=document.querySelector('#music-volume'),label=document.querySelector('#music-track');
- if(!button||!slider)return;
+ if(!button||!slider)return;button.textContent='Music Off';
  let ctx,master,timer,playing=false,step=0,track=0,nextTime=0;
  // Four-bar phrases in concert pitch; quarter-note melody with rests and sustained cadences.
  const songs=[
@@ -64,10 +64,10 @@ export function startMusic(){
  async function toggle(){
   try{
    if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();const limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-15;limiter.ratio.value=4;master.connect(limiter);limiter.connect(ctx.destination)}
-   if(playing){playing=false;clearInterval(timer);await ctx.suspend();button.textContent='♫ Music Off';button.setAttribute('aria-pressed','false');return}
+   if(playing){playing=false;clearInterval(timer);await ctx.suspend();button.textContent='Music Off';button.setAttribute('aria-pressed','false');return}
    await ctx.resume();master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.05);
    nextTime=ctx.currentTime+.08;playing=true;timer=setInterval(schedule,90);schedule();
-   button.textContent='♫ Music On';button.setAttribute('aria-pressed','true');label.textContent=songs[track].name;
+   button.textContent='Music On';button.setAttribute('aria-pressed','true');label.textContent=songs[track].name;
   }catch(err){label.textContent='Audio unavailable';console.warn('Eldervale music:',err)}
  }
  button.addEventListener('click',toggle);
