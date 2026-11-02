@@ -1,7 +1,10 @@
 // Eldervale original medieval-fantasy brass band score. Generated locally with Web Audio.
 export function startMusic(){
  const button=document.querySelector('#music-toggle'),slider=document.querySelector('#music-volume'),label=document.querySelector('#music-track');
- if(!button||!slider)return;button.textContent='Music Off';
+ if(!button||!slider)return;
+ if(window.eldervaleMusicInitialized)return;
+ window.eldervaleMusicInitialized=true;
+ button.textContent='Music Off';
  let ctx,master,timer,playing=false,musicMuted=localStorage.getItem('eldervale-music-muted')==='true',step=0,track=window.eldervaleAudioRegion?0:3,nextTime=0;
  let region=window.eldervaleAudioRegion||'Login',desiredRegion=region;
  const townThemes={'Login':3,'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1,'Suncrest':1,'Greenwatch':0,'Ashen Ruins':2};
