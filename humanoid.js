@@ -122,7 +122,12 @@ export function buildHumanoid(T,root,look={}){
  // Facial hair follows the jaw and leaves the mouth and nasal bridge visible.
  if(look.beard==='Stubble'||look.beard==='Short beard'){
   const long=look.beard==='Short beard';
-  const beard=mesh(sphere,hairMat,head,0,2.205,.055,.176,long?.140:.106,.148);
+  // A close jaw-following beard silhouette avoids the oversized spherical muzzle.
+  const beardGeo=geo('humanBeardJawV2',()=>new T.LatheGeometry([
+   new T.Vector2(.065,0),new T.Vector2(.110,.035),new T.Vector2(.152,.080),
+   new T.Vector2(.168,.125),new T.Vector2(.142,.174)
+  ],12));
+  const beard=mesh(beardGeo,hairMat,head,0,2.155,.065,1,long?1.1:.77,.91);
   for(const side of [-1,1]){const sideburn=mesh(sphere,hairMat,head,side*.193,2.300,.07,.029,.125,.085);sideburn.rotation.z=side*.15}
   if(long)mesh(sphere,hairMat,head,0,2.188,.126,.115,.128,.104);
  }
