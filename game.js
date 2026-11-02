@@ -78,7 +78,7 @@ function rock(x,z){
  const smaller=new T.Mesh(new T.DodecahedronGeometry(.36,0),material(0x6f7770,'stone'));smaller.position.set(.68,.24,.18);smaller.castShadow=true;root.add(smaller);
  m.userData={kind:'rock',x,z};targets.push(m)
 }
-const houseInteriors=[];
+const houseInteriors=[];const mapProps=[];
 function house(x,z,c,scale=1.65,rotation=0){
  const group=new T.Group();group.position.set(x,0,z);group.scale.setScalar(scale);group.rotation.y=rotation;scene.add(group);
  // Real walk-in room, with a front doorway instead of a solid wall block.
@@ -416,10 +416,30 @@ const stats=document.querySelector('#stats'),inventory=document.querySelector('#
 let activeTab='inventory',mapOpen=false;const mapCanvas=document.querySelector('#minimap'),largeMap=document.querySelector('#worldmap'),mapPanel=document.querySelector('#map-panel');
 const mapCtx=mapCanvas.getContext('2d'),largeCtx=largeMap.getContext('2d');
 const places=[['Oakcross',0,0],['Northwatch',-60,45],['Eastmarch',75,-55],['Old Cairn',132,26],['Farwatch',105,103],['Westmere',-210,145],['Suncrest',260,-185],['Greenwatch',225,215],['Ashen Ruins',-275,-215]];
-function drawMap(ctx,canvas,scale){const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#536d4c';ctx.fillRect(0,0,w,h);const toX=x=>w/2+(x-(scale?0:player.position.x))*w/(scale?840:90),toY=z=>h/2+(z-(scale?0:player.position.z))*h/(scale?840:90);
-ctx.strokeStyle='#a9936c';ctx.lineWidth=scale?4:3;const roads=[[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];for(const [a,b] of roads){ctx.beginPath();ctx.moveTo(toX(a[0]),toY(a[1]));ctx.lineTo(toX(b[0]),toY(b[1]));ctx.stroke()}
-for(const [name,x,z] of places){const px=toX(x),py=toY(z);if(px<0||px>w||py<0||py>h)continue;ctx.fillStyle='#e6c988';ctx.beginPath();ctx.arc(px,py,scale?5:4,0,Math.PI*2);ctx.fill();if(scale){ctx.font='13px Georgia';ctx.fillText(name,px+8,py-5)}}
-ctx.fillStyle='#f5f5e4';ctx.strokeStyle='#18281d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(toX(player.position.x),toY(player.position.z),5,0,Math.PI*2);ctx.fill();ctx.stroke()}
+function drawMap(ctx,canvas,scale){
+ const w=canvas.width,h=canvas.height,extent=scale?840:90,pxPerUnit=w/extent,pzPerUnit=h/extent;
+ const toX=x=>w/2+(x-(scale?0:player.position.x))*pxPerUnit,toY=z=>h/2+(z-(scale?0:player.position.z))*pzPerUnit;
+ ctx.clearRect(0,0,w,h);ctx.fillStyle='#536d4c';ctx.fillRect(0,0,w,h);
+ const roads=[[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
+ ctx.strokeStyle='#a9936c';ctx.lineWidth=scale?4:3;
+ for(const [a,b] of roads){ctx.beginPath();ctx.moveTo(toX(a[0]),toY(a[1]));ctx.lineTo(toX(b[0]),toY(b[1]));ctx.stroke()}
+ // Draw buildings from their actual world transforms, including rotated footprints and doorway positions.
+ for(const h of houseInteriors){
+  const g=h.group,worldScale=g.scale.x,halfW=2*worldScale,halfD=1.85*worldScale;
+  const cx=toX(g.position.x),cy=toY(g.position.z);
+  if(cx+halfW*pxPerUnit<0||cx-halfW*pxPerUnit>w||cy+halfD*pzPerUnit<0||cy-halfD*pzPerUnit>h)continue;
+  const corners=[[-halfW,-halfD],[halfW,-halfD],[halfW,halfD],[-halfW,halfD]];
+  const c=Math.cos(g.rotation.y),sn=Math.sin(g.rotation.y);
+  ctx.beginPath();corners.forEach(([x,z],i)=>{const wx=g.position.x+x*c+z*sn,wz=g.position.z-x*sn+z*c;i?ctx.lineTo(toX(wx),toY(wz)):ctx.moveTo(toX(wx),toY(wz))});ctx.closePath();
+  ctx.fillStyle='#8b775b';ctx.strokeStyle='#332c25';ctx.lineWidth=scale?1.5:1;ctx.fill();ctx.stroke();
+  const doorX=g.position.x+1.86*worldScale*sn,doorZ=g.position.z+1.86*worldScale*c;
+  ctx.fillStyle='#e34b40';ctx.beginPath();ctx.arc(toX(doorX),toY(doorZ),scale?2.8:3.4,0,Math.PI*2);ctx.fill();
+ }
+ // World props are represented by small map symbols at their actual world coordinates.
+ for(const prop of mapProps){const x=toX(prop.x),y=toY(prop.z);if(x<0||x>w||y<0||y>h)continue;ctx.fillStyle=prop.color;ctx.beginPath();ctx.arc(x,y,scale?1.7:2.2,0,Math.PI*2);ctx.fill()}
+ for(const [name,x,z] of places){const px=toX(x),py=toY(z);if(px<0||px>w||py<0||py>h)continue;ctx.fillStyle='#e6c988';ctx.beginPath();ctx.arc(px,py,scale?4:3,0,Math.PI*2);ctx.fill();if(scale){ctx.font='13px Georgia';ctx.fillText(name,px+8,py-5)}}
+ ctx.fillStyle='#f5f5e4';ctx.strokeStyle='#18281d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(toX(player.position.x),toY(player.position.z),5,0,Math.PI*2);ctx.fill();ctx.stroke();
+}
 mapCanvas.title='Click to enlarge world map';mapCanvas.style.cursor='pointer';mapCanvas.addEventListener('click',()=>{mapOpen=true;mapPanel.hidden=false;drawMap(largeCtx,largeMap,true)});
 document.querySelector('#map-toggle').onclick=()=>{mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)};
 document.querySelector('#map-close').onclick=()=>{mapOpen=false;mapPanel.hidden=true};
@@ -428,7 +448,7 @@ document.addEventListener('contextmenu',e=>{if(e.target.closest('#game-ui')||e.t
 // Animated ground-click markers: amber for walking and crimson for interactions.
 const markers=[];function markClick(x,z,kind='walk'){const group=new T.Group();group.position.set(x,.11,z);const color=kind==='walk'?0xffd05b:0xe64c46;const ring=new T.Mesh(new T.RingGeometry(.45,.62,32),new T.MeshBasicMaterial({color,transparent:true,opacity:.95,side:T.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;group.add(ring);const dot=new T.Mesh(new T.CircleGeometry(.12,20),new T.MeshBasicMaterial({color,transparent:true,opacity:.85,side:T.DoubleSide,depthWrite:false}));dot.rotation.x=-Math.PI/2;dot.position.y=.005;group.add(dot);scene.add(group);markers.push({group,ring,dot,age:0});}
 // Job stations make villagers inhabit believable places rather than random spawn circles.
-function workCounter(x,z,kind){
+function workCounter(x,z,kind){mapProps.push({x,z,color:'#d9b873'});
  const g=new T.Group();g.position.set(x,0,z);scene.add(g);
  box(3.1,.22,1.05,0x86613d,0,1.08,0,g,'wood');
  for(const dx of [-1.28,1.28])box(.16,1,.18,0x59422e,dx,.55,0,g,'wood');
