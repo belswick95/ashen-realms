@@ -168,8 +168,14 @@ for(const town of extraSettlements){
 }
 // Oakcross starter armory: a one-time supply chest in the northern house.
 const armoryHouse=houseInteriors[1];
+// Identify the starter armory from outside so players can find the chest.
+const armorySignCanvas=document.createElement('canvas');armorySignCanvas.width=512;armorySignCanvas.height=128;
+const armorySignCtx=armorySignCanvas.getContext('2d');armorySignCtx.fillStyle='#35281d';armorySignCtx.fillRect(0,0,512,128);
+armorySignCtx.fillStyle='#f4d492';armorySignCtx.font='bold 48px Georgia';armorySignCtx.textAlign='center';armorySignCtx.fillText('STARTER ARMORY',256,79);
+const armorySign=new T.Mesh(new T.PlaneGeometry(2.8,.7),new T.MeshBasicMaterial({map:new T.CanvasTexture(armorySignCanvas),side:T.DoubleSide}));
+armorySign.position.set(0,2.78,1.99);armoryHouse.group.add(armorySign);
 const chestRoot=new T.Group();armoryHouse.group.add(chestRoot);
-chestRoot.position.set(0,0,-.65);
+chestRoot.position.set(0,0,.15);
 box(1.15,.66,.73,0x6e4325,0,.43,0,chestRoot,'wood');
 box(1.24,.17,.81,0xa47a3f,0,.82,0,chestRoot,'wood');
 for(const x of [-.48,.48]){box(.10,.79,.82,0xb6a069,x,.45,0,chestRoot,'stone')}
@@ -181,8 +187,10 @@ chestHit.position.set(0,.7,0);chestRoot.add(chestHit);
 const chestWorld=new T.Vector3();chestRoot.getWorldPosition(chestWorld);
 chestHit.userData={kind:'chest',x:chestWorld.x,z:chestWorld.z};
 targets.push(chestHit);
+// Visible golden glow highlights the interactable supply chest inside the armory.
+const chestGlow=new T.PointLight(0xffc46b,2.0,6);chestGlow.position.set(0,1.25,.15);chestRoot.add(chestGlow);
 function openArmoryChest(){
- if(state.starterChestClaimed){say('The armory chest is empty. You have already collected its supplies.');return}
+ if(state.starterChestClaimed){for(const key of Object.keys(shieldCatalog))if(!state.shieldsOwned.includes(key))state.shieldsOwned.push(key);state.starterShieldsGranted=true;say('Your armory supplies are already claimed. Both starter shields are available in your inventory.');save();draw();return}
  state.starterChestClaimed=true;
  for(const key of armorKeys)if(!state.armorOwned.includes(key))state.armorOwned.push(key);
  for(const key of Object.keys(weaponCatalog))if(!state.weaponsOwned.includes(key))state.weaponsOwned.push(key);
