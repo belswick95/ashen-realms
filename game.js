@@ -540,7 +540,7 @@ function terrainNoise(x,z){const xi=Math.floor(x),zi=Math.floor(z),u=x-xi,v=z-zi
  }
 })();
 function drawMap(ctx,canvas,scale){
- const w=canvas.width,h=canvas.height,extent=scale?840:90,pxPerUnit=w/extent,pzPerUnit=h/extent;
+ const w=canvas.width,h=canvas.height,extent=scale?840:90,pxPerUnit=w/extent,pzPerUnit=w/extent;
  const toX=x=>w/2+(x-(scale?0:player.position.x))*pxPerUnit,toY=z=>h/2+(z-(scale?0:player.position.z))*pzPerUnit;
  ctx.clearRect(0,0,w,h);
  // Sample the identical 840-unit terrain atlas in both map views.
