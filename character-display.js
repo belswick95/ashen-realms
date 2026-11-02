@@ -1,4 +1,5 @@
-import {buildHumanoid} from './humanoid.js?v=release-20261102-fortress4';import {buildPlateArmor} from './armor.js?v=release-20261102-fortress4';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261102-fortress4';import {makeShield,shieldCatalog} from './shields.js?v=release-20261102-fortress4';import {createCape} from './cape.js?v=release-20261102-fortress4';import {createHumanoidAnimator} from './animation.js?v=release-20261102-fortress4';import {safeAppearance} from './appearance.js?v=release-20261102-fortress4';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261102-grip1';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-grip1';import {buildPlateArmor} from './armor.js?v=release-20261102-grip1';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261102-grip1';import {makeShield,shieldCatalog} from './shields.js?v=release-20261102-grip1';import {createCape} from './cape.js?v=release-20261102-grip1';import {createHumanoidAnimator} from './animation.js?v=release-20261102-grip1';import {safeAppearance} from './appearance.js?v=release-20261102-grip1';
 export function publicCharacter(appearance={},equipment={}){
  if(!equipment||typeof equipment!=='object'||Array.isArray(equipment))equipment={};
  const armor={};for(const key of ['helm','chest','legs','boots','cape'])armor[key]=equipment.armor?.[key]===true;
@@ -9,8 +10,8 @@ export function buildCharacterDisplay(T,parent,appearance,loadout){
  const rig=buildHumanoid(T,visual,data.appearance),shared=new Set();visual.traverse(o=>{if(o.geometry)shared.add(o.geometry);if(o.material)shared.add(o.material)});
  const armor=buildPlateArmor(T,visual,rig);for(const key of ['helm','chest','legs','boots'])for(const part of armor[key])part.visible=data.loadout.armor[key];
  rig.torso.visible=!data.loadout.armor.chest;for(const hair of rig.hairMeshes)hair.visible=!data.loadout.armor.helm;
- if(data.loadout.weapon){const weapon=makeWeapon(T,data.loadout.weapon);weapon.position.set(0,-.02,.035);weapon.rotation.set(2.08,0,-.10);rig.rightHand.add(weapon)}
- if(data.loadout.shield){const shield=makeShield(T,data.loadout.shield);shield.position.set(.14,-.06,-.10);shield.rotation.set(.06,2.82,-.08);rig.leftHand.add(shield)}
+ if(data.loadout.weapon){const weapon=makeWeapon(T,data.loadout.weapon);attachWeapon(rig,weapon,data.loadout.weapon)}
+ if(data.loadout.shield){const shield=makeShield(T,data.loadout.shield);attachShield(rig,shield)}
  const cape=data.loadout.armor.cape?createCape(T,visual,{color:0x81394b}):null,animator=createHumanoidAnimator(rig);
  return {rig,visual,data,update(dt,motion){const pose=animator.update(dt,{...motion,twoHanded:data.loadout.weapon==='twohand',shield:!!data.loadout.shield,armed:!!data.loadout.weapon});cape?.update(dt,pose?.blend||0);return pose},dispose(){const disposed=new Set();visual.traverse(o=>{for(const resource of [o.geometry,...(Array.isArray(o.material)?o.material:[o.material])])if(resource&&!shared.has(resource)&&!disposed.has(resource)){resource.dispose();disposed.add(resource)}});visual.removeFromParent()}};
 }
