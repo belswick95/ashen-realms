@@ -44,8 +44,14 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req
  const quality=await page.evaluate(()=>({preset:document.querySelector('#graphics-preset').value,scale:document.querySelector('#render-scale').value,ratio:window.offlineWorld.renderer.getPixelRatio()}));assert.equal(quality.preset,'auto');assert.ok(['0.8','0.65'].includes(quality.scale));assert.ok(quality.ratio<=1.5);
  await page.locator('#map-toggle').click();const atlasBounds=await page.locator('#worldmap').boundingBox();assert.ok(Math.abs(atlasBounds.width-atlasBounds.height)<1,'phone atlas preserves coordinate aspect ratio');await page.locator('#map-close').click();
  const touch=await page.context().newCDPSession(page),beforeZoom=await page.evaluate(()=>window.offlineWorld.getZoom());
- await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:150,y:200}]});await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:150,y:200},{x:210,y:200}]});await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:120,y:200},{x:240,y:200}]});await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert.ok(await page.evaluate(()=>window.offlineWorld.getZoom())<beforeZoom);
- await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:190,y:200}]});await page.locator('#contextmenu').waitFor({state:'visible'});await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.keyboard.press('Escape');await touch.detach();
+ const sendTouch=(type,points)=>touch.send('Input.dispatchTouchEvent',{type,touchPoints:points.map((point,i)=>({...point,id:i+1}))});
+ await sendTouch('touchStart',[{x:150,y:200}]);
+ await sendTouch('touchStart',[{x:150,y:200},{x:210,y:200}]);
+ await sendTouch('touchMove',[{x:135,y:200},{x:225,y:200}]);
+ await page.waitForFunction(before=>window.offlineWorld.getZoom()<before,beforeZoom);
+ await sendTouch('touchMove',[{x:120,y:200},{x:240,y:200}]);
+ await sendTouch('touchEnd',[]);
+ await sendTouch('touchStart',[{x:190,y:200}]);await page.locator('#contextmenu').waitFor({state:'visible'});await sendTouch('touchEnd',[]);await page.keyboard.press('Escape');await touch.detach();
  await page.locator('[data-tab="inventory"]').click();await page.waitForFunction(()=>document.body.classList.contains('compact-panel-open'));await page.getByRole('button',{name:'Close game panel'}).click();assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('compact-panel-open')),false);
  await page.setViewportSize({width:844,height:390});await page.waitForFunction(()=>document.body.classList.contains('compact-layout'));assert.ok(await page.locator('[data-tab="inventory"]').evaluate(el=>el.getBoundingClientRect().height>=44));await page.setViewportSize({width:844,height:390});
  const out=path.join(root,'test-results');fs.mkdirSync(out,{recursive:true});await page.screenshot({path:path.join(out,'mobile-world.png')});
