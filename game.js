@@ -493,6 +493,35 @@ function terrainNoise(x,z){const xi=Math.floor(x),zi=Math.floor(z),u=x-xi,v=z-zi
   const i=(y*size+x)*4;for(let k=0;k<3;k++)data[i+k]=Math.max(0,Math.min(255,rgb[k]+shade));data[i+3]=255;
  }
  terrainCtx.putImageData(im,0,0);
+ // Cartographic relief: contour lines, textured forest masses, river valleys.
+ const coord=(v)=>((v+420)/840)*size;
+ for(let y=4;y<size-4;y+=4)for(let x=4;x<size-4;x+=4){
+  const wx=(x/size-.5)*840,wz=(y/size-.5)*840;
+  const h=terrainNoise(wx/170-22,wz/170+7)*.65+terrainNoise(wx/55,wz/55)*.35;
+  const east=terrainNoise((wx+4)/170-22,wz/170+7)*.65+terrainNoise((wx+4)/55,wz/55)*.35;
+  const contour=Math.floor(h*14)!==Math.floor(east*14);
+  if(contour&&h>.51){terrainCtx.fillStyle='rgba(36,42,28,.17)';terrainCtx.fillRect(x,y,3,1)}
+ }
+ // A winding, continuous river network with banks and layered blue water.
+ function river(points,width){
+  const draw=(stroke,line)=>{terrainCtx.strokeStyle=stroke;terrainCtx.lineWidth=line;terrainCtx.lineJoin='round';terrainCtx.lineCap='round';terrainCtx.beginPath();terrainCtx.moveTo(coord(points[0][0]),coord(points[0][1]));for(let i=1;i<points.length-1;i++){const p=points[i],q=points[i+1];terrainCtx.quadraticCurveTo(coord(p[0]),coord(p[1]),coord((p[0]+q[0])/2),coord((p[1]+q[1])/2))}const last=points[points.length-1];terrainCtx.lineTo(coord(last[0]),coord(last[1]));terrainCtx.stroke()};
+  draw('#8e946c',width+9);draw('#546f61',width+5);draw('#377486',width);draw('#6098a0',Math.max(1,width*.22));
+ }
+ river([[-420,-165],[-350,-145],[-290,-165],[-235,-130],[-175,-146],[-110,-100],[-85,-42],[-30,-10],[15,45],[85,55],[140,75],[210,65],[270,95],[350,70],[420,95]],11);
+ river([[-190,-420],[-165,-350],[-145,-270],[-100,-205],[-110,-130],[-85,-42]],7);
+ river([[420,-220],[345,-185],[290,-130],[230,-100],[195,-35],[140,75]],8);
+ // Forest canopies are clusters of individual trees, not flat green circles.
+ for(let i=0;i<13500;i++){
+  const wx=(terrainSeed(i,109)-.5)*840,wz=(terrainSeed(i,211)-.5)*840;
+  const woodland=terrainNoise(wx/90+17,wz/90-11);
+  if(woodland<.555)continue;
+  const x=coord(wx),y=coord(wz),radius=1.4+terrainSeed(i,311)*3.6;
+  terrainCtx.fillStyle='rgba(18,45,23,.26)';terrainCtx.beginPath();terrainCtx.arc(x+1.1,y+1.2,radius+1,0,Math.PI*2);terrainCtx.fill();
+  terrainCtx.fillStyle=terrainSeed(i,317)>.45?'#38673a':'#477842';
+  terrainCtx.beginPath();terrainCtx.arc(x,y,radius,0,Math.PI*2);terrainCtx.fill();
+  terrainCtx.fillStyle='rgba(166,190,113,.24)';terrainCtx.beginPath();terrainCtx.arc(x-.65,y-.65,radius*.43,0,Math.PI*2);terrainCtx.fill();
+ }
+
  // Tree canopies and rocky outcrops remain visible at larger zoom levels.
  for(let i=0;i<10000;i++){
   const x=terrainSeed(i,9)*size,y=terrainSeed(i,29)*size;
@@ -525,8 +554,19 @@ function drawMap(ctx,canvas,scale){
  if(clipR>clipX&&clipB>clipY)ctx.drawImage(terrainAtlas,clipX,clipY,clipR-clipX,clipB-clipY,(clipX-sourceX)/sourceW*w,(clipY-sourceY)/sourceH*h,(clipR-clipX)/sourceW*w,(clipB-clipY)/sourceH*h);
 for(const lake of worldLakes){ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit,lake.rz*pzPerUnit,0,0,Math.PI*2);ctx.fillStyle='#b4a478';ctx.fill();ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit*.95,lake.rz*pzPerUnit*.95,0,0,Math.PI*2);ctx.fillStyle='#3b8495';ctx.fill()}
  const roads=[[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
- ctx.strokeStyle='#a9936c';ctx.lineWidth=scale?4:3;
- for(const [a,b] of roads){ctx.beginPath();ctx.moveTo(toX(a[0]),toY(a[1]));ctx.lineTo(toX(b[0]),toY(b[1]));ctx.stroke()}
+ // Layered, gently curved roads with earthen verges, not straight diagram lines.
+ for(const [a,b] of roads){
+  const x1=toX(a[0]),y1=toY(a[1]),x2=toX(b[0]),y2=toY(b[1]);
+  const dx=x2-x1,dy=y2-y1,length=Math.hypot(dx,dy)||1;
+  const bend=Math.min(length*.12,scale?9:13);
+  const side=terrainSeed(a[0],b[1])>.5?1:-1;
+  const mx=(x1+x2)/2-dy/length*bend*side,my=(y1+y2)/2+dx/length*bend*side;
+  const trace=()=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(mx,my,x2,y2)};
+  ctx.lineCap='round';ctx.lineJoin='round';
+  trace();ctx.strokeStyle='#536044';ctx.lineWidth=scale?6:9;ctx.stroke();
+  trace();ctx.strokeStyle='#8c7852';ctx.lineWidth=scale?4:6;ctx.stroke();
+  trace();ctx.strokeStyle='#c3a878';ctx.lineWidth=scale?2.3:3.5;ctx.stroke();
+ }
  // Draw buildings from their actual world transforms, including rotated footprints and doorway positions.
  for(const h of houseInteriors){
   const g=h.group,worldScale=g.scale.x,halfW=2*worldScale,halfD=1.85*worldScale;
