@@ -601,6 +601,12 @@ for(const lake of worldLakes){
    ctx.beginPath();ctx.moveTo(cx-halfW*pxPerUnit*2,yy);ctx.lineTo(cx+halfW*pxPerUnit*2,yy);ctx.stroke();
   }
   ctx.restore();
+  // A ridge and two sloping roof planes follow each house's world rotation.
+  const ridgeA=[-halfD*.88,0],ridgeB=[halfD*.88,0];
+  const roofPoint=(lx,lz)=>[toX(g.position.x+lx*c+lz*sn),toY(g.position.z-lx*sn+lz*c)];
+  const p1=roofPoint(0,ridgeA[0]),p2=roofPoint(0,ridgeB[0]);
+  ctx.beginPath();ctx.moveTo(...p1);ctx.lineTo(...p2);
+  ctx.strokeStyle='rgba(248,202,135,.75)';ctx.lineWidth=scale?1:1.7;ctx.stroke();
   ctx.strokeStyle='#392b20';ctx.lineWidth=scale?1:1.5;ctx.stroke();
   const doorX=g.position.x+1.86*worldScale*sn,doorZ=g.position.z+1.86*worldScale*c;
   if(!scale){ctx.fillStyle='#d8bc83';ctx.beginPath();ctx.arc(toX(doorX),toY(doorZ),2.2,0,Math.PI*2);ctx.fill();}
