@@ -2,6 +2,9 @@ name: Deploy Eldervale to Hostinger
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/materials-character-animation
 
 permissions:
   contents: read
