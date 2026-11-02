@@ -981,14 +981,16 @@ for(const bridge of landscape.bridges){
   box(.14,.14,bridge.length-2,0x9b7b4d,side*(bridge.width/2-.12),1.25,0,group,'wood');
  }
 }
-// Shared world clock: UTC is authoritative so every client sees the same sky.
-const WORLD_DAY_SECONDS=86400; // Real UTC day; all clients share one clock.
+// Shared world clock follows America/New_York civil time, including DST.
+// All clients use the same named zone regardless of their device time zone.
+const easternClock=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
 const worldClock=document.createElement('output');worldClock.id='world-clock';worldClock.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:36;pointer-events:none;background:#12202bc9;color:#e7d1a5;border:1px solid #927b56;border-radius:5px;padding:5px 9px;font:11px Arial';document.body.append(worldClock);
 let nextSkyUpdate=0;
 function updateWorldSky(){
  const now=Date.now();if(now<nextSkyUpdate)return;nextSkyUpdate=now+1500;
- const dayPhase=((now/1000)%WORLD_DAY_SECONDS)/WORLD_DAY_SECONDS;
- const hour=dayPhase*24;
+ const parts=Object.fromEntries(easternClock.formatToParts(new Date(now)).filter(p=>p.type!=='literal').map(p=>[p.type,Number(p.value)]));
+ const hour=parts.hour+parts.minute/60+parts.second/3600;
+ const dayPhase=hour/24;
  const solar=Math.sin((dayPhase-.25)*Math.PI*2);
  const daylight=Math.max(0,Math.min(1,(solar+.16)/.65));
  const twilight=Math.max(0,1-Math.abs(solar)*3);
@@ -997,8 +999,8 @@ function updateWorldSky(){
  skyLight.intensity=.14+daylight*1.86;
  sun.intensity=.04+daylight*2.26;
  sun.position.set(Math.cos(dayPhase*Math.PI*2)*40,Math.max(2,solar*45),Math.sin(dayPhase*Math.PI*2)*40);
- const hh=String(Math.floor(hour)).padStart(2,'0'),mm=String(Math.floor(hour%1*60)).padStart(2,'0');
- worldClock.textContent='World (UTC) '+hh+':'+mm+(daylight<.2?' · Night':daylight<.65?' · Dawn / dusk':' · Day');
+ const hh=String(parts.hour).padStart(2,'0'),mm=String(parts.minute).padStart(2,'0');
+ worldClock.textContent='World (Eastern) '+hh+':'+mm+(daylight<.2?' · Night':daylight<.65?' · Dawn / dusk':' · Day');
  window.eldervaleWorldNight=daylight<.2;
  window.eldervaleSetTimeOfDay?.(hour,daylight);
 }
