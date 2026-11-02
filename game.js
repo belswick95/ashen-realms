@@ -539,8 +539,8 @@ function strike(mob){if(!mob.alive||combat.attackTimer>0)return;combat.attackTim
 function playerHit(mob){const defense=Object.values(state.equipped).filter(Boolean).length;const damage=Math.max(1,6+Math.floor(Math.random()*5)-defense);combat.hp=Math.max(0,combat.hp-damage);combat.hitAnim=.35;combatMessage(mob.name+' hits you for '+damage);draw();if(combat.hp<=0){combat.hp=100;player.position.set(0,0,0);dest=null;action=null;state.gold=Math.max(0,state.gold-10);combatMessage('You fell in battle and returned to Oakcross.');save();draw()}}
 
 const dialog=document.querySelector('#dialog'),dialogName=document.querySelector('#dialog-name'),dialogText=document.querySelector('#dialog-text'),dialogNext=document.querySelector('#dialog-next');let conversation=null;
-function closeDialog(){conversation=null;dialog.hidden=true}
-function talkTo(profile){conversation={profile,index:0};dialog.hidden=false;dialogName.textContent=profile.name;showDialogLine()}
+function closeDialog(){conversation=null;dialog.hidden=true;document.body.classList.remove('npc-conversation')}
+function talkTo(profile){conversation={profile,index:0};dialog.hidden=false;document.body.classList.add('npc-conversation');dialogName.textContent=profile.name;showDialogLine()}
 function showDialogLine(){if(!conversation)return;dialogText.textContent=conversation.profile.lines[conversation.index];dialogNext.textContent=conversation.index===conversation.profile.lines.length-1?'Close':'Continue'}
 dialogNext.onclick=()=>{if(!conversation)return;if(++conversation.index>=conversation.profile.lines.length)closeDialog();else showDialogLine()};
 function closeMenu(){menu.hidden=true;menu.innerHTML=''}
