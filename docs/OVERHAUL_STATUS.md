@@ -124,3 +124,27 @@ a line comment, which commented out the moving-state declaration and caused a
 runtime ReferenceError. Real animator tests caught this despite valid syntax.
 The declaration is restored, and damage decay/idle recovery now has a dedicated
 runtime regression test. This is why syntax checks alone are insufficient.
+
+## Oakcross main town and conversation portraits
+
+- Oakcross is the main town, with 13 individually named buildings: a masonry bank
+  with teller counters and a rear vault, town hall, inn, chapel, forge, armory,
+  and varied stone/timber homes. Public buildings start with open doors. Bank
+  storage transactions remain unavailable; Garrick explains this in dialogue.
+- A paved central square and streets connect the actual entrance positions;
+  building footprints, roof colours and bank/hall labels appear on both maps.
+- Garrick occupies the bank, Torren the forge, and new villagers occupy the inn,
+  town hall and chapel. The starter equipment chest remains in the armory.
+- Building plots grade full terrain cells around rotated/scaled wall footprints.
+  Grass rendering and actor footing use that heightfield; actors stand on the
+  interior floor. Wall boxes meet at their edges rather than overlapping caps.
+  Sun shadows follow a stable texel grid with adjusted depth bias.
+- Conversation windows show the actual selected NPC's skin, hair, clothing and
+  equipment, with a separate animated mouth/head pose. They reuse the world GPU
+  context at 12 portrait frames per second, stop when closed, and respect reduced
+  motion. The window stays within landscape phone viewports and supports Escape.
+- Browser checks cover an actual click on Edda, changing speakers, animated
+  portrait pixels, line progression, closing and phone conversation layout.
+  Runtime tests cover graded mesh triangles, floor footing, speaker isolation and
+  stable sun projection. Full module versions are updated together.
+- Owner authorized continuing through implementation, checks and deployment.
