@@ -29,6 +29,8 @@ export function buildPlateArmor(T,body,rig){
  }
  const crest=cylinder(body,'helm',.055,.055,.32,[0,2.73,-.035],shade);
  for(let i=0;i<7;i++){const a=i/6;const f=plate(body,'helm',[[-.07+a*.02,2.74-a*.13],[.075,2.78-a*.07],[.15+a*.16,2.69-a*.20],[.03,2.67-a*.10]],-.04-i*.018,.013,plume,.005);f.rotation.z=-a*.15}
+ // Chest: a closed cuirass covers both front and back, preventing the underlying torso from showing through.
+ const backShell=cylinder(body,'chest',.445,.355,.86,[0,1.49,0],steel,24);backShell.scale.z=.79;
  // Chest: tapered cuirass with layered breastplate, collar, waist faulds and gold accents.
  plate(body,'chest',[[-.41,1.91],[.41,1.91],[.43,1.66],[.30,1.17],[.20,1.10],[-.20,1.10],[-.30,1.17],[-.43,1.66]],.23,.10,steel);
  plate(body,'chest',[[-.38,1.87],[0,1.92],[.38,1.87],[.31,1.55],[0,1.39],[-.31,1.55]],.34,.055,edge);
