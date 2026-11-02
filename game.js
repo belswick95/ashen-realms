@@ -138,6 +138,31 @@ const villageBuildings=[
 ];
 for(const [x,z,c,scale,rot] of villageBuildings)house(x,z,c,scale,rot);
 house(-60,42,0xb7a08c);house(-54,48,0xaaa38a);house(73,-58,0xc3b29b);house(78,-51,0x99866c);house(-105,-91,0x9a9b87);house(102,103,0xb8a48d);house(-210,145,0xbda78a);house(-205,151,0xa8a089);house(260,-185,0xbda78a);house(265,-180,0xaaa08a);house(225,215,0xbaa78e);house(-275,-215,0xbda88d);
+
+// Lakeside settlements and landmarks. Water is a visible, discoverable world feature.
+const worldLakes=[{x:-91,z:80,rx:18,rz:12,name:'Moonmere Lake'},{x:157,z:77,rx:24,rz:16,name:'Silverfin Lake'},{x:244,z:175,rx:16,rz:12,name:'Greenwatch Pond'}];
+for(const lake of worldLakes){
+ const water=new T.Mesh(new T.CircleGeometry(1,64),new T.MeshStandardMaterial({color:0x397f91,metalness:.18,roughness:.27,transparent:true,opacity:.9,side:T.DoubleSide}));
+ water.rotation.x=-Math.PI/2;water.scale.set(lake.rx,lake.rz,1);water.position.set(lake.x,.065,lake.z);scene.add(water);
+ const shore=new T.Mesh(new T.RingGeometry(.98,1.09,64),new T.MeshStandardMaterial({color:0xb6a47a,roughness:1,side:T.DoubleSide}));
+ shore.rotation.x=-Math.PI/2;shore.scale.set(lake.rx,lake.rz,1);shore.position.set(lake.x,.045,lake.z);scene.add(shore);
+ for(let i=0;i<12;i++){const a=i*Math.PI/6;const x=lake.x+Math.cos(a)*lake.rx*1.13,z=lake.z+Math.sin(a)*lake.rz*1.13;if(i%3===0)rock(x,z);else if(i%3===1)tree(x,z)}
+ // Wooden fishing dock reaches from the eastern bank toward the lake.
+ const dx=lake.x+lake.rx*.88;
+ box(5,.22,2.4,0x8b6542,dx,.32,lake.z,scene,'wood');
+ for(const x of [dx-2,dx+2])for(const z of [lake.z-1,lake.z+1])box(.2,.75,.2,0x5a402d,x,.35,z,scene,'wood');
+ mapProps.push({x:dx,z:lake.z,color:'#e5c37c'});
+}
+const extraSettlements=[
+ {name:'Moonmere',x:-114,z:82,color:0xb4a18a},
+ {name:'Silverfin',x:187,z:74,color:0xc3ae92},
+ {name:'Pinehollow',x:-152,z:-133,color:0xa79e8a},
+ {name:'Stonebridge',x:164,z:-116,color:0xb7a58b}
+];
+for(const town of extraSettlements){
+ for(let i=0;i<5;i++){const a=i*Math.PI*2/5+.3,r=9+(i%2)*5;house(town.x+Math.cos(a)*r,town.z+Math.sin(a)*r,town.color,1.4,a+Math.PI)}
+ places.push([town.name,town.x,town.z]);
+}
 // Oakcross starter armory: a one-time supply chest in the northern house.
 const armoryHouse=houseInteriors[1];
 const chestRoot=new T.Group();armoryHouse.group.add(chestRoot);
@@ -419,7 +444,7 @@ const places=[['Oakcross',0,0],['Northwatch',-60,45],['Eastmarch',75,-55],['Old 
 function drawMap(ctx,canvas,scale){
  const w=canvas.width,h=canvas.height,extent=scale?840:90,pxPerUnit=w/extent,pzPerUnit=h/extent;
  const toX=x=>w/2+(x-(scale?0:player.position.x))*pxPerUnit,toY=z=>h/2+(z-(scale?0:player.position.z))*pzPerUnit;
- ctx.clearRect(0,0,w,h);ctx.fillStyle='#536d4c';ctx.fillRect(0,0,w,h);
+ ctx.clearRect(0,0,w,h);ctx.fillStyle='#536d4c';ctx.fillRect(0,0,w,h);for(const lake of worldLakes){ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit,lake.rz*pzPerUnit,0,0,Math.PI*2);ctx.fillStyle='#b4a478';ctx.fill();ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit*.95,lake.rz*pzPerUnit*.95,0,0,Math.PI*2);ctx.fillStyle='#3b8495';ctx.fill()}
  const roads=[[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
  ctx.strokeStyle='#a9936c';ctx.lineWidth=scale?4:3;
  for(const [a,b] of roads){ctx.beginPath();ctx.moveTo(toX(a[0]),toY(a[1]));ctx.lineTo(toX(b[0]),toY(b[1]));ctx.stroke()}
