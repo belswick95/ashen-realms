@@ -89,10 +89,9 @@ document.addEventListener('visibilitychange',()=>{
 });
 setInterval(()=>{if(!user||logoutInProgress)return;const now=Date.now();if(now-lastActivity>=IDLE_LIMIT_MS||document.hidden&&hiddenSince&&now-hiddenSince>=IDLE_LIMIT_MS)void autoLogout('inactive')},10000);
 addEventListener('pagehide',()=>{
- // Browser termination can cancel network requests; sessionStorage ensures
- // a closed tab cannot silently restore the account.
+ // A pagehide also fires during refresh: preserve same-tab reloads.
+ // sessionStorage is discarded when the tab is closed, preventing auto-login.
  if(!user)return;
  try{window.eldervaleCaptureSave?.();saves.stash()}catch{}
- void db.auth.signOut({scope:'local'});
 });
 const {data:{session}}=await db.auth.getSession();if(session?.user)await enter(session.user);else message('Sign in to continue your adventure.');
