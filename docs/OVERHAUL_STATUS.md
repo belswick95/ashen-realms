@@ -40,6 +40,8 @@ Apex Fabrication Co. and GymWarden were not modified.
 - Existing lakeside buildings are moved ashore if their footprints overlap water;
   old player coordinates in newly impassable water recover to nearby walkable land.
 - Sun shadows follow the player and camera/chat labels account for elevation.
+- The redundant plaza well is relocated to the western village so its roof and
+  masonry no longer intersect the central fountain.
 
 ## Progress preservation
 

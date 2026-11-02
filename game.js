@@ -375,7 +375,8 @@ function signpost(x,z){const g=new T.Group();g.position.set(x,0,z);scene.add(g);
  box(.16,2.5,.17,0x64462d,0,1.25,0,g,'wood');box(2.1,.48,.15,0x9c7848,.35,2.05,0,g,'wood');
  box(.5,.12,.2,0xc3a469,1.55,2.05,0,g,'wood')
 }
-villageWell(2,-1);marketStall(-10,6,0x9e5b43);marketStall(10,5,0x4f7d64);
+// Keep the old well in the western village; the central plaza belongs to the fountain.
+villageWell(-68,37);marketStall(-10,6,0x9e5b43);marketStall(10,5,0x4f7d64);
 for(const [x,z] of [[-13,9],[-9,9],[8,9],[13,9],[-20,-5],[22,16],[-8,-11],[15,-12]])villageCrate(x,z,x*.2);
 for(const [x,z] of [[-12,11],[-11,11],[12,10],[13,10],[-22,-8],[25,13]])villageBarrel(x,z);
 villageFence(-25,-10,8,.05);villageFence(26,-12,7,-.25);villageFence(-23,24,8,.1);
