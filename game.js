@@ -247,6 +247,20 @@ function routeTo(target){
  return goal;
 }
 let walkQueue=[];
+function setWalkDestination(point){
+ const target=routeTo(point);
+ const stops=[target,...walkQueue];
+ walkQueue=[];
+ const all=[];
+ let current=player.position.clone();
+ for(const stop of stops){
+  const path=findWalkPath(current,stop);
+  if(!path.length&&current.distanceTo(stop)>.4){say('No clear path. Try another destination.');break}
+  all.push(...path);current=stop;
+ }
+ dest=all.shift()||null;walkQueue=all;
+}
+
 function updateHouseRoofs(){
  for(const house of houseInteriors){
   const local=house.group.worldToLocal(player.position.clone());
@@ -527,7 +541,7 @@ renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;i
 if(e.button===2){
  const choices=[];
  if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;dest=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):new T.Vector3(a.x,0,a.z);markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' ('+Math.max(0,a.mob.hp)+' HP)':a.kind==='npc'?a.profile.name+' — '+a.profile.role:a.kind==='merchant'?'A traveling trader who buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':'A harvestable '+a.kind+'.')])}
- if(hitGround)choices.push(['Walk here',()=>{walkQueue=[];dest=routeTo(point);action=null;closeDialog();markClick(dest.x,dest.z,'walk')}]);
+ if(hitGround)choices.push(['Walk here',()=>{setWalkDestination(point);action=null;closeDialog();markClick(dest.x,dest.z,'walk')}]);
  choices.push(['Cancel',()=>{}]);showMenu(e.clientX,e.clientY,choices);return;
 }
 if(hits.length){action=hits[0].object.userData;dest=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):new T.Vector3(action.x,0,action.z);markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){dest=point.clone();action=null;closeDialog();markClick(dest.x,dest.z,'walk')}});
