@@ -181,7 +181,7 @@ function walkAllowed(from,to){
   const throughFront=a.z>1.4&&b.z>1.4;
   if(throughFront&&doorway&&h.open)continue;
   if(insideHouse(h,from)&&insideHouse(h,to))continue;
-  return {blocked:true,house:h,doorway:frontCross&&doorway};
+  return {blocked:true,house:h,doorway:throughFront&&doorway};
  }
  return {blocked:false};
 }
@@ -391,7 +391,7 @@ function spawnNPC(profile,index){
  if(index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.50,-.26,root,'cloth');cape.rotation.x=-.12}
  const hit=new T.Mesh(new T.SphereGeometry(.48,8,6),new T.MeshBasicMaterial({visible:false}));
  hit.position.set(0,1.42,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
- const npc={profile,root,leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index};npcs.push(npc)
+ const npc={profile,root,leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075};npcs.push(npc)
 }
 npcProfiles.forEach(spawnNPC);
 // Wildlife and enemies use lightweight low-poly models and simple local AI.
@@ -498,7 +498,48 @@ if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=
 combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);healthBar.style.width=(combat.hp/combat.maxHp*100)+'%';
 for(const mob of creatures){if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*5,0,mob.home.z+Math.sin(a)*5);mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if(mob.hostile&&distance<10){mob.goal.copy(player.position);if(distance<2.3&&mob.attackCooldown===0){playerHit(mob);mob.attackCooldown=2.4}}const delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>.4){delta.normalize();mob.root.position.addScaledVector(delta,dt*(mob.hostile&&distance<10?1.7:.8));mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if(action?.kind==='creature'&&action.mob===mob&&dest)dest.copy(mob.root.position)}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
-for(const npc of npcs){npc.wait-=dt;if(npc.wait<=0){const a=npc.phase*2.4+npc.wait;npc.goal.set(npc.home.x+Math.cos(a)*3.2,0,npc.home.z+Math.sin(a)*3.2);npc.wait=4+(npc.phase%4)*1.3;npc.phase++}const d=npc.goal.clone().sub(npc.root.position);const walking=d.length()>.3;if(walking){d.normalize();const step=d.clone().multiplyScalar(dt*.55);const proposed=npc.root.position.clone().add(step);const crowded=npcs.some(other=>other!==npc&&other.root.position.distanceToSquared(proposed)<1.15*1.15)||player.position.distanceToSquared(proposed)<1.0*1.0;if(!crowded)npc.root.position.add(step);npc.root.rotation.y=Math.atan2(d.x,d.z)}const gait=walking?Math.sin(performance.now()*.005+npc.phase)*.45:0;npc.leftLeg.rotation.x=gait;npc.rightLeg.rotation.x=-gait;npc.leftArm.rotation.x=-gait*.65+Math.sin(performance.now()*.001+npc.phase)*.035;npc.rightArm.rotation.x=gait*.65;if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position)}
+for(const npc of npcs){
+ npc.wait-=dt;
+ if(npc.wait<=0){
+  const a=npc.phase*2.4+npc.wait;
+  npc.goal.set(npc.home.x+Math.cos(a)*3.2,0,npc.home.z+Math.sin(a)*3.2);
+  npc.wait=4+(npc.phase%4)*1.3;npc.phase++;
+ }
+ const previous=npc.root.position.clone(),toward=npc.goal.clone().sub(previous);toward.y=0;
+ let desiredSpeed=0;
+ if(toward.length()>.24){
+  toward.normalize();
+  const stepSize=Math.min(npc.pace*dt,npc.root.position.distanceTo(npc.goal));
+  // Try the desired heading, then gentle left/right detours around solid houses.
+  const heading=Math.atan2(toward.x,toward.z),angles=[0,.42,-.42,.85,-.85,1.3,-1.3,Math.PI];
+  for(const offset of angles){
+   const angle=heading+offset;
+   const direction=new T.Vector3(Math.sin(angle),0,Math.cos(angle));
+   const proposed=previous.clone().addScaledVector(direction,stepSize);
+   const blocked=walkAllowed(previous,proposed).blocked;
+   const crowded=npcs.some(other=>other!==npc&&other.root.position.distanceToSquared(proposed)<1.1*1.1)||player.position.distanceToSquared(proposed)<.85*.85;
+   if(!blocked&&!crowded){
+    npc.root.position.copy(proposed);
+    npc.root.rotation.y=angle;
+    desiredSpeed=stepSize/Math.max(dt,.001);
+    break;
+   }
+  }
+ }
+ const actualDistance=npc.root.position.distanceTo(previous);
+ if(actualDistance<.0001&&toward.lengthSq()>.1){npc.stuck+=dt;if(npc.stuck>1.5){npc.goal.copy(npc.home);npc.wait=1;npc.stuck=0}}
+ else npc.stuck=0;
+ // Foot cadence follows actual distance traveled, not wall-clock time.
+ const speed=actualDistance/Math.max(dt,.001);
+ const intensity=T.MathUtils.clamp(speed/.65,0,1);
+ npc.walkBlend=T.MathUtils.lerp(npc.walkBlend,intensity,1-Math.exp(-9*dt));
+ npc.walkPhase+=actualDistance*8.5;
+ const gait=Math.sin(npc.walkPhase)*.48*npc.walkBlend;
+ npc.leftLeg.rotation.x=gait;npc.rightLeg.rotation.x=-gait;
+ npc.leftArm.rotation.x=-gait*.65+Math.sin(performance.now()*.001+npc.phase)*.025;
+ npc.rightArm.rotation.x=gait*.65;
+ if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position);
+}
 blend=T.MathUtils.lerp(blend,moving?1:0,1-Math.exp(-12*dt));if(moving)phase+=dt*10;const swing=Math.sin(phase)*.65*blend;ll.rotation.x=swing;rl.rotation.x=-swing;la.rotation.x=-swing*.7;ra.rotation.x=swing*.7;if(combat.attackAnim>0){const t=1-combat.attackAnim/.55;ra.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;ra.rotation.z=-.32;body.rotation.y=Math.sin(t*Math.PI)*-.15}else{ra.rotation.z=T.MathUtils.lerp(ra.rotation.z,0,dt*12);body.rotation.y=T.MathUtils.lerp(body.rotation.y,0,dt*10)}if(combat.hitAnim>0){body.rotation.z=Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12}else body.rotation.z=T.MathUtils.lerp(body.rotation.z,0,dt*12);body.position.y=Math.abs(Math.sin(phase))*.06*blend;
 const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);saveTick+=dt;if(saveTick>4){saveTick=0;save()}for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();
