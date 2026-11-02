@@ -139,11 +139,13 @@ export function buildHumanoid(T,root,look={}){
  // swapping hands as shoulder and elbow joints animate.
  const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
  // Gameplay camera follows from behind: right-hand weapon appears on the player's right.
- leftArm.position.set(-.455,1.84,0);rightArm.position.set(.455,1.84,0);
+ // Facing +Z: the character's anatomical RIGHT is world -X (viewed from the front).
+ // Previously these anchors were swapped, making right-hand weapons appear left-handed.
+ leftArm.position.set(.455,1.84,0);rightArm.position.set(-.455,1.84,0);
  leftLeg.position.set(-.165,.985,0);rightLeg.position.set(.165,.985,0);
  root.add(leftArm,rightArm,leftLeg,rightLeg);
  const leftElbow=new T.Group(),rightElbow=new T.Group(),leftKnee=new T.Group(),rightKnee=new T.Group();
- for(const [arm,side,elbow] of [[leftArm,-1,leftElbow],[rightArm,1,rightElbow]]){
+ for(const [arm,side,elbow] of [[leftArm,1,leftElbow],[rightArm,-1,rightElbow]]){
   mesh(geo('tailoredSleeveV2',()=>loftGeometry(T,[[-.445,.100,.095],[-.34,.117,.105],[-.20,.139,.122],[-.09,.151,.132],[-.015,.166,.142],[.055,.140,.12],[.105,.065,.065]])),cloth,arm,0,0,0);
   elbow.position.set(side*.018,-.46,0);arm.add(elbow);
   mesh(sphere,faceMat,elbow,0,0,0,.11,.12,.115);
