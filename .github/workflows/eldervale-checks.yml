@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/login-soundtrack-overhaul
+      - release/eldervale-production-integration-20261102
 jobs:
   test:
     runs-on: ubuntu-latest
