@@ -586,7 +586,7 @@ for(const lake of worldLakes){
  for(const h of houseInteriors){
   const g=h.group,worldScale=g.scale.x,halfW=2*worldScale,halfD=1.85*worldScale;
   const cx=toX(g.position.x),cy=toY(g.position.z);
-  if(cx+halfW*pxPerUnit<0||cx-halfW*pxPerUnit>w||cy+halfD*pzPerUnit<0||cy-halfD*pzPerUnit>h)continue;
+  if(cx+halfW*pxPerUnit<0||cx-halfW*pxPerUnit>w||cy+halfD*pzPerUnit<0||cy-halfD*pzPerUnit>canvas.height)continue;
   const corners=[[-halfW,-halfD],[halfW,-halfD],[halfW,halfD],[-halfW,halfD]];
   const c=Math.cos(g.rotation.y),sn=Math.sin(g.rotation.y);
   ctx.beginPath();corners.forEach(([x,z],i)=>{const wx=g.position.x+x*c+z*sn,wz=g.position.z-x*sn+z*c;i?ctx.lineTo(toX(wx),toY(wz)):ctx.moveTo(toX(wx),toY(wz))});ctx.closePath();
