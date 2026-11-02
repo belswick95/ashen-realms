@@ -187,8 +187,9 @@ function openArmoryChest(){
  for(const key of armorKeys)if(!state.armorOwned.includes(key))state.armorOwned.push(key);
  for(const key of Object.keys(weaponCatalog))if(!state.weaponsOwned.includes(key))state.weaponsOwned.push(key);
  for(const key of Object.keys(shieldCatalog))if(!state.shieldsOwned.includes(key))state.shieldsOwned.push(key);
+ state.starterShieldsGranted=true;
  chestLid.rotation.x=-1.1;
- say('Armory chest opened! Iron armor, a crimson cape, four swords, an axe and a pickaxe added to your inventory.');
+ say('Armory chest opened! Iron armor, a crimson cape, four swords, an axe and a pickaxe, an iron kiteshield and an iron square shield added to your inventory.');
  save();draw();
 }
 function toggleHouseDoor(house){
@@ -435,6 +436,13 @@ armorOwned:Array.isArray(saved.armorOwned)?saved.armorOwned.filter(k=>armorCatal
 equipped:(saved.equipped&&typeof saved.equipped==='object')?saved.equipped:{},weaponsOwned:Array.isArray(saved.weaponsOwned)?saved.weaponsOwned.filter(k=>weaponCatalog[k]):[],equippedWeapon:weaponCatalog[saved.equippedWeapon]?saved.equippedWeapon:null,starterChestClaimed:!!saved.starterChestClaimed,shieldsOwned:Array.isArray(saved.shieldsOwned)?saved.shieldsOwned.filter(k=>shieldCatalog[k]):[],equippedShield:shieldCatalog[saved.equippedShield]?saved.equippedShield:null};
 for(const key of ['attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP'])state[key]=Number.isFinite(Number(saved[key]))?Math.max(0,Math.floor(Number(saved[key]))):0;
 for(const k of armorKeys)if(state.equipped[k]&&!state.armorOwned.includes(k))state.armorOwned.push(k);
+// Existing adventurers already claimed the starter chest before shields existed.
+// Grant the new starter shields once without reopening or resetting their chest.
+if(state.starterChestClaimed&&!saved.starterShieldsGranted){
+ for(const key of Object.keys(shieldCatalog))if(!state.shieldsOwned.includes(key))state.shieldsOwned.push(key);
+ state.starterShieldsGranted=true;
+ localStorage.setItem('eldervale-save',JSON.stringify({...saved,shieldsOwned:state.shieldsOwned,starterShieldsGranted:true}));
+}
 const pieces=buildPlateArmor(T,body,avatar);
 const cape=createCape(T,body,{color:0x81394b});
 function refreshArmor(){for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
