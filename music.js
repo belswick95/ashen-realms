@@ -4,7 +4,8 @@ export function startMusic(){
  if(!button||!slider)return;button.textContent='Music Off';
  let ctx,master,timer,playing=false,step=0,track=0,nextTime=0;
  let region='Oakcross',desiredRegion='Oakcross';
- const townThemes={'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1};
+ const townThemes={'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1,'Suncrest':1,'Greenwatch':0,'Ashen Ruins':2};
+ const regionOffsets={'Oakcross':0,'Northwatch':-2,'Eastmarch':2,'Old Cairn':-5,'Farwatch':4,'Westmere':-3,'Stonebridge':5,'Suncrest':7,'Greenwatch':-1,'Ashen Ruins':-7};
  window.eldervaleSetAudioRegion=(name)=>{desiredRegion=Object.hasOwn(townThemes,name)?name:'Wilderness'};
  const ambientVolume=document.querySelector('#ambient-volume');let ambienceGain,windSource;
  function startAmbience(){
@@ -62,7 +63,7 @@ export function startMusic(){
   const song=songs[track],quarter=60/song.bpm;
   while(nextTime<ctx.currentTime+.4){
    if(step%32===0&&region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;updateAmbience();label.textContent=region==='Wilderness'?'Wilderness · ambient score':region+' · '+songs[track].name}
-   const i=step%32,bar=Math.floor(i/4),root=song.roots[bar];
+   const i=step%32,bar=Math.floor(i/4),transpose=regionOffsets[region]||0,root=song.roots[bar]+transpose;
    // Bass line and two supporting voices give the march a full brass-ensemble texture.
    brass(root-12,nextTime,quarter*.90,'tuba',.085);
    if(i%2===0){brass(root,nextTime,quarter*1.78,'horn',.043);brass(root+7,nextTime,quarter*1.7,'horn',.028)}
@@ -70,8 +71,8 @@ export function startMusic(){
    else if(i%2===0&&region!=='Wilderness')percussion(nextTime,false);
    if(i%8===0&&region!=='Wilderness')percussion(nextTime,false,'cymbal');
    const note=song.melody[i];
-   if(note!=null&&region!=='Wilderness')brass(note,nextTime,quarter*(i%8===6?1.7:.84),'trumpet',.084);
-   if(song.counter[i]!=null)brass(song.counter[i],nextTime,quarter*1.8,'horn',region==='Wilderness'?.018:.044);
+   if(note!=null&&region!=='Wilderness')brass(note+transpose,nextTime,quarter*(i%8===6?1.7:.84),'trumpet',.084);
+   if(song.counter[i]!=null)brass(song.counter[i]+transpose,nextTime,quarter*1.8,'horn',region==='Wilderness'?.018:.044);
    step++;nextTime+=quarter;
    if(step%64===0&&region==='Wilderness'){track=(track+1)%songs.length;label.textContent='Wilderness · '+songs[track].name}
   }
