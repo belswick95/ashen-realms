@@ -591,7 +591,22 @@ for(const lake of worldLakes){ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z
   if(!scale){ctx.fillStyle='#d8bc83';ctx.beginPath();ctx.arc(toX(doorX),toY(doorZ),2.2,0,Math.PI*2);ctx.fill();}
  }
  // World props are represented by small map symbols at their actual world coordinates.
- for(const prop of mapProps){const x=toX(prop.x),y=toY(prop.z);if(x<0||x>w||y<0||y>h)continue;ctx.fillStyle=prop.color;ctx.beginPath();ctx.arc(x,y,scale?1.7:2.2,0,Math.PI*2);ctx.fill()}
+ for(const prop of mapProps){
+  const x=toX(prop.x),y=toY(prop.z);if(x<0||x>w||y<0||y>h)continue;
+  // Natural canopy and shadow symbols instead of uniform colored dots.
+  const color=String(prop.color||'').toLowerCase();
+  const isTree=color.includes('green')||color.includes('forest')||['#2f6338','#3b703c','#315b34','#427a40'].includes(color);
+  const radius=scale?2.3:Math.min(11,Math.max(3.5,pxPerUnit*.8));
+  if(isTree){
+   ctx.fillStyle='rgba(22,38,21,.38)';ctx.beginPath();ctx.ellipse(x+1.2,y+1.5,radius*1.2,radius*.9,-.2,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#244c2e';ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#528044';ctx.beginPath();ctx.arc(x-radius*.25,y-radius*.28,radius*.65,0,Math.PI*2);ctx.fill();
+  }else{
+   ctx.fillStyle='rgba(31,33,23,.38)';ctx.beginPath();ctx.ellipse(x+1,y+1.5,radius*.9,radius*.65,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle=prop.color||'#8c8a72';ctx.beginPath();ctx.moveTo(x-radius,y+radius*.4);ctx.lineTo(x-radius*.5,y-radius*.7);ctx.lineTo(x+radius*.45,y-radius);ctx.lineTo(x+radius,y+radius*.4);ctx.closePath();ctx.fill();
+   ctx.strokeStyle='rgba(235,220,170,.3)';ctx.lineWidth=.8;ctx.stroke();
+  }
+ }
  for(const [name,x,z] of places){const px=toX(x),py=toY(z);if(px<0||px>w||py<0||py>h)continue;ctx.fillStyle='#e6c988';ctx.beginPath();ctx.arc(px,py,scale?4:3,0,Math.PI*2);ctx.fill();if(scale){
   ctx.font='bold 13px Georgia';ctx.textAlign='center';ctx.lineJoin='round';
   ctx.strokeStyle='#263025';ctx.lineWidth=3;ctx.strokeText(name,px,py-11);
