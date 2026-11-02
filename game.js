@@ -107,7 +107,12 @@ function house(x,z,c,scale=1.65,rotation=0){
  if(!dry(x,z)){let found=false;for(let r=2;r<=40&&!found;r+=2)for(let i=0;i<24;i++){const angle=i*Math.PI/12,px=x+Math.cos(angle)*r,pz=z+Math.sin(angle)*r;if(dry(px,pz)){x=px;z=pz;found=true;break}}}
  const group=new T.Group();group.position.set(x,0,z);group.scale.setScalar(scale);group.rotation.y=rotation;scene.add(group);
  // Real walk-in room, with a front doorway instead of a solid wall block.
- box(4,.12,3.7,0x81684c,0,.065,0,group,'wood');
+ // Sink a stone plinth into the terrain and overlap the wall bottoms. The
+ // exposed lip keeps grass and the nearly coplanar floor underside from
+ // competing in the depth buffer as the camera moves. Keep the floor top
+ // at .125 so doorway clearance and the existing walk-in room stay aligned.
+ box(4.18,.7,3.94,0x777568,0,-.25,0,group,'stone');
+ box(4,.085,3.7,0x81684c,0,.0825,0,group,'wood');
  box(4,3,.18,c,0,1.5,-1.83,group,'stone');
  for(const side of [-1,1])box(.18,3,3.7,c,side*1.91,1.5,0,group,'stone');
  for(const side of [-1,1])box(1.48,3,.18,c,side*1.26,1.5,1.83,group,'stone');
