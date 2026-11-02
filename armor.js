@@ -1,7 +1,7 @@
 // Eldervale plate armor: fitted, beveled low-poly meshes, not oversized cubes.
 // All coordinates are local to the shared 2.7-unit humanoid rig.
 export function buildPlateArmor(T,body,rig){
- const steel=new T.MeshStandardMaterial({color:0xb8c3ca,metalness:.72,roughness:.32,flatShading:true});
+ const steel=new T.MeshStandardMaterial({color:0xb8c3ca,metalness:.72,roughness:.32,flatShading:false});
  const shade=new T.MeshStandardMaterial({color:0x59646c,metalness:.66,roughness:.4,flatShading:true});
  const edge=new T.MeshStandardMaterial({color:0xe1e5df,metalness:.76,roughness:.28,flatShading:true});
  const leather=new T.MeshStandardMaterial({color:0x593b32,roughness:.87});
@@ -14,15 +14,15 @@ export function buildPlateArmor(T,body,rig){
   const geo=new T.ExtrudeGeometry(s,{depth,bevelEnabled:bevel>0,bevelThickness:bevel,bevelSize:bevel,bevelSegments:1,steps:1,curveSegments:1});
   geo.computeVertexNormals();return add(geo,mat,parent,[0,0,z],slot);
  }
- function cylinder(parent,slot,r1,r2,h,pos,mat=steel,segments=8){return add(new T.CylinderGeometry(r1,r2,h,segments,1),mat,parent,pos,slot)}
+ function cylinder(parent,slot,r1,r2,h,pos,mat=steel,segments=16){return add(new T.CylinderGeometry(r1,r2,h,segments,1),mat,parent,pos,slot)}
  function strip(parent,slot,w,h,d,pos,mat=edge){return add(new T.BoxGeometry(w,h,d),mat,parent,pos,slot)}
  // Helmet: shaped shell, dark recessed visor, cheek plates, brow and red horsehair crest.
- const helmet=add(new T.SphereGeometry(.347,10,7,0,Math.PI*2,0,Math.PI*.74),steel,body,[0,2.38,0],'helm');
+ const helmet=add(new T.SphereGeometry(.347,24,16,0,Math.PI*2,0,Math.PI*.74),steel,body,[0,2.38,0],'helm');
  helmet.scale.set(1.07,1.1,1.06);
  plate(body,'helm',[[-.33,2.45],[.33,2.45],[.30,2.18],[.20,2.11],[.14,2.22],[-.14,2.22],[-.20,2.11],[-.30,2.18]],.24,.055,steel);
  plate(body,'helm',[[-.20,2.35],[.20,2.35],[.16,2.25],[-.16,2.25]],.322,.009,shade,.006);
  plate(body,'helm',[[-.055,2.37],[.055,2.37],[.095,2.14],[0,2.06],[-.095,2.14]],.349,.035,edge,.012);
- strip(body,'helm',.70,.075,.10,[0,2.47,.29],edge);
+ const brow=cylinder(body,'helm',.347,.347,.055,[0,2.47,0],edge,24);brow.scale.z=1.08;
  for(const side of [-1,1]){
   plate(body,'helm',[[side*.23,2.38],[side*.34,2.34],[side*.31,2.11],[side*.23,2.07]],.18,.09,steel);
   cylinder(body,'helm',.04,.04,.04,[side*.31,2.32,.25],gold,8)
@@ -37,27 +37,27 @@ export function buildPlateArmor(T,body,rig){
  for(const side of [-1,1]){
   const arm=side<0?rig.leftArm:rig.rightArm;
   // Pauldrons attach to shoulders so they animate with the arms.
-  const shoulder=cylinder(arm,'chest',.255,.19,.30,[0,-.15,0],steel,10);shoulder.rotation.z=side*.15;
-  const rim=cylinder(arm,'chest',.255,.25,.065,[0,-.30,0],edge,10);
-  cylinder(arm,'chest',.17,.135,.29,[0,-.51,0],shade,8);
-  const vambrace=cylinder(arm,'chest',.18,.125,.34,[0,-.59,0],steel,8);
-  cylinder(arm,'chest',.16,.13,.11,[0,-.79,0],steel,8);
-  strip(body,'chest',.065,.48,.08,[side*.37,1.54,.28],shade)
+  const shoulder=add(new T.SphereGeometry(.24,20,12,0,Math.PI*2,0,Math.PI*.66),steel,arm,[0,-.16,0],'chest');shoulder.scale.set(1.12,.84,1.06);shoulder.rotation.z=side*.16;
+  const rim=cylinder(arm,'chest',.235,.22,.045,[0,-.30,0],edge,18);
+  cylinder(arm,'chest',.17,.135,.29,[0,-.51,0],shade,16);
+  const vambrace=cylinder(arm,'chest',.158,.112,.34,[0,-.59,0],steel,20);
+  cylinder(arm,'chest',.16,.13,.11,[0,-.79,0],steel,16);
+  cylinder(body,'chest',.025,.025,.43,[side*.36,1.53,.26],shade,12)
  }
  for(let i=0;i<3;i++)plate(body,'chest',[[-.33+i*.03,1.17-i*.095],[.33-i*.03,1.17-i*.095],[.29-i*.03,1.08-i*.095],[-.29+i*.03,1.08-i*.095]],.29-i*.025,.035,i===1?edge:steel,.008);
- strip(body,'chest',.55,.09,.12,[0,1.10,.35],leather);
+ const belt=cylinder(body,'chest',.345,.33,.09,[0,1.10,0],leather,24);belt.scale.z=.85;
  cylinder(body,'chest',.075,.075,.045,[0,1.10,.42],gold);
  // Leg armor: fitted thigh plates and separate articulated knee / shin guards.
  for(const leg of [rig.leftLeg,rig.rightLeg]){
-  cylinder(leg,'legs',.205,.175,.45,[0,-.25,0],steel,8);
+  cylinder(leg,'legs',.205,.175,.45,[0,-.25,0],steel,16);
   plate(leg,'legs',[[-.18,-.10],[.18,-.10],[.16,-.47],[0,-.53],[-.16,-.47]],.18,.05,edge);
-  cylinder(leg,'legs',.22,.20,.18,[0,-.56,.03],steel,9);
+  cylinder(leg,'legs',.22,.20,.18,[0,-.56,.03],steel,18);
   plate(leg,'legs',[[-.16,-.54],[.16,-.54],[.13,-.70],[0,-.77],[-.13,-.70]],.22,.055,steel);
-  cylinder(leg,'legs',.165,.135,.29,[0,-.73,0],shade,8);
+  cylinder(leg,'legs',.165,.135,.29,[0,-.73,0],shade,16);
   // Sabatons follow the leg pivots; overlapping plates form a pointed toe.
-  const shoe=add(new T.SphereGeometry(.20,8,6),steel,leg,[0,-.88,.14],'boots');shoe.scale.set(1.12,.65,1.65);
+  const shoe=add(new T.SphereGeometry(.20,20,12),steel,leg,[0,-.88,.14],'boots');shoe.scale.set(1.12,.65,1.65);
   plate(leg,'boots',[[-.19,-.80],[.19,-.80],[.15,-.95],[0,-1.00],[-.15,-.95]],.19,.12,steel);
-  strip(leg,'boots',.34,.045,.32,[0,-.87,.29],edge)
+  strip(leg,'boots',.30,.025,.25,[0,-.87,.27],edge)
  }
  // Default hidden until equipped.
  Object.values(slots).flat().forEach(m=>m.visible=false);
