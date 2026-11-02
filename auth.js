@@ -1,3 +1,4 @@
+import {startMusic} from './music.js?v=login-audio-20261102';
 import {installOrientationGate} from './responsive.js?v=release-20261102-multiplayer3';
 installOrientationGate();
 import {SKINS,HAIRS,SHIRTS,PANTS,HAIRSTYLES,FACES,BEARDS,safeAppearance} from './appearance.js?v=release-20261102-multiplayer3';
@@ -9,7 +10,7 @@ const overlay=document.querySelector('#auth-screen'),form=document.querySelector
 let signup=false,user=null,pending=null,loading=false,saveTimer=null,started=false;
 // Initialize audio while the login screen is visible so the first user gesture
 // can unlock playback before authentication finishes.
-import('./music.js?v=login-audio-20261102').then(m=>m.startMusic()).catch(e=>console.warn('Music unavailable:',e.message));
+startMusic();
 function message(s){status.textContent=s||''}
 function mode(v){signup=v;title.textContent=v?'Create your Eldervale account':'Welcome to Eldervale';username.hidden=!v;username.required=v;modeBtn.textContent=v?'Already have an account? Sign in':'New adventurer? Create an account';form.querySelector('button[type=submit]').textContent=v?'Create account':'Enter Eldervale';message('')}
 modeBtn.onclick=()=>mode(!signup);
