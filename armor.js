@@ -1,5 +1,5 @@
-import {loftGeometry} from './anatomy.js?v=release-20261102-walk2';
-import {surfaceTexture} from './surface-textures.js?v=release-20261102-walk2';
+import {loftGeometry} from './anatomy.js?v=release-20261102-adventure1';
+import {surfaceTexture} from './surface-textures.js?v=release-20261102-adventure1';
 // Original, closed low-poly plate harness: angular steel, articulated lames and
 // tapered limbs. Every piece follows the existing wrist/knee rig and loadout.
 export function buildPlateArmor(T,body,rig){
@@ -47,6 +47,7 @@ export function buildPlateArmor(T,body,rig){
   if(p.parent===body)p.position.y+=rig.upperOffset;
   else if([rig.leftLeg,rig.rightLeg,rig.leftKnee,rig.rightKnee].includes(p.parent)){p.position.y*=rig.legScale;p.scale.y*=rig.legScale}
  }
+ for(const [knee,ankle] of [[rig.leftKnee,rig.leftAnkle],[rig.rightKnee,rig.rightAnkle]])if(ankle){body.updateMatrixWorld(true);for(const part of slots.boots)if(part.parent===knee)ankle.attach(part)}
  const helmetRoot=new T.Group();body.add(helmetRoot);for(const p of slots.helm){p.position.y-=2.10;helmetRoot.add(p)}helmetRoot.position.y=rig.head.position.y;helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.x*=1.0;
  Object.values(slots).flat().forEach(p=>p.visible=false);return slots;
 }

@@ -1,7 +1,7 @@
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
- let phase=0,blend=0,time=0,impact=0;
+ let phase=0,blend=0,time=0,impact=0;const restY=new WeakMap();
  return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false}={}){
   if(!Number.isFinite(dt)||dt<=0)return;
   dt=Math.min(dt,.1);time+=dt;
@@ -12,18 +12,26 @@ export function createHumanoidAnimator(rig){
   impact=Math.max(incoming,impact*Math.exp(-9*dt));
   const moving=distance>1e-6;
   blend+=(moving?1-blend:-blend)*(1-Math.exp(-12*dt));
-  const run=Math.max(0,Math.min(1,(speed-2.8)/2.5));
-  // Slow townsfolk take shorter steps; fast movement lengthens the stride.
-  const pace=Math.max(0,Math.min(1,speed/2.4));
-  const strideAngle=.20+.16*pace+.10*run;
-  phase+=distance*Math.PI*2/(4*1.18*Math.sin(strideAngle));
-  const gait=Math.sin(phase),opposite=-gait,stride=strideAngle*blend;
-  rig.leftLeg.rotation.x=gait*stride;rig.rightLeg.rotation.x=opposite*stride;
-  // Bend on recovery, then straighten before the forward foot plants.
-  // The old sine timing bent a knee during its planted backward sweep.
-  const recovery=Math.cos(phase),lift=(.34+run*.24)*blend;
-  rig.leftKnee.rotation.x=Math.max(0,-recovery)*lift;
-  rig.rightKnee.rotation.x=Math.max(0,recovery)*lift;
+  const run=Math.max(0,Math.min(1,(speed-2.4)/1.8));
+  const pace=Math.min(1,speed/1.9),stance=.60-run*.10;
+  const strideLength=1.1+.45*pace+.85*run;
+  phase+=distance*Math.PI*2/strideLength;
+  const gait=Math.sin(phase),stride=(.24+run*.12)*blend;
+  const upper=Math.abs(rig.leftKnee.position.y),lower=rig.leftAnkle?Math.abs(rig.leftAnkle.position.y):.42*(rig.legScale||1.3),length=upper+lower;
+  const reach=strideLength*stance/(2*rig.root.scale.z),down=Math.sqrt(Math.max(.1,length*length-reach*reach))-.002;
+  for(const [leg,knee,ankle,offset] of [[rig.leftLeg,rig.leftKnee,rig.leftAnkle,0],[rig.rightLeg,rig.rightKnee,rig.rightAnkle,.5]]){
+   const u=((phase/(Math.PI*2)+offset)%1+1)%1,swing=u>=stance,t=swing?(u-stance)/(1-stance):u/stance;
+   const ease=t*t*(3-2*t),forward=swing?reach*(2*ease-1):reach*(1-2*t),lift=swing?Math.sin(t*Math.PI)*(.12+run*.10):0;
+   const y=down-lift,d=Math.min(length-.00001,Math.hypot(forward,y));
+   const bend=Math.acos(Math.max(-1,Math.min(1,(d*d-upper*upper-lower*lower)/(2*upper*lower))));
+   const hip=Math.atan2(-forward,y)-Math.atan2(lower*Math.sin(bend),upper+lower*Math.cos(bend));
+   leg.rotation.x=hip*blend;knee.rotation.x=bend*blend;
+   if(ankle)ankle.rotation.x=-(hip+bend)*blend;
+  }
+  // Visual pelvis compression keeps contact feet at their standing ground height.
+  // Physics, saved positions and pathfinding roots are never translated.
+  const bob=(down-length)*blend;
+  for(const child of rig.root.children){if(!restY.has(child))restY.set(child,child.position.y);child.position.y=restY.get(child)+bob}
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
   rig.leftArm.rotation.x=-gait*stride*.46+Math.sin(time*1.7)*.018*(1-blend);
@@ -47,10 +55,14 @@ export function createHumanoidAnimator(rig){
   }
   if(shield&&!twoHanded){rig.leftArm.rotation.x=-.15-gait*.03*blend;rig.leftArm.rotation.z=.10;rig.leftElbow.rotation.x=-.55;rig.leftHand?.rotation.set(0,0,0)}
   if(twoHanded&&rig.solveArm){
-   const t=attack>0?Math.max(0,Math.min(1,1-attack/.55)):0,swing=attack>0?Math.sin(t*Math.PI):0;
-   const V=rig.root.position.constructor,angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle));
-   const target=new V(0,1.62+swing*.14,.25+swing*.08);
-   rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
+   const V=rig.root.position.constructor;
+   if(attack>0){
+    const t=Math.max(0,Math.min(1,1-attack/.55)),swing=Math.sin(t*Math.PI),angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle)),target=new V(0,1.62+swing*.14,.25+swing*.08);
+    rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
+   }else{
+    // Carry the greatsword upright along the right shoulder; the free arm walks naturally.
+    rig.solveArm('right',new V(-.50,1.42,.12),new V(0,1,-.10).normalize());
+   }
   }
   if(rig.head){rig.head.rotation.x=-gait*.012*blend-impact*.06;rig.head.rotation.z=Math.sin(time*.7)*.008*(1-blend)}
   if(rig.neck)rig.neck.scale.y=1+Math.sin(time*1.7)*.008*(1-blend);
@@ -59,6 +71,6 @@ export function createHumanoidAnimator(rig){
    rig.torso.scale.y=1+Math.sin(time*1.7)*.004*(1-blend);
    rig.torso.rotation.x=impact*.045;rig.torso.rotation.z=-impact*.025;
   }
-  return {blend,run,attack:attack>0,hit:impact>0.01};
+  return {blend,run,contacts:{left:((phase/(Math.PI*2))%1+1)%1<stance,right:((phase/(Math.PI*2)+.5)%1+1)%1<stance},attack:attack>0,hit:impact>0.01};
  }};
 }

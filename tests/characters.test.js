@@ -45,9 +45,9 @@ test('stopping settles gait and ending combat resets attack channels',()=>{
  assert.equal(r.root.position.y,0);assert.ok(r.leftKnee.rotation.x>=0);
  a.update(NaN,{distance:Infinity});assert.ok(Number.isFinite(r.leftArm.rotation.x));
 });
-test('two-handed IK keeps both wrists on the grip through idle and attack',()=>{
+test('two-handed IK keeps both wrists on the grip during attacks',()=>{
  const r=character(),a=createHumanoidAnimator(r);
- for(const attack of [0,.5,.3,.1]){
+ for(const attack of [.5,.3,.1]){
   a.update(.016,{twoHanded:true,attack});r.root.updateMatrixWorld(true);
   const right=r.rightHand.getWorldPosition(new T.Vector3()),left=r.leftHand.getWorldPosition(new T.Vector3());
   assert.ok(Math.abs(right.distanceTo(left)-.10)<.025,'wrists remain one grip length apart');

@@ -1,4 +1,4 @@
-import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261102-walk2';
+import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261102-adventure1';
 // Eldervale's shared low-poly human rig. The same geometry powers players,
 // NPCs, remote adventurers and the live character-creation preview.
 // Rig pivots are preserved for existing movement, equipment and combat animations.
@@ -178,6 +178,12 @@ export function buildHumanoid(T,root,look={}){
   for(const child of leg.children){child.position.y*=legScale;if(child.isMesh)child.scale.y*=legScale}
   for(const child of knee.children){child.position.y*=legScale;child.scale.y*=legScale}
  }
+ // Ankle pivots let feet stay level during contact instead of tilting with the shins.
+ const leftAnkle=new T.Group(),rightAnkle=new T.Group();
+ for(const [knee,ankle] of [[leftKnee,leftAnkle],[rightKnee,rightAnkle]]){
+  ankle.position.set(0,-.42*legScale,0);knee.add(ankle);root.updateMatrixWorld(true);
+  for(const part of [...knee.children])if(part.isMesh&&part.position.y<-.39*legScale)ankle.attach(part);
+ }
  root.scale.set(.78,1,.86);
  // Two-bone arm IK keeps both palms on a two-handed grip rather than near it.
  function solveArm(side,target,weaponUp=new T.Vector3(0,1,0)){
@@ -192,5 +198,5 @@ export function buildHumanoid(T,root,look={}){
   const parentRotation=arm.quaternion.clone().multiply(elbow.quaternion);hand.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),weaponUp.clone().applyQuaternion(parentRotation.invert()).normalize());
  }
  // Anatomical rig contracts used by armor and equipment.
- return {clothingMeshes:[...root.children.filter(o=>o.userData.tunic),...leftArm.children.filter(o=>o.material===cloth),...rightArm.children.filter(o=>o.material===cloth)],solveArm,upperOffset,legScale,root,body:root,leftArm,rightArm,leftLeg,rightLeg,leftElbow,rightElbow,leftKnee,rightKnee,leftHand,rightHand,torso,neck,face,head,hairMeshes:head.children.filter(o=>o.material===hairMat)};
+ return {clothingMeshes:[...root.children.filter(o=>o.userData.tunic),...leftArm.children.filter(o=>o.material===cloth),...rightArm.children.filter(o=>o.material===cloth)],leftAnkle,rightAnkle,solveArm,upperOffset,legScale,root,body:root,leftArm,rightArm,leftLeg,rightLeg,leftElbow,rightElbow,leftKnee,rightKnee,leftHand,rightHand,torso,neck,face,head,hairMeshes:head.children.filter(o=>o.material===hairMat)};
 }
