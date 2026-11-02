@@ -67,11 +67,11 @@ export function startMusic(){
    brass(root-12,nextTime,quarter*.90,'tuba',.085);
    if(i%2===0){brass(root,nextTime,quarter*1.78,'horn',.043);brass(root+7,nextTime,quarter*1.7,'horn',.028)}
    if(i%4===0){brass(root+12,nextTime,quarter*2.6,'horn',.032);if(region!=='Wilderness')percussion(nextTime,true)}
-   else if(i%2===0)percussion(nextTime,false);
-   if(i%8===0)percussion(nextTime,false,'cymbal');
+   else if(i%2===0&&region!=='Wilderness')percussion(nextTime,false);
+   if(i%8===0&&region!=='Wilderness')percussion(nextTime,false,'cymbal');
    const note=song.melody[i];
-   if(note!=null)brass(note,nextTime,quarter*(i%8===6?1.7:.84),'trumpet',.084);
-   if(song.counter[i]!=null)brass(song.counter[i],nextTime,quarter*1.8,'horn',.044);
+   if(note!=null&&region!=='Wilderness')brass(note,nextTime,quarter*(i%8===6?1.7:.84),'trumpet',.084);
+   if(song.counter[i]!=null)brass(song.counter[i],nextTime,quarter*1.8,'horn',region==='Wilderness'?.018:.044);
    step++;nextTime+=quarter;
    if(step%64===0&&region==='Wilderness'){track=(track+1)%songs.length;label.textContent='Wilderness · '+songs[track].name}
   }
