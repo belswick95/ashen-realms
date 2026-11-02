@@ -1,6 +1,7 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {buildHumanoid} from './humanoid.js';
 import {buildPlateArmor} from './armor.js';
+import {createCape} from './cape.js';
 import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const tint=(hex,fallback)=>/^#[0-9a-f]{6}$/i.test(hex||'')?parseInt(hex.slice(1),16):fallback;
@@ -184,7 +185,7 @@ function openArmoryChest(){
  for(const key of armorKeys)if(!state.armorOwned.includes(key))state.armorOwned.push(key);
  for(const key of Object.keys(weaponCatalog))if(!state.weaponsOwned.includes(key))state.weaponsOwned.push(key);
  chestLid.rotation.x=-1.1;
- say('Armory chest opened! Iron armor, four swords, an axe and a pickaxe added to your inventory.');
+ say('Armory chest opened! Iron armor, a crimson cape, four swords, an axe and a pickaxe added to your inventory.');
  save();draw();
 }
 function toggleHouseDoor(house){
@@ -422,7 +423,8 @@ const armorCatalog={
   helm:{name:'Iron full helm',slot:'Head',desc:'A sturdy iron helmet.'},
   chest:{name:'Iron platebody',slot:'Body',desc:'A solid iron breastplate.'},
   legs:{name:'Iron platelegs',slot:'Legs',desc:'Heavy iron leg protection.'},
-  boots:{name:'Iron boots',slot:'Feet',desc:'Iron-plated boots.'}
+  boots:{name:'Iron boots',slot:'Feet',desc:'Iron-plated boots.'},
+  cape:{name:'Crimson Adventurer Cape',slot:'Back',desc:'A long crimson cape with gold clasps. It flows as you walk.'}
 };
 const armorKeys=Object.keys(armorCatalog);
 const state={wood:saved.wood||0,ore:saved.ore||0,gold:saved.gold||0,woodXP:saved.woodXP||0,miningXP:saved.miningXP||0,
@@ -431,7 +433,8 @@ equipped:(saved.equipped&&typeof saved.equipped==='object')?saved.equipped:{},we
 for(const key of ['attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP'])state[key]=Number.isFinite(Number(saved[key]))?Math.max(0,Math.floor(Number(saved[key]))):0;
 for(const k of armorKeys)if(state.equipped[k]&&!state.armorOwned.includes(k))state.armorOwned.push(k);
 const pieces=buildPlateArmor(T,body,avatar);
-function refreshArmor(){for(const k of armorKeys)for(const m of pieces[k])m.visible=!!state.equipped[k]}
+const cape=createCape(T,body,{color:0x81394b});
+function refreshArmor(){for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
 refreshArmor();
 const weaponMeshes=new Map();
 for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.80,.04);ra.add(model);model.visible=false;weaponMeshes.set(key,model)}
@@ -642,7 +645,7 @@ function draw(){
  for(let i=0;i<state.ore;i++)slots.push({kind:'ore'});
  for(let i=0;i<16;i++){
   const item=slots[i],d=document.createElement('button');d.className='slot';
-  if(item){const icon=document.createElement('span');icon.className='item-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=item.kind==='weapon'?iconForWeapon(item.key):item.kind==='armor'?({helm:'<svg viewBox="0 0 48 48"><path d="M10 26V19Q10 5 24 5T38 19V26L33 37H28V25H20V37H15Z" fill="#a9b5bb" stroke="#e4d6a9" stroke-width="2"/><path d="M13 22H35" stroke="#5d6972" stroke-width="4"/></svg>',chest:'<svg viewBox="0 0 48 48"><path d="M14 5L6 14L11 26L16 23V42H32V23L37 26L42 14L34 5L28 10H20Z" fill="#9daeb8" stroke="#d8d5bd" stroke-width="2"/><path d="M16 16L24 22L32 16M24 22V39" stroke="#566a76" stroke-width="3"/></svg>',legs:'<svg viewBox="0 0 48 48"><path d="M12 5H36L33 42H25L24 22L23 42H15Z" fill="#a1adb4" stroke="#e4d6a9" stroke-width="2"/><path d="M13 14H35" stroke="#64717b" stroke-width="4"/></svg>',boots:'<svg viewBox="0 0 48 48"><path d="M9 7H20V29L25 34V41H5V34L9 27ZM28 7H39V29L44 34V41H24V34L28 27Z" fill="#7e8d96" stroke="#c3bfa7" stroke-width="2"/></svg>'})[item.key]:item.kind==='log'?'<svg viewBox="0 0 48 48"><path d="M9 12L33 6L42 14L18 22Z" fill="#ad8050"/><path d="M9 12V32L18 40V22ZM18 22L42 14V33L18 40Z" fill="#765033" stroke="#c59a62" stroke-width="2"/><ellipse cx="18" cy="22" rx="5" ry="7" fill="#e1b980"/><ellipse cx="18" cy="22" rx="2.5" ry="4" fill="none" stroke="#9e6e40"/></svg>':'<svg viewBox="0 0 48 48"><path d="M6 35L13 15L27 8L42 23L36 40H14Z" fill="#84949a" stroke="#c2c5b4" stroke-width="2"/><path d="M13 15L26 24L42 23M26 24L20 38" fill="none" stroke="#586a73" stroke-width="3"/></svg>';d.append(icon);d.setAttribute('aria-label',item.kind==='weapon'?weaponCatalog[item.key].name:item.kind==='armor'?armorCatalog[item.key].name:item.kind==='log'?'Log':'Ore');
+  if(item){const icon=document.createElement('span');icon.className='item-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=item.kind==='weapon'?iconForWeapon(item.key):item.kind==='armor'?({cape:'<svg viewBox="0 0 48 48"><path d="M15 6L33 6L40 42Q24 35 8 42Z" fill="#873a4b" stroke="#d6b57c" stroke-width="2"/><circle cx="15" cy="7" r="3" fill="#d6b57c"/><circle cx="33" cy="7" r="3" fill="#d6b57c"/></svg>',helm:'<svg viewBox="0 0 48 48"><path d="M10 26V19Q10 5 24 5T38 19V26L33 37H28V25H20V37H15Z" fill="#a9b5bb" stroke="#e4d6a9" stroke-width="2"/><path d="M13 22H35" stroke="#5d6972" stroke-width="4"/></svg>',chest:'<svg viewBox="0 0 48 48"><path d="M14 5L6 14L11 26L16 23V42H32V23L37 26L42 14L34 5L28 10H20Z" fill="#9daeb8" stroke="#d8d5bd" stroke-width="2"/><path d="M16 16L24 22L32 16M24 22V39" stroke="#566a76" stroke-width="3"/></svg>',legs:'<svg viewBox="0 0 48 48"><path d="M12 5H36L33 42H25L24 22L23 42H15Z" fill="#a1adb4" stroke="#e4d6a9" stroke-width="2"/><path d="M13 14H35" stroke="#64717b" stroke-width="4"/></svg>',boots:'<svg viewBox="0 0 48 48"><path d="M9 7H20V29L25 34V41H5V34L9 27ZM28 7H39V29L44 34V41H24V34L28 27Z" fill="#7e8d96" stroke="#c3bfa7" stroke-width="2"/></svg>'})[item.key]:item.kind==='log'?'<svg viewBox="0 0 48 48"><path d="M9 12L33 6L42 14L18 22Z" fill="#ad8050"/><path d="M9 12V32L18 40V22ZM18 22L42 14V33L18 40Z" fill="#765033" stroke="#c59a62" stroke-width="2"/><ellipse cx="18" cy="22" rx="5" ry="7" fill="#e1b980"/><ellipse cx="18" cy="22" rx="2.5" ry="4" fill="none" stroke="#9e6e40"/></svg>':'<svg viewBox="0 0 48 48"><path d="M6 35L13 15L27 8L42 23L36 40H14Z" fill="#84949a" stroke="#c2c5b4" stroke-width="2"/><path d="M13 15L26 24L42 23M26 24L20 38" fill="none" stroke="#586a73" stroke-width="3"/></svg>';d.append(icon);d.setAttribute('aria-label',item.kind==='weapon'?weaponCatalog[item.key].name:item.kind==='armor'?armorCatalog[item.key].name:item.kind==='log'?'Log':'Ore');
    d.title=(item.kind==='armor'||item.kind==='weapon')?'Click to equip • Right-click for options':'Right-click for options';
    d.onclick=()=>{if(item.kind==='armor')toggleArmor(item.key);else if(item.kind==='weapon')equipWeapon(item.key)};
    d.oncontextmenu=e=>{e.preventDefault();showMenu(e.clientX,e.clientY,item.kind==='weapon'? [['Equip '+weaponCatalog[item.key].name,()=>equipWeapon(item.key)],['Examine',()=>say(weaponCatalog[item.key].desc)]]:item.kind==='armor'?
@@ -651,6 +654,7 @@ function draw(){
   }else{d.disabled=true}inventory.append(d);
  }
  const equipmentIcons={
+ cape:'<svg viewBox="0 0 48 48"><path d="M15 6L33 6L40 42Q24 35 8 42Z" fill="#873a4b" stroke="#d6b57c" stroke-width="2"/><circle cx="15" cy="7" r="3" fill="#d6b57c"/><circle cx="33" cy="7" r="3" fill="#d6b57c"/></svg>',
  helm:'<svg viewBox="0 0 48 48"><path d="M10 26V19Q10 5 24 5T38 19V26L33 37H28V25H20V37H15Z" fill="#a9b5bb" stroke="#e4d6a9" stroke-width="2"/><path d="M13 22H35" stroke="#5d6972" stroke-width="4"/></svg>',
  chest:'<svg viewBox="0 0 48 48"><path d="M14 5L6 14L11 26L16 23V42H32V23L37 26L42 14L34 5L28 10H20Z" fill="#9daeb8" stroke="#d8d5bd" stroke-width="2"/><path d="M16 16L24 22L32 16M24 22V39" stroke="#566a76" stroke-width="3"/></svg>',
  legs:'<svg viewBox="0 0 48 48"><path d="M12 5H36L33 42H25L24 22L23 42H15Z" fill="#a1adb4" stroke="#e4d6a9" stroke-width="2"/><path d="M13 14H35" stroke="#64717b" stroke-width="4"/></svg>',
@@ -737,6 +741,6 @@ for(const npc of npcs){
  npc.rightArm.rotation.x=gait*.65;
  if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position);
 }
-blend=T.MathUtils.lerp(blend,moving?1:0,1-Math.exp(-12*dt));if(moving)phase+=dt*10;const swing=Math.sin(phase)*.65*blend;ll.rotation.x=swing;rl.rotation.x=-swing;la.rotation.x=-swing*.7;ra.rotation.x=swing*.7;if(combat.attackAnim>0){const t=1-combat.attackAnim/.55;ra.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;ra.rotation.z=-.32;body.rotation.y=Math.sin(t*Math.PI)*-.15}else{ra.rotation.z=T.MathUtils.lerp(ra.rotation.z,0,dt*12);body.rotation.y=T.MathUtils.lerp(body.rotation.y,0,dt*10)}if(combat.hitAnim>0){body.rotation.z=Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12}else body.rotation.z=T.MathUtils.lerp(body.rotation.z,0,dt*12);body.position.y=Math.abs(Math.sin(phase))*.06*blend;
+blend=T.MathUtils.lerp(blend,moving?1:0,1-Math.exp(-12*dt));if(moving)phase+=dt*10;const swing=Math.sin(phase)*.65*blend;ll.rotation.x=swing;rl.rotation.x=-swing;la.rotation.x=-swing*.7;ra.rotation.x=swing*.7;if(combat.attackAnim>0){const t=1-combat.attackAnim/.55;ra.rotation.x=-1.6+Math.sin(t*Math.PI)*2.7;ra.rotation.z=-.32;body.rotation.y=Math.sin(t*Math.PI)*-.15}else{ra.rotation.z=T.MathUtils.lerp(ra.rotation.z,0,dt*12);body.rotation.y=T.MathUtils.lerp(body.rotation.y,0,dt*10)}if(combat.hitAnim>0){body.rotation.z=Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12}else body.rotation.z=T.MathUtils.lerp(body.rotation.z,0,dt*12);body.position.y=Math.abs(Math.sin(phase))*.06*blend;cape.update(dt,blend);
 const focus=player.position;camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,1,focus.z);saveTick+=dt;if(saveTick>4){saveTick=0;save()}for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();
