@@ -982,7 +982,7 @@ for(const bridge of landscape.bridges){
  }
 }
 // Shared world clock: UTC is authoritative so every client sees the same sky.
-const WORLD_DAY_SECONDS=3600; // 60 real minutes = one complete Eldervale day.
+const WORLD_DAY_SECONDS=86400; // Real UTC day; all clients share one clock.
 const worldClock=document.createElement('output');worldClock.id='world-clock';worldClock.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:36;pointer-events:none;background:#12202bc9;color:#e7d1a5;border:1px solid #927b56;border-radius:5px;padding:5px 9px;font:11px Arial';document.body.append(worldClock);
 let nextSkyUpdate=0;
 function updateWorldSky(){
@@ -998,7 +998,7 @@ function updateWorldSky(){
  sun.intensity=.04+daylight*2.26;
  sun.position.set(Math.cos(dayPhase*Math.PI*2)*40,Math.max(2,solar*45),Math.sin(dayPhase*Math.PI*2)*40);
  const hh=String(Math.floor(hour)).padStart(2,'0'),mm=String(Math.floor(hour%1*60)).padStart(2,'0');
- worldClock.textContent='Eldervale '+hh+':'+mm+(daylight<.2?' · Night':daylight<.65?' · Dawn / dusk':' · Day');
+ worldClock.textContent='World (UTC) '+hh+':'+mm+(daylight<.2?' · Night':daylight<.65?' · Dawn / dusk':' · Day');
  window.eldervaleWorldNight=daylight<.2;
  window.eldervaleSetTimeOfDay?.(hour,daylight);
 }
