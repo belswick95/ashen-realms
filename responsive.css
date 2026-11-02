@@ -77,3 +77,7 @@ body.compact-layout #social-panel,body.compact-layout #social-panel.collapsed{wi
 body.compact-layout #social-panel .social-head strong{font-size:10px}body.compact-layout #social-panel .world-line{font-size:10px}body.compact-layout #social-panel.collapsed #world-chat-lines{height:32px!important}
 body.compact-layout #map-widget .minimap-brand{font-size:13px;letter-spacing:1px}
 body.compact-layout.compact-panel-open #social-panel{visibility:visible}
+#social-panel.collapsed,body.compact-layout #social-panel.collapsed{max-height:none;overflow:visible}
+#social-panel.collapsed .social-content{display:block;padding:0}
+#social-panel.collapsed .social-tabs,#social-panel.collapsed #social-friends,#social-panel.collapsed #social-note,#social-panel.collapsed #social-chat>small{display:none!important}
+body.compact-layout.compact-panel-open #social-panel:not(.collapsed){visibility:visible}

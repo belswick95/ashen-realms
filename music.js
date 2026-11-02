@@ -1,7 +1,7 @@
 // Eldervale original medieval-fantasy brass band score. Generated locally with Web Audio.
 export function startMusic(){
  const button=document.querySelector('#music-toggle'),slider=document.querySelector('#music-volume'),label=document.querySelector('#music-track');
- if(!button||!slider)return;
+ if(!button||!slider)return;button.textContent='Music Off';
  let ctx,master,timer,playing=false,step=0,track=0,nextTime=0;
  // Four-bar phrases in concert pitch; quarter-note melody with rests and sustained cadences.
  const songs=[
