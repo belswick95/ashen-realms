@@ -8,7 +8,8 @@ const game=readFileSync(new URL('../game.js',import.meta.url),'utf8');
 const auth=readFileSync(new URL('../auth.js',import.meta.url),'utf8');
 
 test('login audio initializes before entering game',()=>{
- assert.match(auth,/import\('\.\/music\.js\?v=login-audio-/);
+ assert.match(auth,/import \{startMusic\} from '\.\/music\.js\?v=login-audio-/);
+ assert.match(auth,/startMusic\(\);/);
  assert.match(music,/The Gates of Eldervale/);
 });
 test('music and ambience controls exist in settings',()=>{
