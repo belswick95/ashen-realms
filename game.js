@@ -552,7 +552,22 @@ function drawMap(ctx,canvas,scale){
  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
  const clipX=Math.max(0,sourceX),clipY=Math.max(0,sourceY),clipR=Math.min(terrainAtlas.width,sourceX+sourceW),clipB=Math.min(terrainAtlas.height,sourceY+sourceH);
  if(clipR>clipX&&clipB>clipY)ctx.drawImage(terrainAtlas,clipX,clipY,clipR-clipX,clipB-clipY,(clipX-sourceX)/sourceW*w,(clipY-sourceY)/sourceH*h,(clipR-clipX)/sourceW*w,(clipB-clipY)/sourceH*h);
-for(const lake of worldLakes){ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit,lake.rz*pzPerUnit,0,0,Math.PI*2);ctx.fillStyle='#b4a478';ctx.fill();ctx.beginPath();ctx.ellipse(toX(lake.x),toY(lake.z),lake.rx*pxPerUnit*.95,lake.rz*pzPerUnit*.95,0,0,Math.PI*2);ctx.fillStyle='#3b8495';ctx.fill()}
+for(const lake of worldLakes){
+  // Irregular shorelines and depth shading, seeded by world coordinates.
+  const cx=toX(lake.x),cy=toY(lake.z),rx=lake.rx*pxPerUnit,ry=lake.rz*pzPerUnit;
+  if(cx+rx<0||cy+ry<0||cx-rx>w||cy-ry>h)continue;
+  function shore(factor){ctx.beginPath();for(let i=0;i<=64;i++){
+   const a=i/64*Math.PI*2;
+   const wobble=1+.085*Math.sin(a*5+lake.x*.17)+.055*Math.sin(a*9+lake.z*.13)+.025*Math.sin(a*17);
+   const px=cx+Math.cos(a)*rx*wobble*factor,py=cy+Math.sin(a)*ry*wobble*factor;
+   i?ctx.lineTo(px,py):ctx.moveTo(px,py);
+  }ctx.closePath()}
+  shore(1.08);ctx.fillStyle='#a5a278';ctx.fill();
+  shore(1);ctx.fillStyle='#477b81';ctx.fill();
+  shore(.84);ctx.fillStyle='#367184';ctx.fill();
+  shore(.58);ctx.fillStyle='#2d6278';ctx.fill();
+  ctx.strokeStyle='rgba(172,207,190,.5)';ctx.lineWidth=scale?1:1.5;shore(.96);ctx.stroke();
+ }
  const roads=[[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
  // Layered, gently curved roads with earthen verges, not straight diagram lines.
  for(const [a,b] of roads){
