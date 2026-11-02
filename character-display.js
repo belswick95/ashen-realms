@@ -1,4 +1,4 @@
-import {buildHumanoid} from './humanoid.js';import {buildPlateArmor} from './armor.js';import {makeWeapon,weaponCatalog} from './weapons.js';import {makeShield,shieldCatalog} from './shields.js';import {createCape} from './cape.js';import {createHumanoidAnimator} from './animation.js';import {safeAppearance} from './appearance.js';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-coherent1';import {buildPlateArmor} from './armor.js?v=release-20261102-coherent1';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261102-coherent1';import {makeShield,shieldCatalog} from './shields.js?v=release-20261102-coherent1';import {createCape} from './cape.js?v=release-20261102-coherent1';import {createHumanoidAnimator} from './animation.js?v=release-20261102-coherent1';import {safeAppearance} from './appearance.js?v=release-20261102-coherent1';
 export function publicCharacter(appearance={},equipment={}){
  if(!equipment||typeof equipment!=='object'||Array.isArray(equipment))equipment={};
  const armor={};for(const key of ['helm','chest','legs','boots','cape'])armor[key]=equipment.armor?.[key]===true;
