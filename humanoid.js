@@ -25,35 +25,50 @@ export function buildHumanoid(T,root,look={}){
  // Pelvis fills the gap between the torso and two distinct articulated legs.
  mesh(sphere,trousers,root,0,.985,0,.30,.21,.235);
  const neck=mesh(geo('humanNeck',()=>new T.CylinderGeometry(.108,.125,.20,12)),faceMat,root,0,2.02,0);
- // Angular human head: tapered jaw, cheeks, chin, brow and projected nose.
- const headShape=geo('humanHead',()=>new T.LatheGeometry([
-  new T.Vector2(.09,0),new T.Vector2(.17,.055),new T.Vector2(.235,.17),
-  new T.Vector2(.275,.32),new T.Vector2(.265,.48),new T.Vector2(.225,.59),
-  new T.Vector2(.125,.64)
- ],12));
- const face=mesh(headShape,faceMat,root,0,2.095,.018,1,1,1.02);
- // Face front points toward +Z, matching the existing game movement rig.
+ // Sculpted low-poly head with independently controlled jaw, cheekbone and cranium widths.
+ // An elliptical ring mesh avoids the cylindrical/ball-headed appearance.
+ const headShape=geo('humanHeadV3',()=>{
+  const rings=[
+   [0,.095,.105,.010],[.045,.155,.145,.006],[.12,.208,.195,.005],
+   [.20,.240,.220,0],[.31,.258,.234,-.006],[.42,.255,.238,-.010],
+   [.53,.237,.221,-.016],[.60,.185,.188,-.019],[.65,.09,.10,-.025]
+  ];
+  const positions=[],indices=[],sides=12;
+  for(const [y,rx,rz,off] of rings)for(let j=0;j<sides;j++){
+   const a=j/sides*Math.PI*2;
+   positions.push(Math.cos(a)*rx,y,Math.sin(a)*rz+off);
+  }
+  for(let k=0;k<rings.length-1;k++)for(let j=0;j<sides;j++){
+   const a=k*sides+j,b=k*sides+(j+1)%sides,d=(k+1)*sides+j,e=(k+1)*sides+(j+1)%sides;
+   indices.push(a,b,d,b,e,d);
+  }
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();return g;
+ });
+ const face=mesh(headShape,faceMat,root,0,2.10,.015);
+ // Subtle cheeks and cheekbone planes produce a face rather than a featureless sphere.
  for(const side of [-1,1]){
-  mesh(sphere,faceMat,root,side*.265,2.39,0,.055,.095,.07);
-  mesh(box(.09,.024,.018),mat(0x32251f),root,side*.125,2.493,.266).rotation.z=side*-.10;
-  mesh(box(.07,.018,.015),mat(0x2c2926),root,side*.125,2.455,.278);
-  mesh(sphere,mat(0xf1e5d2),root,side*.125,2.456,.283,.028,.012,.008);
+  const cheek=mesh(sphere,faceMat,root,side*.174,2.382,.145,.095,.093,.074);
+  cheek.rotation.z=side*.12;
+  mesh(sphere,faceMat,root,side*.245,2.40,-.005,.042,.077,.055);
+  // Recessed eyes and angled eyebrows, avoiding large cartoon eyeballs.
+  mesh(sphere,mat(0x392f2a),root,side*.108,2.515,.232,.038,.019,.012);
+  const brow=mesh(box(.125,.025,.035),hairMat,root,side*.113,2.557,.235);brow.rotation.z=-side*.10;
  }
- const nose=mesh(geo('humanNose',()=>new T.ConeGeometry(.072,.185,5)),faceMat,root,0,2.385,.30,.8,1,.8);
+ const nose=mesh(geo('humanNoseV3',()=>new T.ConeGeometry(.054,.15,5)),faceMat,root,0,2.433,.258,.8,1,.9);
  nose.rotation.x=Math.PI/2;
- mesh(box(.105,.016,.012),mat(0x805349),root,0,2.295,.254);
- // Hair is cut as a fitted cap, not a floating round helmet.
+ mesh(box(.085,.014,.014),mat(0x855d51),root,0,2.345,.221);
+ // Close-fitted hairstyle volumes and swept strands are attached to the skull.
  const style=look.hair||'Side swept';
- const hairCap=mesh(geo('humanHairCap',()=>new T.SphereGeometry(1,14,8,0,Math.PI*2,0,Math.PI*.56)),hairMat,root,0,2.635,.005,.269,style==='Buzz cut'?.085:.155,.274);
+ const hairCap=mesh(geo('humanHairCapV3',()=>new T.SphereGeometry(1,14,9,0,Math.PI*2,0,Math.PI*.56)),hairMat,root,0,2.679,-.015,.244,style==='Buzz cut'?.075:.125,.220);
  if(style==='Side swept'){
-  const fringe=mesh(box(.29,.09,.13),hairMat,root,-.09,2.618,.215);fringe.rotation.z=-.24;
+  const fringe=mesh(box(.30,.075,.13),hairMat,root,-.07,2.66,.145);fringe.rotation.z=-.23;
  }else if(style==='Short crop'){
-  mesh(box(.38,.065,.13),hairMat,root,0,2.632,.19);
+  mesh(box(.32,.055,.10),hairMat,root,0,2.676,.145);
  }else if(style==='Spiky'){
-  for(let i=-2;i<=2;i++){const tuft=mesh(geo('humanSpike',()=>new T.ConeGeometry(.065,.18,5)),hairMat,root,i*.105,2.76,-.005);tuft.rotation.z=i*-.16}
+  for(let i=-2;i<=2;i++){const tuft=mesh(geo('humanSpike',()=>new T.ConeGeometry(.055,.15,5)),hairMat,root,i*.09,2.78,-.015);tuft.rotation.z=-i*.14}
  }else if(style==='Long'){
-  for(const side of [-1,1])mesh(sphere,hairMat,root,side*.225,2.37,-.10,.105,.30,.145);
-  mesh(sphere,hairMat,root,0,2.40,-.20,.23,.30,.12);
+  for(const side of [-1,1])mesh(sphere,hairMat,root,side*.20,2.41,-.105,.085,.26,.105);
+  mesh(sphere,hairMat,root,0,2.42,-.175,.20,.28,.10);
  }
  const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
  // Gameplay camera follows from behind: right-hand weapon appears on the player's right.
