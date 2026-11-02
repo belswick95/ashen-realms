@@ -17,15 +17,15 @@ export function createCharacterPreview(host,initial){
  const key=new T.DirectionalLight(0xffdfad,2.6);key.position.set(-3,6,5);scene.add(key);
  const rim=new T.DirectionalLight(0xb7d7ff,1.2);rim.position.set(3,3,-4);scene.add(rim);
  const turntable=new T.Group();scene.add(turntable);
- let model=null,frame=0,disposed=false,dragging=false,lastX=0,rotation=-.25;
+ let model=null,rig=null,frame=0,disposed=false,dragging=false,lastX=0,rotation=-.25;
  const resize=()=>{if(disposed)return;const w=Math.max(host.clientWidth,200),h=Math.max(host.clientHeight,200);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};
  const observer=new ResizeObserver(resize);observer.observe(host);
- function update(look){if(model){turntable.remove(model);model.traverse(()=>{})}model=new T.Group();buildHumanoid(T,model,look);turntable.add(model)}
+ function update(look){if(model){turntable.remove(model);model.traverse(()=>{})}model=new T.Group();rig=buildHumanoid(T,model,look);turntable.add(model)}
  const down=e=>{dragging=true;lastX=e.clientX;renderer.domElement.setPointerCapture(e.pointerId);renderer.domElement.style.cursor='grabbing'};
  const move=e=>{if(!dragging)return;rotation+=(e.clientX-lastX)*.012;lastX=e.clientX};
  const up=()=>{dragging=false;renderer.domElement.style.cursor='grab'};
  renderer.domElement.addEventListener('pointerdown',down);renderer.domElement.addEventListener('pointermove',move);renderer.domElement.addEventListener('pointerup',up);renderer.domElement.addEventListener('pointercancel',up);
- function tick(){if(disposed)return;turntable.rotation.y=rotation;renderer.render(scene,camera);frame=requestAnimationFrame(tick)}
+ function tick(){if(disposed)return;turntable.rotation.y=rotation;if(rig){const t=performance.now()*.001;rig.leftArm.rotation.x=Math.sin(t)*.035;rig.rightArm.rotation.x=-Math.sin(t)*.035;rig.leftElbow.rotation.x=-.08;rig.rightElbow.rotation.x=-.08;model.position.y=Math.sin(t*1.7)*.008}renderer.render(scene,camera);frame=requestAnimationFrame(tick)}
  update(initial);resize();tick();
  return {update,dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(frame);observer.disconnect();up();if(model)model.traverse(()=>{});renderer.dispose();renderer.domElement.remove()}};
 }
