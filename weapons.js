@@ -40,7 +40,9 @@ export function makeWeapon(T,key){
   // blade geometry starts above the crossguard
   group.children.slice(-2).forEach(o=>o.position.y+=handle-.25)
  }
- group.rotation.z=key==='twohand'?-.18:Math.PI;group.scale.setScalar(.8);
+ // Mesh geometry is authored with blade tip along local +Y and hilt at the origin.
+ // Rotating it 180 degrees inverted the blade and put the point behind the hand.
+ group.rotation.z=key==='twohand'?-.12:0;group.scale.setScalar(.8);
  return group
 }
 export const weaponIcons={

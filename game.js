@@ -6,15 +6,15 @@ import {addSystemMessage,renderFeed} from './chat-feed.js?v=staff-crown-20261102
 import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-worldtime4';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {buildHumanoid} from './humanoid.js?v=release-20261102-worldtime4';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-combatstance6';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-gripfix7';
 import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-worldtime4';
 import {buildForest} from './forest.js?v=release-20261102-worldtime4';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-worldtime4';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-gripfix7';
 import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-worldtime4';
 const landscape=createLandscape();
 import {buildPlateArmor} from './armor.js?v=release-20261102-worldtime4';
 import {createCape} from './cape.js?v=release-20261102-worldtime4';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-worldtime4';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-gripfix7';
 import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-worldtime4';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
@@ -552,9 +552,9 @@ const cape=createCape(T,body,{color:0x81394b});
 function refreshArmor(){for(const hair of avatar.hairMeshes)hair.visible=!state.equipped.helm;avatar.torso.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
 refreshArmor();
 const weaponMeshes=new Map();
-for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.015,.075);model.rotation.set(-.38,0,-.12);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
+for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.02,.045);model.rotation.set(.68,0,-.10);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
 const shieldMeshes=new Map();
-for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);model.position.set(-.015,-.08,.23);model.rotation.set(-.10,.18,0);avatar.leftHand.add(model);model.visible=false;shieldMeshes.set(key,model)}
+for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);model.position.set(-.01,-.07,.13);model.rotation.set(0,-.15,0);avatar.leftHand.add(model);model.visible=false;shieldMeshes.set(key,model)}
 if(state.equippedWeapon==='twohand')state.equippedShield=null;
 function refreshShield(){for(const [key,model] of shieldMeshes)model.visible=state.equippedShield===key}
 function equipShield(key){if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;if(state.equippedShield&&state.equippedWeapon==='twohand'){state.equippedWeapon=null;refreshWeapon()}refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
