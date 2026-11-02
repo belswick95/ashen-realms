@@ -28,9 +28,45 @@ function trail(ax,az,bx,bz,width=2.7){const len=Math.hypot(bx-ax,bz-az);const m=
 trail(0,0,-60,45);trail(0,0,75,-55);trail(0,0,105,103);trail(-60,45,-105,-91);disk(13,0x81966a,0,0);
 for(let i=0;i<480;i++){const a=i*2.399963,r=8+Math.sqrt(i)*9.1,x=Math.sin(a)*r,z=Math.cos(a)*r;if(Math.abs(x)<410&&Math.abs(z)<410){const g=box(.11,.14,.11,i%3?0x79955b:0x9baa70,x,.08,z);g.rotation.y=a}}
 for(let i=0;i<38;i++){const a=i*2.4,r=17+i*3.8,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<405&&Math.abs(z)<405){const stone=sphere(.3+i%3*.12,0x8d8e7c,x,.16,z);stone.scale.y=.5}}
-function tree(x,z){const trunk=box(.58,3.6,.58,0x614a33,x,1.8,z,scene,'wood');trunk.rotation.y=x*.3;const hit=cone(2.5,3.8,0x2b6544,x,3.9,z);hit.userData={kind:'tree',x,z};targets.push(hit);cone(2.05,3.2,0x397b4f,x,5.2,z);cone(1.35,2.7,0x4b8a54,x,6.35,z)}
-function rock(x,z){const m=sphere(.9,0x777b78,x,.6,z);m.scale.set(1.2,.7,1);m.userData={kind:'rock',x,z};targets.push(m)}
-function house(x,z,c){box(4,3,3.7,c,x,1.5,z,scene,'stone');box(4.5,.2,4.1,0x685340,x,3.08,z);const roof=cone(3.4,2.3,0x644333,x,4.1,z,scene,'roof');roof.rotation.y=Math.PI/4;box(.8,1.6,.13,0x493322,x,.8,z+1.9);box(.7,.7,.12,0x98b5bd,x+1.3,1.9,z+1.89);box(.14,.75,.16,0x644b33,x+1.3,1.9,z+1.98);box(.75,.13,.16,0x644b33,x+1.3,1.9,z+1.98);box(.4,1.2,.4,0x76665b,x+1.1,4.4,z-.7)}
+function tree(x,z){
+ const seed=Math.abs(Math.sin(x*12.9898+z*78.233));
+ const trunk=box(.53,3.7,.53,0x65472f,x,1.85,z,scene,'wood');trunk.rotation.y=seed*2;
+ for(let i=0;i<3;i++){const branch=box(.12,1.1,.12,0x65472f,x+(i-1)*.42,3.25+i*.38,z+(i%2?.3:-.3),scene,'wood');branch.rotation.z=(i-1)*.65}
+ const crownColors=[0x356f47,0x3f8051,0x4c8952,0x2e6846];
+ const hit=cone(2.35,3.6,crownColors[Math.floor(seed*4)],x,4.0,z);hit.userData={kind:'tree',x,z};targets.push(hit);
+ cone(1.9,2.9,crownColors[(Math.floor(seed*4)+1)%4],x,5.25,z);
+ cone(1.25,2.4,crownColors[(Math.floor(seed*4)+2)%4],x,6.35,z);
+ for(let i=0;i<4;i++){const a=i*2.4+seed*4;const leaf=cone(.65,1.2,crownColors[i],x+Math.cos(a)*1.15,4.2+i*.24,z+Math.sin(a)*1.15);leaf.rotation.z=Math.cos(a)*.28}
+}
+function rock(x,z){
+ const root=new T.Group();root.position.set(x,0,z);scene.add(root);
+ const color=[0x777b78,0x898b7d,0x676f6c][Math.floor(Math.abs(Math.sin(x+z))*3)];
+ const m=new T.Mesh(new T.DodecahedronGeometry(.9,0),material(color,'stone'));m.position.y=.57;m.scale.set(1.15,.75,1);m.rotation.y=x*.1;m.castShadow=true;m.receiveShadow=true;root.add(m);
+ const smaller=new T.Mesh(new T.DodecahedronGeometry(.36,0),material(0x6f7770,'stone'));smaller.position.set(.68,.24,.18);smaller.castShadow=true;root.add(smaller);
+ m.userData={kind:'rock',x,z};targets.push(m)
+}
+function house(x,z,c){
+ const group=new T.Group();group.position.set(x,0,z);scene.add(group);
+ box(4,3,3.7,c,0,1.5,0,group,'stone');
+ for(const side of [-1,1]){
+  box(.18,3.15,.2,0x715139,side*1.94,1.55,1.83,group,'wood');
+  box(.18,3.15,.2,0x715139,side*1.94,1.55,-1.83,group,'wood')
+ }
+ box(4.25,.18,3.9,0x74543c,0,3.07,0,group,'wood');
+ // Two pitched roof slopes instead of an intersecting cone.
+ for(const side of [-1,1]){
+  const roof=box(2.95,.18,4.45,0x634332,side*1.14,3.95,0,group,'roof');roof.rotation.z=side*.58
+ }
+ box(.86,1.65,.12,0x493322,0,.84,1.92,group,'wood');
+ box(.08,.08,.06,0xc7a65f,.29,.84,2.0,group);
+ for(const side of [-1,1]){
+  box(.79,.82,.12,0x89aeb8,side*1.25,1.92,1.92,group);
+  box(.1,.91,.17,0x614832,side*1.25,1.92,2.02,group,'wood');
+  box(.85,.10,.17,0x614832,side*1.25,1.92,2.02,group,'wood')
+ }
+ box(.4,1.2,.4,0x76665b,1.1,4.35,-.7,group,'stone');
+ for(let i=0;i<4;i++)box(.36,.21,.29,0x858479,-1.55+i*.95,.12,1.96,group,'stone');
+}
 for(let i=0;i<520;i++){const a=i*2.399,r=14+Math.sqrt(i)*17,x=Math.sin(a)*r,z=Math.cos(a)*r;if(i%4===0)rock(x,z);else tree(x,z)}
 house(-7,-5,0xb8a480);house(7,-6,0x9d967f);house(8,7,0xc1aa82);house(-60,42,0xb7a08c);house(-54,48,0xaaa38a);house(73,-58,0xc3b29b);house(78,-51,0x99866c);house(-105,-91,0x9a9b87);house(102,103,0xb8a48d);house(-210,145,0xbda78a);house(-205,151,0xa8a089);house(260,-185,0xbda78a);house(265,-180,0xaaa08a);house(225,215,0xbaa78e);house(-275,-215,0xbda88d);
 // Forest glades and distant ruins make the expanded wilderness feel distinct.
