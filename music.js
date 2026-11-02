@@ -6,12 +6,14 @@ export function startMusic(){
  window.eldervaleMusicInitialized=true;
  button.textContent='Music Off';
  let ctx,master,timer,playing=false,musicMuted=localStorage.getItem('eldervale-music-muted')==='true',step=0,track=window.eldervaleAudioRegion?0:3,nextTime=0;
- let region=window.eldervaleAudioRegion||'Login',desiredRegion=region;
+ let region=window.eldervaleAudioRegion||'Login',desiredRegion=region,worldHour=12,daylight=1;
  const townThemes={'Login':3,'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1,'Suncrest':1,'Greenwatch':0,'Ashen Ruins':2};
  const regionOffsets={'Oakcross':0,'Northwatch':-2,'Eastmarch':2,'Old Cairn':-5,'Farwatch':4,'Westmere':-3,'Stonebridge':5,'Suncrest':7,'Greenwatch':-1,'Ashen Ruins':-7};
- window.eldervaleSetAudioRegion=(name)=>{desiredRegion=Object.hasOwn(townThemes,name)?name:'Wilderness'};
+ window.eldervaleSetAudioRegion=(name)=>{desiredRegion=Object.hasOwn(townThemes,name)?name:'Wilderness';if(ctx)syncRegion()};
+ window.eldervaleSetTimeOfDay=(hour,light)=>{worldHour=hour;daylight=light};
  const settingsToggle=document.querySelector('#settings-music-toggle'),settingsVolume=document.querySelector('#settings-music-volume');
- const ambientVolume=document.querySelector('#ambient-volume');let ambienceGain,windSource,townGain,townSource;
+ const ambientVolume=document.querySelector('#ambient-volume');let ambienceGain,windSource,townGain,townSource,natureGain;
+ function syncRegion(){if(region===desiredRegion||!ctx)return;region=desiredRegion;track=townThemes[region]??0;step=0;updateAmbience();master?.gain.setTargetAtTime(region==='Wilderness'||musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,1.2);label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name}
  function startAmbience(){
   if(!ctx||ambienceGain)return;
   const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),data=buffer.getChannelData(0);
@@ -20,7 +22,7 @@ export function startMusic(){
   const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter();source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=320;
   ambienceGain=ctx.createGain();source.connect(filter);filter.connect(ambienceGain);ambienceGain.connect(ctx.destination);source.start();windSource=source;
   // Soft market-square murmur, independent from the musical score.
-  const townFilter=ctx.createBiquadFilter();townFilter.type='bandpass';townFilter.frequency.value=490;townFilter.Q.value=.38;townGain=ctx.createGain();townGain.gain.value=0;source.connect(townFilter);townFilter.connect(townGain);townGain.connect(ctx.destination);townSource=source;updateAmbience();
+  const townFilter=ctx.createBiquadFilter();townFilter.type='bandpass';townFilter.frequency.value=490;townFilter.Q.value=.38;townGain=ctx.createGain();townGain.gain.value=0;source.connect(townFilter);townFilter.connect(townGain);townGain.connect(ctx.destination);townSource=source;natureGain=ctx.createGain();natureGain.gain.value=1;natureGain.connect(ctx.destination);updateAmbience();
  }
  function updateAmbience(){if(ambienceGain&&ctx){const v=ambientVolume?Number(ambientVolume.value)/100:.3;ambienceGain.gain.setTargetAtTime(v*(region==='Wilderness'?.30:.19),ctx.currentTime,.8);townGain?.gain.setTargetAtTime(region==='Wilderness'?0:v*.055,ctx.currentTime,.8)}}
  if(ambientVolume){const stored=localStorage.getItem('eldervale-ambient-volume');ambientVolume.value=stored===null?'30':stored;ambientVolume.addEventListener('input',()=>{localStorage.setItem('eldervale-ambient-volume',ambientVolume.value);updateAmbience()})}
@@ -68,10 +70,20 @@ export function startMusic(){
   osc.connect(gain);gain.connect(master);osc.start(t);osc.stop(t+.38);
   osc.onended=()=>{osc.disconnect();gain.disconnect()};
  }
+ let nextNature=0;
+ function natureNote(t,night){
+  const f=night?3900+Math.random()*1200:1450+Math.random()*1200;
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(night?f*.94:f*1.32,t+.15);
+  const v=Number(ambientVolume?.value||30)/100*(night?.012:.024);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v+.0001,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+.24);
+  o.connect(g);g.connect(natureGain);o.start(t);o.stop(t+.27);o.onended=()=>{o.disconnect();g.disconnect()};
+ }
  function schedule(){
   if(!playing||!ctx)return;
+  if(natureGain&&ctx.currentTime>=nextNature){const night=daylight<.2;natureNote(ctx.currentTime+.02,night);if(!night&&Math.random()>.55)natureNote(ctx.currentTime+.14,false);nextNature=ctx.currentTime+(night?.18+Math.random()*.6:1.2+Math.random()*3)}
   while(nextTime<ctx.currentTime+.4){
-   if(region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;step=0;updateAmbience();label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name}
+   syncRegion()
    const quarter=60/songs[track].bpm;
    const currentSong=songs[track],i=step%32,bar=Math.floor(i/4),transpose=regionOffsets[region]||0,root=currentSong.roots[bar]+transpose;
    // Bass line and two supporting voices give the march a full brass-ensemble texture.
@@ -90,13 +102,13 @@ export function startMusic(){
  async function toggle(){
   try{
    if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();const limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-15;limiter.ratio.value=4;master.connect(limiter);limiter.connect(ctx.destination)}
-   if(playing){musicMuted=!musicMuted;localStorage.setItem('eldervale-music-muted',String(musicMuted));master.gain.setTargetAtTime(musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,.08);button.textContent=musicMuted?'Music Off':'Music On';button.setAttribute('aria-pressed',String(!musicMuted));if(settingsToggle){settingsToggle.textContent=musicMuted?'Unmute music':'Mute music';settingsToggle.setAttribute('aria-pressed',String(!musicMuted))}return}
-   await ctx.resume();startAmbience();master.gain.setTargetAtTime(musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,.05);
+   if(playing){musicMuted=!musicMuted;localStorage.setItem('eldervale-music-muted',String(musicMuted));master.gain.setTargetAtTime(musicMuted||region==='Wilderness'?0:Number(slider.value)/100*.5,ctx.currentTime,.08);button.textContent=musicMuted?'Music Off':'Music On';button.setAttribute('aria-pressed',String(!musicMuted));if(settingsToggle){settingsToggle.textContent=musicMuted?'Unmute music':'Mute music';settingsToggle.setAttribute('aria-pressed',String(!musicMuted))}return}
+   await ctx.resume();startAmbience();master.gain.setTargetAtTime(musicMuted||region==='Wilderness'?0:Number(slider.value)/100*.5,ctx.currentTime,.05);
    nextTime=ctx.currentTime+.08;playing=true;timer=setInterval(schedule,90);schedule();
    button.textContent=musicMuted?'Music Off':'Music On';button.setAttribute('aria-pressed',String(!musicMuted));if(settingsToggle){settingsToggle.textContent=musicMuted?'Unmute music':'Mute music';settingsToggle.setAttribute('aria-pressed',String(!musicMuted))}label.textContent=region==='Wilderness'?'Wilderness ambience':region+' · '+songs[track].name;
   }catch(err){label.textContent='Audio unavailable';console.warn('Eldervale music:',err)}
  }
- window.eldervaleEnableAudio=async()=>{if(!playing){await toggle()}else if(ctx?.state!=='running'){await ctx.resume()}if(musicMuted){musicMuted=false;localStorage.setItem('eldervale-music-muted','false');master?.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.08);button.textContent='Music On';settingsToggle.textContent='Mute music';settingsToggle.setAttribute('aria-pressed','true')}document.querySelector('#enable-game-audio')?.remove();};
+ window.eldervaleEnableAudio=async()=>{if(!playing){await toggle()}else if(ctx?.state!=='running'){await ctx.resume()}if(musicMuted){musicMuted=false;localStorage.setItem('eldervale-music-muted','false');master?.gain.setTargetAtTime(region==='Wilderness'?0:Number(slider.value)/100*.5,ctx.currentTime,.08);button.textContent='Music On';settingsToggle.textContent='Mute music';settingsToggle.setAttribute('aria-pressed','true')}document.querySelector('#enable-game-audio')?.remove();};
  document.querySelector('#auth-theme-play')?.addEventListener('click',async()=>{await window.eldervaleEnableAudio?.();const b=document.querySelector('#auth-theme-play');if(b)b.textContent='♫ Entrance theme playing';});
  button.addEventListener('click',toggle);
  settingsToggle?.addEventListener('click',toggle);
@@ -104,7 +116,7 @@ export function startMusic(){
  document.addEventListener('pointerdown',event=>{if(!playing&&!event.target.closest('#music-toggle, #settings-music-toggle'))toggle()},{once:true});
  document.addEventListener('touchstart',()=>{if(!playing)toggle()},{once:true,passive:true});
  document.addEventListener('keydown',event=>{if(!playing&&!event.repeat&&!event.target.closest('#music-toggle, #settings-music-toggle'))toggle()},{once:true});
- slider.addEventListener('input',()=>{if(settingsVolume)settingsVolume.value=slider.value;localStorage.setItem('eldervale-music-volume',slider.value);if(ctx&&master)master.gain.setTargetAtTime(musicMuted?0:Number(slider.value)/100*.5,ctx.currentTime,.04)});
+ slider.addEventListener('input',()=>{if(settingsVolume)settingsVolume.value=slider.value;localStorage.setItem('eldervale-music-volume',slider.value);if(ctx&&master)master.gain.setTargetAtTime(musicMuted||region==='Wilderness'?0:Number(slider.value)/100*.5,ctx.currentTime,.04)});
  settingsVolume?.addEventListener('input',()=>{slider.value=settingsVolume.value;slider.dispatchEvent(new Event('input',{bubbles:true}))});
  if(settingsToggle){settingsToggle.textContent=musicMuted?'Unmute music':'Mute music';settingsToggle.setAttribute('aria-pressed',String(!musicMuted))}
  const stored=localStorage.getItem('eldervale-music-volume');const saved=stored===null?45:Number(stored);slider.value=Number.isFinite(saved)&&saved>=0&&saved<=100?String(saved):'45';if(settingsVolume)settingsVolume.value=slider.value;

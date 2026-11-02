@@ -1,25 +1,25 @@
-import {createPlayerHUD} from './player-hud.js?v=release-20261102-multiplayer3';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-multiplayer3';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261102-multiplayer3';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-multiplayer3';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-multiplayer3';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-multiplayer3';
+import {createPlayerHUD} from './player-hud.js?v=release-20261102-worldtime4';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261102-worldtime4';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261102-worldtime4';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261102-worldtime4';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261102-worldtime4';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261102-worldtime4';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261102-multiplayer3';
-import {createHumanoidAnimator} from './animation.js?v=release-20261102-multiplayer3';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-multiplayer3';
-import {buildForest} from './forest.js?v=release-20261102-multiplayer3';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-multiplayer3';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-multiplayer3';
+import {buildHumanoid} from './humanoid.js?v=release-20261102-worldtime4';
+import {createHumanoidAnimator} from './animation.js?v=release-20261102-worldtime4';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261102-worldtime4';
+import {buildForest} from './forest.js?v=release-20261102-worldtime4';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261102-worldtime4';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261102-worldtime4';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261102-multiplayer3';
-import {createCape} from './cape.js?v=release-20261102-multiplayer3';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-multiplayer3';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-multiplayer3';
+import {buildPlateArmor} from './armor.js?v=release-20261102-worldtime4';
+import {createCape} from './cape.js?v=release-20261102-worldtime4';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261102-worldtime4';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261102-worldtime4';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
-scene.add(new T.HemisphereLight(0xcfe4ff,0x5a4d33,2));const sun=new T.DirectionalLight(0xffe9b6,2.3);sun.position.set(12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);scene.add(sun.target);renderer.shadowMap.type=T.PCFSoftShadowMap;
+const skyLight=new T.HemisphereLight(0xcfe4ff,0x5a4d33,2);scene.add(skyLight);const sun=new T.DirectionalLight(0xffe9b6,2.3);sun.position.set(12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);scene.add(sun.target);renderer.shadowMap.type=T.PCFSoftShadowMap;
 Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:.5,far:140});sun.shadow.normalBias=.10;sun.shadow.bias=-.0003;sun.shadow.camera.updateProjectionMatrix();
 // Seeded procedural canvas textures, cached and shared across meshes.
 const textureCache=new Map();
@@ -981,6 +981,27 @@ for(const bridge of landscape.bridges){
   box(.14,.14,bridge.length-2,0x9b7b4d,side*(bridge.width/2-.12),1.25,0,group,'wood');
  }
 }
+// Shared world clock: UTC is authoritative so every client sees the same sky.
+const WORLD_DAY_SECONDS=86400; // Real UTC day; all clients share one clock.
+const worldClock=document.createElement('output');worldClock.id='world-clock';worldClock.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:36;pointer-events:none;background:#12202bc9;color:#e7d1a5;border:1px solid #927b56;border-radius:5px;padding:5px 9px;font:11px Arial';document.body.append(worldClock);
+let nextSkyUpdate=0;
+function updateWorldSky(){
+ const now=Date.now();if(now<nextSkyUpdate)return;nextSkyUpdate=now+1500;
+ const dayPhase=((now/1000)%WORLD_DAY_SECONDS)/WORLD_DAY_SECONDS;
+ const hour=dayPhase*24;
+ const solar=Math.sin((dayPhase-.25)*Math.PI*2);
+ const daylight=Math.max(0,Math.min(1,(solar+.16)/.65));
+ const twilight=Math.max(0,1-Math.abs(solar)*3);
+ const sky=new T.Color(0x091324).lerp(new T.Color(0x94b9c8),daylight).lerp(new T.Color(0xb36a48),twilight*.24);
+ scene.background.copy(sky);scene.fog.color.copy(sky);
+ skyLight.intensity=.14+daylight*1.86;
+ sun.intensity=.04+daylight*2.26;
+ sun.position.set(Math.cos(dayPhase*Math.PI*2)*40,Math.max(2,solar*45),Math.sin(dayPhase*Math.PI*2)*40);
+ const hh=String(Math.floor(hour)).padStart(2,'0'),mm=String(Math.floor(hour%1*60)).padStart(2,'0');
+ worldClock.textContent='World (UTC) '+hh+':'+mm+(daylight<.2?' · Night':daylight<.65?' · Dawn / dusk':' · Day');
+ window.eldervaleWorldNight=daylight<.2;
+ window.eldervaleSetTimeOfDay?.(hour,daylight);
+}
 const clock=new T.Clock();let lastAutosave=performance.now();
 // Update music regions at a low frequency, avoiding audio work in the render loop.
 let nextAudioRegionCheck=0,lastAudioRegion='';
@@ -992,7 +1013,7 @@ function updateAudioRegion(){
  if(nearest!==lastAudioRegion){lastAudioRegion=nearest;window.eldervaleAudioRegion=nearest;window.eldervaleSetAudioRegion?.(nearest)}
 }
 
-function frame(){requestAnimationFrame(frame);updateAudioRegion();updateCoordinateHUD();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
+function frame(){requestAnimationFrame(frame);updateAudioRegion();updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
 if(action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<2.6){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
 if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(5*dt,distance));
  const collision=walkAllowed(player.position,proposed);
