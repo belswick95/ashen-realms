@@ -1,5 +1,6 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {buildHumanoid} from './humanoid.js';
+import {buildPlateArmor} from './armor.js';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const tint=(hex,fallback)=>/^#[0-9a-f]{6}$/i.test(hex||'')?parseInt(hex.slice(1),16):fallback;
 const skin=tint(appearance.skin,0xd9a783),shirt=tint(appearance.shirt,0x315b76),pants=tint(appearance.pants,0x424750),hairColor=tint(appearance.hairColor,0x3b2b22);
@@ -109,14 +110,7 @@ const state={wood:saved.wood||0,ore:saved.ore||0,gold:saved.gold||0,woodXP:saved
 armorOwned:Array.isArray(saved.armorOwned)?saved.armorOwned.filter(k=>armorCatalog[k]):[...armorKeys],
 equipped:(saved.equipped&&typeof saved.equipped==='object')?saved.equipped:{}};
 for(const k of armorKeys)if(state.equipped[k]&&!state.armorOwned.includes(k))state.armorOwned.push(k);
-const armorVisual=new T.Group();body.add(armorVisual);
-const iron=0x8b969e,trim=0xb7c2c8;
-const pieces={
- helm:[box(.78,.44,.68,iron,0,2.55,0,armorVisual),box(.82,.12,.77,trim,0,2.37,.03,armorVisual)],
- chest:[box(1.08,.95,.7,iron,0,1.55,0,armorVisual),box(.94,.14,.76,trim,0,1.15,0,armorVisual)],
- legs:[box(.34,.77,.38,iron,0,-.40,0,ll),box(.34,.77,.38,iron,0,-.40,0,rl)],
- boots:[box(.4,.31,.54,trim,0,-.84,.09,ll),box(.4,.31,.54,trim,0,-.84,.09,rl)]
-};
+const pieces=buildPlateArmor(T,body,avatar);
 function refreshArmor(){for(const k of armorKeys)for(const m of pieces[k])m.visible=!!state.equipped[k]}
 refreshArmor();
 if(saved.x!==undefined)player.position.set(saved.x,0,saved.z);
