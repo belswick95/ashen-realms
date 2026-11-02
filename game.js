@@ -177,9 +177,9 @@ function walkAllowed(from,to){
   const ix=Math.abs(b.x)<1.91+radius,iz=Math.abs(b.z)<1.83+radius;
   if(!ix||!iz)continue;
   // Only the front doorway is traversable; the rest of the walls are solid.
-  const frontCross=(a.z>=1.83+radius&&b.z<1.83+radius)||(a.z<=1.83-radius&&b.z>1.83-radius);
   const doorway=Math.abs(b.x)<.43&&Math.abs(a.x)<.43;
-  if(frontCross&&doorway&&h.open)continue;
+  const throughFront=a.z>1.4&&b.z>1.4;
+  if(throughFront&&doorway&&h.open)continue;
   if(insideHouse(h,from)&&insideHouse(h,to))continue;
   return {blocked:true,house:h,doorway:frontCross&&doorway};
  }
@@ -362,6 +362,7 @@ function drawMap(ctx,canvas,scale){const w=canvas.width,h=canvas.height;ctx.clea
 ctx.strokeStyle='#a9936c';ctx.lineWidth=scale?4:3;const roads=[[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];for(const [a,b] of roads){ctx.beginPath();ctx.moveTo(toX(a[0]),toY(a[1]));ctx.lineTo(toX(b[0]),toY(b[1]));ctx.stroke()}
 for(const [name,x,z] of places){const px=toX(x),py=toY(z);if(px<0||px>w||py<0||py>h)continue;ctx.fillStyle='#e6c988';ctx.beginPath();ctx.arc(px,py,scale?5:4,0,Math.PI*2);ctx.fill();if(scale){ctx.font='13px Georgia';ctx.fillText(name,px+8,py-5)}}
 ctx.fillStyle='#f5f5e4';ctx.strokeStyle='#18281d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(toX(player.position.x),toY(player.position.z),5,0,Math.PI*2);ctx.fill();ctx.stroke()}
+mapCanvas.title='Click to enlarge world map';mapCanvas.style.cursor='pointer';mapCanvas.addEventListener('click',()=>{mapOpen=true;mapPanel.hidden=false;drawMap(largeCtx,largeMap,true)});
 document.querySelector('#map-toggle').onclick=()=>{mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)};
 document.querySelector('#map-close').onclick=()=>{mapOpen=false;mapPanel.hidden=true};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeDialog();mapOpen=false;mapPanel.hidden=true}if(!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&e.key.toLowerCase()==='m'&&!e.repeat){mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)}});
