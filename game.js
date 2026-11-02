@@ -552,7 +552,7 @@ const cape=createCape(T,body,{color:0x81394b});
 function refreshArmor(){for(const hair of avatar.hairMeshes)hair.visible=!state.equipped.helm;avatar.torso.visible=!state.equipped.chest;for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
 refreshArmor();
 const weaponMeshes=new Map();
-for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.02,.035);model.rotation.set(2.25,0,0);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
+for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);model.position.set(0,-.02,.035);model.rotation.set(.75,0,0);avatar.rightHand.add(model);model.visible=false;weaponMeshes.set(key,model)}
 const shieldMeshes=new Map();
 for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);model.position.set(.04,-.09,.16);model.rotation.set(.28,.12,0);avatar.leftHand.add(model);model.visible=false;shieldMeshes.set(key,model)}
 if(state.equippedWeapon==='twohand')state.equippedShield=null;
