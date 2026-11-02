@@ -975,7 +975,17 @@ for(const bridge of landscape.bridges){
  }
 }
 const clock=new T.Clock();let lastAutosave=performance.now();
-function frame(){requestAnimationFrame(frame);const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
+// Update music regions at a low frequency, avoiding audio work in the render loop.
+let nextAudioRegionCheck=0,lastAudioRegion='';
+function updateAudioRegion(){
+ const now=performance.now();if(now<nextAudioRegionCheck)return;nextAudioRegionCheck=now+1500;
+ let nearest='Wilderness',distance=Infinity;
+ for(const [name,x,z] of places){const d=Math.hypot(player.position.x-x,player.position.z-z);if(d<distance){distance=d;nearest=name.split(' · ')[0]}}
+ if(distance>30)nearest='Wilderness';
+ if(nearest!==lastAudioRegion){lastAudioRegion=nearest;window.eldervaleAudioRegion=nearest;window.eldervaleSetAudioRegion?.(nearest)}
+}
+
+function frame(){requestAnimationFrame(frame);updateAudioRegion();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
 if(action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<2.6){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
 if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?2.4:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(5*dt,distance));
  const collision=walkAllowed(player.position,proposed);
