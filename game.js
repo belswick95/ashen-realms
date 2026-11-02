@@ -103,6 +103,10 @@ function spawnNPC(profile,index){
  const palettes=[0xc9916b,0xe0b48e,0x966247,0x67402f,0xb98362];
  const hairs=[0x39271f,0x6d4831,0xa17a4b,0x241e1d];
  const model=buildHumanoid(T,root,{skin:palettes[index%palettes.length],shirt:profile.color,pants:0x474442,hairColor:hairs[index%hairs.length],hair:['Short crop','Side swept','Spiky','Buzz cut','Long'][index%5]});
+ // Clothing accents give each NPC a recognizable silhouette without changing the animation rig.
+ if(index%3===0){box(.62,.11,.44,0x5e422d,0,1.07,0,root,'wood');box(.24,.16,.07,0xc5a46b,0,1.07,.245,root)}
+ if(index%3===1){box(.52,.62,.045,0xb3a17b,0,1.48,.223,root,'cloth');box(.54,.12,.45,0x6b4c33,0,1.09,0,root,'wood')}
+ if(index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.50,-.26,root,'cloth');cape.rotation.x=-.12}
  const hit=new T.Mesh(new T.SphereGeometry(.48,8,6),new T.MeshBasicMaterial({visible:false}));
  hit.position.set(0,1.42,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
  const npc={profile,root,leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index};npcs.push(npc)
