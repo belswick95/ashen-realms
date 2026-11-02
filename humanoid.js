@@ -56,8 +56,8 @@ export function buildHumanoid(T,root,look={}){
   mesh(sphere,hairMat,root,0,2.40,-.20,.23,.30,.12);
  }
  const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
- // Character faces +Z. Anatomical right is camera-left when viewed from the front.
- leftArm.position.set(.455,1.84,0);rightArm.position.set(-.455,1.84,0);
+ // Gameplay camera follows from behind: right-hand weapon appears on the player's right.
+ leftArm.position.set(-.455,1.84,0);rightArm.position.set(.455,1.84,0);
  leftLeg.position.set(-.165,.985,0);rightLeg.position.set(.165,.985,0);
  root.add(leftArm,rightArm,leftLeg,rightLeg);
  const limb=(top,bottom,len,key)=>geo(key,()=>new T.CylinderGeometry(top,bottom,len,12,1));
