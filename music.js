@@ -6,6 +6,17 @@ export function startMusic(){
  let region='Oakcross',desiredRegion='Oakcross';
  const townThemes={'Oakcross':0,'Northwatch':2,'Eastmarch':1,'Old Cairn':2,'Farwatch':1,'Westmere':0,'Stonebridge':1};
  window.eldervaleSetAudioRegion=(name)=>{desiredRegion=Object.hasOwn(townThemes,name)?name:'Wilderness'};
+ const ambientVolume=document.querySelector('#ambient-volume');let ambienceGain,windSource;
+ function startAmbience(){
+  if(!ctx||ambienceGain)return;
+  const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),data=buffer.getChannelData(0);
+  // Deterministic low-level wind noise; generated locally, no network audio files.
+  let seed=1234567;for(let i=0;i<data.length;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;data[i]=(seed/2147483648-1)*.3}
+  const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter();source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=320;
+  ambienceGain=ctx.createGain();source.connect(filter);filter.connect(ambienceGain);ambienceGain.connect(ctx.destination);source.start();windSource=source;updateAmbience();
+ }
+ function updateAmbience(){if(ambienceGain&&ctx){const v=ambientVolume?Number(ambientVolume.value)/100:.3;ambienceGain.gain.setTargetAtTime(region==='Wilderness'?v*.15:v*.035,ctx.currentTime,.8)}}
+ if(ambientVolume){const stored=localStorage.getItem('eldervale-ambient-volume');ambientVolume.value=stored===null?'30':stored;ambientVolume.addEventListener('input',()=>{localStorage.setItem('eldervale-ambient-volume',ambientVolume.value);updateAmbience()})}
  // Four-bar phrases in concert pitch; quarter-note melody with rests and sustained cadences.
  const songs=[
  {name:'Banner of Oakcross',bpm:106,key:0,roots:[48,53,55,48,57,53,55,48],
@@ -50,7 +61,7 @@ export function startMusic(){
   if(!playing||!ctx)return;
   const song=songs[track],quarter=60/song.bpm;
   while(nextTime<ctx.currentTime+.4){
-   if(step%32===0&&region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;label.textContent=region==='Wilderness'?'Wilderness · ambient score':region+' · '+songs[track].name}
+   if(step%32===0&&region!==desiredRegion){region=desiredRegion;track=townThemes[region]??0;updateAmbience();label.textContent=region==='Wilderness'?'Wilderness · ambient score':region+' · '+songs[track].name}
    const i=step%32,bar=Math.floor(i/4),root=song.roots[bar];
    // Bass line and two supporting voices give the march a full brass-ensemble texture.
    brass(root-12,nextTime,quarter*.90,'tuba',.085);
@@ -69,7 +80,7 @@ export function startMusic(){
   try{
    if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();const limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-15;limiter.ratio.value=4;master.connect(limiter);limiter.connect(ctx.destination)}
    if(playing){playing=false;clearInterval(timer);await ctx.suspend();button.textContent='Music Off';button.setAttribute('aria-pressed','false');return}
-   await ctx.resume();master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.05);
+   await ctx.resume();startAmbience();master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.05);
    nextTime=ctx.currentTime+.08;playing=true;timer=setInterval(schedule,90);schedule();
    button.textContent='Music On';button.setAttribute('aria-pressed','true');label.textContent=songs[track].name;
   }catch(err){label.textContent='Audio unavailable';console.warn('Eldervale music:',err)}
@@ -79,5 +90,5 @@ export function startMusic(){
  document.addEventListener('pointerdown',event=>{if(!playing&&!event.target.closest('#music-toggle'))toggle()},{once:true});
  slider.addEventListener('input',()=>{localStorage.setItem('eldervale-music-volume',slider.value);if(ctx&&master)master.gain.setTargetAtTime(Number(slider.value)/100*.5,ctx.currentTime,.04)});
  const stored=localStorage.getItem('eldervale-music-volume');const saved=stored===null?45:Number(stored);slider.value=Number.isFinite(saved)&&saved>=0&&saved<=100?String(saved):'45';
- window.addEventListener('pagehide',()=>{playing=false;clearInterval(timer);ctx?.close()},{once:true});
+ window.addEventListener('pagehide',()=>{playing=false;clearInterval(timer);windSource?.stop();ctx?.close()},{once:true});
 }
