@@ -6,7 +6,7 @@ const {chromium}=require(process.env.ELDERVALE_PLAYWRIGHT_MODULE||'playwright-co
 const root=path.resolve(__dirname,'..');
 const three=fs.readFileSync(path.join(root,'node_modules/three/build/three.module.js'));
 const fixture={x:7,z:5,gold:123,wood:8,ore:4,woodXP:456,miningXP:321,combatXP:90,kills:3,attackXP:22,appearance:{hair:'Long',skin:'#c9916b',shirt:'#426e68'},armorOwned:['helm','chest','legs','boots','cape'],equipped:{helm:true,chest:true,legs:true,boots:true,cape:true},weaponsOwned:['longsword'],equippedWeapon:'longsword',shieldsOwned:['kite'],equippedShield:'kite',starterShieldsGranted:true};
-const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req.url==='/'?'/index.html':req.url));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return}try{res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(file))}catch{res.writeHead(404).end()}});
+const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(new URL(req.url,'http://local').pathname==='/'?'/index.html':new URL(req.url,'http://local').pathname));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return}try{res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(file))}catch{res.writeHead(404).end()}});
 (async()=>{
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  const browser=await chromium.launch({headless:true,...(process.env.ELDERVALE_CHROMIUM?{executablePath:process.env.ELDERVALE_CHROMIUM}:{}),args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
@@ -16,8 +16,8 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(req
   const url=route.request().url();
   if(url==='https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js')return route.fulfill({contentType:'text/javascript',body:three});
   if(!url.startsWith('http://127.0.0.1:'))return route.abort();
-  if(url.endsWith('/game.js'))return route.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(root,'game.js'),'utf8')+'\nwindow.offlineWorld={landscape,player,camera,scene,renderer,getZoom:()=>zoom,walkAllowed,findWalkPath,state,combat,creatures,strike,draw,save,equipWeapon,equipShield,avatar,openArmoryChest,houseInteriors,housePoint,toggleHouseDoor,interact:kind=>{const target=targets.find(o=>o.userData.kind===kind),a=target.userData;player.position.set(a.x+.4,landscape.walkHeight(a.x+.4,a.z),a.z);action=a;dest=new T.Vector3(a.x,0,a.z)}};'});
-  if(url.endsWith('/auth.js'))return route.fulfill({contentType:'text/javascript',body:"document.querySelector('#auth-screen').hidden=true;import('./game.js').then(()=>window.testGameReady=true);"});
+  if(new URL(url).pathname==='/game.js')return route.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(root,'game.js'),'utf8')+'\nwindow.offlineWorld={landscape,player,camera,scene,renderer,getZoom:()=>zoom,walkAllowed,findWalkPath,state,combat,creatures,strike,draw,save,equipWeapon,equipShield,avatar,openArmoryChest,houseInteriors,housePoint,toggleHouseDoor,interact:kind=>{const target=targets.find(o=>o.userData.kind===kind),a=target.userData;player.position.set(a.x+.4,landscape.walkHeight(a.x+.4,a.z),a.z);action=a;dest=new T.Vector3(a.x,0,a.z)}};'});
+  if(new URL(url).pathname==='/auth.js')return route.fulfill({contentType:'text/javascript',body:"document.querySelector('#auth-screen').hidden=true;import('./game.js').then(()=>window.testGameReady=true);"});
   return route.continue();
  });
  await page.addInitScript(seed=>{if(!localStorage.getItem('eldervale-save'))localStorage.setItem('eldervale-save',JSON.stringify(seed))},fixture);
