@@ -219,11 +219,11 @@ function walkAllowed(from,to){
  return {blocked:false};
 }
 // Lightweight A* on a local 1.5m grid. Replans on goal changes, not every frame.
-function findWalkPath(start,goal,maxCells=2500){
+function findWalkPath(start,goal,maxCells=14000){
  if(walkAllowed(start,goal).blocked===false)return [goal.clone()];
- const cell=1.5,originX=Math.min(start.x,goal.x)-18,originZ=Math.min(start.z,goal.z)-18;
- const cols=Math.min(100,Math.ceil((Math.abs(start.x-goal.x)+36)/cell));
- const rows=Math.min(100,Math.ceil((Math.abs(start.z-goal.z)+36)/cell));
+ const cell=1.0,margin=30,originX=Math.min(start.x,goal.x)-margin,originZ=Math.min(start.z,goal.z)-margin;
+ const cols=Math.min(480,Math.ceil((Math.abs(start.x-goal.x)+margin*2)/cell)+1);
+ const rows=Math.min(480,Math.ceil((Math.abs(start.z-goal.z)+margin*2)/cell)+1);
  const coord=p=>[Math.max(0,Math.min(cols-1,Math.round((p.x-originX)/cell))),Math.max(0,Math.min(rows-1,Math.round((p.z-originZ)/cell)))];
  const point=(x,z)=>new T.Vector3(originX+x*cell,0,originZ+z*cell);
  const [sx,sz]=coord(start),[gx,gz]=coord(goal);
@@ -241,15 +241,17 @@ function findWalkPath(start,goal,maxCells=2500){
   for(const [dx,dz] of directions){
    const x=n.x+dx,z=n.z+dz;if(x<0||z<0||x>=cols||z>=rows)continue;
    const nid=key(x,z);if(closed.has(nid))continue;
-   if(walkAllowed(point(n.x,n.z),point(x,z)).blocked)continue;
+   if(walkAllowed(point(n.x,n.z),point(x,z)).blocked)continue;if(dx&&dz&&(walkAllowed(point(n.x,n.z),point(n.x+dx,n.z)).blocked||walkAllowed(point(n.x,n.z),point(n.x,n.z+dz)).blocked))continue;
    const g=n.g+Math.hypot(dx,dz),existing=nodes.get(nid);
    if(!existing||g<existing.g){nodes.set(nid,{x,z,g,f:g+Math.hypot(x-gx,z-gz),prev:id});open.push(nid)}
   }
  }
- if(best===startKey)return [];
+ if(best!==goalKey)return [];if(best===startKey)return [];
  const result=[];let id=best;
  while(id!==startKey&&result.length<100){const n=nodes.get(id);result.push(point(n.x,n.z));id=n.prev;if(id==null)break}
  result.reverse();
+ // Replace grid zigzags with long straight, collision-checked walking segments.
+ const smooth=[];let anchor=start;for(let i=0;i<result.length;){let furthest=i;for(let j=result.length-1;j>i;j--){if(!walkAllowed(anchor,result[j]).blocked){furthest=j;break}}smooth.push(result[furthest]);anchor=result[furthest];i=furthest+1}result.splice(0,result.length,...smooth);
  if(best===goalKey&&!walkAllowed(result[result.length-1]||start,goal).blocked)result.push(goal.clone());
  return result;
 }
@@ -280,7 +282,7 @@ function setWalkDestination(point){
  let current=player.position.clone();
  for(const stop of stops){
   const path=findWalkPath(current,stop);
-  if(!path.length&&current.distanceTo(stop)>.4){say('No clear path. Try another destination.');break}
+  if(!path.length&&current.distanceTo(stop)>.4){say('That destination is currently unreachable.');break}
   all.push(...path);current=stop;
  }
  dest=all.shift()||null;walkQueue=all;
@@ -643,11 +645,11 @@ renderer.domElement.addEventListener('pointermove',e=>{if(!down)return;const dx=
 renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;if(drag)return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(targets,false);const point=new T.Vector3();const hitGround=ray.ray.intersectPlane(plane,point);
 if(e.button===2){
  const choices=[];
- if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;dest=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):new T.Vector3(a.x,0,a.z);markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' ('+Math.max(0,a.mob.hp)+' HP)':a.kind==='npc'?a.profile.name+' — '+a.profile.role:a.kind==='merchant'?'A traveling trader who buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':'A harvestable '+a.kind+'.')])}
- if(hitGround)choices.push(['Walk here',()=>{setWalkDestination(point);action=null;closeDialog();markClick(dest.x,dest.z,'walk')}]);
+ if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' ('+Math.max(0,a.mob.hp)+' HP)':a.kind==='npc'?a.profile.name+' — '+a.profile.role:a.kind==='merchant'?'A traveling trader who buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':'A harvestable '+a.kind+'.')])}
+ if(hitGround)choices.push(['Walk here',()=>{action=null;setWalkDestination(point);closeDialog();if(dest)markClick(dest.x,dest.z,'walk')}]);
  choices.push(['Cancel',()=>{}]);showMenu(e.clientX,e.clientY,choices);return;
 }
-if(hits.length){action=hits[0].object.userData;dest=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):new T.Vector3(action.x,0,action.z);markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){dest=point.clone();action=null;closeDialog();markClick(dest.x,dest.z,'walk')}});
+if(hits.length){action=hits[0].object.userData;const goal=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):new T.Vector3(action.x,0,action.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){action=null;setWalkDestination(point);closeDialog();if(dest)markClick(dest.x,dest.z,'walk')}});
 renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.deltaY*.015,9,42)},{passive:true});
 const clock=new T.Clock();let phase=0,blend=0,saveTick=0;
 function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);fpsSamples++;fpsSeconds+=dt;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}let moving=false;
