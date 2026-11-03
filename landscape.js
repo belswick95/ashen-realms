@@ -1,6 +1,6 @@
-import {generatedWorld,seedNoise,biomeWeights,biomeColor} from './procedural-world.js?v=release-20261103-roam20';
-import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261103-roam20';
-import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261103-roam20';
+import {generatedWorld,seedNoise,biomeWeights,biomeColor} from './procedural-world.js?v=release-20261103-surfaces21';
+import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261103-surfaces21';
+import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261103-surfaces21';
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
 export function noise(x,z){const hash=(a,b)=>{const n=Math.sin(a*127.1+b*311.7)*43758.5453;return n-Math.floor(n)};const ix=Math.floor(x),iz=Math.floor(z),u=smooth(0,1,x-ix),v=smooth(0,1,z-iz);return (hash(ix,iz)*(1-u)+hash(ix+1,iz)*u)*(1-v)+(hash(ix,iz+1)*(1-u)+hash(ix+1,iz+1)*u)*v}
@@ -51,8 +51,8 @@ export function createLandscape({segments=280,extent=840}={}){
  }
  for(let iz=0;iz<count;iz++)for(let ix=0;ix<count;ix++)heights[iz*count+ix]=sculpt(ix*step-extent/2,iz*step-extent/2);
  function heightAt(x,z){const gx=clamp((x+extent/2)/step,0,segments),gz=clamp((z+extent/2)/step,0,segments),ix=Math.min(segments-1,Math.floor(gx)),iz=Math.min(segments-1,Math.floor(gz)),u=gx-ix,v=gz-iz;const a=heights[iz*count+ix],b=heights[iz*count+ix+1],c=heights[(iz+1)*count+ix],d=heights[(iz+1)*count+ix+1];return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v)}
- function levelBuildingPlot({x,z,scaleX,scaleZ,rotation=0,floorHeight=.2}){
-  const level=heightAt(x,z),c=Math.cos(rotation),s=Math.sin(rotation);
+ function levelBuildingPlot({x,z,scaleX,scaleZ,rotation=0,floorHeight=.2,levelHeight=heightAt(x,z),register=true,coreOnly=false}){
+  const level=levelHeight,c=Math.cos(rotation),s=Math.sin(rotation);
   // Include a complete terrain cell beyond the walls: the rendered triangles
   // crossing a wall must also be flat, not just the point under its center.
   const halfX=2.12*scaleX,halfZ=1.98*scaleZ,pad=step*1.5,blend=step*2;
@@ -62,17 +62,17 @@ export function createLandscape({segments=280,extent=840}={}){
   for(let iz=minZ;iz<=maxZ;iz++)for(let ix=minX;ix<=maxX;ix++){
    const dx=ix*step-extent/2-x,dz=iz*step-extent/2-z;
    const lx=dx*c-dz*s,lz=dx*s+dz*c,d=Math.hypot(Math.max(0,Math.abs(lx)-halfX),Math.max(0,Math.abs(lz)-halfZ));
-   const weight=1-smooth(pad,pad+blend,d),index=iz*count+ix;
+   const weight=coreOnly?(d<=pad?1:0):1-smooth(pad,pad+blend,d),index=iz*count+ix;
    heights[index]+=(level-heights[index])*weight;
   }
-  buildingPlots.push({x,z,c,s,halfX:2*scaleX,halfZ:1.85*scaleZ,level,floorHeight});
+  if(register)buildingPlots.push({x,z,c,s,halfX:2*scaleX,halfZ:1.85*scaleZ,level,floorHeight});
   return level;
  }
  function registerFloor(id,{x,z,scaleX,scaleZ,rotation=0,floorHeight=.2}){removeFloor(id);buildingPlots.push({id,x,z,c:Math.cos(rotation),s:Math.sin(rotation),halfX:2*scaleX,halfZ:1.85*scaleZ,level:heightAt(x,z),floorHeight})}
  function removeFloor(id){for(let i=buildingPlots.length-1;i>=0;i--)if(buildingPlots[i].id===id)buildingPlots.splice(i,1)}
  function walkHeight(x,z){
   for(const plot of buildingPlots){const dx=x-plot.x,dz=z-plot.z;if(Math.abs(dx*plot.c-dz*plot.s)<plot.halfX&&Math.abs(dx*plot.s+dz*plot.c)<plot.halfZ)return plot.level+plot.floorHeight}
-  const bridge=bridgeAt(x,z);if(!bridge)return heightAt(x,z);const dx=x-bridge.x,dz=z-bridge.z,along=Math.abs(dx*Math.sin(bridge.yaw)+dz*Math.cos(bridge.yaw));return .24*(1-smooth(bridge.length/2-2,bridge.length/2,along))
+  const bridge=bridgeAt(x,z);if(!bridge)return heightAt(x,z);const dx=x-bridge.x,dz=z-bridge.z,along=Math.abs(dx*Math.sin(bridge.yaw)+dz*Math.cos(bridge.yaw));return .08+.16*(1-smooth(bridge.length/2-2,bridge.length/2,along))
  }
  function canWalk(x,z){if(!Number.isFinite(x)||!Number.isFinite(z)||Math.abs(x)>extent/2-1||Math.abs(z)>extent/2-1)return false;if(bridgeAt(x,z))return true;if(waterAt(x,z)>.015)return false;const slope=Math.hypot(heightAt(x+1,z)-heightAt(x-1,z),heightAt(x,z+1)-heightAt(x,z-1))/2;return slope<.85}
  function nearestDryPoint(x,z){if(canWalk(x,z))return {x,z};for(let r=1;r<32;r++)for(let i=0;i<24;i++){const a=i*Math.PI/12,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;if(canWalk(px,pz))return {x:px,z:pz}}return {x:0,z:5}}
