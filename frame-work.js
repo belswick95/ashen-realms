@@ -1,0 +1,11 @@
+export const nextFrame=()=>new Promise(resolve=>{if(typeof requestAnimationFrame==='function'&&!globalThis.document?.hidden)requestAnimationFrame(()=>setTimeout(resolve,0));else setTimeout(resolve,0)});
+// Yield between bounded pieces of CPU work, and allow a newer route to cancel an old one.
+export async function runFrameWork(iterator,{signal,budget=5,yieldFrame=nextFrame,now=()=>performance.now(),onProgress=()=>{}}={}){
+ let start=now();await yieldFrame();for(;;){if(signal?.aborted)throw new DOMException('Cancelled','AbortError');const step=iterator.next();if(step.done)return step.value;onProgress(step.value);if(now()-start>=budget){await yieldFrame();start=now();}}
+}
+export function createLoadingPanel(){
+ const panel=document.createElement('div');panel.id='area-loading';panel.hidden=true;panel.innerHTML='<section role="status" aria-live="polite"><div class="area-loading-spinner" aria-hidden="true"></div><strong></strong><span></span><progress max="1"></progress><button type="button" hidden>Cancel route</button></section>';document.body.append(panel);
+ const jobs=new Map();let timer=null;const title=panel.querySelector('strong'),detail=panel.querySelector('span'),progress=panel.querySelector('progress'),cancel=panel.querySelector('button');
+ function draw(){const latest=[...jobs.values()].at(-1);if(!latest){clearTimeout(timer);timer=null;panel.hidden=true;document.body.classList.remove('area-loading');return}title.textContent=latest.label;detail.textContent=latest.detail||'Please wait — staying connected to Eldervale.';if(latest.total>0){progress.value=Math.min(1,latest.done/latest.total)}else progress.removeAttribute('value');cancel.hidden=!latest.cancel;cancel.textContent=latest.cancelLabel||'Cancel route';cancel.onclick=latest.cancel||null;if(!timer&&panel.hidden)timer=setTimeout(()=>{timer=null;if(jobs.size){panel.hidden=false;document.body.classList.add('area-loading')}},120)}
+ return {begin(label,{cancel}={}){const id=Symbol();const job={label,cancel,done:0,total:0};jobs.set(id,job);draw();return {progress(done,total,detail){Object.assign(job,{done,total,detail});draw()},fail(message,retry){Object.assign(job,{label:'Area loading interrupted',detail:message,total:0,cancel:retry,cancelLabel:'Reload game'});draw()},end(){jobs.delete(id);draw()}}}};
+}
