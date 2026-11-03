@@ -807,7 +807,7 @@ function spawnNPC(profile,index){profile.realmId||='base:npc:'+profile.name;
  const root=new T.Group();root.position.set(profile.x,0,profile.z);scene.add(root);
  const palettes=[0xc9916b,0xe0b48e,0x966247,0x67402f,0xb98362];
  const hairs=[0x39271f,0x6d4831,0xa17a4b,0x241e1d];
- const model=buildHumanoid(T,root,{skin:palettes[index%palettes.length],shirt:profile.color,pants:0x474442,hairColor:hairs[index%hairs.length],hair:['Short crop','Side swept','Spiky','Buzz cut','Long'][index%5]});
+ const model=buildHumanoid(T,root,{skin:palettes[index%palettes.length],shirt:profile.color,pants:0x474442,hairColor:hairs[index%hairs.length],face:['Balanced','Angular','Broad'][index%3],beard:index%4===0?'Short beard':index%4===1?'Stubble':undefined,hair:['Short crop','Side swept','Buzz cut','Long'][index%4]});
  if(/guard|warden|sentinel|soldier/i.test(profile.role+' '+profile.name)){
   const plates=buildPlateArmor(T,root,model);for(const slot of ['chest','legs','boots'])for(const part of plates[slot])part.visible=true;model.torso.visible=false;for(const part of model.clothingMeshes)part.visible=false;
   if(profile.whiteArmor)for(const slot of ['chest','legs','boots'])for(const part of plates[slot]){part.material=part.material.clone();part.material.userData.eldervaleShared=false;part.material.color.setHex(0xdfe6e6);part.material.metalness=.55;part.material.roughness=.44;}

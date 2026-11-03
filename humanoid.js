@@ -93,10 +93,10 @@ export function buildHumanoid(T,root,look={}){
  for(const side of [-1,1]){const ear=mesh(sphere,faceMat,head,side*.256,2.405,-.012,.035,.082,.047);ear.rotation.z=side*.13}
  // Close-fitted hairstyle volumes and swept strands are attached to the skull.
  const style=look.hair||'Side swept';
- const hairCap=mesh(geo('humanHairCapV3',()=>new T.SphereGeometry(1,8,4,0,Math.PI*2,0,Math.PI*.56)),hairMat,head,0,2.679,-.015,.244,style==='Buzz cut'?.075:.125,.220);
+ const hairCap=mesh(geo('humanHairCapV3',()=>new T.SphereGeometry(1,20,10,0,Math.PI*2,0,Math.PI*.56)),hairMat,head,0,2.679,-.015,.244,style==='Buzz cut'?.075:.125,.220);
  // Tapered, overlapping locks replace rectangular hair blocks. Shared geometry
  // keeps the extra silhouette detail inexpensive for crowds and mobile devices.
- const lock=geo('humanTaperedHairLockV1',()=>new T.ConeGeometry(.045,.22,5));
+ const lock=geo('humanTaperedHairLockV1',()=>new T.ConeGeometry(.045,.22,10,2));
  if(style==='Side swept'){
   for(let i=0;i<7;i++){
    const strand=mesh(lock,hairMat,head,-.19+i*.062,2.675-i*.006,.154-i*.004,1,1,.78);
