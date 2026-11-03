@@ -20,7 +20,7 @@ export function createCape(T,body,{color=0x71364a}={}){
  const trim=new T.MeshStandardMaterial({color:0xd6b57c,metalness:.38,roughness:.52});
  for(const side of [-1,1]){
   const clasp=new T.Mesh(new T.SphereGeometry(.07,12,8),trim);
-  clasp.position.set(side*.35,2.15,-.43);body.add(clasp);
+  clasp.position.set(side*.35,2.15,-.43);cloth.add(clasp);
  }
  let time=0;
  return {mesh:cloth,update(dt,speed=0){

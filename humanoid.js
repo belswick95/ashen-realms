@@ -1,4 +1,4 @@
-import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261103-chat14';
+import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261103-motion15';
 // Eldervale's shared low-poly human rig. The same geometry powers players,
 // NPCs, remote adventurers and the live character-creation preview.
 // Rig pivots are preserved for existing movement, equipment and combat animations.

@@ -20,9 +20,9 @@ export function createHumanoidAnimator(rig){
   // Combat keeps the existing short, planted approach. Walking has an extended
   // recovery and low foot lift; running has a flight phase and high recovery.
   const stance=.60*combatBlend+.52*walkBlend+.32*runBlend;
-  const strideLength=(1.1+.45*pace)*combatBlend+(1.90+.25*pace)*walkBlend+2.80*runBlend;
-  const footLift=.12*combatBlend+.065*walkBlend+.30*runBlend;
-  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?2.80:1.90+.25*pace;
+  const strideLength=(1.1+.45*pace)*combatBlend+(2.25+.20*pace)*walkBlend+2.80*runBlend;
+  const footLift=.12*combatBlend+.09*walkBlend+.30*runBlend;
+  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?2.80:2.25+.20*pace;
   phase+=distance*Math.PI*2/cycleLength;
   const gait=Math.sin(phase),stride=(.24+run*.12)*blend;
   const upper=Math.abs(rig.leftKnee.position.y),lower=rig.leftAnkle?Math.abs(rig.leftAnkle.position.y):.42*(rig.legScale||1.3),length=upper+lower;
@@ -45,6 +45,7 @@ export function createHumanoidAnimator(rig){
    const hip=Math.atan2(-forward,y)-Math.atan2(lower*Math.sin(bend),upper+lower*Math.cos(bend));
    leg.rotation.x=hip*blend;knee.rotation.x=bend*blend;
    if(ankle)ankle.rotation.x=-(hip+bend)*blend-lean+(swing?Math.sin(t*Math.PI)*.16*runBlend*blend:0);
+
   }
   // Visual pelvis compression keeps contact feet at their standing ground height.
   // Physics, saved positions and pathfinding roots are never translated.
@@ -52,7 +53,7 @@ export function createHumanoidAnimator(rig){
   for(const child of rig.root.children){if(!restY.has(child))restY.set(child,child.position.y);child.position.y=restY.get(child)+bob}
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
-  const armSwing=(.11*combatBlend+.25*walkBlend+.45*runBlend)*blend;
+  const armSwing=(.11*combatBlend+.32*walkBlend+.45*runBlend)*blend;
   rig.leftArm.rotation.x=-gait*armSwing+Math.sin(time*1.7)*.018*(1-blend);
   rig.rightArm.rotation.x=gait*armSwing-Math.sin(time*1.7)*.018*(1-blend);
   const elbow=-.10-.78*runBlend*blend;
