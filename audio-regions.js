@@ -1,4 +1,4 @@
-import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261103-motion6';
+import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261103-nature7';
 export const townMusic=[
  {id:'oakcross',name:'Oakcross',x:0,z:0,radius:50,title:'Lord of the Land'},
  {id:'northwatch',name:'Northwatch',x:-60,z:45,radius:22,title:'Night Vigil'},
@@ -27,3 +27,4 @@ export function wildernessSound(position){
  return Math.abs(x)>290||Math.abs(z)>290?'highlands':'forest';
 }
 export function audioPreference(storage,key,fallback){const raw=storage.getItem(key);if(raw===null)return fallback;const value=Number(raw);return Number.isFinite(value)&&value>=0&&value<=100?value:fallback}
+export function waterProximity(position){if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.z))return 0;const {x,z}=position;let distance=Infinity;for(const lake of landscapeLakes)distance=Math.min(distance,Math.max(0,(Math.hypot((x-lake.x)/lake.rx,(z-lake.z)/lake.rz)-1)*Math.min(lake.rx,lake.rz)));for(const river of worldRivers)for(let i=1;i<river.points.length;i++)distance=Math.min(distance,Math.max(0,segmentDistance(x,z,river.points[i-1],river.points[i])-river.width/2));const t=Math.max(0,Math.min(1,1-distance/10));return t*t*(3-2*t)}

@@ -1,38 +1,38 @@
-import {createMotionTrack} from './motion-track.js?v=release-20261103-motion6';
-import {lightingAt} from './world-lighting.js?v=release-20261103-motion6';
-import {sculptPatches} from './terrain-patches.js?v=release-20261103-motion6';
-import {fromPlayerRow} from './player-save.js?v=release-20261103-motion6';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-motion6';
-import {worldTemplates} from './world-templates.js?v=release-20261103-motion6';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-motion6';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-motion6';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-motion6';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-motion6';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-motion6';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-motion6';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-motion6';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-motion6';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-motion6';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-motion6';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-motion6';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-motion6';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-motion6';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-motion6';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-motion6';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-motion6';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-motion6';
+import {createMotionTrack} from './motion-track.js?v=release-20261103-nature7';
+import {lightingAt} from './world-lighting.js?v=release-20261103-nature7';
+import {sculptPatches} from './terrain-patches.js?v=release-20261103-nature7';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-nature7';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-nature7';
+import {worldTemplates} from './world-templates.js?v=release-20261103-nature7';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-nature7';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-nature7';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-nature7';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-nature7';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-nature7';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-nature7';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-nature7';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-nature7';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-nature7';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-nature7';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-nature7';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-nature7';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-nature7';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-nature7';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-nature7';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-nature7';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-nature7';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-motion6';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-motion6';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-motion6';
-import {buildForest} from './forest.js?v=release-20261103-motion6';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-motion6';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-motion6';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-nature7';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-nature7';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-nature7';
+import {buildForest} from './forest.js?v=release-20261103-nature7';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-nature7';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-nature7';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-motion6';
-import {createCape} from './cape.js?v=release-20261103-motion6';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-motion6';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-motion6';
+import {buildPlateArmor} from './armor.js?v=release-20261103-nature7';
+import {createCape} from './cape.js?v=release-20261103-nature7';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-nature7';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-nature7';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -467,7 +467,7 @@ signpost(4,-12);
 // Oakcross town atmosphere: animated fountain, lanterns, flowerbeds, benches, banners, birds.
 const townAnimations=[];
 function fountain(x,z){
- const g=new T.Group();g.position.set(x,0,z);scene.add(g);
+ const g=new T.Group();g.userData.waterSource=true;g.position.set(x,0,z);scene.add(g);
  const stone=material(0x8e9187,'stone'),water=new T.MeshStandardMaterial({color:0x5799ad,metalness:.15,roughness:.23,transparent:true,opacity:.86,side:T.DoubleSide});
  const basin=new T.Mesh(new T.CylinderGeometry(2.3,2.5,.72,16),stone);basin.position.y=.38;basin.castShadow=true;g.add(basin);
  const pool=new T.Mesh(new T.CylinderGeometry(2.06,2.06,.06,16),water);pool.position.y=.76;g.add(pool);
@@ -876,7 +876,7 @@ for(let i=0;i<24;i++){const a=i*2.399,r=22+i*11;creature(i%5===0?'Wolf':i%3===0?
 const audioSettings=document.querySelector('[data-settings-panel="audio"]');
 const oldAudioVolume=document.querySelector('#settings-music-volume').closest('label');oldAudioVolume.style.display='none';
 audioSettings.querySelector('p')?.remove();audioSettings.append(document.querySelector('#music-controls'));
-const environmentControls=document.createElement('div');environmentControls.id='environment-controls';environmentControls.innerHTML='<h4>Environment</h4><button id="environment-toggle" type="button" aria-pressed="true">Environment on</button><label for="environment-volume">Wind, wildlife & water</label><input id="environment-volume" type="range" min="0" max="100" value="35" aria-label="Environment volume"><small>Natural sound is separate from the soundtrack.</small><a href="/credits.html" target="_blank" rel="noopener">Soundtrack credits</a>';audioSettings.append(environmentControls);
+const environmentControls=document.createElement('div');environmentControls.id='environment-controls';environmentControls.innerHTML='<h4>Environment</h4><button id="environment-toggle" type="button" aria-pressed="true">Environment on</button><label for="environment-volume">Wildlife & nearby water</label><input id="environment-volume" type="range" min="0" max="100" value="35" aria-label="Environment volume"><small>Natural sound is separate from the soundtrack.</small><a href="/credits.html" target="_blank" rel="noopener">Soundtrack credits</a>';audioSettings.append(environmentControls);
 const gameplaySettings=document.querySelector('[data-settings-panel="gameplay"]');gameplaySettings.append(document.querySelector('#stats'),document.querySelector('#reset'));
 document.querySelector('#character-panel').hidden=true;
 const brand=document.createElement('strong');brand.className='minimap-brand';brand.textContent='ELDERVALE';document.querySelector('#map-widget').prepend(brand);
@@ -1205,7 +1205,7 @@ window.eldervaleWorldBridge={
    else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);const mesh=new T.Mesh(geometry,material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template);
    const hit=new T.Mesh(new T.BoxGeometry(1.3,2,1.3),new T.MeshBasicMaterial({visible:false}));hit.position.y=1;root.add(hit);hit.userData={kind:d.kind==='item'?'worldItem':d.template==='fishing_spot'?'fishing':d.template==='market'?'merchant':d.template==='tree'||d.template==='pine'?'tree':d.template==='rock'?'rock':'worldObject',x:d.x,z:d.z};targets.push(hit);
   }
-  if(!h)root.scale.multiplyScalar(d.scale||1);if(actor?.config)root.scale.setScalar(d.scale||1);root.rotation.y=d.yaw*Math.PI/180;root.traverse(o=>{if(targets.includes(o))o.userData.worldEntityId=row.id});root.userData.lamp=d.template==='lantern';if(root.userData.surface)conformSurface(root);worldInstances.set(row.id,{root,actor,house:h});
+  if(!h)root.scale.multiplyScalar(d.scale||1);if(actor?.config)root.scale.setScalar(d.scale||1);root.rotation.y=d.yaw*Math.PI/180;root.traverse(o=>{if(targets.includes(o))o.userData.worldEntityId=row.id});root.userData.waterSource=d.template==='fountain';root.userData.lamp=d.template==='lantern';if(root.userData.surface)conformSurface(root);worldInstances.set(row.id,{root,actor,house:h});
  }},
  position:()=>({x:player.position.x,z:player.position.z,yaw:player.rotation.y*180/Math.PI}),
  teleport(x,z){if(window.eldervaleAuthority){say('Use the owner Teleport command.');return}combatTurns.cancel();dest=null;walkQueue=[];action=null;player.position.set(x,landscape.walkHeight(x,z),z);save()},
@@ -1268,3 +1268,5 @@ townAnimations.push(()=>{if(performance.now()<nextLampUpdate)return;nextLampUpda
 const fishingMarker=new T.Group();fishingMarker.position.set(-70,landscape.walkHeight(-70,80),80);scene.add(fishingMarker);objectModel(T,fishingMarker,'fishing_spot');const fishingHit=new T.Mesh(new T.CylinderGeometry(.8,.8,1.6,10),new T.MeshBasicMaterial({visible:false}));fishingHit.position.y=.8;fishingMarker.add(fishingHit);fishingHit.userData={kind:'fishing',x:-70,z:80,realmId:'base:fishing:moonmere'};targets.push(fishingHit);realmObjectTargets.set('base:fishing:moonmere',fishingHit);
 
 function groundFeet(rig,visual){visual.updateWorldMatrix(true,true);let lift=0;for(const ankle of [rig.leftAnkle,rig.rightAnkle])ankle?.traverse(m=>{if(!m.isMesh||!m.visible||m.material?.visible===false)return;if(!m.geometry.boundingBox)m.geometry.computeBoundingBox();const box=m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld);const x=(box.min.x+box.max.x)/2,z=(box.min.z+box.max.z)/2;lift=Math.max(lift,landscape.walkHeight(x,z)+.012-box.min.y)});visual.position.y+=Math.min(.3,Math.max(0,lift));}
+
+window.eldervaleGetWaterSoundProximity=()=>Math.max(0,...scene.children.filter(o=>o.userData.waterSource).map(o=>Math.max(0,1-Math.hypot(player.position.x-o.position.x,player.position.z-o.position.z)/9)));

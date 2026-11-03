@@ -68,3 +68,6 @@ body.landscape-required:has(#auth-screen:not([hidden])) #rotate-phone{display:no
  #auth-screen .login-brand-line span{width:clamp(20px,3vw,45px)}
  #auth-screen .login-audio{flex-wrap:wrap;justify-content:center}
 }
+
+/* Remove obsolete architectural grid/band overlays over the fortress artwork. */
+#auth-screen::before,#auth-screen::after{content:none!important;display:none!important}
