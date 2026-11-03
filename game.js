@@ -1,61 +1,63 @@
-import {fishingDock} from './waterfront.js?v=release-20261103-worldaudit22';
-import {isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261103-worldaudit22';
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261103-worldaudit22';
-import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261103-worldaudit22';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261103-worldaudit22';
-import {buildNaturalForest,updateNaturalForest} from './natural-forest.js?v=release-20261103-worldaudit22';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261103-worldaudit22';
-import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261103-worldaudit22';
-import {createRegionStreamer} from './region-streamer.js?v=release-20261103-worldaudit22';
-import {searchRoute} from './route-search.js?v=release-20261103-worldaudit22';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261103-worldaudit22';
-import {actorMenuLabel} from './context-label.js?v=release-20261103-worldaudit22';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261103-worldaudit22';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-worldaudit22';
-import {createGroundDrops} from './ground-drops.js?v=release-20261103-worldaudit22';
-import {createCombatHealth} from './combat-health.js?v=release-20261103-worldaudit22';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-worldaudit22';
-import {castle,inCastle} from './castle-layout.js?v=release-20261103-worldaudit22';
-import {createMotionTrack} from './motion-track.js?v=release-20261103-worldaudit22';
-import {lightingAt} from './world-lighting.js?v=release-20261103-worldaudit22';
-import {sculptPatches} from './terrain-patches.js?v=release-20261103-worldaudit22';
-import {fromPlayerRow} from './player-save.js?v=release-20261103-worldaudit22';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-worldaudit22';
-import {worldTemplates} from './world-templates.js?v=release-20261103-worldaudit22';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-worldaudit22';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-worldaudit22';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-worldaudit22';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-worldaudit22';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-worldaudit22';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-worldaudit22';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-worldaudit22';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-worldaudit22';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-worldaudit22';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-worldaudit22';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-worldaudit22';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-worldaudit22';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-worldaudit22';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-worldaudit22';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-worldaudit22';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-worldaudit22';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-worldaudit22';
+import {createWaterSystem} from './water-rendering.js?v=release-20261103-waterlight23';
+import {fishingDock} from './waterfront.js?v=release-20261103-waterlight23';
+import {isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261103-waterlight23';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261103-waterlight23';
+import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261103-waterlight23';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261103-waterlight23';
+import {buildNaturalForest,updateNaturalForest} from './natural-forest.js?v=release-20261103-waterlight23';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261103-waterlight23';
+import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261103-waterlight23';
+import {createRegionStreamer} from './region-streamer.js?v=release-20261103-waterlight23';
+import {searchRoute} from './route-search.js?v=release-20261103-waterlight23';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261103-waterlight23';
+import {actorMenuLabel} from './context-label.js?v=release-20261103-waterlight23';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261103-waterlight23';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-waterlight23';
+import {createGroundDrops} from './ground-drops.js?v=release-20261103-waterlight23';
+import {createCombatHealth} from './combat-health.js?v=release-20261103-waterlight23';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-waterlight23';
+import {castle,inCastle} from './castle-layout.js?v=release-20261103-waterlight23';
+import {createMotionTrack} from './motion-track.js?v=release-20261103-waterlight23';
+import {lightingAt} from './world-lighting.js?v=release-20261103-waterlight23';
+import {sculptPatches} from './terrain-patches.js?v=release-20261103-waterlight23';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-waterlight23';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-waterlight23';
+import {worldTemplates} from './world-templates.js?v=release-20261103-waterlight23';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-waterlight23';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-waterlight23';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-waterlight23';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-waterlight23';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-waterlight23';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-waterlight23';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-waterlight23';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-waterlight23';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-waterlight23';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-waterlight23';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-waterlight23';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-waterlight23';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-waterlight23';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-waterlight23';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-waterlight23';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-waterlight23';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-waterlight23';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-worldaudit22';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-worldaudit22';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-worldaudit22';
-import {buildForest} from './forest.js?v=release-20261103-worldaudit22';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-worldaudit22';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-worldaudit22';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-waterlight23';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-waterlight23';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-waterlight23';
+import {buildForest} from './forest.js?v=release-20261103-waterlight23';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-waterlight23';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-waterlight23';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-worldaudit22';
-import {createCape} from './cape.js?v=release-20261103-worldaudit22';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-worldaudit22';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-worldaudit22';
+import {buildPlateArmor} from './armor.js?v=release-20261103-waterlight23';
+import {createCape} from './cape.js?v=release-20261103-waterlight23';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-waterlight23';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-waterlight23';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
 const skyLight=new T.HemisphereLight(0xcfe4ff,0x5a4d33,2);scene.add(skyLight);const sun=new T.DirectionalLight(0xffe9b6,2.3);sun.position.set(12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);scene.add(sun.target);renderer.shadowMap.type=T.PCFSoftShadowMap;
-Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:.5,far:140});sun.shadow.normalBias=.10;sun.shadow.bias=-.0003;sun.shadow.camera.updateProjectionMatrix();
+Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:.5,far:140});sun.shadow.normalBias=.035;sun.shadow.bias=-.00008;sun.shadow.camera.updateProjectionMatrix();
+const waterSystem=createWaterSystem(T,scene,renderer,landscape);
 // Seeded procedural canvas textures, cached and shared across meshes.
 const textureCache=new Map();
 function texture(kind,base){if(['masonry','wood','roof','plaster','floor','cloth'].includes(kind))return surfaceTexture(T,kind,base);const key=kind+base;if(textureCache.has(key))return textureCache.get(key);const canvas=document.createElement('canvas');const groundKind=kind==='grass'||kind==='dirt';const texSize=groundKind?256:128;canvas.width=texSize;canvas.height=texSize;const ctx=canvas.getContext('2d');ctx.fillStyle='#'+base.toString(16).padStart(6,'0');ctx.fillRect(0,0,texSize,texSize);let seed=base>>>0;const rnd=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
@@ -271,7 +273,7 @@ for(const lake of worldLakes){
  shore.rotation.x=-Math.PI/2;shore.position.y=.045;shore.userData.terrainFixed=true;shore.receiveShadow=true;scene.add(shore);
  for(const [factor,color,y] of [[1,0x315d66,.06]]){
   const water=new T.Mesh(outlineGeometry(factor),new T.MeshStandardMaterial({color,metalness:.18,roughness:.27,side:T.DoubleSide}));
-  water.rotation.x=-Math.PI/2;water.position.y=y;water.userData.terrainFixed=true;scene.add(water);
+  water.rotation.x=-Math.PI/2;water.position.y=y;water.userData.terrainFixed=true;scene.add(water);waterSystem.add(water);
  }
  for(let i=0;i<(generatedWorld?0:12);i++){const a=i*Math.PI/6;const x=lake.x+Math.cos(a)*lake.rx*1.13,z=lake.z+Math.sin(a)*lake.rz*1.13;if(i%3===0)rock(x,z);else if(i%3===1)tree(x,z)}
  // Fix the deck to water level. Terrain-adjusting a pier's centre sinks
@@ -941,6 +943,9 @@ function applyGraphics(){
  const resolved=effectiveGraphics(clientSettings,profile),scale=Number(resolved.scale)||1;
  renderer.setPixelRatio(Math.min(devicePixelRatio*scale,resolved.pixelCap));
  renderer.shadowMap.enabled=Boolean(resolved.shadows);sun.castShadow=Boolean(resolved.shadows);
+ const preset=clientSettings.preset==='auto'?profile.preset:clientSettings.preset;waterSystem.setQuality(preset==='custom'?(scale<=.65?'low':scale<1?'medium':'high'):preset,profile.compact);
+ const shadowSize=profile.compact?1024:2048;if(sun.shadow.mapSize.x!==shadowSize){sun.shadow.mapSize.set(shadowSize,shadowSize);sun.shadow.map?.dispose();sun.shadow.map=null;}
+
  camera.far=Number(resolved.distance)||330;scene.fog.far=camera.far;scene.fog.near=camera.far*.45;camera.updateProjectionMatrix();
  const ids={'graphics-preset':clientSettings.preset,'render-scale':String(scale),'view-distance':String(resolved.distance),'shadows-setting':resolved.shadows,'fps-setting':clientSettings.fps,'reduce-motion':clientSettings.reducedMotion};
  for(const [id,value] of Object.entries(ids)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=Boolean(value);else el.value=String(value)}}
@@ -1068,7 +1073,7 @@ tufts.instanceMatrix.needsUpdate=true;tufts.computeBoundingSphere();
 for(const river of worldRivers){
  const bank=new T.Mesh(ribbonGeometry(T,river.points,river.width+3),material(0x9a9271,'dirt'));bank.position.y=.018;bank.userData.terrainFixed=bank.userData.drape=true;scene.add(bank);
  const water=new T.Mesh(ribbonGeometry(T,river.points,river.width),new T.MeshStandardMaterial({color:0x315d66,metalness:.05,roughness:.38,side:T.DoubleSide}));
- water.position.y=.035;water.userData.terrainFixed=true;scene.add(water);
+ water.position.y=.035;water.userData.terrainFixed=true;scene.add(water);waterSystem.add(water);
 }
 for(const bridge of landscape.bridges){
  const group=new T.Group();group.position.set(bridge.x,0,bridge.z);group.rotation.y=bridge.yaw;group.userData.terrainFixed=true;scene.add(group);
@@ -1101,8 +1106,8 @@ function updateWorldSky(){
  const sky=new T.Color(0x26394f).lerp(new T.Color(0x94b9c8),daylight).lerp(new T.Color(0xb36a48),twilight*.24);
  scene.background.copy(sky);scene.fog.color.copy(sky);
  const lighting=lightingAt(daylight);skyLight.intensity=lighting.ambient;
- sun.intensity=lighting.directional;sun.color.set(daylight<.3?0xb9cee8:0xffe9b6);
- sun.position.set(Math.cos(dayPhase*Math.PI*2)*40,Math.max(22,solar*45),Math.sin(dayPhase*Math.PI*2)*40);
+ sun.intensity=lighting.directional;renderer.toneMappingExposure=lighting.exposure;sun.color.set(daylight<.3?0xb9cee8:daylight<.7?0xffd0a0:0xffefcf);
+ const angle=(hour-6)/24*Math.PI*2;sun.userData.direction=new T.Vector3(Math.cos(angle)*.6,Math.max(.26,Math.sin(angle)),Math.cos(angle)*.8).normalize().multiplyScalar(85);
  const hh=String(parts.hour).padStart(2,'0'),mm=String(parts.minute).padStart(2,'0');
  worldClock.textContent='World (Eastern) '+hh+':'+mm+(daylight<.2?' · Night':daylight<.65?' · Dawn / dusk':' · Day');
  window.eldervaleWorldNight=daylight<.2;
@@ -1179,7 +1184,7 @@ for(const other of remotePlayers.values()){
  const distance=before.distanceTo(other.root.position);
  other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.animator.update(dt,{locomotion:other.running?'run':other.attackAnim>0||other.blockAnim>0?'combat':'walk',style:other.attackStyle,attack:other.attackAnim,block:other.blockAnim,distance,speed:distance/Math.max(dt,.001)});other.animator.visual.position.y=0;groundFeet(other.animator.rig,other.animator.visual);
 }
-if(!cameraFocus){cameraFocus=player.position.clone();yaw=player.rotation.y+Math.PI;}if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;if((traveled>.002||manual)&&!down&&performance.now()-lastCameraDrag>1800){const behind=player.rotation.y+Math.PI;yaw+=Math.atan2(Math.sin(behind-yaw),Math.cos(behind-yaw))*(1-Math.exp(-3*dt));}stabilizeSun(T,sun,focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+1.75+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position,.35);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;const eye=new T.Vector3(focus.x,focus.y+1.5,focus.z),cameraVector=camera.position.clone().sub(eye),cameraDistance=cameraVector.length();cameraWallRay.set(eye,cameraVector.normalize());cameraWallRay.far=cameraDistance;const walls=[];for(const root of cameraWorldOccluders)if(root.visible&&Math.hypot(root.position.x-player.position.x,root.position.z-player.position.z)<45)root.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});for(const h of houseInteriors)if(h.group.position.distanceToSquared(player.position)<1600)h.group.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});const obstruction=cameraWallRay.intersectObjects(walls,false)[0];if(obstruction&&obstruction.distance<cameraDistance)camera.position.copy(eye).addScaledVector(cameraVector,Math.max(.8,obstruction.distance-.3));camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const root of waterAnimationRoots)root.userData.animateWater(performance.now()*.001);for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();naturalSky.update(camera,performance.now(),skyHour,skyDaylight);meadow.update(player.position,performance.now());if(Math.floor(performance.now()/500)!==window._forestFrame){window._forestFrame=Math.floor(performance.now()/500);updateNaturalForest(forestBatches,player.position);}renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
+if(!cameraFocus){cameraFocus=player.position.clone();yaw=player.rotation.y+Math.PI;}if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;if((traveled>.002||manual)&&!down&&performance.now()-lastCameraDrag>1800){const behind=player.rotation.y+Math.PI;yaw+=Math.atan2(Math.sin(behind-yaw),Math.cos(behind-yaw))*(1-Math.exp(-3*dt));}stabilizeSun(T,sun,focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+1.75+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position,.35);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;const eye=new T.Vector3(focus.x,focus.y+1.5,focus.z),cameraVector=camera.position.clone().sub(eye),cameraDistance=cameraVector.length();cameraWallRay.set(eye,cameraVector.normalize());cameraWallRay.far=cameraDistance;const walls=[];for(const root of cameraWorldOccluders)if(root.visible&&Math.hypot(root.position.x-player.position.x,root.position.z-player.position.z)<45)root.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});for(const h of houseInteriors)if(h.group.position.distanceToSquared(player.position)<1600)h.group.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});const obstruction=cameraWallRay.intersectObjects(walls,false)[0];if(obstruction&&obstruction.distance<cameraDistance)camera.position.copy(eye).addScaledVector(cameraVector,Math.max(.8,obstruction.distance-.3));camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const root of waterAnimationRoots)root.userData.animateWater(performance.now()*.001);for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();naturalSky.update(camera,performance.now(),skyHour,skyDaylight);meadow.update(player.position,performance.now());if(Math.floor(performance.now()/500)!==window._forestFrame){window._forestFrame=Math.floor(performance.now()/500);updateNaturalForest(forestBatches,player.position);}waterSystem.update(camera,performance.now(),skyDaylight,clientSettings.reducedMotion);renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 drapeRoads();draw();say('Welcome to Eldervale!');frame();
 
 // World editor rendering bridge. Authority and durable writes live in Postgres RPCs.
@@ -1266,7 +1271,7 @@ function rebuildTerrain(){
  for(const p of plots)landscape.levelBuildingPlot(p);
  // Preserve each flat foundation after neighbouring blend zones are graded.
  for(const p of plots)landscape.levelBuildingPlot({...p,coreOnly:true});
- ground.geometry.dispose();ground.geometry=landscapeGeometry(T,landscape);meadow.invalidate();drapeRoads();
+ ground.geometry.dispose();ground.geometry=landscapeGeometry(T,landscape);waterSystem.refreshTerrain();meadow.invalidate();drapeRoads();
  for(const o of scene.children)if(anchorHeights.has(o)&&!o.userData.surface)o.position.y=landscape.heightAt(o.position.x,o.position.z)+anchorHeights.get(o);
  for(const batch of [...forestBatches,tufts]){const values=instanceBase.get(batch);for(let i=0;i<batch.count;i++){const {matrix,ground:height}=values[i],m=matrix.clone();m.elements[13]+=landscape.heightAt(m.elements[12],m.elements[14])-height;batch.setMatrixAt(i,m)}batch.instanceMatrix.needsUpdate=true;batch.computeBoundingSphere()}
  for(const [id,entry] of worldInstances){if(entry.house&&foundationRows.has(id)){const p=buildingPlot(foundationRows.get(id).data);entry.root.position.y=landscape.heightAt(p.x,p.z);landscape.registerFloor(id,p)}if(entry.root.userData.surface)conformSurface(entry.root);}
@@ -1282,7 +1287,7 @@ function groundFeet(rig,visual,contacts=null){visual.updateWorldMatrix(true,true
 window.eldervaleGetWaterSoundProximity=()=>Math.max(0,...scene.children.filter(o=>o.userData.waterSource).map(o=>Math.max(0,1-Math.hypot(player.position.x-o.position.x,player.position.z-o.position.z)/9)));
 
 // The moat surrounds the playable castle plateau. The shared bridge is the only crossing.
-for(const [dx,dz,w,l] of [[0,-58.5,126,9],[0,58.5,126,9],[-58.5,0,9,108],[58.5,0,9,108]]){const m=new T.Mesh(new T.PlaneGeometry(w,l),new T.MeshStandardMaterial({map:texture('water',0x577f83),color:0x84a9aa,roughness:.32,metalness:.2}));m.rotation.x=-Math.PI/2;m.position.set(castle.x+dx,.035,castle.z+dz);m.userData.terrainFixed=true;scene.add(m)}
+for(const [dx,dz,w,l] of [[0,-58.5,126,9],[0,58.5,126,9],[-58.5,0,9,108],[58.5,0,9,108]]){const m=new T.Mesh(new T.PlaneGeometry(w,l),new T.MeshStandardMaterial({map:texture('water',0x577f83),color:0x84a9aa,roughness:.32,metalness:.2}));m.rotation.x=-Math.PI/2;m.position.set(castle.x+dx,.035,castle.z+dz);m.userData.terrainFixed=true;scene.add(m);waterSystem.add(m)}
 
 window.eldervaleCastleCollision=(x,z)=>{for(const row of persistentRows.values()){const d=row.data;if(row.deleted||!['castle_wall','castle_tower','castle_gate'].includes(d.template))continue;const a=d.yaw*Math.PI/180,s=d.scale||1,dx=x-d.x,dz=z-d.z,tx=(dx*Math.cos(a)-dz*Math.sin(a))/s,tz=(dx*Math.sin(a)+dz*Math.cos(a))/s;if(d.template==='castle_tower'){if(tx*tx+tz*tz<25)return true;}else if(Math.abs(tz)<(d.template==='castle_gate'?2.1:1.6)&&Math.abs(tx)<(d.length||24)/2+.3){if(d.template!=='castle_gate'||Math.abs(tx)>4.1||!worldInstances.get(row.id)?.root.userData.gateOpen)return true;}}return false;};
 
