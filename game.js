@@ -1,33 +1,35 @@
-import {worldTemplates} from './world-templates.js?v=release-20261103-owner1';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-owner1';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-owner1';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-owner1';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-owner1';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-owner1';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-owner1';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-owner1';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-owner1';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-owner1';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-owner1';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-owner1';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-owner1';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-owner1';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-owner1';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-owner1';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-owner1';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261103-owner1';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-shared1';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-shared1';
+import {worldTemplates} from './world-templates.js?v=release-20261103-shared1';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-shared1';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-shared1';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-shared1';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-shared1';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-shared1';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-shared1';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-shared1';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-shared1';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-shared1';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-shared1';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-shared1';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-shared1';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-shared1';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-shared1';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-shared1';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-shared1';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261103-shared1';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-owner1';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-owner1';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-owner1';
-import {buildForest} from './forest.js?v=release-20261103-owner1';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-owner1';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-owner1';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-shared1';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-shared1';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-shared1';
+import {buildForest} from './forest.js?v=release-20261103-shared1';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-shared1';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-shared1';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-owner1';
-import {createCape} from './cape.js?v=release-20261103-owner1';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-owner1';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-owner1';
+import {buildPlateArmor} from './armor.js?v=release-20261103-shared1';
+import {createCape} from './cape.js?v=release-20261103-shared1';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-shared1';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-shared1';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
@@ -302,7 +304,7 @@ chestHit.userData={kind:'chest',x:chestWorld.x,z:chestWorld.z};
 targets.push(chestHit);
 // Visible golden glow highlights the interactable supply chest inside the armory.
 const chestGlow=new T.PointLight(0xffc46b,2.0,6);chestGlow.position.set(0,1.25,.15);chestRoot.add(chestGlow);
-function openArmoryChest(){
+function openArmoryChest(){if(window.eldervaleAuthority)return;
  if(!state.starterBattleaxeGranted){if(!state.weaponsOwned.includes('battleaxe'))state.weaponsOwned.push('battleaxe');state.starterBattleaxeGranted=true}
  if(!state.starterJewelryGranted){for(const key of Object.keys(jewelryCatalog))if(!state.jewelryOwned.includes(key))state.jewelryOwned.push(key);state.starterJewelryGranted=true}
  if(state.starterChestClaimed){if(!state.starterDaggerGranted){if(!state.weaponsOwned.includes('dagger'))state.weaponsOwned.push('dagger');state.starterDaggerGranted=true}save();draw();say('Starter supplies already claimed. Any new starter jewelry, dagger or battleaxe has been added once.');return}
@@ -415,7 +417,7 @@ function setWalkDestination(point){
   if(!path.length&&current.distanceTo(stop)>.4){say('That destination is currently unreachable.');break}
   all.push(...path);current=stop;
  }
- dest=all.shift()||null;walkQueue=all;mapDestination=all.at(-1)?.clone()||dest?.clone()||null;
+ dest=all.shift()||null;walkQueue=all;mapDestination=all.at(-1)?.clone()||dest?.clone()||null;if(window.eldervaleAuthority){const route=[dest,...walkQueue].filter(Boolean).slice(0,128).map(p=>[p.x,p.z]);const target=action?.realmId||action?.worldEntityId||action?.mob?.realmId||action?.profile?.realmId||action?.house?.realmId;void window.eldervaleRealm?.command('move',{path:route,target:target||null,kind:action?.kind||'walk'})}
 }
 
 function updateHouseRoofs(){
@@ -538,21 +540,21 @@ const mobileLayout=matchMedia('(max-width:700px)');
 function compactMobileChat(){if(!mobileLayout.matches)return;document.querySelector('#social-panel')?.classList.add('collapsed');const toggle=document.querySelector('#social-toggle');if(toggle)toggle.textContent='Show Chat'}
 mobileLayout.addEventListener('change',compactMobileChat);compactMobileChat();
 const bubbleLayer=document.createElement('div');bubbleLayer.id='overhead-chat-layer';bubbleLayer.style.cssText='position:fixed;inset:0;z-index:45;pointer-events:none;overflow:hidden';document.body.append(bubbleLayer);
-window.eldervaleGetPlayerPosition=()=>({x:Math.round(player.position.x*10)/10,z:Math.round(player.position.z*10)/10,yaw:player.rotation.y,...publicCharacter(appearance,{armor:state.equipped,weapon:state.equippedWeapon,shield:state.equippedShield})});
+window.eldervaleGetPlayerPosition=()=>({x:Math.round(player.position.x*10)/10,z:Math.round(player.position.z*10)/10,yaw:player.rotation.y,combatLevel:combatLevel(state),...publicCharacter(appearance,{armor:state.equipped,weapon:state.equippedWeapon,shield:state.equippedShield})});
 window.eldervaleUpdatePlayers=entries=>{
  if(!Array.isArray(entries))return;
  const seen=new Set();
  for(const entry of entries){if(!entry||typeof entry!=='object'||!entry.id||!Number.isFinite(entry.x)||!Number.isFinite(entry.z))continue;seen.add(entry.id);
  let other=remotePlayers.get(entry.id);
- if(!other){const root=new T.Group();scene.add(root);const display=buildCharacterDisplay(T,root,entry.appearance,entry.loadout);const tag=document.createElement('div');tag.style.cssText='position:fixed;padding:3px 7px;background:#14221cdd;color:#f4e2ba;border:1px solid #9b8659;border-radius:5px;font:12px Arial;white-space:nowrap;pointer-events:none';tag.textContent=String(entry.username||'Adventurer').slice(0,24);bubbleLayer.append(tag);other={root,tag,animator:display,signature:JSON.stringify(display.data),target:new T.Vector3(entry.x,0,entry.z),yaw:0};root.position.copy(other.target);remotePlayers.set(entry.id,other)}
+ if(!other){const root=new T.Group();scene.add(root);const display=buildCharacterDisplay(T,root,entry.appearance,entry.loadout);const tag=document.createElement('div');tag.style.cssText='position:fixed;padding:3px 7px;background:#14221cdd;color:#f4e2ba;border:1px solid #9b8659;border-radius:5px;font:12px Arial;white-space:nowrap;pointer-events:none';tag.textContent=String(entry.username||'Adventurer').slice(0,24);bubbleLayer.append(tag);other={root,tag,animator:display,signature:JSON.stringify(display.data),target:new T.Vector3(entry.x,0,entry.z),yaw:0};root.position.copy(other.target);const hit=new T.Mesh(new T.CylinderGeometry(.65,.65,2.8,10),new T.MeshBasicMaterial({visible:false}));hit.position.y=1.4;root.add(hit);hit.userData={kind:'player',playerId:entry.id};targets.push(hit);other.hit=hit;remotePlayers.set(entry.id,other)}
  const cosmetics=publicCharacter(entry.appearance,entry.loadout),signature=JSON.stringify(cosmetics);
  if(signature!==other.signature){other.animator.dispose();other.animator=buildCharacterDisplay(T,other.root,cosmetics.appearance,cosmetics.loadout);other.signature=signature}
- other.tag.textContent=String(entry.username||'Adventurer').slice(0,24);
+ other.username=String(entry.username||'Adventurer').slice(0,24);other.combatLevel=Math.max(1,Math.min(100,Math.floor(entry.combatLevel||1)));other.tag.textContent='Lv '+other.combatLevel+' · '+other.username;
  other.target.set(entry.x,0,entry.z);other.yaw=Number.isFinite(entry.yaw)?entry.yaw:0;
  // Treat long jumps as teleports rather than animating across the whole map.
  if(other.root.position.distanceToSquared(other.target)>400)other.root.position.copy(other.target);
  }
- for(const [id,other] of remotePlayers)if(!seen.has(id)){other.animator.dispose();scene.remove(other.root);other.tag.remove();remotePlayers.delete(id);const bubble=chatBubbles.get(id);bubble?.node.remove();chatBubbles.delete(id)}
+ for(const [id,other] of remotePlayers)if(!seen.has(id)){other.animator.dispose();const ti=targets.indexOf(other.hit);if(ti>=0)targets.splice(ti,1);scene.remove(other.root);other.tag.remove();remotePlayers.delete(id);const bubble=chatBubbles.get(id);bubble?.node.remove();chatBubbles.delete(id)}
 };
 window.eldervaleShowChatBubble=(id,name,message)=>{
  if(!id||!message)return;const old=chatBubbles.get(id);old?.node.remove();
@@ -592,10 +594,10 @@ const shieldMeshes=new Map();
 for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);attachShield(avatar,model);model.visible=false;shieldMeshes.set(key,model)}
 if(state.equippedWeapon==='twohand')state.equippedShield=null;
 function refreshShield(){for(const [key,model] of shieldMeshes)model.visible=state.equippedShield===key}
-function equipShield(key){if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;if(state.equippedShield&&state.equippedWeapon==='twohand'){state.equippedWeapon=null;refreshWeapon()}refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
+function equipShield(key){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('equip',{slot:'shield',key});return}if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;if(state.equippedShield&&state.equippedWeapon==='twohand'){state.equippedWeapon=null;refreshWeapon()}refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
 refreshShield();
 function refreshWeapon(){for(const [key,model] of weaponMeshes)model.visible=state.equippedWeapon===key}
-function equipWeapon(key){if(!state.weaponsOwned.includes(key))return;state.equippedWeapon=state.equippedWeapon===key?null:key;if(state.equippedWeapon==='twohand'){state.equippedShield=null;refreshShield()}refreshWeapon();say(state.equippedWeapon?'Equipped '+weaponCatalog[key].name:'Unequipped weapon');save();draw()}
+function equipWeapon(key){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('equip',{slot:'weapon',key});return}if(!state.weaponsOwned.includes(key))return;state.equippedWeapon=state.equippedWeapon===key?null:key;if(state.equippedWeapon==='twohand'){state.equippedShield=null;refreshShield()}refreshWeapon();say(state.equippedWeapon?'Equipped '+weaponCatalog[key].name:'Unequipped weapon');save();draw()}
 refreshWeapon();
 if(Number.isFinite(saved.x)&&Number.isFinite(saved.z)){const p=landscape.nearestDryPoint(saved.x,saved.z);player.position.set(p.x,0,p.z);if(Math.hypot(p.x,p.z)<2.5)player.position.z=5}else player.position.set(0,0,5);
 const stats=document.querySelector('#stats'),inventory=document.querySelector('#inventory'),log=document.querySelector('#log'),equipment=document.querySelector('#equipment'),menu=document.querySelector('#contextmenu');
@@ -608,7 +610,7 @@ const mapControls=document.createElement('div');mapControls.id='map-controls';ma
 for(const [label,title,handler] of [['+','Zoom in',()=>{minimapExtent=Math.max(35,minimapExtent*.8)}],['−','Zoom out',()=>{minimapExtent=Math.min(180,minimapExtent*1.25)}]]){const button=document.createElement('button');button.type='button';button.textContent=label;button.setAttribute('aria-label',title);button.style.cssText='min-height:30px;min-width:30px;padding:4px 7px;margin:0;font-size:14px';button.onclick=()=>{handler();drawMap(mapCtx,mapCanvas,false)};mapControls.append(button)}
 const runButton=document.createElement('button');runButton.id='run-toggle';runButton.type='button';runButton.innerHTML=footIcon+'<span id="run-energy">100</span>';runButton.setAttribute('aria-label','Toggle run');runButton.setAttribute('aria-pressed','false');mapControls.append(runButton);document.querySelector('#map-widget').append(mapControls);
 function updateRunButton(){const energy=Math.ceil(state.runEnergy);if(runButton.dataset.energy===String(energy)&&runButton.getAttribute('aria-pressed')===String(running))return;runButton.dataset.energy=energy;runButton.setAttribute('aria-pressed',String(running));runButton.querySelector('span').textContent=energy;runButton.title=(running?'Running':'Walking')+' · Energy '+energy+'/100';}
-runButton.onclick=()=>{if(!running&&state.runEnergy<5){say('Recover a little energy before running again.');return}running=!running;updateRunButton()};updateRunButton();
+runButton.onclick=()=>{if(window.eldervaleAuthority){void window.eldervaleRealm?.command('run',{enabled:!running});return}if(!running&&state.runEnergy<5){say('Recover a little energy before running again.');return}running=!running;updateRunButton()};updateRunButton();
 const mapCtx=mapCanvas.getContext('2d'),largeCtx=largeMap.getContext('2d');
 
 // One deterministic terrain atlas is shared by the minimap and world map.
@@ -817,7 +819,7 @@ const npcProfiles=[
 {name:'Sister Maeve',role:'cleric',x:-23,z:26.9,color:0xb5aa82,station:'chapel',behavior:'stationary',lines:['Peace to you, traveler. The Chapel of the Dawn is open to all.','You may rest among the pews before returning to the roads.']}
 ];
 const npcs=[];
-function spawnNPC(profile,index){
+function spawnNPC(profile,index){profile.realmId||='base:npc:'+profile.name;
  profile.attackType||=/mage|healer/.test(profile.role)?'magic':/smith/.test(profile.role)?'hammer':/guard/.test(profile.role)?'slash':'punch';profile.level??=5;profile.hp??=45;profile.damage??=4;profile.attackSpeed??=2.4;
  const root=new T.Group();root.position.set(profile.x,0,profile.z);scene.add(root);
  const palettes=[0xc9916b,0xe0b48e,0x966247,0x67402f,0xb98362];
@@ -846,7 +848,7 @@ function spawnNPC(profile,index){
  if(!root.userData.armed&&index%3===2){const cape=box(.64,.84,.07,0x514f67,0,1.795,-.26,root,'cloth');cape.rotation.x=-.12}
  const hit=new T.Mesh(new T.CylinderGeometry(.68,.68,2.7,14),new T.MeshBasicMaterial({visible:false}));
  hit.position.set(0,1.38,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
- const npc={profile,root,rig:model,workProp,animator:createHumanoidAnimator(model),leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,leftElbow:model.leftElbow,rightElbow:model.rightElbow,leftKnee:model.leftKnee,rightKnee:model.rightKnee,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null,patrolIndex:0};npcs.push(npc);npc.hit=hit;return npc
+ const npc={realmId:profile.realmId,profile,root,rig:model,workProp,animator:createHumanoidAnimator(model),leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,leftElbow:model.leftElbow,rightElbow:model.rightElbow,leftKnee:model.leftKnee,rightKnee:model.rightKnee,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null,patrolIndex:0};npcs.push(npc);npc.hit=hit;return npc
 }
 npcProfiles.forEach(spawnNPC);
 const extraResidents=townResidents(landscapeSettlements),spawnedResidents=new Set();let nextResidentCheck=0;
@@ -903,7 +905,7 @@ function combatSound(kind){if(localStorage.getItem('eldervale-audio-enabled')===
 }
 function faceTarget(object,target){const dx=target.x-object.position.x,dz=target.z-object.position.z;if(dx*dx+dz*dz>.0001)object.rotation.y=Math.atan2(dx,dz)}
 const hitNumbers=createHitNumbers(T,camera);
-function applyPlayerHit(mob,rng=Math.random,weaponKey=state.equippedWeapon){
+function applyPlayerHit(mob,rng=Math.random,weaponKey=state.equippedWeapon){if(window.eldervaleAuthority)return;
  if(!mob.alive)return;
  combat.stanceTimer=2;faceTarget(player,mob.root.position);
  const hit=meleeRoll(weaponStats(weaponKey),{blockChance:Math.min(.45,.08+(mob.config?.level||1)*.002),reduction:Math.floor((mob.config?.level||1)/15)},rng);
@@ -912,7 +914,7 @@ function applyPlayerHit(mob,rng=Math.random,weaponKey=state.equippedWeapon){
  mob.hitAnim=.3;mob.hp=Math.max(0,mob.hp-hit.damage);combatSound(/axe|hatchet/i.test(String(state.equippedWeapon||''))?'axe':'slash');combatMessage('You hit '+mob.name+' for '+hit.damage+' damage');
  if(mob.hp<=0){mob.alive=false;mob.root.visible=false;mob.respawn=mob.config?.respawn===0?Infinity:mob.config?.respawn||22;combat.kills++;combat.xp+=30;state.attackXP+=10;state.strengthXP+=10;state.defenceXP+=5;state.hitpointsXP+=5;state.gold+=mob.hostile?8:2;combatMessage('Defeated '+mob.name+'! +30 combat XP');action=null;dest=null;save();draw()}
 }
-function playerHit(mob,rng=Math.random){
+function playerHit(mob,rng=Math.random){if(window.eldervaleAuthority)return;
  combat.stanceTimer=2;combat.attackAnim=0;combat.blockAnim=.65;
  const protection=meleeProtection(state),defense=protection.defence,hit=meleeRoll({damage:mob.config?.damage??(mob.hostile?6:3),attack:Math.round((mob.config?.level||5)*.6)},['fire','magic','venom'].includes(mob.config?.attackType)?{...protection,reduction:0,blockChance:protection.blockChance*.35}:protection,rng);faceTarget(mob.root,player.position);
  hitNumbers.show(player,hit.damage,hit.blocked,2.8);
@@ -935,8 +937,8 @@ function talkTo(profile){if(profile.role==='banker'){services.open('bank',profil
 function showDialogLine(){if(!conversation)return;dialogText.textContent=conversation.profile.lines[conversation.index];dialoguePortrait.speak(dialogText.textContent);dialogNext.textContent=conversation.index===conversation.profile.lines.length-1?'Close':'Continue'}
 dialogNext.onclick=()=>{if(!conversation)return;if(++conversation.index>=conversation.profile.lines.length)closeDialog();else showDialogLine()};
 function closeMenu(){menu.hidden=true;menu.innerHTML=''}
-function showMenu(x,y,items){menu.innerHTML='';for(const [label,fn] of items){const b=document.createElement('button');b.textContent=label;b.onclick=()=>{closeMenu();fn()};menu.append(b)}menu.hidden=false;menu.style.left=Math.min(x,innerWidth-190)+'px';menu.style.top=Math.min(y,innerHeight-180)+'px'}
-function toggleArmor(k){if(!state.armorOwned.includes(k))return;state.equipped[k]=!state.equipped[k];refreshArmor();say((state.equipped[k]?'Equipped ':'Removed ')+armorCatalog[k].name);save();draw()}
+function showMenu(x,y,items){menu.innerHTML='';for(const [label,fn] of items){const b=document.createElement('button');if(label instanceof Node)b.append(label);else b.textContent=label;b.onclick=()=>{closeMenu();fn()};menu.append(b)}menu.hidden=false;menu.style.left=Math.min(x,innerWidth-190)+'px';menu.style.top=Math.min(y,innerHeight-180)+'px'}
+function toggleArmor(k){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('equip',{slot:k,key:k});return}if(!state.armorOwned.includes(k))return;state.equipped[k]=!state.equipped[k];refreshArmor();say((state.equipped[k]?'Equipped ':'Removed ')+armorCatalog[k].name);save();draw()}
 function examine(k){say(armorCatalog[k].name+': '+armorCatalog[k].desc+' Melee defence +'+armorCatalog[k].defence+' · Damage absorption '+armorCatalog[k].reduction)}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{activeTab=b.dataset.tab;draw();closeMenu()});
 
@@ -966,11 +968,11 @@ applyGraphics();
 let fpsSamples=0,fpsSeconds=0;
 
 document.addEventListener('pointerdown',e=>{if(!menu.contains(e.target))closeMenu()});
-const level=x=>1+Math.floor(Math.sqrt(x/50));
+const level=skillLevel;
 const skillDefinitions=[['⚔','Attack','attackXP'],['💪','Strength','strengthXP'],['🛡','Defence','defenceXP'],['❤️','Hitpoints','hitpointsXP'],['🏹','Ranged','rangedXP'],['✨','Magic','magicXP'],['🙏','Prayer','prayerXP'],['🌳','Woodcutting','woodXP'],['⛏','Mining','miningXP'],['🔥','Firemaking','firemakingXP'],['🎣','Fishing','fishingXP'],['🍳','Cooking','cookingXP'],['🔨','Smithing','smithingXP'],['🛠','Crafting','craftingXP'],['🌿','Herblore','herbloreXP'],['🌱','Farming','farmingXP'],['🏃','Agility','agilityXP'],['🗝','Thieving','thievingXP']];
 const skillsPanel=document.querySelector('#skills');
 function drawSkills(){
- skillsPanel.replaceChildren();
+ skillsPanel.replaceChildren();const rank=document.createElement('div');rank.className='player-combat-level';rank.innerHTML=crossedSwords;const label=document.createElement('strong');label.textContent='Player Combat Level: '+combatLevel(state)+' / 100';rank.append(label);skillsPanel.append(rank);
  const grid=document.createElement('div');grid.className='skills-grid';
  let total=0;
  for(const [icon,name,key] of skillDefinitions){
@@ -989,7 +991,7 @@ function drawSkills(){
 }
 function draw(){
  inventoryGold.hidden=activeTab!=='inventory';inventoryGold.textContent='🪙 '+state.gold.toLocaleString()+' gold';
- playerHUD.update({hp:combat.hp,maxHp:combat.maxHp,xp:combat.xp,kills:combat.kills,gold:state.gold,helmet:!!state.equipped.helm,weapon:weaponCatalog[state.equippedWeapon]});
+ playerHUD.update({combatLevel:combatLevel(state),hp:combat.hp,maxHp:combat.maxHp,xp:combat.xp,kills:combat.kills,gold:state.gold,helmet:!!state.equipped.helm,weapon:weaponCatalog[state.equippedWeapon]});
  stats.innerHTML='<p><strong>Health: '+Math.ceil(combat.hp)+' / '+combat.maxHp+'</strong><br>Combat: '+level(combat.xp)+' ('+combat.xp+' XP)<br>Defeated: '+combat.kills+'<br>Gold: '+state.gold+'<br>Woodcutting: '+level(state.woodXP)+' ('+state.woodXP+' XP)<br>Mining: '+level(state.miningXP)+' ('+state.miningXP+' XP)</p>';
  inventory.innerHTML='';equipment.innerHTML='';
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.tab===activeTab));
@@ -1035,7 +1037,7 @@ function draw(){
  const protection=meleeProtection(state),attack=weaponStats(state.equippedWeapon),summary=document.createElement('p');summary.className='equipment-combat-stats';summary.textContent='Attack +'+attack.attack+' · Damage +'+attack.damage+' · '+attack.speed+'s turn · Melee defence '+protection.defence+' · Absorption '+protection.reduction;equipment.append(summary);
 
 }
-function equipJewelry(key){const item=jewelryCatalog[key];if(!item||!state.jewelryOwned.includes(key))return;state[item.slot]=state[item.slot]===key?null:key;save();draw();say(state[item.slot]?item.name+' equipped. '+item.description:'Removed '+item.name)}
+function equipJewelry(key){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('equip',{slot:jewelryCatalog[key]?.slot,key});return}const item=jewelryCatalog[key];if(!item||!state.jewelryOwned.includes(key))return;state[item.slot]=state[item.slot]===key?null:key;save();draw();say(state[item.slot]?item.name+' equipped. '+item.description:'Removed '+item.name)}
 function say(s){addSystemMessage(s)}function captureSave(){const snapshot={...saved,...state,appearance,hp:combat.hp,combatXP:combat.xp,kills:combat.kills,x:player.position.x,z:player.position.z};localStorage.setItem('eldervale-save',JSON.stringify(snapshot));return snapshot}
 window.eldervaleCaptureSave=captureSave;
 function save(){captureSave();window.eldervaleSave?.()}
@@ -1049,9 +1051,10 @@ renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;i
 if(window.eldervaleBuilderClick?.({point:hitGround?{x:point.x,z:point.z}:null,entityId:hits[0]?.object.userData.worldEntityId,button:e.button}))return;
 if(hits[0]?.object.userData.kind==='worldObject'){say('World decoration');return}
 if(hits[0]?.object.userData.kind==='worldItem'){window.eldervaleWorldPickup?.(hits[0].object.userData.worldEntityId);return}
+if(hits[0]?.object.userData.kind==='player'){const other=remotePlayers.get(hits[0].object.userData.playerId);if(other&&e.button===2){const row=document.createElement('span');row.className='player-menu-heading';row.innerHTML=crossedSwords;row.append(document.createTextNode(other.combatLevel+' '+other.username));showMenu(e.clientX,e.clientY,[[row,()=>say(other.username+' · Combat level '+other.combatLevel)],['Cancel',()=>{}]])}return}
 if(e.button===2){
  const choices=[];
- if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.type==='bank'?'Use bank':a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' ('+Math.max(0,a.mob.hp)+' HP)':a.kind==='npc'?a.profile.name+' — '+a.profile.role:a.kind==='merchant'?'A traveling trader who buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':'A harvestable '+a.kind+'.')])}
+ if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.type==='bank'?'Use bank':a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' · Combat '+(a.mob.config?.level||1)+' · '+Math.max(0,a.mob.hp)+' / '+a.mob.maxHp+' HP':a.kind==='npc'?a.profile.name+' — '+a.profile.role+' · Combat '+a.profile.level+' · '+a.profile.hp+' / '+(a.profile.maxHp||a.profile.hp)+' HP':a.kind==='merchant'?'Traveling merchant · Combat 5 · 45 / 45 HP. Buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':(Date.parse(a.availableAt)>(window.eldervaleServerTime?.()||Date.now())?'This '+a.kind+' is recovering.':'A harvestable '+a.kind+'.'))])}
  if(hitGround)choices.push(['Walk here',()=>{action=null;setWalkDestination(point);closeDialog();if(dest)markClick(dest.x,dest.z,'walk')}]);
  choices.push(['Cancel',()=>{}]);showMenu(e.clientX,e.clientY,choices);return;
 }
@@ -1087,7 +1090,7 @@ const easternClock=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',
 const worldClock=document.createElement('output');worldClock.id='world-clock';worldClock.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:36;pointer-events:none;background:#12202bc9;color:#e7d1a5;border:1px solid #927b56;border-radius:5px;padding:5px 9px;font:11px Arial';document.body.append(worldClock);
 let nextSkyUpdate=0;
 function updateWorldSky(){
- const now=Date.now();if(now<nextSkyUpdate)return;nextSkyUpdate=now+1500;
+ const now=window.eldervaleServerTime?.()||Date.now();if(now<nextSkyUpdate)return;nextSkyUpdate=now+1500;
  const parts=Object.fromEntries(easternClock.formatToParts(new Date(now)).filter(p=>p.type!=='literal').map(p=>[p.type,Number(p.value)]));
  const hour=parts.hour+parts.minute/60+parts.second/3600;
  const dayPhase=hour/24;
@@ -1105,21 +1108,21 @@ function updateWorldSky(){
  window.eldervaleSetTimeOfDay?.(hour,daylight);
 }
 const clock=new T.Clock();let lastAutosave=performance.now();
-function frame(){requestAnimationFrame(frame);updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();
-if(action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<weaponStats(state.equippedWeapon).reach){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
-if(dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?weaponStats(state.equippedWeapon).reach*.88:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min((running?SPRINT_SPEED:WALK_SPEED)*dt,distance));
+function frame(){requestAnimationFrame(frame);updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.05);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();if(window.eldervaleAuthority&&realmPlayerPose){const target=new T.Vector3(realmPlayerPose.x,player.position.y,realmPlayerPose.z);if(player.position.distanceToSquared(target)>100)player.position.copy(target);else player.position.lerp(target,1-Math.exp(-14*dt));player.rotation.y=realmPlayerPose.yaw;}
+if(!window.eldervaleAuthority&&action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<weaponStats(state.equippedWeapon).reach){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
+if(!window.eldervaleAuthority&&dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?weaponStats(state.equippedWeapon).reach*.88:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min((running?SPRINT_SPEED:WALK_SPEED)*dt,distance));
  const collision=walkAllowed(player.position,proposed);
  if(!collision.blocked)player.position.copy(proposed);
  else{dest=null;walkQueue=[];action=null;if(collision.house&&!collision.house.open)say('Door closed — click the door to open it.');else say('A building blocks the way. Walk around it.')}
  player.rotation.y=Math.atan2(delta.x,delta.z)}else{dest=null;if(walkQueue.length){dest=walkQueue.shift();}else if(action){const a=action;action=null;if(a.kind==='door'){if(a.house.type==='bank'){if(!a.house.open)toggleHouseDoor(a.house);services.open('bank',a.house.name)}else toggleHouseDoor(a.house)}else if(a.kind==='creature'){if(a.mob.alive){strike(a.mob);if(a.mob.alive){action=a;dest=a.mob.root.position.clone()}}}else if(a.kind==='npc'){talkTo(a.profile)}else if(a.kind==='chest'){openArmoryChest()}else if(a.kind==='merchant'){services.open('shop','Traveling merchant');}else if(a.kind==='worldObject'){say('A world decoration.')}else if(state.wood+state.ore+state.armorOwned.filter(k=>!state.equipped[k]).length>=16)say('Inventory full! Visit the merchant.');else if(a.kind==='tree'){state.wood++;const gained=gatheringXP(state,'woodXP');state.woodXP+=gained;say('You chop logs. +'+gained+' XP')}else{state.ore++;const gained=gatheringXP(state,'miningXP');state.miningXP+=gained;say('You mine ore. +'+gained+' XP')}save();draw()}}}
 combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);combat.blockAnim=Math.max(0,combat.blockAnim-dt);combat.stanceTimer=Math.max(0,combat.stanceTimer-dt);playerHUD.health(combat.hp,combat.maxHp);
-for(const mob of creatures){const mobBefore=mob.root.position.clone();mob.attackAnim=Math.max(0,(mob.attackAnim||0)-dt);mob.blockAnim=Math.max(0,(mob.blockAnim||0)-dt);mob.hitAnim=Math.max(0,(mob.hitAnim||0)-dt);mob.root.rotation.x=mob.attackAnim>0?-Math.sin((1-mob.attackAnim/.55)*Math.PI)*.15:0;mob.root.rotation.z=mob.blockAnim>0?.12:mob.hitAnim>0?-.10:0;if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*(mob.config?.roam??5),0,mob.home.z+Math.sin(a)*(mob.config?.roam??5));mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if((mob.hostile||combatTurns.target===mob)&&distance<10){mob.goal.copy(player.position);if(distance<2.5&&!combatTurns.target&&!services.isOpen){combatRng=Math.random;combatTurns.engage(mob,true)}}const meleeDistance=Math.min(1.85,weaponStats(state.equippedWeapon).reach*.9),delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>((mob.hostile||combatTurns.target===mob)&&distance<10?meleeDistance:.4)){delta.normalize();const step=Math.min(dt*((mob.hostile||combatTurns.target===mob)&&distance<10?1.7:.8),Math.max(0,distance-meleeDistance));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if((mob.hostile||combatTurns.target===mob)&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,weaponStats(state.equippedWeapon).reach*.85)}mob.model?.update(dt,{distance:mob.root.position.distanceTo(mobBefore),speed:mob.root.position.distanceTo(mobBefore)/dt,attack:mob.attackAnim,hit:mob.hitAnim,block:mob.blockAnim})}
-if(combatTurns.target){const target=combatTurns.target;combat.stanceTimer=3;const range=combatTurns.side==='player'?weaponStats(combatTurns.phase==='ready'?state.equippedWeapon:swingWeapon||state.equippedWeapon).reach:2.5;combatTurns.tick(dt,{inRange:player.position.distanceTo(target.root.position)<=range,playerAlive:combat.hp>0})}
+for(const mob of creatures){if(window.eldervaleAuthority){const before=mob.root.position.clone();interpolateRealm(mob,dt);mob.attackAnim=Math.max(0,(mob.attackAnim||0)-dt);mob.blockAnim=Math.max(0,(mob.blockAnim||0)-dt);mob.hitAnim=Math.max(0,(mob.hitAnim||0)-dt);mob.model?.update(dt,{distance:mob.root.position.distanceTo(before),speed:mob.root.position.distanceTo(before)/dt,attack:mob.attackAnim,block:mob.blockAnim,hit:mob.hitAnim});continue}const mobBefore=mob.root.position.clone();mob.attackAnim=Math.max(0,(mob.attackAnim||0)-dt);mob.blockAnim=Math.max(0,(mob.blockAnim||0)-dt);mob.hitAnim=Math.max(0,(mob.hitAnim||0)-dt);mob.root.rotation.x=mob.attackAnim>0?-Math.sin((1-mob.attackAnim/.55)*Math.PI)*.15:0;mob.root.rotation.z=mob.blockAnim>0?.12:mob.hitAnim>0?-.10:0;if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*(mob.config?.roam??5),0,mob.home.z+Math.sin(a)*(mob.config?.roam??5));mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if((mob.hostile||combatTurns.target===mob)&&distance<10){mob.goal.copy(player.position);if(distance<2.5&&!combatTurns.target&&!services.isOpen){combatRng=Math.random;combatTurns.engage(mob,true)}}const meleeDistance=Math.min(1.85,weaponStats(state.equippedWeapon).reach*.9),delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>((mob.hostile||combatTurns.target===mob)&&distance<10?meleeDistance:.4)){delta.normalize();const step=Math.min(dt*((mob.hostile||combatTurns.target===mob)&&distance<10?1.7:.8),Math.max(0,distance-meleeDistance));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if((mob.hostile||combatTurns.target===mob)&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,weaponStats(state.equippedWeapon).reach*.85)}mob.model?.update(dt,{distance:mob.root.position.distanceTo(mobBefore),speed:mob.root.position.distanceTo(mobBefore)/dt,attack:mob.attackAnim,hit:mob.hitAnim,block:mob.blockAnim})}
+if(!window.eldervaleAuthority&&combatTurns.target){const target=combatTurns.target;combat.stanceTimer=3;const range=combatTurns.side==='player'?weaponStats(combatTurns.phase==='ready'?state.equippedWeapon:swingWeapon||state.equippedWeapon).reach:2.5;combatTurns.tick(dt,{inRange:player.position.distanceTo(target.root.position)<=range,playerAlive:combat.hp>0})}
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 ensureTownResidents();
 for(const npc of npcs){
  npc.root.visible=npc.root.position.distanceToSquared(player.position)<85*85;
- if(!npc.root.visible)continue;
+ if(!npc.root.visible)continue;if(window.eldervaleAuthority){const before=npc.root.position.clone();interpolateRealm(npc,dt);const distance=npc.root.position.distanceTo(before);npc.previewAttack=Math.max(0,(npc.previewAttack||0)-dt);npc.animator.update(dt,{distance,speed:distance/dt,attack:npc.previewAttack,weapon:npc.profile.weapon,armed:!!npc.root.userData.armed});npc.attackEffect?.update(npc.previewAttack);if(!npc.previewAttack)animateTownActivity(npc.rig,npc.profile.activity,performance.now()*.001+npc.phase,distance>.001);continue}
  if(npc.workProp)npc.workProp.visible=conversation?.profile!==npc.profile;
  if(conversation?.profile===npc.profile){faceTarget(npc.root,player.position);npc.animator.update(dt,{armed:!!npc.root.userData.armed});continue}
  if(Math.hypot(npc.root.position.x-npc.goal.x,npc.root.position.z-npc.goal.z)<.6)npc.wait-=dt;
@@ -1159,10 +1162,10 @@ for(const npc of npcs){
 player.position.y=landscape.walkHeight(player.position.x,player.position.z);
 for(const npc of npcs)npc.root.position.y=landscape.walkHeight(npc.root.position.x,npc.root.position.z);
 for(const mob of creatures)mob.root.position.y=landscape.walkHeight(mob.root.position.x,mob.root.position.z);
-if(!dest&&!walkQueue.length)mapDestination=null;
+if(!dest&&!walkQueue.length&&!realmPlayerPose?.moving)mapDestination=null;
 const traveled=Math.hypot(player.position.x-frameStart.x,player.position.z-frameStart.z);
-const energyStep=stepEnergy(state.runEnergy,running,traveled>.001,dt);state.runEnergy=energyStep.energy;running=energyStep.running;if(energyStep.exhausted)say('You are out of energy and slow to a walk.');updateRunButton();
-const pose=playerAnimator.update(dt,{locomotion:running?'run':combatTurns.target||action?.kind==='creature'?'combat':'walk',weapon:state.equippedWeapon,block:combat.blockAnim,distance:traveled,speed:traveled/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim,twoHanded:state.equippedWeapon==='twohand',shield:!!state.equippedShield,armed:!!state.equippedWeapon});
+if(!window.eldervaleAuthority){const energyStep=stepEnergy(state.runEnergy,running,traveled>.001,dt);state.runEnergy=energyStep.energy;running=energyStep.running;if(energyStep.exhausted)say('You are out of energy and slow to a walk.')}updateRunButton();
+const pose=playerAnimator.update(dt,{locomotion:running?'run':(window.eldervaleAuthority?realmInCombat:combatTurns.target||action?.kind==='creature')?'combat':'walk',weapon:state.equippedWeapon,block:combat.blockAnim,distance:traveled,speed:traveled/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim,twoHanded:state.equippedWeapon==='twohand',shield:!!state.equippedShield,armed:!!state.equippedWeapon});
 body.rotation.y=combat.attackAnim>0?Math.sin((1-combat.attackAnim/.55)*Math.PI)*-.15:T.MathUtils.lerp(body.rotation.y,0,1-Math.exp(-10*dt));
 body.rotation.z=combat.hitAnim>0?Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12:T.MathUtils.lerp(body.rotation.z,0,1-Math.exp(-12*dt));
 body.position.y=0;cape.update(dt,pose?.blend||0);merchantAnimator.update(dt);
@@ -1172,7 +1175,7 @@ for(const other of remotePlayers.values()){
  const delta=Math.atan2(Math.sin(other.yaw-other.root.rotation.y),Math.cos(other.yaw-other.root.rotation.y));
  other.root.rotation.y+=delta*(1-Math.exp(-12*dt));
  const distance=before.distanceTo(other.root.position);
- other.animator.update(dt,{distance,speed:distance/Math.max(dt,.001)});
+ other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.animator.update(dt,{attack:other.attackAnim,block:other.blockAnim,distance,speed:distance/Math.max(dt,.001)});
 }
 const focus=player.position;stabilizeSun(T,sun,focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}texture('water',0x577f83).offset.y=performance.now()*.000012;for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);hitNumbers.update(elapsed);const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();
@@ -1201,10 +1204,10 @@ window.eldervaleWorldBridge={
   if(!h)root.scale.multiplyScalar(d.scale||1);if(actor?.config)root.scale.setScalar(d.scale||1);root.rotation.y=d.yaw*Math.PI/180;root.traverse(o=>{if(targets.includes(o))o.userData.worldEntityId=row.id});worldInstances.set(row.id,{root,actor,house:h});
  }},
  position:()=>({x:player.position.x,z:player.position.z,yaw:player.rotation.y*180/Math.PI}),
- teleport(x,z){combatTurns.cancel();dest=null;walkQueue=[];action=null;player.position.set(x,landscape.walkHeight(x,z),z);save()},
- preview(id){const a=worldInstances.get(id)?.actor;if(a){a.previewAttack=.55;a.attackAnim=.55;say('Preview: '+(a.profile?.attackType||a.config?.attackType||'melee'))}},
+ teleport(x,z){if(window.eldervaleAuthority){say('Use the owner Teleport command.');return}combatTurns.cancel();dest=null;walkQueue=[];action=null;player.position.set(x,landscape.walkHeight(x,z),z);save()},
+ preview(id){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('preview',{target:id});return}const a=worldInstances.get(id)?.actor;if(a){a.previewAttack=.55;a.attackAnim=.55;say('Preview: '+(a.profile?.attackType||a.config?.attackType||'melee'))}},
  highlight(id){const e=worldInstances.get(id);if(e)markClick(e.root.position.x,e.root.position.z,'interact')},
- grant(delivery){const receipts=state.worldReceipts;if(receipts.includes(delivery.id))return;
+ grant(delivery){if(window.eldervaleAuthority){void window.eldervaleRealm?.refresh();return}const receipts=state.worldReceipts;if(receipts.includes(delivery.id))return;
  const d=delivery.data;if(d.command==='teleport')this.teleport(Number(d.x),Number(d.z));else{const n=Math.max(1,Math.min(1000000,Math.floor(Number(d.amount)||1)));if(d.item==='gold')state.gold=Math.min(1e9,state.gold+n);else if(goods[d.item])state.bank[d.item]=goods[d.item].field?1:Math.min(1e9,(state.bank[d.item]||0)+n);else throw Error('Unknown delivered item');say('Owner delivery received'+(d.item==='gold'?'': ' in your bank')+'.')}
  receipts.push(delivery.id);state.worldReceipts=receipts;save();draw();
  },notice:text=>say(text),capture:()=>{captureSave();return JSON.parse(localStorage.getItem('eldervale-save'))}
@@ -1214,3 +1217,32 @@ window.eldervaleWorldBridge={
 const persistentRows=new Map(),applyNearby=window.eldervaleWorldBridge.apply;
 window.eldervaleWorldBridge.apply=rows=>{for(const row of rows){persistentRows.set(row.id,row);removeWorldEntity(row.id);if(!row.deleted&&Math.hypot(row.data.x-player.position.x,row.data.z-player.position.z)<180)applyNearby([row])}};
 setInterval(()=>{for(const [id,row]of persistentRows){if(row.deleted)continue;const distance=Math.hypot(row.data.x-player.position.x,row.data.z-player.position.z),entry=worldInstances.get(id);if(!entry&&distance<180)applyNearby([row]);else if(entry&&distance>220&&combatTurns.target!==entry.actor&&conversation?.profile!==entry.actor?.profile)removeWorldEntity(id)}},2000);
+
+var realmPlayerPose=null,realmInCombat=false;
+function interpolateRealm(actor,dt){if(!actor.serverPose)return;const target=new T.Vector3(actor.serverPose.x,actor.root.position.y,actor.serverPose.z);if(actor.root.position.distanceToSquared(target)>100)actor.root.position.copy(target);else actor.root.position.lerp(target,1-Math.exp(-14*dt));actor.root.rotation.y=actor.serverPose.yaw;}
+const realmActorCache=new Map(),realmObjectTargets=new Map(),realmMerchant={root:merchant,profile:{level:5,hp:45,maxHp:45}};
+const baseRealmId=(kind,x,z)=>'base:'+kind+':'+Number(x).toFixed(1)+':'+Number(z).toFixed(1);
+creatures.forEach((m,i)=>m.realmId='base:creature:'+i);
+houseInteriors.forEach((h,i)=>h.realmId='base:door:'+i);
+for(const target of targets){const a=target.userData;if(['tree','rock','chest','merchant'].includes(a.kind))a.realmId=baseRealmId(a.kind,a.x,a.z);else if(a.kind==='door')a.realmId=a.house.realmId;else if(a.kind==='npc')a.realmId=a.profile.realmId;else if(a.kind==='creature')a.realmId=a.mob.realmId;if(a.realmId)realmObjectTargets.set(a.realmId,target);}
+function realmActor(id){if(id==='base:merchant:-3.0:7.0')return realmMerchant;const custom=worldInstances.get(id)?.actor;return custom||creatures.find(a=>a.realmId===id)||npcs.find(a=>a.realmId===id)}
+function applyRealmActor(row){let actor=realmActor(row.id);if(!actor&&row.id.startsWith('base:npc:')){const p=extraResidents.find(p=>'base:npc:'+p.name===row.id);if(p){actor=spawnNPC({...p,realmId:row.id},npcs.length);spawnedResidents.add(extraResidents.indexOf(p))}}if(!actor)return;actor.serverPose=row;actor.root.visible=row.hp>0;actor.alive=row.hp>0;if(actor.config){actor.hp=row.hp;actor.maxHp=row.data.hp;actor.config={...actor.config,...row.data}}if(actor.profile){actor.profile.level=row.data.level;actor.profile.hp=row.hp;actor.profile.maxHp=row.data.hp;}return actor;}
+window.eldervaleRealmBridge={
+ snapshot(data,selfId){
+  const savedRow=fromPlayerRow(data.self);for(const k of ['gold','wood','ore','woodXP','miningXP','armorOwned','weaponsOwned','shieldsOwned','jewelryOwned','bank','attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP','amulet','trinket','starterChestClaimed','starterShieldsGranted','starterBattleaxeGranted','starterDaggerGranted','starterJewelryGranted'])if(savedRow[k]!==undefined)state[k]=savedRow[k];
+  const signature=JSON.stringify([state.equipped,state.equippedWeapon,state.equippedShield]),incoming=JSON.stringify([savedRow.equipped,savedRow.equippedWeapon,savedRow.equippedShield]);state.equipped=savedRow.equipped;state.equippedWeapon=savedRow.equippedWeapon;state.equippedShield=savedRow.equippedShield;combat.hp=data.self.health;combat.maxHp=data.self.max_health;combat.xp=data.self.xp;combat.kills=savedRow.kills;state.runEnergy=data.motion.energy;running=data.motion.run;
+  if(signature!==incoming){refreshArmor();refreshWeapon();refreshShield()}realmPlayerPose={x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0};if(!realmPlayerPose.moving){dest=null;walkQueue=[];mapDestination=null;}
+  realmInCombat=false;for(const row of data.actors){realmActorCache.set(row.id,row);applyRealmActor(row);if(row.target===selfId)realmInCombat=true;}
+  window.eldervaleUpdatePlayers(data.players);for(const entry of data.players){const other=remotePlayers.get(entry.id);if(other){other.hp=entry.hp;other.maxHp=entry.maxHp}}
+  for(const object of data.objects){const custom=worldInstances.get(object.id),house=custom?.house||houseInteriors.find(h=>h.realmId===object.id);if(house){house.open=object.open;house.doorPivot.rotation.y=house.open?-Math.PI*.53:0;}const t=realmObjectTargets.get(object.id);if(t)t.userData.availableAt=object.available_at;}
+  captureSave();draw();services.refresh?.();
+ },
+ event(e,selfId){const actor=realmActor(e.target),root=actor?.root,isSelf=e.player===selfId,other=remotePlayers.get(e.player);if(e.type==='preview'){if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}return}if(e.type==='windup'){if(e.side==='player'){if(isSelf){combat.attackAnim=.55;combat.blockAnim=0;faceTarget(player,root?.position||player.position)}else if(other)other.attackAnim=.55;if(actor)actor.blockAnim=1.1;}else{if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}if(isSelf){combat.attackAnim=0;combat.blockAnim=1.15;}else if(other)other.blockAnim=1.15;}}
+  else if(e.type==='hit'){const target=e.side==='player'?root:isSelf?player:other?.root;if(target)hitNumbers.show(target,e.damage,e.blocked,e.side==='player'?1.8:2.8);if(isSelf)combatSound(e.blocked?'metal':'slash');if(actor&&e.side==='player'){actor.hitAnim=e.blocked?0:.3;actor.blockAnim=e.blocked?.65:0;}}
+  else if(e.type==='interaction'&&isSelf){const a=targets.find(t=>(t.userData.realmId||t.userData.worldEntityId||t.userData.profile?.realmId)===e.target)?.userData;if(a?.kind==='npc')talkTo(a.profile);else if(a?.kind==='merchant')services.open('shop','Market');action=null;}
+  else if(e.type==='door'){const h=worldInstances.get(e.target)?.house||houseInteriors.find(h=>h.realmId===e.target);if(h){h.open=e.open;h.doorPivot.rotation.y=e.open?-Math.PI*.53:0;if(isSelf&&h.type==='bank')services.open('bank',h.name)}action=null;}
+  else if(e.type==='notice'&&isSelf)say(e.text);else if(e.type==='death'&&isSelf){say('Defeated '+(actor?.name||'opponent')+'.');action=null;}else if(e.type==='gather'&&isSelf){say('Resource gathered. +25 XP');action=null;}else if(e.type==='player_death'&&isSelf){say('You fell in battle and returned to Oakcross.');action=null;}
+ }
+};
+// World edits arriving between tick snapshots receive the last authoritative pose.
+const applyWorldRender=window.eldervaleWorldBridge.apply;window.eldervaleWorldBridge.apply=rows=>{applyWorldRender(rows);for(const row of rows){const target=targets.find(t=>t.userData.worldEntityId===row.id);if(target)realmObjectTargets.set(row.id,target);const pose=realmActorCache.get(row.id);if(pose)applyRealmActor(pose)}};

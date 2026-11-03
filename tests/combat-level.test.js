@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {combatLevel,skillLevel,crossedSwords} from '../combat-level.js';
+test('combat level averages the three skill levels, rounds down, and caps at 100',()=>{assert.equal(combatLevel({}),1);assert.equal(combatLevel({attackXP:18050,defenceXP:42050,strengthXP:76050}),30);assert.equal(combatLevel({attackXP:50}),1);assert.equal(combatLevel({attackXP:1e9,defenceXP:1e9,strengthXP:1e9}),100);assert.equal(skillLevel(-30),1);assert.match(crossedSwords,/<svg/)});

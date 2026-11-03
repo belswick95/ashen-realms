@@ -6,3 +6,4 @@
 @media(prefers-reduced-motion:reduce){.hit-number{font-size:21px}}
 .equipment-combat-stats{grid-column:1 / -1;margin:2px 0;padding:9px;border:1px solid #8c784544;border-radius:4px;color:#ddc99c;font:11px/1.6 Arial;text-align:center;background:#0f1e18}
 #combat-notice[data-turn=enemy]{border-color:#bc745f;color:#ffdfcb}#combat-notice[data-turn=player]{border-color:#bca15f;color:#f4e2b5}
+.combat-swords{display:inline-block;width:23px;height:23px;flex-shrink:0;color:#e6c483;vertical-align:middle}.player-combat-level{display:flex;gap:10px;align-items:center;padding:13px;margin-bottom:12px;border:1px solid #a18a59;background:#23382d;color:#eedbad;border-radius:6px;font:14px Georgia}.player-menu-heading{display:flex;align-items:center;gap:7px;color:#f2d69d}

@@ -1,0 +1,44 @@
+alter table eldervale_private.realm_water add column passable boolean not null default false;
+insert into eldervale_private.realm_water(outline,passable) values ('((-419.0914937785702,114.31540455179156),(-324.0914937785702,94.31540455179156),(-325.9085062214298,85.68459544820844),(-420.9085062214298,105.68459544820844))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-325.687794949016,94.35603467710119),(-230.68779494901597,109.35603467710119),(-229.31220505098403,100.64396532289881),(-324.312205050984,85.64396532289881))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-229.75537721346467,109.40321015763587),(-139.75537721346467,104.40321015763587),(-140.24462278653533,95.59678984236413),(-230.24462278653533,100.59678984236413))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-138.33347424134865,104.08298810869583),(-89.33347424134864,84.08298810869583),(-92.66652575865136,75.91701189130417),(-141.66652575865135,95.91701189130417))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-90.08843126538986,84.31475867715464),(-19.088431265389865,69.31475867715464),(-20.911568734610135,60.68524132284536),(-91.91156873461014,75.68524132284536))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-20.924023281303153,69.31210864608137),(49.07597671869685,84.31210864608137),(50.92402328130315,75.68789135391863),(-19.075976718696847,60.68789135391862))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((50.991630424541526,84.29706517301328),(115.99163042454153,69.29706517301328),(114.00836957545847,60.70293482698673),(49.008369575458474,75.70293482698672))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((113.78847982597256,69.24032060909603),(155.78847982597256,81.24032060909603),(158.21152017402744,72.75967939090397),(116.21152017402744,60.75967939090397))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((153.38204408454436,79.52160563804485),(176.38204408454436,112.52160563804485),(183.61795591545564,107.47839436195515),(160.61795591545564,74.47839436195515))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((179.07597671869684,114.31210864608137),(249.07597671869684,129.31210864608138),(250.92402328130316,120.68789135391863),(180.92402328130316,105.68789135391863))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((250.54699317953842,129.37594543630726),(330.5469931795384,119.37594543630728),(329.4530068204616,110.62405456369272),(249.45300682046158,120.62405456369272))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((330.95666331898025,119.30498493541123),(420.95666331898025,99.30498493541123),(419.04333668101975,90.69501506458877),(329.04333668101975,110.69501506458877))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-182.89257753569373,-419.47407681169204),(-162.89257753569373,-309.47407681169204),(-157.10742246430627,-310.52592318830796),(-177.10742246430627,-420.52592318830796))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-162.752807782053,-311.03230291826986),(-192.752807782053,-231.03230291826986),(-187.247192217947,-228.96769708173014),(-157.247192217947,-308.96769708173014))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-192.92792602701505,-230.266175093365),(-197.92792602701505,-175.266175093365),(-192.07207397298495,-174.733824906635),(-187.07207397298495,-229.733824906635))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-197.94,-175),(-197.94,-115),(-192.06,-115),(-192.06,-175))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-197.232214410954,-113.08667336203945),(-137.232214410954,-43.086673362039456),(-132.767785589046,-46.913326637960544),(-192.767785589046,-116.91332663796055))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-137.9349266571345,-45.17264274453732),(-142.9349266571345,39.82735725546268),(-137.0650733428655,40.17264274453732),(-132.0650733428655,-44.82735725546268))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((-141.85918688034204,42.27750392841901),(-92.85918688034205,82.27750392841901),(-89.14081311965795,77.72249607158099),(-138.14081311965796,37.72249607158099))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((418.54950285391425,-223.10820817018376),(343.54950285391425,-188.10820817018376),(346.45049714608575,-181.89179182981624),(421.45049714608575,-216.89179182981624))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((341.8283541222317,-186.30597183202224),(306.8283541222317,-101.30597183202224),(313.1716458777683,-98.69402816797776),(348.1716458777683,-183.69402816797776))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((307.3216199836104,-102.14270401311167),(247.32161998361042,-27.142704013111675),(252.67838001638958,-22.857295986888325),(312.6783800163896,-97.85729598688833))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((247.34532646373262,-27.17200562058241),(202.34532646373262,27.82799437941759),(207.65467353626738,32.17200562058241),(252.65467353626738,-22.82799437941759))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((202.60028696135382,27.549229237127314),(154.60028696135382,74.54922923712732),(159.39971303864618,79.45077076287268),(207.39971303864618,32.450770762872686))'::polygon,false);
+insert into eldervale_private.realm_water(outline,passable) values ('((61.434140252910055,71.12739173724543),(75.22162514707597,82.96834565586101),(77.95802632481983,79.78210828327843),(64.17054143065391,67.94115436466285))'::polygon,true);
+insert into eldervale_private.realm_water(outline,passable) values ('((-92.92829237859642,69.52674606317021),(-103.41078777561582,77.50097140867851),(-100.86791648123331,80.84369568390755),(-90.38542108421392,72.86947033839925))'::polygon,true);
+insert into eldervale_private.realm_water(outline,passable) values ('((-100.85218700135462,76.11831289951922),(-140.23382666289842,103.57265011840954),(-137.8319131196177,107.018054496796),(-98.4502734580739,79.56371727790568))'::polygon,true);
+insert into eldervale_private.realm_water(outline,passable) values ('((-187.93109026851258,-161.5304986999915),(-199.63026689902588,-169.8738422755509),(-202.06890973148742,-166.45433629724292),(-190.36973310097412,-158.11099272168352))'::polygon,true);
+create or replace function eldervale_private.can_step(ax float8,az float8,bx float8,bz float8) returns boolean language plpgsql stable set search_path='' as $$
+declare h record; tx float8;tz float8;px float8;pz float8;q float8;dx float8;dz float8;
+begin
+ if abs(bx)>4500 or abs(bz)>4500 or bx::text in ('NaN','Infinity','-Infinity') or bz::text in ('NaN','Infinity','-Infinity') then return false;end if;
+ -- Water collision outlines exclude bridge corridors when seeded.
+ if exists(select 1 from eldervale_private.realm_water where not passable and point(bx,bz)<@outline) and not exists(select 1 from eldervale_private.realm_water where passable and point(bx,bz)<@outline) then return false;end if;
+ for h in select * from eldervale_private.realm_objects where kind='door' and abs(x-bx)<25 and abs(z-bz)<25 loop
+  q:=coalesce((h.data->>'yaw')::float8,0);dx:=coalesce((h.data->>'scaleX')::float8,1);dz:=coalesce((h.data->>'scaleZ')::float8,1);
+  tx:=((bx-h.x)*cos(q)-(bz-h.z)*sin(q))/dx;tz:=((bx-h.x)*sin(q)+(bz-h.z)*cos(q))/dz;
+  px:=((ax-h.x)*cos(q)-(az-h.z)*sin(q))/dx;pz:=((ax-h.x)*sin(q)+(az-h.z)*cos(q))/dz;
+  if abs(tx)<2.17 and abs(tz)<2.09 and not(abs(tx)<1.65 and abs(tz)<1.57 and abs(px)<1.65 and abs(pz)<1.57) and not(h.open and abs(tx)<.49 and abs(px)<.49 and tz>1.2 and pz>1.2) then return false;end if;
+ end loop;
+ return true;
+end $$;
+insert into eldervale_private.realm_actors(id,data,x,z,hp) values('base:merchant:-3.0:7.0','{"kind":"npc","template":"merchant","role":"merchant","name":"Traveling merchant","x":-3,"z":7,"hp":45,"level":5,"attackLevel":5,"strengthLevel":5,"defenceLevel":5,"damage":4,"attackSpeed":2.4,"attackType":"punch","roam":0,"respawn":30,"hostile":false,"attackable":false}',-3,7,45);
