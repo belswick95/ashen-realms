@@ -1,57 +1,57 @@
-import {createWaterSystem} from './water-rendering.js?v=release-20261103-waterlight23';
-import {fishingDock} from './waterfront.js?v=release-20261103-waterlight23';
-import {isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261103-waterlight23';
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261103-waterlight23';
-import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261103-waterlight23';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261103-waterlight23';
-import {buildNaturalForest,updateNaturalForest} from './natural-forest.js?v=release-20261103-waterlight23';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261103-waterlight23';
-import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261103-waterlight23';
-import {createRegionStreamer} from './region-streamer.js?v=release-20261103-waterlight23';
-import {searchRoute} from './route-search.js?v=release-20261103-waterlight23';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261103-waterlight23';
-import {actorMenuLabel} from './context-label.js?v=release-20261103-waterlight23';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261103-waterlight23';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-waterlight23';
-import {createGroundDrops} from './ground-drops.js?v=release-20261103-waterlight23';
-import {createCombatHealth} from './combat-health.js?v=release-20261103-waterlight23';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-waterlight23';
-import {castle,inCastle} from './castle-layout.js?v=release-20261103-waterlight23';
-import {createMotionTrack} from './motion-track.js?v=release-20261103-waterlight23';
-import {lightingAt} from './world-lighting.js?v=release-20261103-waterlight23';
-import {sculptPatches} from './terrain-patches.js?v=release-20261103-waterlight23';
-import {fromPlayerRow} from './player-save.js?v=release-20261103-waterlight23';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-waterlight23';
-import {worldTemplates} from './world-templates.js?v=release-20261103-waterlight23';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-waterlight23';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-waterlight23';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-waterlight23';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-waterlight23';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-waterlight23';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-waterlight23';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-waterlight23';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-waterlight23';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-waterlight23';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-waterlight23';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-waterlight23';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-waterlight23';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-waterlight23';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-waterlight23';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-waterlight23';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-waterlight23';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-waterlight23';
+import {createWaterSystem} from './water-rendering.js?v=release-20261103-keyboard24';
+import {fishingDock} from './waterfront.js?v=release-20261103-keyboard24';
+import {isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261103-keyboard24';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261103-keyboard24';
+import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261103-keyboard24';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261103-keyboard24';
+import {buildNaturalForest,updateNaturalForest} from './natural-forest.js?v=release-20261103-keyboard24';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261103-keyboard24';
+import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261103-keyboard24';
+import {createRegionStreamer} from './region-streamer.js?v=release-20261103-keyboard24';
+import {searchRoute} from './route-search.js?v=release-20261103-keyboard24';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261103-keyboard24';
+import {actorMenuLabel} from './context-label.js?v=release-20261103-keyboard24';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261103-keyboard24';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-keyboard24';
+import {createGroundDrops} from './ground-drops.js?v=release-20261103-keyboard24';
+import {createCombatHealth} from './combat-health.js?v=release-20261103-keyboard24';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-keyboard24';
+import {castle,inCastle} from './castle-layout.js?v=release-20261103-keyboard24';
+import {createMotionTrack} from './motion-track.js?v=release-20261103-keyboard24';
+import {lightingAt} from './world-lighting.js?v=release-20261103-keyboard24';
+import {sculptPatches} from './terrain-patches.js?v=release-20261103-keyboard24';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-keyboard24';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-keyboard24';
+import {worldTemplates} from './world-templates.js?v=release-20261103-keyboard24';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-keyboard24';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-keyboard24';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-keyboard24';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-keyboard24';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-keyboard24';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-keyboard24';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-keyboard24';
+import {mapPoint} from './minimap.js?v=release-20261103-keyboard24';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-keyboard24';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-keyboard24';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-keyboard24';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-keyboard24';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-keyboard24';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-keyboard24';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-keyboard24';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-keyboard24';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-keyboard24';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-waterlight23';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-waterlight23';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-waterlight23';
-import {buildForest} from './forest.js?v=release-20261103-waterlight23';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-waterlight23';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-waterlight23';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-keyboard24';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-keyboard24';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-keyboard24';
+import {buildForest} from './forest.js?v=release-20261103-keyboard24';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-keyboard24';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-keyboard24';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-waterlight23';
-import {createCape} from './cape.js?v=release-20261103-waterlight23';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-waterlight23';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-waterlight23';
+import {buildPlateArmor} from './armor.js?v=release-20261103-keyboard24';
+import {createCape} from './cape.js?v=release-20261103-keyboard24';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-keyboard24';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-keyboard24';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -746,18 +746,9 @@ for(const lake of worldLakes){
  if(mapDestination){const p=scale?{x:toX(mapDestination.x),y:toY(mapDestination.z)}:mapPoint(mapDestination.x,mapDestination.z,player.position,Math.PI,extent,w,h);if(p.x>3&&p.x<w-3&&p.y>3&&p.y<h-3){ctx.strokeStyle='#fff2bc';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.x,p.y+5);ctx.lineTo(p.x,p.y-12);ctx.stroke();ctx.fillStyle='#f2c653';ctx.beginPath();ctx.moveTo(p.x,p.y-12);ctx.lineTo(p.x+11,p.y-8);ctx.lineTo(p.x,p.y-4);ctx.fill()}}
  const px=scale?toX(player.position.x):w/2,py=scale?toY(player.position.z):h/2;ctx.save();ctx.translate(px,py);ctx.rotate(Math.PI-player.rotation.y);ctx.fillStyle='#ffffff';ctx.strokeStyle='#15251d';ctx.lineWidth=2;ctx.beginPath();if(!scale)ctx.arc(0,0,3.2,0,Math.PI*2);else{ctx.moveTo(0,-7);ctx.lineTo(5,5);ctx.lineTo(0,2);ctx.lineTo(-5,5);ctx.closePath();}ctx.fill();ctx.stroke();ctx.restore();
 }
-// Click-to-walk on both map sizes. Coordinates use the exact transform used by drawMap.
-function walkFromMap(e,canvas,worldView){
- const rect=canvas.getBoundingClientRect();if(!rect.width||!rect.height)return;
- const u=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width)),v=Math.max(0,Math.min(1,(e.clientY-rect.top)/rect.height));
- const extent=worldView?840:minimapExtent;
- const point=worldView?{x:(u-.5)*extent,z:(v-.5)*extent*canvas.height/canvas.width}:minimapDestination(u,v,player.position,Math.PI,extent,canvas.width,canvas.height);const {x,z}=point;
- pendingPickup=null;action=null;closeDialog();setWalkDestination(new T.Vector3(x,0,z));if(dest)markClick(x,z,'walk');
-}
-mapCanvas.title='Click anywhere to walk · MAP button opens world map';mapCanvas.style.cursor='crosshair';
-mapCanvas.addEventListener('click',e=>walkFromMap(e,mapCanvas,false));
-largeMap.style.cursor='crosshair';largeMap.title='Click a destination to walk';
-largeMap.addEventListener('click',e=>walkFromMap(e,largeMap,true));
+// Maps are informational; movement uses the keyboard or touch movement pad.
+mapCanvas.title='Map · Move with WASD or arrow keys';mapCanvas.style.cursor='default';
+largeMap.title='World map · Move with WASD or arrow keys';largeMap.style.cursor='default';
 document.querySelector('#map-toggle').onclick=()=>{mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)};
 document.querySelector('#map-close').onclick=()=>{mapOpen=false;mapPanel.hidden=true};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeDialog();mapOpen=false;mapPanel.hidden=true}if(!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&e.key.toLowerCase()==='m'&&!e.repeat){mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)}});
@@ -1053,12 +1044,12 @@ pendingPickup=null;
 if(hits[0]?.object.userData.kind==='worldItem'){window.eldervaleWorldPickup?.(hits[0].object.userData.worldEntityId);return}
 if(hits[0]?.object.userData.kind==='player'){const other=remotePlayers.get(hits[0].object.userData.playerId);if(other&&e.button===2){const row=actorMenuLabel({name:other.username,level:other.combatLevel,playerLevel:combatLevel(state),accountId:hits[0].object.userData.playerId,player:true});showMenu(e.clientX,e.clientY,[[row,()=>say(other.username+' · Combat level '+other.combatLevel)],['Trade with '+other.username,()=>tradePanel.request(hits[0].object.userData.playerId)],['Cancel',()=>{}]])}return}
 if(e.button===2){
+ if(!hits.length){closeMenu();return;}
  const choices=[];
  if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?actorMenuLabel({prefix:'Attack ',name:a.mob.name,level:a.mob.config?.level||1,playerLevel:combatLevel(state)}):a.kind==='npc'?actorMenuLabel({prefix:'Talk to ',name:a.profile.name,level:a.profile.level||1,playerLevel:combatLevel(state)}):a.kind==='merchant'?actorMenuLabel({prefix:'Trade with ',name:'Traveling merchant',level:5,playerLevel:combatLevel(state)}):a.kind==='altar'?'Pray at altar':a.kind==='hearth'?'Cook and eat fish':a.kind==='castleGate'?'Open / close great gate':a.kind==='fishing'?'Fish here':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.type==='bank'?'Use bank':a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):a.kind==='castleGate'?new T.Vector3(a.x,0,a.z+(player.position.z>a.z?4:-4)):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+(a.kind==='creature'?a.mob.name:a.kind==='npc'?a.profile.name:a.kind==='merchant'?'Traveling merchant':a.kind),()=>say(a.kind==='creature'?a.mob.name+' · Combat '+(a.mob.config?.level||1)+' · '+Math.max(0,a.mob.hp)+' / '+a.mob.maxHp+' HP':a.kind==='npc'?a.profile.name+' — '+a.profile.role+' · Combat '+a.profile.level+' · '+a.profile.hp+' / '+(a.profile.maxHp||a.profile.hp)+' HP':a.kind==='merchant'?'Traveling merchant · Combat 5 · 45 / 45 HP. Buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':(Date.parse(a.availableAt)>(window.eldervaleServerTime?.()||Date.now())?'This '+a.kind+' is recovering.':'A harvestable '+a.kind+'.'))])}
- if(hitGround)choices.push(['Walk here',()=>{action=null;setWalkDestination(point);closeDialog();if(dest)markClick(dest.x,dest.z,'walk')}]);
  choices.push(['Cancel',()=>{}]);showMenu(e.clientX,e.clientY,choices);return;
 }
-if(hits.length){action=hits[0].object.userData;const goal=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):action.kind==='castleGate'?new T.Vector3(action.x,0,action.z+(player.position.z>action.z?4:-4)):new T.Vector3(action.x,0,action.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){action=null;setWalkDestination(point);closeDialog();if(dest)markClick(dest.x,dest.z,'walk')}});
+if(hits.length){action=hits[0].object.userData;const goal=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):action.kind==='castleGate'?new T.Vector3(action.x,0,action.z+(player.position.z>action.z?4:-4)):new T.Vector3(action.x,0,action.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){closeDialog();closeMenu()}});
 renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.deltaY*.015,4,28)},{passive:true});
 // Rebuild once after every building plot has been graded. The same heightfield
 // now supplies the grass mesh, building bases, streets and actor footing.

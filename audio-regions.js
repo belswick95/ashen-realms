@@ -1,5 +1,5 @@
-import {generatedWorld} from './procedural-world.js?v=release-20261103-waterlight23';
-import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261103-waterlight23';
+import {generatedWorld} from './procedural-world.js?v=release-20261103-keyboard24';
+import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261103-keyboard24';
 export const townMusic=[
  {id:'oakcross',name:'Oakcross',x:0,z:0,radius:50,title:'Lord of the Land'},
  {id:'northwatch',name:'Northwatch',x:-60,z:45,radius:22,title:'Night Vigil'},
