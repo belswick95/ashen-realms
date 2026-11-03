@@ -1,6 +1,7 @@
-import {dragonModel} from './monster-dragon.js?v=release-20261103-world12';
-import {castleObject} from './castle-models.js?v=release-20261103-world12';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261103-world12';
+import {creatureMaterial} from './creature-material.js?v=release-20261103-hud13';
+import {dragonModel} from './monster-dragon.js?v=release-20261103-hud13';
+import {castleObject} from './castle-models.js?v=release-20261103-hud13';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261103-hud13';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);
@@ -18,8 +19,8 @@ export function actorModel(T,parent,d){
  }
  const group=new T.Group();parent.add(group);const parts=[],legs=[],wings=[];let tick=0,travel=0;
  const color=({demon:0x8f3b3e,imp:0xa65a38,ogre:0x758654,revenant:0x71808f,wolf:0x727d80,deer:0xa57a50,boar:0x665142,bear:0x62432f,rat:0x786b67,spider:0x343840,bat:0x52445d,dragon:0x7e4937,troll:0x788263,golem:0x727b7d,wraith:0x4b5776})[d.species]||0x777777;
- const materials=new Map();function mat(c){if(!materials.has(c))materials.set(c,new T.MeshStandardMaterial({color:c,roughness:.84,flatShading:false}));return materials.get(c)}
- function ball(x,y,z,sx,sy,sz,c=color,p=group){const m=new T.Mesh(new T.SphereGeometry(1,10,7),mat(c));m.position.set(x,y,z);m.scale.set(sx,sy,sz);p.add(m);parts.push(m);return m}
+ const materials=new Map();function mat(c){if(!materials.has(c))materials.set(c,creatureMaterial(T,c,['golem'].includes(d.species)?'stone':['demon','imp','spider'].includes(d.species)?'scales':'hide'));return materials.get(c)}
+ function ball(x,y,z,sx,sy,sz,c=color,p=group){const m=new T.Mesh(new T.SphereGeometry(1,20,14),mat(c));m.position.set(x,y,z);m.scale.set(sx,sy,sz);p.add(m);parts.push(m);return m}
  function rod(x,y,z,sx,sy,sz,c=color,p=group){const m=new T.Mesh(new T.BoxGeometry(sx,sy,sz),mat(c));m.position.set(x,y,z);p.add(m);parts.push(m);return m}
  const pivot=(x,y,z,p=group)=>{const q=new T.Group();q.position.set(x,y,z);p.add(q);return q};
  const flying=['bat','wraith','revenant'].includes(d.species),biped=['troll','golem','wraith','demon','imp','ogre','revenant'].includes(d.species),spider=d.species==='spider',dragon=d.species==='dragon';
