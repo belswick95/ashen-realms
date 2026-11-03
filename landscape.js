@@ -1,4 +1,5 @@
-import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261103-nature7';
+import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261103-castle9';
+import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261103-castle9';
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
 export function noise(x,z){const hash=(a,b)=>{const n=Math.sin(a*127.1+b*311.7)*43758.5453;return n-Math.floor(n)};const ix=Math.floor(x),iz=Math.floor(z),u=smooth(0,1,x-ix),v=smooth(0,1,z-iz);return (hash(ix,iz)*(1-u)+hash(ix+1,iz)*u)*(1-v)+(hash(ix,iz+1)*(1-u)+hash(ix+1,iz+1)*u)*v}
@@ -8,7 +9,7 @@ function segmentIntersection(a,b,c,d){
  return t>=0&&t<=1&&u>=0&&u<=1?{x:a[0]+t*rx,z:a[1]+t*rz,dx:rx,dz:rz,cross:Math.abs(det)/(Math.hypot(rx,rz)*Math.hypot(sx,sz))}:null;
 }
 export function waterAt(x,z){
- let amount=0;
+ let amount=inMoat(x,z)?1:0;
  for(const lake of landscapeLakes){const dx=(x-lake.x)/lake.rx,dz=(z-lake.z)/lake.rz;if(Math.abs(dx)>1.2||Math.abs(dz)>1.2)continue;const a=Math.atan2(dz,dx),outline=1+.085*Math.sin(a*5+lake.x*.17)+.055*Math.sin(a*9+lake.z*.13)+.025*Math.sin(a*17);amount=Math.max(amount,1-Math.hypot(dx,dz)/outline)}
  for(const river of worldRivers)for(let i=1;i<river.points.length;i++){
   const a=river.points[i-1],b=river.points[i],pad=river.width/2+2;
@@ -19,7 +20,7 @@ export function waterAt(x,z){
  return amount;
 }
 export function createLandscape({segments=280,extent=840}={}){
- const bridges=[];
+ const bridges=[{x:castle.x,z:castle.z+59,yaw:0,width:9,length:20}];
  for(const line of roadLines)for(let i=1;i<line.length;i++)for(const river of worldRivers)for(let j=1;j<river.points.length;j++){
   const hit=segmentIntersection(line[i-1],line[i],river.points[j-1],river.points[j]);if(!hit||bridges.some(b=>Math.hypot(b.x-hit.x,b.z-hit.z)<8))continue;
   bridges.push({...hit,yaw:Math.atan2(hit.dx,hit.dz),width:4.2,length:river.width/Math.max(.2,hit.cross)+7});
@@ -43,6 +44,7 @@ export function createLandscape({segments=280,extent=840}={}){
    }
    for(const lake of landscapeLakes){const d=Math.hypot((x-lake.x)/lake.rx,(z-lake.z)/lake.rz);h*=smooth(1,1.5,d)}
   }
+  const castleDistance=Math.max(Math.abs(x-castle.x),Math.abs(z-castle.z));h*=smooth(66,85,castleDistance);if(inMoat(x,z))h=-1.5;
   return h;
  }
  for(let iz=0;iz<count;iz++)for(let ix=0;ix<count;ix++)heights[iz*count+ix]=sculpt(ix*step-extent/2,iz*step-extent/2);
@@ -64,13 +66,15 @@ export function createLandscape({segments=280,extent=840}={}){
   buildingPlots.push({x,z,c,s,halfX:2*scaleX,halfZ:1.85*scaleZ,level,floorHeight});
   return level;
  }
+ function registerFloor(id,{x,z,scaleX,scaleZ,rotation=0,floorHeight=.2}){removeFloor(id);buildingPlots.push({id,x,z,c:Math.cos(rotation),s:Math.sin(rotation),halfX:2*scaleX,halfZ:1.85*scaleZ,level:heightAt(x,z),floorHeight})}
+ function removeFloor(id){for(let i=buildingPlots.length-1;i>=0;i--)if(buildingPlots[i].id===id)buildingPlots.splice(i,1)}
  function walkHeight(x,z){
   for(const plot of buildingPlots){const dx=x-plot.x,dz=z-plot.z;if(Math.abs(dx*plot.c-dz*plot.s)<plot.halfX&&Math.abs(dx*plot.s+dz*plot.c)<plot.halfZ)return plot.level+plot.floorHeight}
   const bridge=bridgeAt(x,z);if(!bridge)return heightAt(x,z);const dx=x-bridge.x,dz=z-bridge.z,along=Math.abs(dx*Math.sin(bridge.yaw)+dz*Math.cos(bridge.yaw));return .24*(1-smooth(bridge.length/2-2,bridge.length/2,along))
  }
  function canWalk(x,z){if(!Number.isFinite(x)||!Number.isFinite(z)||Math.abs(x)>extent/2-1||Math.abs(z)>extent/2-1)return false;if(bridgeAt(x,z))return true;if(waterAt(x,z)>.015)return false;const slope=Math.hypot(heightAt(x+1,z)-heightAt(x-1,z),heightAt(x,z+1)-heightAt(x,z-1))/2;return slope<.85}
  function nearestDryPoint(x,z){if(canWalk(x,z))return {x,z};for(let r=1;r<32;r++)for(let i=0;i<24;i++){const a=i*Math.PI/12,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;if(canWalk(px,pz))return {x:px,z:pz}}return {x:0,z:5}}
- return {segments,extent,heights,heightAt,walkHeight,waterAt,canWalk,bridgeAt,bridges,nearestDryPoint,levelBuildingPlot};
+ return {segments,extent,heights,heightAt,walkHeight,waterAt,canWalk,bridgeAt,bridges,nearestDryPoint,levelBuildingPlot,registerFloor,removeFloor};
 }
 export function landscapeGeometry(T,landscape){
  const {segments,extent,heightAt}=landscape,g=new T.PlaneGeometry(extent,extent,segments,segments);g.rotateX(-Math.PI/2);

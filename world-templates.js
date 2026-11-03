@@ -2,6 +2,11 @@
 const npc=(name,role,weapon,attackType,color,extra={})=>({kind:'npc',name,role,weapon,attackType,color,level:5,hp:45,damage:4,attackSpeed:2.4,roam:3,respawn:30,attackable:false,hostile:false,scale:1,dialogue:'Welcome, traveler. These roads connect us all.',...extra});
 const monster=(name,species,attackType,level,hp,damage,extra={})=>({kind:'monster',name,species,attackType,level,hp,damage,attackSpeed:2.6,roam:5,respawn:30,attackable:true,hostile:false,scale:1,...extra});
 export const worldTemplates={
+ white_knight:npc('White Knight','guard','longsword','slash',0xe4e8e4,{level:45,hp:240,damage:20,whiteArmor:true,roam:0}),
+ demon:monster('Ash demon','demon','claw',50,420,29,{hostile:true,scale:1.5,attackSpeed:3.4}),
+ imp:monster('Cinder imp','imp','fire',13,55,8,{hostile:true,scale:.7,attackSpeed:2.2}),
+ ogre:monster('Ironhide ogre','ogre','slam',38,300,24,{hostile:true,scale:1.6,attackSpeed:3.8}),
+ revenant:monster('Fallen revenant','revenant','magic',42,260,26,{hostile:true,scale:1.2}),
  villager:npc('Town resident','resident',null,'punch',0x7f845b),
  guard:npc('Town guard','guard','longsword','slash',0x53677b,{level:20,hp:110,damage:12,hostile:false}),
  banker:npc('Royal banker','banker','longsword','stab',0x7a577c,{roam:0}),
@@ -28,8 +33,8 @@ export const worldTemplates={
  wraith:monster('Night wraith','wraith','magic',28,125,18,{hostile:true}),
  dragon:monster('Ember dragon','dragon','fire',75,850,38,{hostile:true,scale:1.8,attackSpeed:4.5,roam:8}),
 };
-for(const [id,name] of Object.entries({fishing_spot:'Fishing spot',fountain:'Town fountain',road:'Path segment',terrain_grass:'Grass terrain',terrain_sand:'Sandy terrain',terrain_stone:'Stone terrain',terrain_snow:'Snow terrain',crate:'Supply crate',barrel:'Oak barrel',chest:'Treasure chest',bench:'Town bench',fence:'Timber fence',lantern:'Street lantern',market:'Market stall',well:'Stone well',campfire:'Campfire',tree:'Oak tree',pine:'Pine tree',rock:'Boulder',banner:'Town banner',cottage:'Cottage',bank:'Bank',inn:'Inn',forge:'Forge',ruin:'Ruined wall'}))worldTemplates[id]={kind:'object',name,scale:1,level:1,hp:1,damage:0,attackSpeed:2.4,roam:0,respawn:0,attackable:false,hostile:false};
-for(const id of ['terrain_grass','terrain_sand','terrain_stone','terrain_snow'])Object.assign(worldTemplates[id],{radius:10,elevation:0});worldTemplates.road.length=10;worldTemplates.road.width=2.5;
+for(const [id,name] of Object.entries({castle_wall:'Castle curtain wall',castle_tower:'Castle round tower',castle_gate:'Castle great gate',altar:'Prayer altar',hearth:'Cooking hearth',fishing_spot:'Fishing spot',fountain:'Town fountain',road:'Path segment',terrain_grass:'Grass terrain',terrain_sand:'Sandy terrain',terrain_stone:'Stone terrain',terrain_snow:'Snow terrain',crate:'Supply crate',barrel:'Oak barrel',chest:'Treasure chest',bench:'Town bench',fence:'Timber fence',lantern:'Street lantern',market:'Market stall',well:'Stone well',campfire:'Campfire',tree:'Oak tree',pine:'Pine tree',rock:'Boulder',banner:'Town banner',cottage:'Cottage',bank:'Bank',inn:'Inn',forge:'Forge',ruin:'Ruined wall'}))worldTemplates[id]={kind:'object',name,scale:1,level:1,hp:1,damage:0,attackSpeed:2.4,roam:0,respawn:0,attackable:false,hostile:false};
+for(const id of ['terrain_grass','terrain_sand','terrain_stone','terrain_snow'])Object.assign(worldTemplates[id],{radius:10,elevation:0});worldTemplates.castle_wall.length=24;worldTemplates.castle_gate.length=28;worldTemplates.road.length=10;worldTemplates.road.width=2.5;
 export const attackTypes=['slash','punch','stab','hammer','arrow','magic','bite','kick','charge','claw','venom','swoop','slam','fire'];
 export function entityDefaults(template,x=0,z=0){const t=worldTemplates[template];if(!t)throw Error('Unknown template');return {...t,template,x,z,yaw:0};}
 export function validateEntity(d){if(!d||!worldTemplates[d.template]&&d.kind!=='item')throw Error('Unknown template');for(const k of ['x','z','yaw','scale','level','hp','damage','attackSpeed','roam','respawn'])if(!Number.isFinite(Number(d[k])))throw Error('Invalid '+k);if(Math.abs(d.x)>4500||Math.abs(d.z)>4500||d.scale<.25||d.scale>5||d.hp<1||d.hp>100000||d.level<1||d.level>999||d.attackSpeed<1.3||d.attackSpeed>30)throw Error('Values outside world limits');return d;}

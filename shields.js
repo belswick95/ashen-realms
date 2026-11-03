@@ -15,7 +15,7 @@ export function makeShield(T,key){
  const grip=new T.Mesh(new T.BoxGeometry(.12,.38,.1),new T.MeshStandardMaterial({color:0x493527,roughness:.9}));grip.position.z=-.11;g.add(grip);
  // Neutral grip-space mesh. Equipment attachment controls its final side-facing
  // orientation; pre-rotating here would compound and obscure that transform.
- g.position.set(0,0,0);g.rotation.set(0,0,0);g.scale.setScalar(.78);
+ g.position.set(0,0,0);g.rotation.set(0,0,0);g.scale.setScalar(.94);
  g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
  return g;
 }

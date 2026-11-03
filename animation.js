@@ -19,18 +19,17 @@ export function createHumanoidAnimator(rig){
   const walkBlend=Math.max(0,1-combatBlend-runBlend),run=runBlend,pace=Math.min(1,speed/1.9);
   // Combat keeps the existing short, planted approach. Walking has an extended
   // recovery and low foot lift; running has a flight phase and high recovery.
-  const stance=.60*combatBlend+.52*walkBlend+.40*runBlend;
-  const strideLength=(1.1+.45*pace)*combatBlend+(2.10+.25*pace)*walkBlend+3.50*runBlend;
-  const footLift=.12*combatBlend+.095*walkBlend+.55*runBlend;
-  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?3.50:2.10+.25*pace;
+  const stance=.60*combatBlend+.52*walkBlend+.32*runBlend;
+  const strideLength=(1.1+.45*pace)*combatBlend+(1.90+.25*pace)*walkBlend+2.80*runBlend;
+  const footLift=.12*combatBlend+.065*walkBlend+.30*runBlend;
+  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?2.80:1.90+.25*pace;
   phase+=distance*Math.PI*2/cycleLength;
   const gait=Math.sin(phase),stride=(.24+run*.12)*blend;
   const upper=Math.abs(rig.leftKnee.position.y),lower=rig.leftAnkle?Math.abs(rig.leftAnkle.position.y):.42*(rig.legScale||1.3),length=upper+lower;
-  const reach=strideLength*stance/(2*rig.root.scale.z),baseDown=Math.sqrt(Math.max(.1,length*length-reach*reach))-.002;
+  const lean=.17*runBlend*blend;
+  const reach=strideLength*stance/(2*rig.root.scale.z),baseDown=Math.sqrt(Math.max(.1,length*length-reach*reach))-.03*runBlend-.002;
   const phases=[((phase/(Math.PI*2))%1+1)%1,((phase/(Math.PI*2)+.5)%1+1)%1],contacts=phases.filter(u=>u<stance);
-  const plantedReach=contacts.length?Math.max(...contacts.map(u=>Math.abs(reach*(1-2*u/stance)))):reach;
-  const extendedDown=Math.sqrt(Math.max(.1,length*length-plantedReach*plantedReach))-.002;
-  const down=baseDown*combatBlend+extendedDown*(1-combatBlend),flight=contacts.length===0?runBlend*.055:0;
+  const down=baseDown,flight=0;
   for(const [leg,knee,ankle,offset] of [[rig.leftLeg,rig.leftKnee,rig.leftAnkle,0],[rig.rightLeg,rig.rightKnee,rig.rightAnkle,.5]]){
    const u=((phase/(Math.PI*2)+offset)%1+1)%1,swing=u>=stance,t=swing?(u-stance)/(1-stance):u/stance;
    // Walk: relaxed contact/passing/contact with a low, almost straight recovery.
@@ -40,20 +39,20 @@ export function createHumanoidAnimator(rig){
    const walkForward=reach*(2*ease-1),runForward=reach*(2*runEase-1);
    const forward=swing?walkForward*(1-runBlend)+runForward*runBlend:reach*(1-2*t);
    const recovery=Math.sin(Math.PI*Math.pow(t,.72));
-   const lift=swing?Math.sin(t*Math.PI)*footLift*(1-runBlend)+recovery*.55*runBlend:0;
-   const y=down-lift,d=Math.min(length-.00001,Math.hypot(forward,y));
+   const lift=swing?Math.sin(t*Math.PI)*footLift*(1-runBlend)+recovery*.30*runBlend:0;
+   const y=down-lift-Math.tan(lean)*forward*rig.root.scale.z,d=Math.min(length-.00001,Math.hypot(forward,y));
    const bend=Math.acos(Math.max(-1,Math.min(1,(d*d-upper*upper-lower*lower)/(2*upper*lower))));
    const hip=Math.atan2(-forward,y)-Math.atan2(lower*Math.sin(bend),upper+lower*Math.cos(bend));
    leg.rotation.x=hip*blend;knee.rotation.x=bend*blend;
-   if(ankle)ankle.rotation.x=-(hip+bend)*blend+(swing?Math.sin(t*Math.PI)*.16*runBlend*blend:0);
+   if(ankle)ankle.rotation.x=-(hip+bend)*blend-lean+(swing?Math.sin(t*Math.PI)*.16*runBlend*blend:0);
   }
   // Visual pelvis compression keeps contact feet at their standing ground height.
   // Physics, saved positions and pathfinding roots are never translated.
-  const bob=(down-length+flight)*blend;rig.root.rotation.x=.12*runBlend*blend;
+  const bob=(down-length+flight)*blend;rig.root.rotation.x=lean;
   for(const child of rig.root.children){if(!restY.has(child))restY.set(child,child.position.y);child.position.y=restY.get(child)+bob}
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
-  const armSwing=(.11*combatBlend+.25*walkBlend+.65*runBlend)*blend;
+  const armSwing=(.11*combatBlend+.25*walkBlend+.45*runBlend)*blend;
   rig.leftArm.rotation.x=-gait*armSwing+Math.sin(time*1.7)*.018*(1-blend);
   rig.rightArm.rotation.x=gait*armSwing-Math.sin(time*1.7)*.018*(1-blend);
   const elbow=-.10-.78*runBlend*blend;
@@ -79,6 +78,7 @@ export function createHumanoidAnimator(rig){
     rig.rightArm.rotation.x=-1.35+s*1.8;rig.rightArm.rotation.y=.30-s*.60;rig.rightArm.rotation.z=-.30+s*.20;rig.rightElbow.rotation.x=-.45+pulse*.15;
    }
   }
+  for(const child of rig.leftHand?.children||[])if(child.userData.shieldMount)child.rotation.set(...(block>0&&attack<=0?[0,0,0]:[.70,1.02,-.10]));
   if(shield&&!twoHanded){rig.leftArm.rotation.x=-.15-gait*.03*blend;rig.leftArm.rotation.z=.10;rig.leftElbow.rotation.x=-.55;rig.leftHand?.rotation.set(0,0,0)}
   if(twoHanded&&rig.solveArm){
    const V=rig.root.position.constructor;
@@ -91,8 +91,8 @@ export function createHumanoidAnimator(rig){
    }
   }
   if(block>0&&attack<=0){
-   if(twoHanded&&rig.solveArm){const V=rig.root.position.constructor,direction=new V(-.65,.65,.30).normalize(),target=new V(-.12,1.88,.40);if(style==='stab'||style==='lunge'){direction.set(0,.25,1).normalize();target.set(0,1.55,.45+swing*(style==='lunge'?.7:.4))}rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10),direction)}
-   else if(shield){rig.leftArm.rotation.x=-.90;rig.leftArm.rotation.z=.24;rig.leftElbow.rotation.x=-.85}
+   if(twoHanded&&rig.solveArm){const V=rig.root.position.constructor,direction=new V(-.65,.65,.30).normalize(),target=new V(-.12,1.88,.40);rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10),direction)}
+   else if(shield&&rig.solveArm){const V=rig.root.position.constructor;rig.solveArm('left',new V(.12,1.68,.62),new V(0,1,0),new V(0,0,1))}
    else{rig.rightArm.rotation.x=-.85;rig.rightElbow.rotation.x=-.7;rig.rightHand.rotation.z=-.45}
   }
   if(rig.head){rig.head.rotation.x=-gait*.012*blend-impact*.06;rig.head.rotation.z=Math.sin(time*.7)*.008*(1-blend)}
