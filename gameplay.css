@@ -73,3 +73,4 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body.compact-layout #side>.tabs button .fantasy-tab-icon{width:30px!important;height:30px!important}
 body.compact-layout #game-ui #health-hud #hud-name{font-size:12px}
 body.compact-layout #map-widget .minimap-brand{font-size:13px}
+.attack-styles{display:flex;gap:5px;flex:0 0 auto;grid-column:1/-1;margin:4px 0 10px}.attack-styles button{flex:1;min-height:38px;margin:0;padding:6px;font:12px Arial}.attack-styles button[aria-pressed=true]{background:#94733f;border-color:#e5c582}

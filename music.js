@@ -1,4 +1,4 @@
-import {townMusic,loginMusic,musicRegion,wildernessSound,audioPreference} from './audio-regions.js?v=release-20261103-builder5';
+import {townMusic,loginMusic,musicRegion,wildernessSound,audioPreference} from './audio-regions.js?v=release-20261103-motion6';
 let singleton;
 // One audio engine spans sign-in and gameplay. Music and environment have
 // separate buses; natural ambience is never represented as a music track.
