@@ -1,40 +1,44 @@
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-castle8';
-import {castle,inCastle} from './castle-layout.js?v=release-20261103-castle8';
-import {createMotionTrack} from './motion-track.js?v=release-20261103-castle8';
-import {lightingAt} from './world-lighting.js?v=release-20261103-castle8';
-import {sculptPatches} from './terrain-patches.js?v=release-20261103-castle8';
-import {fromPlayerRow} from './player-save.js?v=release-20261103-castle8';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-castle8';
-import {worldTemplates} from './world-templates.js?v=release-20261103-castle8';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-castle8';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-castle8';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-castle8';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-castle8';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-castle8';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-castle8';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-castle8';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-castle8';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-castle8';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-castle8';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-castle8';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-castle8';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-castle8';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-castle8';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-castle8';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-castle8';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-castle8';
+import {fixedObstacles,obstacleBlocks} from './navigation-obstacles.js?v=release-20261103-castle9';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-castle9';
+import {createGroundDrops} from './ground-drops.js?v=release-20261103-castle9';
+import {createCombatHealth} from './combat-health.js?v=release-20261103-castle9';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-castle9';
+import {castle,inCastle} from './castle-layout.js?v=release-20261103-castle9';
+import {createMotionTrack} from './motion-track.js?v=release-20261103-castle9';
+import {lightingAt} from './world-lighting.js?v=release-20261103-castle9';
+import {sculptPatches} from './terrain-patches.js?v=release-20261103-castle9';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-castle9';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-castle9';
+import {worldTemplates} from './world-templates.js?v=release-20261103-castle9';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-castle9';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-castle9';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-castle9';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-castle9';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-castle9';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-castle9';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-castle9';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-castle9';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-castle9';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-castle9';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-castle9';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-castle9';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-castle9';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-castle9';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-castle9';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-castle9';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-castle9';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-castle8';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-castle8';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-castle8';
-import {buildForest} from './forest.js?v=release-20261103-castle8';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-castle8';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-castle8';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-castle9';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-castle9';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-castle9';
+import {buildForest} from './forest.js?v=release-20261103-castle9';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-castle9';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-castle9';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-castle8';
-import {createCape} from './cape.js?v=release-20261103-castle8';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-castle8';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-castle8';
+import {buildPlateArmor} from './armor.js?v=release-20261103-castle9';
+import {createCape} from './cape.js?v=release-20261103-castle9';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-castle9';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-castle9';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -333,7 +337,7 @@ function insideHouse(h,p){const q=houseLocal(h,p);return Math.abs(q.x)<1.92&&Mat
 function walkAllowed(from,to){
  // Swept movement sampled at sub-character intervals prevents tunneling through thin walls.
  const distance=Math.hypot(to.x-from.x,to.z-from.z),samples=Math.max(1,Math.ceil(distance/.18));
- for(let i=1;i<=samples;i++){const t=i/samples,px=from.x+(to.x-from.x)*t,pz=from.z+(to.z-from.z)*t;if(window.eldervaleCastleCollision?.(px,pz))return {blocked:true,terrain:true};if(!landscape.canWalk(from.x+(to.x-from.x)*t,from.z+(to.z-from.z)*t))return {blocked:true,terrain:true}}
+ for(let i=1;i<=samples;i++){const t=i/samples,px=from.x+(to.x-from.x)*t,pz=from.z+(to.z-from.z)*t;if(window.eldervalePropCollision?.(px,pz)||window.eldervaleCastleCollision?.(px,pz))return {blocked:true,terrain:true};if(!landscape.canWalk(from.x+(to.x-from.x)*t,from.z+(to.z-from.z)*t))return {blocked:true,terrain:true}}
  for(const h of houseInteriors){
   const a=houseLocal(h,from),b=houseLocal(h,to);
   const radius=.26,limitX=1.91+radius,limitZ=1.83+radius;
@@ -382,9 +386,9 @@ function findWalkPath(start,goal,maxCells=14000){
    if(!existing||g<existing.g){nodes.set(nid,{x,z,g,f:g+Math.hypot(x-gx,z-gz),prev:id});open.push(nid)}
   }
  }
- if(best!==goalKey)return [];if(best===startKey)return [];
+ if(best!==goalKey&&bestH>2.5)return [];if(best===startKey)return [];
  const result=[];let id=best;
- while(id!==startKey&&result.length<100){const n=nodes.get(id);result.push(point(n.x,n.z));id=n.prev;if(id==null)break}
+ while(id!==startKey&&result.length<maxCells){const n=nodes.get(id);result.push(point(n.x,n.z));id=n.prev;if(id==null)break}
  result.reverse();
  // Replace grid zigzags with long straight, collision-checked walking segments.
  const smooth=[];let anchor=start;for(let i=0;i<result.length;){let furthest=i;for(let j=result.length-1;j>i;j--){if(!walkAllowed(anchor,result[j]).blocked){furthest=j;break}}smooth.push(result[furthest]);anchor=result[furthest];i=furthest+1}result.splice(0,result.length,...smooth);
@@ -397,21 +401,21 @@ function routeTo(target){
  const h=houseInteriors.find(h=>insideHouse(h,goal));
  if(h&&!insideHouse(h,player.position)){
   const door=housePoint(h,0,2.48),threshold=housePoint(h,0,1.08);
-  if(!h.open){say('The door is closed. Click the door to open it.');return player.position.clone()}
+  if(!h.open){navigationAfterDoor=target.clone();action={kind:'door',house:h};return housePoint(h,0,2.48)}
   // Enter through the doorway, then continue to the clicked destination.
   walkQueue=[threshold,goal];return door;
  }
  const current=houseInteriors.find(h=>insideHouse(h,player.position));
  if(current&&!insideHouse(current,goal)){
   const threshold=housePoint(current,0,1.08),door=housePoint(current,0,2.48);
-  if(!current.open){say('Open the door before leaving.');return player.position.clone()}
+  if(!current.open){navigationAfterDoor=target.clone();action={kind:'door',house:current};return housePoint(current,0,1.08)}
   walkQueue=[door,goal];return threshold;
  }
  return goal;
 }
-let walkQueue=[],mapDestination=null;
+var navigationAfterDoor=null,pendingPickup=null;let walkQueue=[],mapDestination=null;
 function setWalkDestination(point){
- if(action?.kind!=='creature')combatTurns.cancel();
+ navigationAfterDoor=null;if(action?.kind!=='creature')combatTurns.cancel();
  const target=routeTo(point);
  const stops=[target,...walkQueue];
  walkQueue=[];
@@ -606,7 +610,8 @@ function equipWeapon(key){if(window.eldervaleAuthority){void window.eldervaleRea
 refreshWeapon();
 if(Number.isFinite(saved.x)&&Number.isFinite(saved.z)){const p=landscape.nearestDryPoint(saved.x,saved.z);player.position.set(p.x,0,p.z);if(Math.hypot(p.x,p.z)<2.5)player.position.z=5}else player.position.set(0,0,5);
 const stats=document.querySelector('#stats'),inventory=document.querySelector('#inventory'),log=document.querySelector('#log'),equipment=document.querySelector('#equipment'),menu=document.querySelector('#contextmenu');
-const inventoryGold=document.createElement('div');inventoryGold.id='inventory-gold';inventory.before(inventoryGold);
+const inventoryGold=document.createElement('div');inventoryGold.id='inventory-gold';inventory.before(inventoryGold);inventoryGold.oncontextmenu=e=>{e.preventDefault();showMenu(e.clientX,e.clientY,[['Drop gold',()=>requestDrop(state,'gold')]])};
+const tradePanel=createTradePanel(state),groundDrops=createGroundDrops(T,scene,landscape,targets),combatHealth=createCombatHealth(T,camera);var npcDuelIds=new Set(),combatPlayerIds=new Set();
 const services=createServicePanel(state,{onChange:()=>{save();draw()},onOpen:()=>{dest=null;walkQueue=[];mapDestination=null;action=null;combatTurns.cancel();closeDialog()}});
 let serviceBuilding=null;
 let activeTab='inventory',mapOpen=false;const mapCanvas=document.querySelector('#minimap'),largeMap=document.querySelector('#worldmap'),mapPanel=document.querySelector('#map-panel');
@@ -663,7 +668,7 @@ function terrainNoise(x,z){const xi=Math.floor(x),zi=Math.floor(z),u=x-xi,v=z-zi
 function drawMap(ctx,canvas,scale){
  const w=canvas.width,h=canvas.height,extent=scale?840:minimapExtent,pxPerUnit=w/extent,pzPerUnit=w/extent;
  const toX=x=>w/2+(x-(scale?0:player.position.x))*pxPerUnit,toY=z=>h/2+(z-(scale?0:player.position.z))*pzPerUnit;
- ctx.clearRect(0,0,w,h);ctx.fillStyle='#415d39';ctx.fillRect(0,0,w,h);ctx.save();ctx.beginPath();ctx.rect(0,0,w,h);ctx.clip();if(!scale){ctx.translate(w/2,h/2);ctx.rotate(player.rotation.y-Math.PI);ctx.translate(-w/2,-h/2)}
+ ctx.clearRect(0,0,w,h);ctx.fillStyle='#415d39';ctx.fillRect(0,0,w,h);ctx.save();ctx.beginPath();ctx.rect(0,0,w,h);ctx.clip();
  // Sample the identical 840-unit terrain atlas in both map views.
  const originX=scale?0:player.position.x,originZ=scale?0:player.position.z;
  const sourceX=(originX-extent/2+420)/840*terrainAtlas.width;
@@ -757,17 +762,18 @@ for(const lake of worldLakes){
   ctx.fillStyle='#f0dbad';ctx.fillText(name,px,py-11);
   ctx.textAlign='start';
  }}
+ if(!scale){const dot=(x,z,color,r=2.6)=>{const px=toX(x),py=toY(z);if(px<2||py<2||px>w-2||py>h-2)return;ctx.fillStyle=color;ctx.strokeStyle='#14221c';ctx.lineWidth=1;ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);ctx.fill();ctx.stroke()};for(const a of [...npcs,...creatures])if(a.root.visible&&!a.deleted&&a.alive!==false)dot(a.root.position.x,a.root.position.z,'#f4db4f');for(const a of remotePlayers.values())dot(a.root.position.x,a.root.position.z,'#ffffff');for(const e of groundDrops.entries.values())dot(e.data.x,e.data.z,'#fa4b43',2.8);for(const row of window.eldervaleMapItems?.()||[])if(!row.deleted&&row.data.kind==='item')dot(row.data.x,row.data.z,'#fa4b43',2.8);}
  ctx.restore();
- if(mapDestination){const p=scale?{x:toX(mapDestination.x),y:toY(mapDestination.z)}:mapPoint(mapDestination.x,mapDestination.z,player.position,player.rotation.y,extent,w,h);if(p.x>3&&p.x<w-3&&p.y>3&&p.y<h-3){ctx.strokeStyle='#fff2bc';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.x,p.y+5);ctx.lineTo(p.x,p.y-12);ctx.stroke();ctx.fillStyle='#f2c653';ctx.beginPath();ctx.moveTo(p.x,p.y-12);ctx.lineTo(p.x+11,p.y-8);ctx.lineTo(p.x,p.y-4);ctx.fill()}}
- const px=scale?toX(player.position.x):w/2,py=scale?toY(player.position.z):h/2;ctx.save();ctx.translate(px,py);if(scale)ctx.rotate(Math.PI-player.rotation.y);ctx.fillStyle='#fff4d1';ctx.strokeStyle='#15251d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-7);ctx.lineTo(5,5);ctx.lineTo(0,2);ctx.lineTo(-5,5);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+ if(mapDestination){const p=scale?{x:toX(mapDestination.x),y:toY(mapDestination.z)}:mapPoint(mapDestination.x,mapDestination.z,player.position,Math.PI,extent,w,h);if(p.x>3&&p.x<w-3&&p.y>3&&p.y<h-3){ctx.strokeStyle='#fff2bc';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.x,p.y+5);ctx.lineTo(p.x,p.y-12);ctx.stroke();ctx.fillStyle='#f2c653';ctx.beginPath();ctx.moveTo(p.x,p.y-12);ctx.lineTo(p.x+11,p.y-8);ctx.lineTo(p.x,p.y-4);ctx.fill()}}
+ const px=scale?toX(player.position.x):w/2,py=scale?toY(player.position.z):h/2;ctx.save();ctx.translate(px,py);ctx.rotate(Math.PI-player.rotation.y);ctx.fillStyle='#ffffff';ctx.strokeStyle='#15251d';ctx.lineWidth=2;ctx.beginPath();if(!scale)ctx.arc(0,0,3.2,0,Math.PI*2);else{ctx.moveTo(0,-7);ctx.lineTo(5,5);ctx.lineTo(0,2);ctx.lineTo(-5,5);ctx.closePath();}ctx.fill();ctx.stroke();ctx.restore();
 }
 // Click-to-walk on both map sizes. Coordinates use the exact transform used by drawMap.
 function walkFromMap(e,canvas,worldView){
  const rect=canvas.getBoundingClientRect();if(!rect.width||!rect.height)return;
  const u=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width)),v=Math.max(0,Math.min(1,(e.clientY-rect.top)/rect.height));
  const extent=worldView?840:minimapExtent;
- const point=worldView?{x:(u-.5)*extent,z:(v-.5)*extent*canvas.height/canvas.width}:minimapDestination(u,v,player.position,player.rotation.y,extent,canvas.width,canvas.height);const {x,z}=point;
- action=null;closeDialog();setWalkDestination(new T.Vector3(x,0,z));if(dest)markClick(x,z,'walk');
+ const point=worldView?{x:(u-.5)*extent,z:(v-.5)*extent*canvas.height/canvas.width}:minimapDestination(u,v,player.position,Math.PI,extent,canvas.width,canvas.height);const {x,z}=point;
+ pendingPickup=null;action=null;closeDialog();setWalkDestination(new T.Vector3(x,0,z));if(dest)markClick(x,z,'walk');
 }
 mapCanvas.title='Click anywhere to walk · MAP button opens world map';mapCanvas.style.cursor='crosshair';
 mapCanvas.addEventListener('click',e=>walkFromMap(e,mapCanvas,false));
@@ -1015,9 +1021,9 @@ function draw(){
   if(item){const icon=document.createElement('span');icon.className='item-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=item.kind==='supply'?goods[item.key].icon+(goods[item.key].stackable?' <small>'+item.count+'</small>':''):item.kind==='jewelry'?jewelryCatalog[item.key].icon:item.kind==='weapon'?iconForWeapon(item.key):item.kind==='shield'?'<svg viewBox="0 0 48 48"><path d="M9 6H39V25L24 43L9 25Z" fill="#8499a5" stroke="#d7bc7a" stroke-width="3"/><circle cx="24" cy="21" r="5" fill="#d7bc7a"/></svg>':item.kind==='armor'?({cape:'<svg viewBox="0 0 48 48"><path d="M15 6L33 6L40 42Q24 35 8 42Z" fill="#873a4b" stroke="#d6b57c" stroke-width="2"/><circle cx="15" cy="7" r="3" fill="#d6b57c"/><circle cx="33" cy="7" r="3" fill="#d6b57c"/></svg>',helm:'<svg viewBox="0 0 48 48"><path d="M10 26V19Q10 5 24 5T38 19V26L33 37H28V25H20V37H15Z" fill="#a9b5bb" stroke="#e4d6a9" stroke-width="2"/><path d="M13 22H35" stroke="#5d6972" stroke-width="4"/></svg>',chest:'<svg viewBox="0 0 48 48"><path d="M14 5L6 14L11 26L16 23V42H32V23L37 26L42 14L34 5L28 10H20Z" fill="#9daeb8" stroke="#d8d5bd" stroke-width="2"/><path d="M16 16L24 22L32 16M24 22V39" stroke="#566a76" stroke-width="3"/></svg>',legs:'<svg viewBox="0 0 48 48"><path d="M12 5H36L33 42H25L24 22L23 42H15Z" fill="#a1adb4" stroke="#e4d6a9" stroke-width="2"/><path d="M13 14H35" stroke="#64717b" stroke-width="4"/></svg>',boots:'<svg viewBox="0 0 48 48"><path d="M9 7H20V29L25 34V41H5V34L9 27ZM28 7H39V29L44 34V41H24V34L28 27Z" fill="#7e8d96" stroke="#c3bfa7" stroke-width="2"/></svg>'})[item.key]:item.kind==='log'?'<svg viewBox="0 0 48 48"><path d="M9 12L33 6L42 14L18 22Z" fill="#ad8050"/><path d="M9 12V32L18 40V22ZM18 22L42 14V33L18 40Z" fill="#765033" stroke="#c59a62" stroke-width="2"/><ellipse cx="18" cy="22" rx="5" ry="7" fill="#e1b980"/><ellipse cx="18" cy="22" rx="2.5" ry="4" fill="none" stroke="#9e6e40"/></svg>':'<svg viewBox="0 0 48 48"><path d="M6 35L13 15L27 8L42 23L36 40H14Z" fill="#84949a" stroke="#c2c5b4" stroke-width="2"/><path d="M13 15L26 24L42 23M26 24L20 38" fill="none" stroke="#586a73" stroke-width="3"/></svg>';d.append(icon);d.setAttribute('aria-label',item.kind==='supply'?goods[item.key].name:item.kind==='jewelry'?jewelryCatalog[item.key].name:item.kind==='weapon'?weaponCatalog[item.key].name:item.kind==='shield'?shieldCatalog[item.key].name:item.kind==='armor'?armorCatalog[item.key].name:item.kind==='log'?'Log':'Ore');
    d.title=(item.kind==='armor'||item.kind==='weapon')?'Click to equip • Right-click for options':'Right-click for options';
    d.onclick=()=>{if(item.kind==='supply'){if(goods[item.key].heal>0){void window.eldervaleRealm?.command('consume',{item:item.key});return}say(item.key==='fishingPole'?'Carry the pole and bait, then click a shoreline fishing spot.':goods[item.key].name+' ×'+state[item.key]);return}if(item.kind==='jewelry')equipJewelry(item.key);else if(item.kind==='armor')toggleArmor(item.key);else if(item.kind==='weapon')equipWeapon(item.key);else if(item.kind==='shield')equipShield(item.key)};
-   d.oncontextmenu=e=>{e.preventDefault();showMenu(e.clientX,e.clientY,item.kind==='jewelry'?[['Equip '+jewelryCatalog[item.key].name,()=>equipJewelry(item.key)],['Examine',()=>say(jewelryCatalog[item.key].description)]]:item.kind==='weapon'? [['Equip '+weaponCatalog[item.key].name,()=>equipWeapon(item.key)],['Examine',()=>say(weaponCatalog[item.key].desc)]]:item.kind==='shield'?[['Equip '+shieldCatalog[item.key].name,()=>equipShield(item.key)],['Examine',()=>say(shieldCatalog[item.key].desc)]]:item.kind==='armor'?
+   d.oncontextmenu=e=>{e.preventDefault();const itemId=item.kind==='weapon'?'weapon:'+item.key:item.kind==='armor'?'armor:'+item.key:item.kind==='shield'?'shield:'+item.key:item.kind==='jewelry'?'jewelry:'+item.key:item.kind==='supply'?item.key:item.kind==='log'?'wood':'ore';const choices=item.kind==='jewelry'?[['Equip '+jewelryCatalog[item.key].name,()=>equipJewelry(item.key)],['Examine',()=>say(jewelryCatalog[item.key].description)]]:item.kind==='weapon'? [['Equip '+weaponCatalog[item.key].name,()=>equipWeapon(item.key)],['Examine',()=>say(weaponCatalog[item.key].desc)]]:item.kind==='shield'?[['Equip '+shieldCatalog[item.key].name,()=>equipShield(item.key)],['Examine',()=>say(shieldCatalog[item.key].desc)]]:item.kind==='armor'?
     [['Equip '+armorCatalog[item.key].name,()=>toggleArmor(item.key)],['Examine',()=>examine(item.key)]]:
-    [['Examine',()=>say(item.kind==='supply'?goods[item.key].name+(item.key==='bait'?' — stackable bait consumed by fishing.':item.key==='fishingPole'?' — carry this pole and bait to fish.':' — sell your catch to a merchant.'):item.kind==='log'?'Freshly cut logs.':'Unrefined ore.')]])};
+    [['Examine',()=>say(item.kind==='supply'?goods[item.key].name+(item.key==='bait'?' — stackable bait consumed by fishing.':item.key==='fishingPole'?' — carry this pole and bait to fish.':' — sell your catch to a merchant.'):item.kind==='log'?'Freshly cut logs.':'Unrefined ore.')]];choices.push(['Drop',()=>requestDrop(state,itemId)]);showMenu(e.clientX,e.clientY,choices)};
   }else{d.disabled=true}inventory.append(d);
  }
  for(const slot of ['amulet','trinket']){const current=jewelryCatalog[state[slot]],button=document.createElement('button');button.className='equip-slot';const name=slot==='amulet'?'Amulet':'Trinket (ring)';button.setAttribute('aria-label',name+': '+(current?.name||'Empty'));button.innerHTML='<span class="item-icon">'+(slot==='amulet'?'📿':'💍')+'</span><span class="equip-caption">'+name+'</span>';button.title=current?current.name+' — '+current.description:'Choose jewelry · starter pieces are in the armory chest';button.onclick=e=>{const choices=state.jewelryOwned.filter(k=>jewelryCatalog[k].slot===slot).map(k=>['Equip '+jewelryCatalog[k].name,()=>equipJewelry(k)]);if(current)choices.unshift(['Remove '+current.name,()=>equipJewelry(state[slot])]);if(choices.length)showMenu(e.clientX,e.clientY,choices);else say('Collect starter jewelry from the armory chest.')};equipment.append(button)}
@@ -1057,8 +1063,10 @@ renderer.domElement.addEventListener('pointermove',e=>{if(!down)return;const dx=
 renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;if(drag)return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(targets.filter(t=>{let o=t;while(o){if(!o.visible)return false;o=o.parent}return true}),false);const point=new T.Vector3();const groundHit=ray.intersectObjects(walkSurfaces,false)[0];const hitGround=groundHit?point.copy(groundHit.point):null;
 if(window.eldervaleBuilderClick?.({point:hitGround?{x:point.x,z:point.z}:null,entityId:hits[0]?.object.userData.worldEntityId||hits[0]?.object.userData.mob?.realmId||hits[0]?.object.userData.profile?.realmId,button:e.button}))return;
 if(hits[0]?.object.userData.kind==='worldObject'){say('World decoration');return}
+if(hits[0]?.object.userData.kind==='groundDrop'){const d=hits[0].object.userData;const take=()=>{pendingPickup={...d};action=null;setWalkDestination(new T.Vector3(d.x,0,d.z));};if(e.button===2)showMenu(e.clientX,e.clientY,[['Take '+d.name+' ×'+d.amount,take],['Cancel',()=>{}]]);else take();return}
+pendingPickup=null;
 if(hits[0]?.object.userData.kind==='worldItem'){window.eldervaleWorldPickup?.(hits[0].object.userData.worldEntityId);return}
-if(hits[0]?.object.userData.kind==='player'){const other=remotePlayers.get(hits[0].object.userData.playerId);if(other&&e.button===2){const row=document.createElement('span');row.className='player-menu-heading';row.innerHTML=crossedSwords;row.append(document.createTextNode(other.combatLevel+' '+other.username));showMenu(e.clientX,e.clientY,[[row,()=>say(other.username+' · Combat level '+other.combatLevel)],['Cancel',()=>{}]])}return}
+if(hits[0]?.object.userData.kind==='player'){const other=remotePlayers.get(hits[0].object.userData.playerId);if(other&&e.button===2){const row=document.createElement('span');row.className='player-menu-heading';row.innerHTML=crossedSwords;row.append(document.createTextNode(other.combatLevel+' '+other.username));showMenu(e.clientX,e.clientY,[[row,()=>say(other.username+' · Combat level '+other.combatLevel)],['Trade with '+other.username,()=>tradePanel.request(hits[0].object.userData.playerId)],['Cancel',()=>{}]])}return}
 if(e.button===2){
  const choices=[];
  if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='altar'?'Pray at altar':a.kind==='hearth'?'Cook and eat fish':a.kind==='castleGate'?'Open / close great gate':a.kind==='fishing'?'Fish here':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.type==='bank'?'Use bank':a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):a.kind==='castleGate'?new T.Vector3(a.x,0,a.z+(player.position.z>a.z?4:-4)):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' · Combat '+(a.mob.config?.level||1)+' · '+Math.max(0,a.mob.hp)+' / '+a.mob.maxHp+' HP':a.kind==='npc'?a.profile.name+' — '+a.profile.role+' · Combat '+a.profile.level+' · '+a.profile.hp+' / '+(a.profile.maxHp||a.profile.hp)+' HP':a.kind==='merchant'?'Traveling merchant · Combat 5 · 45 / 45 HP. Buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':(Date.parse(a.availableAt)>(window.eldervaleServerTime?.()||Date.now())?'This '+a.kind+' is recovering.':'A harvestable '+a.kind+'.'))])}
@@ -1129,7 +1137,7 @@ if(!window.eldervaleAuthority&&combatTurns.target){const target=combatTurns.targ
 for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;marker.group.scale.setScalar(.75+t*.95);marker.ring.material.opacity=Math.max(0,1-t);marker.dot.material.opacity=Math.max(0,1-t);if(t>=1){scene.remove(marker.group);marker.ring.geometry.dispose();marker.ring.material.dispose();marker.dot.geometry.dispose();marker.dot.material.dispose();markers.splice(markers.indexOf(marker),1)}}
 ensureTownResidents();
 for(const npc of npcs){
- npc.root.visible=!npc.deleted&&npc.root.position.distanceToSquared(player.position)<85*85;
+ npc.root.visible=npc.alive!==false&&!npc.deleted&&npc.root.position.distanceToSquared(player.position)<85*85;
  if(!npc.root.visible||npc.deleted)continue;if(window.eldervaleAuthority){const before=npc.root.position.clone();interpolateRealm(npc,dt);const distance=npc.root.position.distanceTo(before);npc.previewAttack=Math.max(0,(npc.previewAttack||0)-dt);npc.blockAnim=Math.max(0,(npc.blockAnim||0)-dt);npc.animator.update(dt,{distance,speed:distance/dt,attack:npc.previewAttack,block:npc.blockAnim||0,locomotion:npc.previewAttack>0?'combat':'walk',weapon:npc.profile.weapon,armed:!!npc.root.userData.armed});npc.attackEffect?.update(npc.previewAttack);if(!npc.previewAttack)animateTownActivity(npc.rig,npc.profile.activity,performance.now()*.001+npc.phase,distance>.001);continue}
  if(npc.workProp)npc.workProp.visible=conversation?.profile!==npc.profile;
  if(conversation?.profile===npc.profile){faceTarget(npc.root,player.position);npc.animator.update(dt,{armed:!!npc.root.userData.armed});continue}
@@ -1185,7 +1193,7 @@ for(const other of remotePlayers.values()){
  const distance=before.distanceTo(other.root.position);
  other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.animator.update(dt,{locomotion:other.running?'run':other.attackAnim>0||other.blockAnim>0?'combat':'walk',style:other.attackStyle,attack:other.attackAnim,block:other.blockAnim,distance,speed:distance/Math.max(dt,.001)});other.animator.visual.position.y=0;groundFeet(other.animator.rig,other.animator.visual);
 }
-cameraFocus||=player.position.clone();if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;stabilizeSun(T,sun,focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}texture('water',0x577f83).offset.y=performance.now()*.000012;for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);hitNumbers.update(elapsed);const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
+cameraFocus||=player.position.clone();if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;stabilizeSun(T,sun,focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}texture('water',0x577f83).offset.y=performance.now()*.000012;for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 drapeRoads();draw();say('Welcome to Eldervale!');frame();
 
 // World editor rendering bridge. Authority and durable writes live in Postgres RPCs.
@@ -1204,13 +1212,13 @@ window.eldervaleWorldBridge={
    const radius=d.roam||0,profile={...config,worldEntityId:row.id,x:d.x,z:d.z,name:d.name||base.name,color:config.color||0x8d7259,lines:(d.dialogue||base.dialogue).split('\n'),behavior:radius?'patrol':'stationary',patrol:[[d.x-radius,d.z],[d.x,d.z+radius],[d.x+radius,d.z],[d.x,d.z-radius]]};actor=spawnNPC(profile,npcs.length);actor.attackEffect=serviceAttackEffect(T,actor.rig,config.attackType);root=actor.root;
    if(config.weapon&&!root.userData.armed){attachWeapon(actor.rig,makeWeapon(T,config.weapon),config.weapon);root.userData.armed=true}
   }else if(['cottage','bank','inn','forge'].includes(d.template)){
-   h=house(d.x,d.z,0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stone:!!d.stone});root=h.group;landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
+   h=house(d.x,d.z,0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stone:!!d.stone});h.realmId=row.id;root=h.group;landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
   }else{root=new T.Group();scene.add(root);root.position.set(d.x,landscape.walkHeight(d.x,d.z),d.z);
    if(d.kind==='item'){const item=goods[d.item];if(!item){root.removeFromParent();continue}if(d.item.startsWith('weapon:'))root.add(makeWeapon(T,item.key));else objectModel(T,root,'chest');root.position.y+=.4}
    else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);for(let i=0;i<geometry.attributes.uv.count;i++)geometry.attributes.uv.setXY(i,geometry.attributes.position.getX(i)/3,geometry.attributes.position.getZ(i)/3);const mesh=new T.Mesh(geometry,material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template,d);
    const hit=new T.Mesh(new T.BoxGeometry(d.template==='castle_gate'?9:1.3,d.template==='castle_gate'?7:2,1.3),new T.MeshBasicMaterial({visible:false}));hit.position.y=d.template==='castle_gate'?3.5:1;root.add(hit);hit.userData={kind:d.kind==='item'?'worldItem':d.template==='fishing_spot'?'fishing':d.template==='castle_gate'?'castleGate':d.template==='altar'?'altar':d.template==='hearth'?'hearth':d.template==='market'?'merchant':d.template==='tree'||d.template==='pine'?'tree':d.template==='rock'?'rock':'worldObject',x:d.x,z:d.z};targets.push(hit);
   }
-  if(!h)root.scale.multiplyScalar(d.scale||1);if(actor?.config)root.scale.setScalar(d.scale||1);root.rotation.y=d.yaw*Math.PI/180;root.traverse(o=>{if(targets.includes(o))o.userData.worldEntityId=row.id});root.userData.waterSource=d.template==='fountain';root.userData.lamp=d.template==='lantern';if(root.userData.surface)conformSurface(root);worldInstances.set(row.id,{root,actor,house:h});
+  if(actor)actor.realmId=row.id;if(!h)root.scale.multiplyScalar(d.scale||1);if(actor?.config)root.scale.setScalar(d.scale||1);root.rotation.y=d.yaw*Math.PI/180;root.traverse(o=>{if(targets.includes(o))o.userData.worldEntityId=row.id});root.userData.waterSource=d.template==='fountain';root.userData.lamp=d.template==='lantern';if(root.userData.surface)conformSurface(root);worldInstances.set(row.id,{root,actor,house:h});
  }},
  position:()=>({x:player.position.x,z:player.position.z,yaw:player.rotation.y*180/Math.PI}),
  teleport(x,z){if(window.eldervaleAuthority){say('Use the owner Teleport command.');return}combatTurns.cancel();dest=null;walkQueue=[];action=null;player.position.set(x,landscape.walkHeight(x,z),z);save()},
@@ -1237,7 +1245,7 @@ for(const target of targets){const a=target.userData;if(['tree','rock','chest','
 function realmActor(id){if(id==='base:merchant:-3.0:7.0')return realmMerchant;const custom=worldInstances.get(id)?.actor;return custom||creatures.find(a=>a.realmId===id)||npcs.find(a=>a.realmId===id)}
 function applyRealmActor(row){let actor=realmActor(row.id);if(!actor&&row.id.startsWith('base:npc:')){const p=extraResidents.find(p=>'base:npc:'+p.name===row.id);if(p){actor=spawnNPC({...p,realmId:row.id},npcs.length);spawnedResidents.add(extraResidents.indexOf(p))}}if(!actor)return;actor.serverPose=row;actor.motion||=createMotionTrack();actor.motion.push(realmFrameTime,{x:row.x,z:row.z,yaw:row.yaw,moving:!!row.target});actor.root.visible=row.hp>0;actor.alive=row.hp>0;if(actor.config){actor.hp=row.hp;actor.maxHp=row.data.hp;actor.config={...actor.config,...row.data}}if(actor.profile){actor.profile.level=row.data.level;actor.profile.hp=row.hp;actor.profile.maxHp=row.data.hp;}return actor;}
 window.eldervaleRealmBridge={
- snapshot(data,selfId){realmFrameTime=Date.parse(data.stateTime||data.time);attackStyle=data.motion.attack_style||'slash';
+ snapshot(data,selfId){groundDrops.sync(data.groundDrops||[]);tradePanel.sync(data.trade);npcDuelIds=new Set((data.npcDuels||[]).flatMap(d=>[d.guard,d.monster]));combatPlayerIds=new Set((data.actors||[]).map(a=>a.target).filter(Boolean));realmFrameTime=Date.parse(data.stateTime||data.time);attackStyle=data.motion.attack_style||'slash';
   for(const [id,g]of Object.entries(goods))if(g.custom)state[id]=Number(data.self.stats?.[id])||0;const savedRow=fromPlayerRow(data.self);for(const k of ['gold','wood','ore','fishingPole','bait','rawFish','woodXP','miningXP','armorOwned','weaponsOwned','shieldsOwned','jewelryOwned','bank','attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP','amulet','trinket','starterChestClaimed','starterShieldsGranted','starterBattleaxeGranted','starterDaggerGranted','starterJewelryGranted'])if(savedRow[k]!==undefined)state[k]=savedRow[k];
   const signature=JSON.stringify([state.equipped,state.equippedWeapon,state.equippedShield]),incoming=JSON.stringify([savedRow.equipped,savedRow.equippedWeapon,savedRow.equippedShield]);state.equipped=savedRow.equipped;state.equippedWeapon=savedRow.equippedWeapon;state.equippedShield=savedRow.equippedShield;combat.hp=data.self.health;combat.maxHp=data.self.max_health;combat.xp=data.self.xp;combat.kills=savedRow.kills;state.runEnergy=data.motion.energy;running=data.motion.run;
   if(signature!==incoming){refreshArmor();refreshWeapon();refreshShield()}playerMotion.push(realmFrameTime,{x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0});realmPlayerPose={x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0};if(!realmPlayerPose.moving){dest=null;walkQueue=[];mapDestination=null;}
@@ -1246,10 +1254,10 @@ window.eldervaleRealmBridge={
   for(const object of [...data.objects,...(data.gates||[])]){const gate=worldInstances.get(object.id)?.root;if(gate?.userData.leftGate){gate.userData.gateOpen=object.open;gate.userData.leftGate.rotation.y=object.open?-Math.PI*.48:0;gate.userData.rightGate.rotation.y=object.open?Math.PI*.48:0;}const custom=worldInstances.get(object.id),house=custom?.house||houseInteriors.find(h=>h.realmId===object.id);if(house){house.open=object.open;house.doorPivot.rotation.y=house.open?-Math.PI*.53:0;}const t=realmObjectTargets.get(object.id);if(t)t.userData.availableAt=object.available_at;}
   window.eldervaleShops=data.shops||{};captureSave();draw();services.refresh?.();
  },
- event(e,selfId){const actor=realmActor(e.target),root=actor?.root,isSelf=e.player===selfId,other=remotePlayers.get(e.player);if(e.type==='fishing'){const target=isSelf?player:other?.root;if(target){const rod=new T.Mesh(new T.CylinderGeometry(.018,.035,2.5,7),new T.MeshStandardMaterial({color:0x9a7950}));rod.position.set(-.5,1.8,.8);rod.rotation.x=.6;target.add(rod);setTimeout(()=>{target.remove(rod);rod.geometry.dispose();rod.material.dispose()},1500)}if(isSelf)say('You catch a fish. +25 Fishing XP');return}if(e.type==='preview'){if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}return}if(e.type==='windup'){if(isSelf&&e.side==='player')combatSound(e.style||'slash');if(e.style&&isSelf)attackStyle=e.style;if(e.side==='player'){if(isSelf){combat.attackAnim=.55;combat.blockAnim=0;faceTarget(player,root?.position||player.position)}else if(other){other.attackAnim=.55;other.attackStyle=e.style||'slash';}if(actor)actor.blockAnim=1.1;}else{if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}if(isSelf){combat.attackAnim=0;combat.blockAnim=1.15;}else if(other)other.blockAnim=1.15;}}
+ event(e,selfId){if(e.type==='npc_windup'){const a=realmActor(e.attacker),b=realmActor(e.target);if(a){a.attackAnim=.55;a.previewAttack=.55;}if(b)b.blockAnim=.75;return}if(e.type==='npc_hit'){const a=realmActor(e.target);if(a){hitNumbers.show(a.root,e.damage,e.blocked,3);if(a.root.position.distanceTo(player.position)<20)combatSound(e.blocked?'metal':'impact');}return}const actor=realmActor(e.target),root=actor?.root,isSelf=e.player===selfId,other=remotePlayers.get(e.player);if(e.type==='fishing'){const target=isSelf?player:other?.root;if(target){const rod=new T.Mesh(new T.CylinderGeometry(.018,.035,2.5,7),new T.MeshStandardMaterial({color:0x9a7950}));rod.position.set(-.5,1.8,.8);rod.rotation.x=.6;target.add(rod);setTimeout(()=>{target.remove(rod);rod.geometry.dispose();rod.material.dispose()},1500)}if(isSelf)say('You catch a fish. +25 Fishing XP');return}if(e.type==='preview'){if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}return}if(e.type==='windup'){if(isSelf&&e.side==='player')combatSound(e.style||'slash');if(e.style&&isSelf)attackStyle=e.style;if(e.side==='player'){if(isSelf){combat.attackAnim=.55;combat.blockAnim=0;faceTarget(player,root?.position||player.position)}else if(other){other.attackAnim=.55;other.attackStyle=e.style||'slash';}if(actor)actor.blockAnim=1.1;}else{if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}if(isSelf){combat.attackAnim=0;combat.blockAnim=1.15;}else if(other)other.blockAnim=1.15;}}
   else if(e.type==='hit'){const target=e.side==='player'?root:isSelf?player:other?.root;if(target)hitNumbers.show(target,e.damage,e.blocked,e.side==='player'?1.8:2.8);if(isSelf)combatSound(e.blocked?'metal':'impact');if(actor&&e.side==='player'){actor.hitAnim=e.blocked?0:.3;actor.blockAnim=e.blocked?.65:0;}}
   else if(e.type==='interaction'&&isSelf){const a=targets.find(t=>(t.userData.realmId||t.userData.worldEntityId||t.userData.profile?.realmId)===e.target)?.userData;if(a?.kind==='npc')talkTo(a.profile);else if(a?.kind==='merchant')services.open('shop','Market',e.target);else if(a?.kind==='altar'||a?.kind==='hearth')void window.eldervaleRealm.command(a.kind==='altar'?'pray':'cook',{target:e.target});else if(a?.kind==='fishing')void window.eldervaleRealm.command('fish',{target:e.target});action=null;}
-  else if(e.type==='door'){const h=worldInstances.get(e.target)?.house||houseInteriors.find(h=>h.realmId===e.target);if(h){h.open=e.open;h.doorPivot.rotation.y=e.open?-Math.PI*.53:0;if(isSelf&&h.type==='bank')services.open('bank',h.name)}action=null;}
+  else if(e.type==='door'){const h=worldInstances.get(e.target)?.house||houseInteriors.find(h=>h.realmId===e.target);if(h){h.open=e.open;h.doorPivot.rotation.y=e.open?-Math.PI*.53:0;if(isSelf&&h.type==='bank'&&!navigationAfterDoor)services.open('bank',h.name)}action=null;if(isSelf&&navigationAfterDoor){const goal=navigationAfterDoor;navigationAfterDoor=null;setWalkDestination(goal);}}
   else if(e.type==='notice'&&isSelf)say(e.text);else if(e.type==='death'&&isSelf){say('Defeated '+(actor?.name||'opponent')+'.');action=null;}else if(e.type==='gather'&&isSelf){say('Resource gathered. +25 XP');action=null;}else if(e.type==='player_death'&&isSelf){say('You fell in battle and returned to Oakcross.');action=null;}
  }
 };
@@ -1282,3 +1290,7 @@ for(const [dx,dz,w,l] of [[0,-58.5,126,9],[0,58.5,126,9],[-58.5,0,9,108],[58.5,0
 window.eldervaleCastleCollision=(x,z)=>{for(const row of persistentRows.values()){const d=row.data;if(row.deleted||!['castle_wall','castle_tower','castle_gate'].includes(d.template))continue;const a=d.yaw*Math.PI/180,s=d.scale||1,dx=x-d.x,dz=z-d.z,tx=(dx*Math.cos(a)-dz*Math.sin(a))/s,tz=(dx*Math.sin(a)+dz*Math.cos(a))/s;if(d.template==='castle_tower'){if(tx*tx+tz*tz<25)return true;}else if(Math.abs(tz)<(d.template==='castle_gate'?2.1:1.6)&&Math.abs(tx)<(d.length||24)/2+.3){if(d.template!=='castle_gate'||Math.abs(tx)>4.1||!worldInstances.get(row.id)?.root.userData.gateOpen)return true;}}return false;};
 
 window.eldervaleRemovedActors=ids=>{for(const id of ids){const a=realmActor(id);if(a){a.deleted=true;a.root.visible=false;}}};
+
+window.eldervalePropCollision=(x,z)=>{if(fixedObstacles.some(d=>obstacleBlocks(d,x,z)))return true;for(const row of persistentRows.values())if(!row.deleted&&row.data.kind==='object'&&obstacleBlocks(row.data,x,z))return true;for(const [id,t]of realmObjectTargets)if(id.startsWith('base:')&&['tree','rock'].includes(t.userData.kind)&&obstacleBlocks({template:t.userData.kind,x:t.userData.x,z:t.userData.z},x,z))return true;return false;};
+
+window.eldervaleMapItems=()=>persistentRows.values();
