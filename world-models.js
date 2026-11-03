@@ -1,7 +1,7 @@
-import {creatureMaterial} from './creature-material.js?v=release-20261103-motion15';
-import {dragonModel} from './monster-dragon.js?v=release-20261103-motion15';
-import {castleObject} from './castle-models.js?v=release-20261103-motion15';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261103-motion15';
+import {creatureMaterial} from './creature-material.js?v=release-20261103-stream16';
+import {dragonModel} from './monster-dragon.js?v=release-20261103-stream16';
+import {castleObject} from './castle-models.js?v=release-20261103-stream16';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261103-stream16';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);

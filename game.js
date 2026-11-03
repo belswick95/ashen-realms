@@ -1,54 +1,54 @@
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261103-motion15';
-import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261103-motion15';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261103-motion15';
-import {buildNaturalForest,updateNaturalForest} from './natural-forest.js?v=release-20261103-motion15';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261103-motion15';
-import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261103-motion15';
-import {createRegionStreamer} from './region-streamer.js?v=release-20261103-motion15';
-import {searchRoute} from './route-search.js?v=release-20261103-motion15';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261103-motion15';
-import {actorMenuLabel} from './context-label.js?v=release-20261103-motion15';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261103-motion15';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-motion15';
-import {createGroundDrops} from './ground-drops.js?v=release-20261103-motion15';
-import {createCombatHealth} from './combat-health.js?v=release-20261103-motion15';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-motion15';
-import {castle,inCastle} from './castle-layout.js?v=release-20261103-motion15';
-import {createMotionTrack} from './motion-track.js?v=release-20261103-motion15';
-import {lightingAt} from './world-lighting.js?v=release-20261103-motion15';
-import {sculptPatches} from './terrain-patches.js?v=release-20261103-motion15';
-import {fromPlayerRow} from './player-save.js?v=release-20261103-motion15';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-motion15';
-import {worldTemplates} from './world-templates.js?v=release-20261103-motion15';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-motion15';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-motion15';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-motion15';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-motion15';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-motion15';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-motion15';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-motion15';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-motion15';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-motion15';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-motion15';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-motion15';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-motion15';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-motion15';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-motion15';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-motion15';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-motion15';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-motion15';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261103-stream16';
+import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261103-stream16';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261103-stream16';
+import {buildNaturalForest,updateNaturalForest} from './natural-forest.js?v=release-20261103-stream16';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261103-stream16';
+import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261103-stream16';
+import {createRegionStreamer} from './region-streamer.js?v=release-20261103-stream16';
+import {searchRoute} from './route-search.js?v=release-20261103-stream16';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261103-stream16';
+import {actorMenuLabel} from './context-label.js?v=release-20261103-stream16';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261103-stream16';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-stream16';
+import {createGroundDrops} from './ground-drops.js?v=release-20261103-stream16';
+import {createCombatHealth} from './combat-health.js?v=release-20261103-stream16';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-stream16';
+import {castle,inCastle} from './castle-layout.js?v=release-20261103-stream16';
+import {createMotionTrack} from './motion-track.js?v=release-20261103-stream16';
+import {lightingAt} from './world-lighting.js?v=release-20261103-stream16';
+import {sculptPatches} from './terrain-patches.js?v=release-20261103-stream16';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-stream16';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-stream16';
+import {worldTemplates} from './world-templates.js?v=release-20261103-stream16';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-stream16';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-stream16';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-stream16';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-stream16';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-stream16';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-stream16';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-stream16';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-stream16';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-stream16';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-stream16';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-stream16';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-stream16';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-stream16';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-stream16';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-stream16';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-stream16';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-stream16';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-motion15';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-motion15';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-motion15';
-import {buildForest} from './forest.js?v=release-20261103-motion15';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-motion15';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-motion15';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-stream16';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-stream16';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-stream16';
+import {buildForest} from './forest.js?v=release-20261103-stream16';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-stream16';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-stream16';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-motion15';
-import {createCape} from './cape.js?v=release-20261103-motion15';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-motion15';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-motion15';
+import {buildPlateArmor} from './armor.js?v=release-20261103-stream16';
+import {createCape} from './cape.js?v=release-20261103-stream16';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-stream16';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-stream16';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -532,7 +532,7 @@ window.eldervaleUpdatePlayers=entries=>{
  const cosmetics=publicCharacter(entry.appearance,entry.loadout),signature=JSON.stringify(cosmetics);
  if(signature!==other.signature){other.animator.dispose();other.animator=buildCharacterDisplay(T,other.root,cosmetics.appearance,cosmetics.loadout);other.signature=signature}
  other.username=String(entry.username||'Adventurer').slice(0,24);other.combatLevel=Math.max(1,Math.min(100,Math.floor(entry.combatLevel||1)));other.tag.textContent='Lv '+other.combatLevel+' · '+other.username;
- other.motion||=createMotionTrack();other.motion.push(realmFrameTime||Date.now(),{x:entry.x,z:entry.z,yaw:entry.yaw||0,moving:true});other.running=entry.run===true;other.target.set(entry.x,0,entry.z);other.yaw=Number.isFinite(entry.yaw)?entry.yaw:0;
+ other.motion||=createMotionTrack({delay:650});other.motion.push(realmFrameTime||Date.now(),{x:entry.x,z:entry.z,yaw:entry.yaw||0,moving:true});other.running=entry.run===true;other.target.set(entry.x,0,entry.z);other.yaw=Number.isFinite(entry.yaw)?entry.yaw:0;
  // Treat long jumps as teleports rather than animating across the whole map.
  if(other.root.position.distanceToSquared(other.target)>400)other.root.position.copy(other.target);
  }
@@ -1031,7 +1031,7 @@ function save(){captureSave();window.eldervaleSave?.()}
 document.querySelector('#reset').onclick=()=>window.eldervaleReset?.();
 let dest=null,action=null,yaw=Math.PI,pitch=.24,zoom=10,drag=false,down=null,lastCameraDrag=0,rightSteering=false,dragDistance=0;const cameraWallRay=new T.Raycaster(),ray=new T.Raycaster(),pointer=new T.Vector2();
 installTouchGestures(renderer.domElement,{onPinch:ratio=>{zoom=T.MathUtils.clamp(zoom*ratio,4,28);drag=true;down=null},onHold:p=>renderer.domElement.dispatchEvent(new PointerEvent('pointerup',{clientX:p.x,clientY:p.y,button:2,pointerType:'touch',bubbles:true}))});
-const mmoControls=installMMOControls({element:renderer.domElement,getYaw:()=>player.rotation.y,getCameraYaw:()=>yaw,isRightMouse:()=>rightSteering,isBlocked:()=>document.hidden||document.body.classList.contains('landscape-required')||document.body.classList.contains('area-loading')||!document.querySelector('#dialog').hidden||!!document.querySelector('dialog[open]')||!!document.activeElement?.closest('input,textarea,select,[contenteditable=true]'),onInput:input=>{navigationGeneration++;routeController?.abort();routePending=false;dest=null;walkQueue=[];action=null;if(window.eldervaleAuthority)window.eldervaleRealm?.steer(input);},onJump:()=>{if(window.eldervaleAuthority)void window.eldervaleRealm?.command('jump');else localJumpAt=new Date().toISOString()},onSprint:enabled=>{if(window.eldervaleAuthority)void window.eldervaleRealm?.command('run',{enabled});else running=enabled}});
+const mmoControls=installMMOControls({element:renderer.domElement,getYaw:()=>player.rotation.y,getCameraYaw:()=>yaw,isRightMouse:()=>rightSteering,isBlocked:()=>window.eldervaleWorldLoading===true||document.hidden||document.body.classList.contains('landscape-required')||document.body.classList.contains('area-loading')||!document.querySelector('#dialog').hidden||!!document.querySelector('dialog[open]')||!!document.activeElement?.closest('input,textarea,select,[contenteditable=true]'),onInput:input=>{navigationGeneration++;routeController?.abort();routePending=false;dest=null;walkQueue=[];action=null;if(window.eldervaleAuthority)window.eldervaleRealm?.steer(input);},onJump:()=>{if(window.eldervaleAuthority)void window.eldervaleRealm?.command('jump');else localJumpAt=new Date().toISOString()},onSprint:enabled=>{if(window.eldervaleAuthority)void window.eldervaleRealm?.command('run',{enabled});else running=enabled}});
 let localJumpAt=null;
 renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
 renderer.domElement.addEventListener('pointerdown',e=>{if(e.button!==0&&e.button!==2)return;responsiveLayout.collapse();down=[e.clientX,e.clientY];rightSteering=e.button===2;drag=false;dragDistance=0;renderer.domElement.setPointerCapture(e.pointerId)});
@@ -1170,7 +1170,7 @@ for(const other of remotePlayers.values()){
  const before=other.root.position.clone();
  if(window.eldervaleAuthority&&other.motion){const sample=other.motion.sample();if(sample){other.root.position.x=sample.x;other.root.position.z=sample.z;other.root.rotation.y=sample.yaw}}else other.root.position.lerp(other.target,1-Math.exp(-12*dt));other.root.position.y=landscape.walkHeight(other.root.position.x,other.root.position.z)+jumpHeight(other.jumpAt,window.eldervaleServerTime?.()||Date.now());
  const delta=Math.atan2(Math.sin(other.yaw-other.root.rotation.y),Math.cos(other.yaw-other.root.rotation.y));
- other.root.rotation.y+=delta*(1-Math.exp(-12*dt));
+ if(!window.eldervaleAuthority)other.root.rotation.y+=delta*(1-Math.exp(-12*dt));
  const distance=before.distanceTo(other.root.position);
  other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.animator.update(dt,{locomotion:other.running?'run':other.attackAnim>0||other.blockAnim>0?'combat':'walk',style:other.attackStyle,attack:other.attackAnim,block:other.blockAnim,distance,speed:distance/Math.max(dt,.001)});other.animator.visual.position.y=0;groundFeet(other.animator.rig,other.animator.visual);
 }
@@ -1216,7 +1216,7 @@ const persistentRows=new Map(),applyNearby=window.eldervaleWorldBridge.apply;let
 const regionStreamer=createRegionStreamer({rows:persistentRows,loaded:worldInstances,position:()=>player.position,
  apply:row=>{applyNearby([row]);const entry=worldInstances.get(row.id);if(entry?.house)entry.root.visible=entry.root.position.distanceToSquared(player.position)<155*155;const target=targets.find(t=>t.userData.worldEntityId===row.id);if(target)realmObjectTargets.set(row.id,target);const pose=realmActorCache.get(row.id);if(pose)applyRealmActor(pose);const object=realmObjectState.get(row.id);if(object)applyRealmObject(object);},
  remove:removeWorldEntity,canRemove:id=>{const e=worldInstances.get(id);return !e||!e.actor||combatTurns.target!==e.actor&&(!conversation||conversation.profile!==e.actor.profile)},
- onProgress:({pending,done,total,error})=>{if(pending){if(!regionTicket){regionTicket=areaLoading.begin('Loading nearby area…');regionResume=!realmInCombat&&!routePending&&mapDestination?{goal:mapDestination.clone(),generation:navigationGeneration}:null;if(regionResume)void window.eldervaleRealm?.command('stop');}regionTicket.progress(done,total,'Preparing buildings, scenery and residents…');}else if(regionTicket&&!error){regionTicket.end();regionTicket=null;const resume=regionResume;regionResume=null;if(resume&&resume.generation===navigationGeneration&&!routePending)void setWalkDestination(resume.goal);}},
+ onProgress:({pending,done,total,error})=>{if(!document.querySelector('#auth-screen').hidden)document.querySelector('#auth-status').textContent=pending?'Loading nearby world… '+done+' / '+total:'Preparing controls…';if(pending){if(!regionTicket){regionTicket=areaLoading.begin('Loading nearby area…');regionResume=!realmInCombat&&!routePending&&mapDestination?{goal:mapDestination.clone(),generation:navigationGeneration}:null;if(regionResume)void window.eldervaleRealm?.command('stop');}regionTicket.progress(done,total,'Preparing buildings, scenery and residents…');}else if(regionTicket&&!error){regionTicket.end();regionTicket=null;const resume=regionResume;regionResume=null;if(resume&&resume.generation===navigationGeneration&&!routePending)void setWalkDestination(resume.goal);}},
  onError:error=>{console.warn('Area loading:',error);regionTicket?.fail('This area could not be loaded. Reload to reconnect.',()=>location.reload());}
 });window.eldervaleRegionStreamer=regionStreamer;
 window.eldervaleWorldBridge.apply=rows=>regionStreamer.upsert(rows);
@@ -1230,7 +1230,7 @@ creatures.forEach((m,i)=>m.realmId='base:creature:'+i);
 houseInteriors.forEach((h,i)=>h.realmId='base:door:'+i);
 for(const target of targets){const a=target.userData;if(['tree','rock','chest','merchant'].includes(a.kind)&&(!generatedWorld||!['chest','merchant'].includes(a.kind)))a.realmId=baseRealmId(a.kind,a.x,a.z);else if(a.kind==='door')a.realmId=a.house.realmId;else if(a.kind==='npc')a.realmId=a.profile.realmId;else if(a.kind==='creature')a.realmId=a.mob.realmId;if(a.realmId)realmObjectTargets.set(a.realmId,target);}
 function realmActor(id){if(id==='base:merchant:-3.0:7.0')return realmMerchant;const custom=worldInstances.get(id)?.actor;return custom||creatures.find(a=>a.realmId===id)||npcs.find(a=>a.realmId===id)}
-function applyRealmActor(row){let actor=realmActor(row.id);if(!actor&&row.id.startsWith('base:npc:')){const p=extraResidents.find(p=>'base:npc:'+p.name===row.id);if(p){actor=spawnNPC({...p,realmId:row.id},npcs.length);spawnedResidents.add(extraResidents.indexOf(p))}}if(!actor)return;actor.serverPose=row;actor.motion||=createMotionTrack();actor.motion.push(realmFrameTime,{x:row.x,z:row.z,yaw:row.yaw,moving:!!row.target});actor.root.visible=row.hp>0;actor.alive=row.hp>0;if(actor.config){actor.hp=row.hp;actor.maxHp=row.data.hp;actor.config={...actor.config,...row.data}}if(actor.profile){actor.profile.level=row.data.level;actor.profile.hp=row.hp;actor.profile.maxHp=row.data.hp;}return actor;}
+function applyRealmActor(row){let actor=realmActor(row.id);if(!actor&&row.id.startsWith('base:npc:')){const p=extraResidents.find(p=>'base:npc:'+p.name===row.id);if(p){actor=spawnNPC({...p,realmId:row.id},npcs.length);spawnedResidents.add(extraResidents.indexOf(p))}}if(!actor)return;actor.serverPose=row;actor.motion||=createMotionTrack({delay:650});actor.motion.push(realmFrameTime,{x:row.x,z:row.z,yaw:row.yaw,moving:!!row.target});actor.root.visible=row.hp>0;actor.alive=row.hp>0;if(actor.config){actor.hp=row.hp;actor.maxHp=row.data.hp;actor.config={...actor.config,...row.data}}if(actor.profile){actor.profile.level=row.data.level;actor.profile.hp=row.hp;actor.profile.maxHp=row.data.hp;}return actor;}
 function applyRealmObject(object){const gate=worldInstances.get(object.id)?.root;if(gate?.userData.leftGate){gate.userData.gateOpen=object.open;gate.userData.leftGate.rotation.y=object.open?-Math.PI*.48:0;gate.userData.rightGate.rotation.y=object.open?Math.PI*.48:0;}const custom=worldInstances.get(object.id),house=custom?.house||houseInteriors.find(h=>h.realmId===object.id);if(house){house.open=object.open;house.doorPivot.rotation.y=house.open?-Math.PI*.53:0;}const t=realmObjectTargets.get(object.id);if(t)t.userData.availableAt=object.available_at;}
 window.eldervaleRealmBridge={
  snapshot(data,selfId){lastMovementAck=performance.now();localJumpAt=data.motion.jump_at;groundDrops.sync(data.groundDrops||[]);tradePanel.sync(data.trade);npcDuelIds=new Set((data.npcDuels||[]).flatMap(d=>[d.guard,d.monster]));combatPlayerIds=new Set((data.actors||[]).map(a=>a.target).filter(Boolean));realmFrameTime=Date.parse(data.stateTime||data.time);attackStyle=data.motion.attack_style||'slash';
