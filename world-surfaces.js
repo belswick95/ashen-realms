@@ -3,7 +3,7 @@ export const isBuilding=d=>['cottage','bank','inn','forge'].includes(d?.template
 export function localPoint(d,x,z){const a=(d.yaw||0)*Math.PI/180,c=Math.cos(a),s=Math.sin(a),dx=x-d.x,dz=z-d.z;return [dx*c-dz*s,dx*s+dz*c]}
 export function coversSurface(d,x,z,pad=0){
  const [u,v]=localPoint(d,x,z),scale=d.scale||1;
- if(isBuilding(d))return Math.abs(u)<2.2*1.3*scale+pad&&Math.abs(v)<2.1*1.3*scale+pad;
+ if(isBuilding(d))return Math.abs(u)<2.55*1.3*scale+pad&&Math.abs(v)<2.4*1.3*scale+pad;
  if(d.template==='road')return Math.abs(u)<(d.width||2.5)*scale/2+pad&&Math.abs(v)<(d.length||10)*scale/2+pad;
  if(d.template==='plaza'||d.template?.startsWith('terrain_'))return Math.hypot(u,v)<(d.template==='plaza'?8:d.radius||10)*scale+pad;
  return false;

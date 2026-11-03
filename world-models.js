@@ -1,7 +1,8 @@
-import {creatureMaterial} from './creature-material.js?v=release-20261103-keyboard24';
-import {dragonModel} from './monster-dragon.js?v=release-20261103-keyboard24';
-import {castleObject} from './castle-models.js?v=release-20261103-keyboard24';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261103-keyboard24';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261103-scenery25';
+import {creatureMaterial} from './creature-material.js?v=release-20261103-scenery25';
+import {dragonModel} from './monster-dragon.js?v=release-20261103-scenery25';
+import {castleObject} from './castle-models.js?v=release-20261103-scenery25';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261103-scenery25';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);
@@ -60,8 +61,15 @@ export function objectModel(T,parent,id,d={}){
  if(id.startsWith('castle_')||['altar','hearth'].includes(id)){castleObject(T,g,id,d);Object.assign(parent.userData,g.userData);return g;}
  const box=(x,y,z,w,h,l,c)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,l),new T.MeshStandardMaterial({color:c,roughness:.9}));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m};
  const cyl=(x,y,z,r,h,c,r2=r)=>{const m=new T.Mesh(new T.CylinderGeometry(r2,r,h,12),new T.MeshStandardMaterial({color:c,roughness:.9}));m.position.set(x,y,z);g.add(m);return m};
- if(id==='fountain'){cyl(0,.35,0,1.9,.7,stone);cyl(0,.72,0,1.65,.04,0x659bb7);cyl(0,1.5,0,.24,1.8,stone);cyl(0,2.3,0,.65,.25,stone);const streams=[],water=new T.MeshStandardMaterial({color:0x6b9da9,roughness:.22,metalness:.08,transparent:true,opacity:.65});for(let i=0;i<8;i++){const a=i*Math.PI/4,curve=new T.QuadraticBezierCurve3(new T.Vector3(Math.cos(a)*.52,2.36,Math.sin(a)*.52),new T.Vector3(Math.cos(a)*1.3,2.6,Math.sin(a)*1.3),new T.Vector3(Math.cos(a)*1.45,.76,Math.sin(a)*1.45));const stream=new T.Mesh(new T.TubeGeometry(curve,16,.016,5,false),water);g.add(stream);const drop=new T.Mesh(new T.SphereGeometry(.026,6,5),water);drop.scale.set(.7,1.8,.7);g.add(drop);streams.push({curve,drop,phase:i/8})}parent.userData.animateWater=time=>{for(const s of streams)s.drop.position.copy(s.curve.getPoint((time*.65+s.phase)%1))};}else if(id==='fishing_spot'){cyl(0,.06,0,.7,.08,0x4b8ca3);box(0,.65,0,.06,1.3,.06,wood);box(.3,1.1,0,.6,.35,.05,0x4f8798)}else if(['tree','pine'].includes(id)){cyl(0,1.4,0,.22,2.8,wood);for(let i=0;i<3;i++)cyl(0,2.5+i*.6,0,1.5-i*.3,1.8,0x486641,id==='pine'?0:.8-i*.2)}
- else if(id==='rock'){const m=new T.Mesh(new T.DodecahedronGeometry(.9),new T.MeshStandardMaterial({color:stone,flatShading:true}));m.position.y=.65;g.add(m)}
+ if(id==='fountain'){cyl(0,.35,0,1.9,.7,stone);cyl(0,.72,0,1.65,.04,0x659bb7);cyl(0,1.5,0,.24,1.8,stone);cyl(0,2.3,0,.65,.25,stone);const streams=[],water=new T.MeshStandardMaterial({color:0x6b9da9,roughness:.22,metalness:.08,transparent:true,opacity:.65});for(let i=0;i<8;i++){const a=i*Math.PI/4,curve=new T.QuadraticBezierCurve3(new T.Vector3(Math.cos(a)*.52,2.36,Math.sin(a)*.52),new T.Vector3(Math.cos(a)*1.3,2.6,Math.sin(a)*1.3),new T.Vector3(Math.cos(a)*1.45,.76,Math.sin(a)*1.45));const stream=new T.Mesh(new T.TubeGeometry(curve,16,.016,5,false),water);g.add(stream);const drop=new T.Mesh(new T.SphereGeometry(.026,6,5),water);drop.scale.set(.7,1.8,.7);g.add(drop);streams.push({curve,drop,phase:i/8})}parent.userData.animateWater=time=>{for(const s of streams)s.drop.position.copy(s.curve.getPoint((time*.65+s.phase)%1))};}else if(id==='fishing_spot'){cyl(0,.06,0,.7,.08,0x4b8ca3);box(0,.65,0,.06,1.3,.06,wood);box(.3,1.1,0,.6,.35,.05,0x4f8798)}else if(['tree','pine'].includes(id)){buildNaturalForest(T,g,[{x:0,z:0}],{wood:creatureMaterial(T,0x75583e,'hide'),heightAt:()=>0,seed:(Math.floor((d.x||0)*137)^Math.floor((d.z||0)*317)^2419)>>>0,species:id==='pine'?'pine':'oak'});}
+
+ else if(id==='rock'){
+  const rockMat=creatureMaterial(T,d.rockColor||0x92978a,'stone'),geo=new T.IcosahedronGeometry(1,2),positions=geo.attributes.position;
+  for(let i=0;i<positions.count;i++){const x=positions.getX(i),y=positions.getY(i),z=positions.getZ(i),grain=Math.sin(x*12.7+y*7.1+z*9.3)*.07+Math.sin(z*15.9-x*4.1)*.035;positions.setXYZ(i,x*(1+grain),Math.max(-.70,y*(.78+grain)),z*(.88+grain));}geo.computeVertexNormals();
+  const main=new T.Mesh(geo,rockMat);main.position.y=.55;main.castShadow=main.receiveShadow=true;g.add(main);
+  for(let i=0;i<3;i++){const chip=new T.Mesh(new T.IcosahedronGeometry(.22+i*.035,1),rockMat);chip.position.set(Math.sin(i*2.4)*.9,.10,Math.cos(i*2.4)*.72);chip.scale.set(1.2,.55,1);if(d.groundHeight&&Number.isFinite(d.x)&&Number.isFinite(d.z)){const a=(d.yaw||0)*Math.PI/180,s=d.scale||1,x=d.x+s*(chip.position.x*Math.cos(a)+chip.position.z*Math.sin(a)),z=d.z+s*(-chip.position.x*Math.sin(a)+chip.position.z*Math.cos(a));chip.position.y+=(d.groundHeight(x,z)-d.groundHeight(d.x,d.z))/s;}chip.castShadow=chip.receiveShadow=true;g.add(chip)}
+ }
+
  else if(id==='barrel'){cyl(0,.5,0,.4,1,wood);for(const y of [.16,.83])cyl(0,y,0,.41,.08,metal)}
  else if(id==='well'){cyl(0,.45,0,1,.9,stone);cyl(0,.91,0,.75,.025,0x436878);for(const x of [-1,1])box(x,1.4,0,.12,2.8,.12,wood);box(0,2.8,0,2.5,.2,1.8,wood)}
  else if(id==='bench'){box(0,.65,0,2,.16,.6,wood);box(0,1.05,-.25,2,.4,.1,wood);for(const x of [-.75,.75])box(x,.3,0,.15,.6,.4,wood)}

@@ -1,57 +1,58 @@
-import {createWaterSystem} from './water-rendering.js?v=release-20261103-keyboard24';
-import {fishingDock} from './waterfront.js?v=release-20261103-keyboard24';
-import {isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261103-keyboard24';
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261103-keyboard24';
-import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261103-keyboard24';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261103-keyboard24';
-import {buildNaturalForest,updateNaturalForest} from './natural-forest.js?v=release-20261103-keyboard24';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261103-keyboard24';
-import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261103-keyboard24';
-import {createRegionStreamer} from './region-streamer.js?v=release-20261103-keyboard24';
-import {searchRoute} from './route-search.js?v=release-20261103-keyboard24';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261103-keyboard24';
-import {actorMenuLabel} from './context-label.js?v=release-20261103-keyboard24';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261103-keyboard24';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-keyboard24';
-import {createGroundDrops} from './ground-drops.js?v=release-20261103-keyboard24';
-import {createCombatHealth} from './combat-health.js?v=release-20261103-keyboard24';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-keyboard24';
-import {castle,inCastle} from './castle-layout.js?v=release-20261103-keyboard24';
-import {createMotionTrack} from './motion-track.js?v=release-20261103-keyboard24';
-import {lightingAt} from './world-lighting.js?v=release-20261103-keyboard24';
-import {sculptPatches} from './terrain-patches.js?v=release-20261103-keyboard24';
-import {fromPlayerRow} from './player-save.js?v=release-20261103-keyboard24';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-keyboard24';
-import {worldTemplates} from './world-templates.js?v=release-20261103-keyboard24';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-keyboard24';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-keyboard24';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-keyboard24';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-keyboard24';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-keyboard24';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-keyboard24';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-keyboard24';
-import {mapPoint} from './minimap.js?v=release-20261103-keyboard24';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-keyboard24';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-keyboard24';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-keyboard24';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-keyboard24';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-keyboard24';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-keyboard24';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-keyboard24';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-keyboard24';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-keyboard24';
+import {createGroundDressing} from './environment-detail.js?v=release-20261103-scenery25';
+import {createWaterSystem} from './water-rendering.js?v=release-20261103-scenery25';
+import {fishingDock} from './waterfront.js?v=release-20261103-scenery25';
+import {isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261103-scenery25';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261103-scenery25';
+import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261103-scenery25';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261103-scenery25';
+import {buildNaturalForest,updateNaturalForest} from './natural-forest.js?v=release-20261103-scenery25';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261103-scenery25';
+import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261103-scenery25';
+import {createRegionStreamer} from './region-streamer.js?v=release-20261103-scenery25';
+import {searchRoute} from './route-search.js?v=release-20261103-scenery25';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261103-scenery25';
+import {actorMenuLabel} from './context-label.js?v=release-20261103-scenery25';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261103-scenery25';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-scenery25';
+import {createGroundDrops} from './ground-drops.js?v=release-20261103-scenery25';
+import {createCombatHealth} from './combat-health.js?v=release-20261103-scenery25';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-scenery25';
+import {castle,inCastle} from './castle-layout.js?v=release-20261103-scenery25';
+import {createMotionTrack} from './motion-track.js?v=release-20261103-scenery25';
+import {lightingAt} from './world-lighting.js?v=release-20261103-scenery25';
+import {sculptPatches} from './terrain-patches.js?v=release-20261103-scenery25';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-scenery25';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-scenery25';
+import {worldTemplates} from './world-templates.js?v=release-20261103-scenery25';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-scenery25';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-scenery25';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-scenery25';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-scenery25';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-scenery25';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-scenery25';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-scenery25';
+import {mapPoint} from './minimap.js?v=release-20261103-scenery25';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-scenery25';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-scenery25';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-scenery25';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-scenery25';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-scenery25';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-scenery25';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-scenery25';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-scenery25';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-scenery25';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-keyboard24';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-keyboard24';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-keyboard24';
-import {buildForest} from './forest.js?v=release-20261103-keyboard24';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-keyboard24';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-keyboard24';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-scenery25';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-scenery25';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-scenery25';
+import {buildForest} from './forest.js?v=release-20261103-scenery25';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-scenery25';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-scenery25';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-keyboard24';
-import {createCape} from './cape.js?v=release-20261103-keyboard24';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-keyboard24';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-keyboard24';
+import {buildPlateArmor} from './armor.js?v=release-20261103-scenery25';
+import {createCape} from './cape.js?v=release-20261103-scenery25';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-scenery25';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-scenery25';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -166,7 +167,13 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  // competing in the depth buffer as the camera moves. Keep the floor top
  // at .125 so doorway clearance and the existing walk-in room stay aligned.
  box(4.18,.7,3.94,0x777568,0,-.25,0,group,'stone');
- box(4,.085,3.7,0x81684c,0,.0825,0,group,options.stone?'masonry':'floor');
+ // A gravel apron separates vegetation from the foundation, with no timber
+ // end faces coplanar with the exterior walls.
+ const apron=new T.Shape();apron.moveTo(-2.42,-2.22);apron.lineTo(2.42,-2.22);apron.lineTo(2.42,2.22);apron.lineTo(-2.42,2.22);apron.closePath();
+ const inner=new T.Path();inner.moveTo(-2.02,-1.93);inner.lineTo(-2.02,1.93);inner.lineTo(2.02,1.93);inner.lineTo(2.02,-1.93);inner.closePath();apron.holes.push(inner);
+ const apronGeometry=new T.ShapeGeometry(apron);apronGeometry.rotateX(-Math.PI/2);const apronMesh=new T.Mesh(apronGeometry,material(0xa39c83,'dirt'));apronMesh.position.y=.014;apronMesh.receiveShadow=true;group.add(apronMesh);
+
+ box(3.76,.085,3.56,0x81684c,0,.0825,0,group,options.stone?'masonry':'floor');
  // Walls meet at edges. Overlapping box caps used to compete in the depth
  // buffer along the corners, independently of the grass/foundation seam.
  box(3.64,3,.18,c,0,1.5,-1.83,group,wallKind);
@@ -1082,7 +1089,8 @@ const easternClock=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',
 const worldClock=document.createElement('output');worldClock.id='world-clock';worldClock.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:36;pointer-events:none;background:#12202bc9;color:#e7d1a5;border:1px solid #927b56;border-radius:5px;padding:5px 9px;font:11px Arial';document.body.append(worldClock);
 let nextSkyUpdate=0,skyHour=12,skyDaylight=1;const cameraWorldOccluders=new Set(),waterAnimationRoots=new Set();
 const naturalSky=createNaturalSky(T,scene);
-const meadow=createMeadow(T,scene,landscape,{seed:generatedWorld?.seed||2419,count:navigator.maxTouchPoints?9000:18000,canPlant:(x,z)=>!onBridge(landscape.bridges,x,z)&&!window.eldervaleSurfaceCover?.(x,z)&&!inCastle(x,z)&&(generatedWorld||landscape.heightAt(x,z)<35)&&distanceToRoad(x,z)>3&&landscape.canWalk(x,z)&&!window.eldervalePropCollision?.(x,z)&&!houseInteriors.some(h=>{const p=h.group.worldToLocal(new T.Vector3(x,h.group.position.y,z));return Math.abs(p.x)<2.3&&Math.abs(p.z)<2.15})});
+const meadow=createMeadow(T,scene,landscape,{seed:generatedWorld?.seed||2419,count:navigator.maxTouchPoints?9000:18000,canPlant:(x,z)=>!onBridge(landscape.bridges,x,z)&&!window.eldervaleSurfaceCover?.(x,z)&&(generatedWorld||landscape.heightAt(x,z)<35)&&distanceToRoad(x,z)>3&&landscape.canWalk(x,z)&&!window.eldervalePropCollision?.(x,z)&&!window.eldervaleCastleCollision?.(x,z)&&!houseInteriors.some(h=>{const p=h.group.worldToLocal(new T.Vector3(x,h.group.position.y,z));return Math.abs(p.x)<2.3&&Math.abs(p.z)<2.15})});
+const groundDressing=createGroundDressing(T,scene,landscape,{seed:generatedWorld?.seed||2419,canPlant:(x,z)=>!onBridge(landscape.bridges,x,z,1.2)&&!window.eldervaleSurfaceCover?.(x,z,1.2)&&distanceToRoad(x,z)>4.5&&landscape.canWalk(x,z)&&!window.eldervalePropCollision?.(x,z)&&!window.eldervaleCastleCollision?.(x,z)});
 function drapeRoads(){for(const object of scene.children){if(!object.userData.drape||!object.geometry)continue;const source=object.userData.drapeSource??=object.geometry.clone(),offset=object.userData.drapeOffset??=object.position.y+.02;object.geometry.dispose();object.geometry=drapedGeometry(T,landscape,source,object.position,offset);}}
 
 function updateWorldSky(){
@@ -1175,7 +1183,7 @@ for(const other of remotePlayers.values()){
  const distance=before.distanceTo(other.root.position);
  other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.animator.update(dt,{locomotion:other.running?'run':other.attackAnim>0||other.blockAnim>0?'combat':'walk',style:other.attackStyle,attack:other.attackAnim,block:other.blockAnim,distance,speed:distance/Math.max(dt,.001)});other.animator.visual.position.y=0;groundFeet(other.animator.rig,other.animator.visual);
 }
-if(!cameraFocus){cameraFocus=player.position.clone();yaw=player.rotation.y+Math.PI;}if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;if((traveled>.002||manual)&&!down&&performance.now()-lastCameraDrag>1800){const behind=player.rotation.y+Math.PI;yaw+=Math.atan2(Math.sin(behind-yaw),Math.cos(behind-yaw))*(1-Math.exp(-3*dt));}stabilizeSun(T,sun,focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+1.75+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position,.35);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;const eye=new T.Vector3(focus.x,focus.y+1.5,focus.z),cameraVector=camera.position.clone().sub(eye),cameraDistance=cameraVector.length();cameraWallRay.set(eye,cameraVector.normalize());cameraWallRay.far=cameraDistance;const walls=[];for(const root of cameraWorldOccluders)if(root.visible&&Math.hypot(root.position.x-player.position.x,root.position.z-player.position.z)<45)root.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});for(const h of houseInteriors)if(h.group.position.distanceToSquared(player.position)<1600)h.group.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});const obstruction=cameraWallRay.intersectObjects(walls,false)[0];if(obstruction&&obstruction.distance<cameraDistance)camera.position.copy(eye).addScaledVector(cameraVector,Math.max(.8,obstruction.distance-.3));camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const root of waterAnimationRoots)root.userData.animateWater(performance.now()*.001);for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();naturalSky.update(camera,performance.now(),skyHour,skyDaylight);meadow.update(player.position,performance.now());if(Math.floor(performance.now()/500)!==window._forestFrame){window._forestFrame=Math.floor(performance.now()/500);updateNaturalForest(forestBatches,player.position);}waterSystem.update(camera,performance.now(),skyDaylight,clientSettings.reducedMotion);renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
+if(!cameraFocus){cameraFocus=player.position.clone();yaw=player.rotation.y+Math.PI;}if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;if((traveled>.002||manual)&&!down&&performance.now()-lastCameraDrag>1800){const behind=player.rotation.y+Math.PI;yaw+=Math.atan2(Math.sin(behind-yaw),Math.cos(behind-yaw))*(1-Math.exp(-3*dt));}stabilizeSun(T,sun,focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+1.75+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position,.35);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;const eye=new T.Vector3(focus.x,focus.y+1.5,focus.z),cameraVector=camera.position.clone().sub(eye),cameraDistance=cameraVector.length();cameraWallRay.set(eye,cameraVector.normalize());cameraWallRay.far=cameraDistance;const walls=[];for(const root of cameraWorldOccluders)if(root.visible&&Math.hypot(root.position.x-player.position.x,root.position.z-player.position.z)<45)root.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});for(const h of houseInteriors)if(h.group.position.distanceToSquared(player.position)<1600)h.group.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});const obstruction=cameraWallRay.intersectObjects(walls,false)[0];if(obstruction&&obstruction.distance<cameraDistance)camera.position.copy(eye).addScaledVector(cameraVector,Math.max(.8,obstruction.distance-.3));camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const root of waterAnimationRoots)root.userData.animateWater(performance.now()*.001);for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();naturalSky.update(camera,performance.now(),skyHour,skyDaylight);meadow.update(player.position,performance.now());if(Math.floor(performance.now()/500)!==window._forestFrame){window._forestFrame=Math.floor(performance.now()/500);updateNaturalForest(forestBatches,player.position);groundDressing.update(player.position);}waterSystem.update(camera,performance.now(),skyDaylight,clientSettings.reducedMotion);renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 drapeRoads();draw();say('Welcome to Eldervale!');frame();
 
 // World editor rendering bridge. Authority and durable writes live in Postgres RPCs.
@@ -1197,7 +1205,7 @@ window.eldervaleWorldBridge={
    h=house(d.x,d.z,d.wallColor||0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stone:!!d.stone,roof:d.roof});h.realmId=row.id;root=h.group;landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
   }else{root=new T.Group();scene.add(root);root.position.set(d.x,landscape.walkHeight(d.x,d.z),d.z);
    if(d.kind==='item'){const item=goods[d.item];if(!item){root.removeFromParent();continue}if(d.item.startsWith('weapon:'))root.add(makeWeapon(T,item.key));else objectModel(T,root,'chest');root.position.y+=.4}
-   else if(d.template==='plaza'){const mesh=new T.Mesh(new T.CircleGeometry(8,48),material(0xa39d8b,'masonry'));mesh.rotation.x=-Math.PI/2;mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);for(let i=0;i<geometry.attributes.uv.count;i++)geometry.attributes.uv.setXY(i,geometry.attributes.position.getX(i)/3,geometry.attributes.position.getZ(i)/3);const mesh=new T.Mesh(geometry,material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template,d);
+   else if(d.template==='plaza'){const mesh=new T.Mesh(new T.CircleGeometry(8,48),material(0xa39d8b,'masonry'));mesh.rotation.x=-Math.PI/2;mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);for(let i=0;i<geometry.attributes.uv.count;i++)geometry.attributes.uv.setXY(i,geometry.attributes.position.getX(i)/3,geometry.attributes.position.getZ(i)/3);const mesh=new T.Mesh(geometry,material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template,{...d,groundHeight:landscape.heightAt});
    const hit=new T.Mesh(new T.BoxGeometry(d.template==='castle_gate'?9:1.3,d.template==='castle_gate'?7:2,1.3),new T.MeshBasicMaterial({visible:false}));hit.position.y=d.template==='castle_gate'?3.5:1;root.add(hit);hit.userData={kind:d.kind==='item'?'worldItem':d.template==='fishing_spot'?'fishing':d.template==='castle_gate'?'castleGate':d.template==='altar'?'altar':d.template==='hearth'?'hearth':d.template==='market'?'merchant':d.template==='tree'||d.template==='pine'?'tree':d.template==='rock'?'rock':'worldObject',x:d.x,z:d.z};targets.push(hit);
   }
   if(root.userData.animateWater)waterAnimationRoots.add(root);if(['castle_wall','castle_tower','castle_gate'].includes(d.template))cameraWorldOccluders.add(root);if(actor)actor.realmId=row.id;if(!h)root.scale.multiplyScalar(d.scale||1);if(actor?.config)root.scale.setScalar(d.scale||1);root.rotation.y=d.yaw*Math.PI/180;root.traverse(o=>{if(targets.includes(o))o.userData.worldEntityId=row.id});root.userData.waterSource=d.template==='fountain';root.userData.lamp=d.template==='lantern';if(root.userData.surface){root.userData.surfaceData=d;root.userData.surfaceId=row.id;conformSurface(root)}worldInstances.set(row.id,{root,actor,house:h});
@@ -1254,7 +1262,7 @@ window.eldervaleRealmBridge={
 const terrainBaseline=landscape.heights.slice(),terrainRows=new Map(),anchorHeights=new WeakMap(),instanceBase=new WeakMap();
 function conformSurface(root){const d=root.userData.surfaceData;if(!d)return;const mesh=root.children.find(m=>m.isMesh&&m.material?.visible!==false);if(!mesh)return;mesh.geometry.dispose();mesh.geometry=pavedGeometry(T,landscape,d,root.position.y);mesh.rotation.set(0,0,0);const ids=[...surfaceRows.keys()].sort(),order=ids.indexOf(root.userData.surfaceId)+1;mesh.renderOrder=order;if(!mesh.userData.surfaceMaterial){mesh.material=mesh.material.clone();mesh.userData.surfaceMaterial=true}mesh.material.polygonOffset=true;mesh.material.polygonOffsetFactor=-1;mesh.material.polygonOffsetUnits=-order;}
 const foundationRows=new Map(),surfaceRows=new Map();
-window.eldervaleSurfaceCover=(x,z)=>[...foundationRows.values(),...surfaceRows.values()].some(r=>!r.deleted&&coversSurface(r.data,x,z,.65));
+window.eldervaleSurfaceCover=(x,z,padding=.65)=>[...foundationRows.values(),...surfaceRows.values()].some(r=>!r.deleted&&coversSurface(r.data,x,z,padding));
 function rebuildTerrain(){
  for(const o of scene.children)if(!o.isLight&&!o.isInstancedMesh&&!o.userData.terrainFixed&&o!==player&&!anchorHeights.has(o))anchorHeights.set(o,o.position.y-landscape.heightAt(o.position.x,o.position.z));
  for(const batch of [...forestBatches,tufts])if(!instanceBase.has(batch)){const values=[];for(let i=0;i<batch.count;i++){const m=new T.Matrix4();batch.getMatrixAt(i,m);values.push({matrix:m,ground:landscape.heightAt(m.elements[12],m.elements[14])})}instanceBase.set(batch,values)}
@@ -1286,7 +1294,7 @@ window.eldervaleRemovedActors=ids=>{for(const id of ids){const a=realmActor(id);
 
 let propCollisionIndex=null;
 window.eldervalePropCollision=(x,z)=>{if(!propCollisionIndex){const data=generatedWorld?[]:[...fixedObstacles];for(const row of persistentRows.values())if(!row.deleted&&row.data.kind==='object')data.push(row.data);for(const [id,t]of realmObjectTargets)if(id.startsWith('base:')&&['tree','rock'].includes(t.userData.kind))data.push({template:t.userData.kind,x:t.userData.x,z:t.userData.z});propCollisionIndex=createObstacleIndex(data);}return propCollisionIndex.blocked(x,z);};
-const applyNavigationWorld=window.eldervaleWorldBridge.apply;window.eldervaleWorldBridge.apply=async rows=>{await applyNavigationWorld(rows);if(rows.length){propCollisionIndex=null;meadow.invalidate();}};
+const applyNavigationWorld=window.eldervaleWorldBridge.apply;window.eldervaleWorldBridge.apply=async rows=>{await applyNavigationWorld(rows);if(rows.length){propCollisionIndex=null;meadow.invalidate();groundDressing.invalidate();}};
 
 
 window.eldervaleMapItems=()=>persistentRows.values();

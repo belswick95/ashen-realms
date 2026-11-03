@@ -12,7 +12,8 @@
     "test:browser:legacy": "node scripts/browser-smoke.cjs",
     "audit:world:surfaces": "node scripts/audit-world-surfaces.mjs",
     "audit:world:visual": "node scripts/world-surface-sweep.cjs",
-    "test:lighting": "node scripts/water-lighting-smoke.cjs"
+    "test:lighting": "node scripts/water-lighting-smoke.cjs",
+    "test:scenery": "node scripts/scenery-smoke.cjs"
   },
   "devDependencies": {
     "playwright-core": "1.51.1",
