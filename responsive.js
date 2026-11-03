@@ -10,13 +10,13 @@ export function installOrientationGate(){
  const update=()=>{const p=deviceProfile({width:innerWidth,height:innerHeight,coarse:matchMedia('(any-pointer:coarse)').matches,touch:navigator.maxTouchPoints>0});document.body.classList.toggle('landscape-required',p.rotateRequired);rotate.hidden=!p.rotateRequired};addEventListener('resize',update);update();return rotate;
 }
 export function installResponsiveLayout({onChange=()=>{}}={}){
- const rotate=installOrientationGate();
+ const rotate=installOrientationGate();document.documentElement.classList.add('game-viewport');document.body.classList.add('game-active');
  const side=document.querySelector('#side'),close=document.createElement('button');close.type='button';close.className='compact-close';close.textContent='×';close.setAttribute('aria-label','Close game panel');side.prepend(close);const title=document.createElement('strong');title.className='compact-panel-title';title.textContent='Inventory';side.prepend(title);
  const collapse=()=>{document.body.classList.remove('compact-panel-open');for(const tab of side.querySelectorAll('[data-tab]'))tab.setAttribute('aria-expanded','false')};close.onclick=collapse;
  for(const tab of side.querySelectorAll('[data-tab]'))tab.addEventListener('click',()=>{if(!document.body.classList.contains('compact-layout'))return;const was=tab.getAttribute('aria-expanded')==='true';collapse();if(!was){document.body.classList.add('compact-panel-open');title.textContent=({inventory:'Inventory',equipment:'Equipment',skills:'Skills',friends:'Friends',blocked:'Blocked',settings:'Settings'})[tab.dataset.tab]||tab.dataset.tab;tab.setAttribute('aria-expanded','true')}});
  let previous=null;
  function update(){const p=deviceProfile({width:innerWidth,height:innerHeight,coarse:matchMedia('(any-pointer:coarse)').matches,touch:navigator.maxTouchPoints>0,memory:navigator.deviceMemory||8});document.body.classList.toggle('compact-layout',p.compact);document.body.classList.toggle('landscape-required',p.rotateRequired);rotate.hidden=!p.rotateRequired;if(previous!==p.compact){collapse();if(p.compact){document.querySelector('#social-panel').classList.add('collapsed');document.querySelector('#social-toggle').textContent='Show Chat'}}previous=p.compact;onChange(p)}
- addEventListener('resize',update);visualViewport?.addEventListener('resize',()=>{document.documentElement.style.setProperty('--visible-height',visualViewport.height+'px')});update();return {collapse};
+ const viewport=globalThis.visualViewport;const updateViewport=()=>{document.documentElement.style.setProperty('--visible-height',(viewport?.height||innerHeight)+'px');update()};addEventListener('resize',updateViewport);viewport?.addEventListener('resize',updateViewport);updateViewport();return {collapse};
 }
 export function installTouchGestures(canvas,{onPinch,onHold}){
  const points=new Map();let distance=0,timer=null,origin=null,pinching=false;

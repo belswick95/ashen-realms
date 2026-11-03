@@ -1,8 +1,8 @@
-import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261103-shared1';
-import {goods} from './economy.js?v=release-20261103-shared1';
+import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261103-mobile2';
+import {goods} from './economy.js?v=release-20261103-mobile2';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==null)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
 export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
- const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261103-shared1';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261103-mobile2';document.head.append(css);
  const button=el('button','♛ World studio',{id:'owner-studio-toggle',type:'button'}),panel=el('dialog',null,{id:'owner-studio'});document.body.append(button,panel);
  panel.innerHTML='<header><div><small>ELDERVALE · OWNER ACCESS</small><h2>World studio</h2></div><button type="button" data-close aria-label="Close studio">×</button></header><nav aria-label="Owner tools"></nav><div class="studio-workspace"></div><footer role="status">Changes are saved to the server and audited.</footer>';
  let tab='World',rows=new Map(),selected=null,placing=false,selecting=false,busy=false,overview=null,current=snapshot,formData=null;
