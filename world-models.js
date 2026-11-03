@@ -1,7 +1,7 @@
-import {creatureMaterial} from './creature-material.js?v=release-20261103-stream16';
-import {dragonModel} from './monster-dragon.js?v=release-20261103-stream16';
-import {castleObject} from './castle-models.js?v=release-20261103-stream16';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261103-stream16';
+import {creatureMaterial} from './creature-material.js?v=release-20261103-live17';
+import {dragonModel} from './monster-dragon.js?v=release-20261103-live17';
+import {castleObject} from './castle-models.js?v=release-20261103-live17';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261103-live17';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);
@@ -60,7 +60,7 @@ export function objectModel(T,parent,id,d={}){
  if(id.startsWith('castle_')||['altar','hearth'].includes(id)){castleObject(T,g,id,d);Object.assign(parent.userData,g.userData);return g;}
  const box=(x,y,z,w,h,l,c)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,l),new T.MeshStandardMaterial({color:c,roughness:.9}));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m};
  const cyl=(x,y,z,r,h,c,r2=r)=>{const m=new T.Mesh(new T.CylinderGeometry(r2,r,h,12),new T.MeshStandardMaterial({color:c,roughness:.9}));m.position.set(x,y,z);g.add(m);return m};
- if(id==='fountain'){cyl(0,.35,0,1.9,.7,stone);cyl(0,.72,0,1.65,.04,0x659bb7);cyl(0,1.5,0,.24,1.8,stone);cyl(0,2.3,0,.65,.25,stone);for(let i=0;i<12;i++){const a=i*Math.PI/6;const drop=new T.Mesh(new T.SphereGeometry(.06,6,5),new T.MeshStandardMaterial({color:0x8dc5de,emissive:0x183c51}));drop.position.set(Math.cos(a),1.35,Math.sin(a));g.add(drop)}}else if(id==='fishing_spot'){cyl(0,.06,0,.7,.08,0x4b8ca3);box(0,.65,0,.06,1.3,.06,wood);box(.3,1.1,0,.6,.35,.05,0x4f8798)}else if(['tree','pine'].includes(id)){cyl(0,1.4,0,.22,2.8,wood);for(let i=0;i<3;i++)cyl(0,2.5+i*.6,0,1.5-i*.3,1.8,0x486641,id==='pine'?0:.8-i*.2)}
+ if(id==='fountain'){cyl(0,.35,0,1.9,.7,stone);cyl(0,.72,0,1.65,.04,0x659bb7);cyl(0,1.5,0,.24,1.8,stone);cyl(0,2.3,0,.65,.25,stone);const streams=[],water=new T.MeshStandardMaterial({color:0x6b9da9,roughness:.22,metalness:.08,transparent:true,opacity:.65});for(let i=0;i<8;i++){const a=i*Math.PI/4,curve=new T.QuadraticBezierCurve3(new T.Vector3(Math.cos(a)*.52,2.36,Math.sin(a)*.52),new T.Vector3(Math.cos(a)*1.3,2.6,Math.sin(a)*1.3),new T.Vector3(Math.cos(a)*1.45,.76,Math.sin(a)*1.45));const stream=new T.Mesh(new T.TubeGeometry(curve,16,.016,5,false),water);g.add(stream);const drop=new T.Mesh(new T.SphereGeometry(.026,6,5),water);drop.scale.set(.7,1.8,.7);g.add(drop);streams.push({curve,drop,phase:i/8})}parent.userData.animateWater=time=>{for(const s of streams)s.drop.position.copy(s.curve.getPoint((time*.65+s.phase)%1))};}else if(id==='fishing_spot'){cyl(0,.06,0,.7,.08,0x4b8ca3);box(0,.65,0,.06,1.3,.06,wood);box(.3,1.1,0,.6,.35,.05,0x4f8798)}else if(['tree','pine'].includes(id)){cyl(0,1.4,0,.22,2.8,wood);for(let i=0;i<3;i++)cyl(0,2.5+i*.6,0,1.5-i*.3,1.8,0x486641,id==='pine'?0:.8-i*.2)}
  else if(id==='rock'){const m=new T.Mesh(new T.DodecahedronGeometry(.9),new T.MeshStandardMaterial({color:stone,flatShading:true}));m.position.y=.65;g.add(m)}
  else if(id==='barrel'){cyl(0,.5,0,.4,1,wood);for(const y of [.16,.83])cyl(0,y,0,.41,.08,metal)}
  else if(id==='well'){cyl(0,.45,0,1,.9,stone);cyl(0,.91,0,.75,.025,0x436878);for(const x of [-1,1])box(x,1.4,0,.12,2.8,.12,wood);box(0,2.8,0,2.5,.2,1.8,wood)}
