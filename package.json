@@ -9,7 +9,9 @@
     "test:auth": "node scripts/auth-smoke.cjs",
     "test:multiplayer": "node scripts/multiplayer-smoke.cjs --live",
     "test:login": "node scripts/login-smoke.cjs",
-    "test:browser:legacy": "node scripts/browser-smoke.cjs"
+    "test:browser:legacy": "node scripts/browser-smoke.cjs",
+    "audit:world:surfaces": "node scripts/audit-world-surfaces.mjs",
+    "audit:world:visual": "node scripts/world-surface-sweep.cjs"
   },
   "devDependencies": {
     "playwright-core": "1.51.1",
