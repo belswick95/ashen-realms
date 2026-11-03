@@ -55,3 +55,5 @@
 @media(prefers-reduced-motion:reduce){.login-mist{animation:none}}
 
 body.landscape-required:has(#auth-screen:not([hidden])) #rotate-phone{display:none}
+/* iOS zooms focused small text fields; keep the real input text at readable size. */
+@media(any-pointer:coarse),(max-width:1024px){#auth-screen .auth-card input,#character-creator input,#character-creator select{font-size:16px!important}}
