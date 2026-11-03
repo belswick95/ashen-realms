@@ -5,10 +5,11 @@
   "scripts": {
     "test": "node --test tests/*.test.js",
     "check": "node scripts/check-syntax.js",
-    "test:browser": "node scripts/browser-smoke.cjs",
+    "test:browser": "node scripts/third-person-smoke.cjs",
     "test:auth": "node scripts/auth-smoke.cjs",
     "test:multiplayer": "node scripts/multiplayer-smoke.cjs --live",
-    "test:login": "node scripts/login-smoke.cjs"
+    "test:login": "node scripts/login-smoke.cjs",
+    "test:browser:legacy": "node scripts/browser-smoke.cjs"
   },
   "devDependencies": {
     "playwright-core": "1.51.1",

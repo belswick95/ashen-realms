@@ -1,5 +1,6 @@
-import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261103-travel11';
-import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261103-travel11';
+import {generatedWorld,seedNoise,biomeWeights,biomeColor} from './procedural-world.js?v=release-20261103-world12';
+import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261103-world12';
+import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261103-world12';
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
 export function noise(x,z){const hash=(a,b)=>{const n=Math.sin(a*127.1+b*311.7)*43758.5453;return n-Math.floor(n)};const ix=Math.floor(x),iz=Math.floor(z),u=smooth(0,1,x-ix),v=smooth(0,1,z-iz);return (hash(ix,iz)*(1-u)+hash(ix+1,iz)*u)*(1-v)+(hash(ix,iz+1)*(1-u)+hash(ix+1,iz+1)*u)*v}
@@ -33,8 +34,9 @@ export function createLandscape({segments=280,extent=840}={}){
   let h=0;for(const [px,pz,height,r] of peaks)h+=height*Math.exp(-((x-px)**2+(z-pz)**2)/(r*r));
   h*=.65+.35*(1-Math.abs(noise(x/35,z/35)*2-1));
   h+=(noise(x/100,z/100)-.35)*12+(noise(x/28,z/28)-.5)*2;
+  if(generatedWorld){const seed=generatedWorld.seed,w=biomeWeights(x,z,seed);h=(seedNoise(x/135,z/135,seed)*15+seedNoise(x/42,z/42,seed+17)*5)*(1+w.snow*1.8+w.dry*.7);h+=Math.pow(seedNoise(x/180+11,z/180-7,seed+33),3)*(35*w.snow+12*w.dry+12*w.castle);}
   h=Math.max(0,h);
-  let clearance=1;for(const [sx,sz] of landscapeSettlements)clearance=Math.min(clearance,smooth(31,56,Math.hypot(x-sx,z-sz)));
+  let clearance=1;for(const [sx,sz] of landscapeSettlements)clearance=Math.min(clearance,smooth(generatedWorld?42:31,generatedWorld?66:56,Math.hypot(x-sx,z-sz)));
   clearance=Math.min(clearance,smooth(4,13,distanceToRoad(x,z)));h*=clearance;
   const wet=waterAt(x,z);if(wet>0)h=-.9*Math.min(1,wet*4);else{
    // Water valleys meet the shore at water level, even near highland terrain.
@@ -78,7 +80,7 @@ export function createLandscape({segments=280,extent=840}={}){
 }
 export function landscapeGeometry(T,landscape){
  const {segments,extent,heightAt}=landscape,g=new T.PlaneGeometry(extent,extent,segments,segments);g.rotateX(-Math.PI/2);
- const positions=g.attributes.position,colors=new Float32Array(positions.count*3);
- for(let i=0;i<positions.count;i++){const x=positions.getX(i),z=positions.getZ(i),h=heightAt(x,z);positions.setY(i,h);const stone=smooth(15,42,h),n=noise(x/43,z/43);colors[i*3]=.62+stone*.18+n*.12;colors[i*3+1]=.78-stone*.08+n*.08;colors[i*3+2]=.50+stone*.20+n*.10}
- g.setAttribute('color',new T.Float32BufferAttribute(colors,3));g.computeVertexNormals();g.computeBoundingSphere();return g;
+ const positions=g.attributes.position,colors=new Float32Array(positions.count*3),climate=new Float32Array(positions.count*4);
+ for(let i=0;i<positions.count;i++){const x=positions.getX(i),z=positions.getZ(i),h=heightAt(x,z);positions.setY(i,h);const w=biomeWeights(x,z,generatedWorld?.seed||2419);climate.set([w.grass,w.snow,w.dry,w.castle],i*4);const stone=smooth(15,42,h),n=noise(x/43,z/43);if(generatedWorld){const c=biomeColor(x,z,generatedWorld.seed),variation=.88+seedNoise(x/35,z/35,generatedWorld.seed)*.22;for(let k=0;k<3;k++)colors[i*3+k]=Math.pow(c[k],2.2)*variation;continue;}colors[i*3]=.62+stone*.18+n*.12;colors[i*3+1]=.78-stone*.08+n*.08;colors[i*3+2]=.50+stone*.20+n*.10}
+ g.setAttribute('color',new T.Float32BufferAttribute(colors,3));g.setAttribute('climate',new T.Float32BufferAttribute(climate,4));g.computeVertexNormals();g.computeBoundingSphere();return g;
 }

@@ -1,0 +1,14 @@
+import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261103-world12';
+export function buildNaturalForest(T,scene,trees,{wood,heightAt,seed=1}){
+ const atlas=document.createElement('canvas');atlas.width=atlas.height=256;const c=atlas.getContext('2d'),rand=seededRandom(seed);c.clearRect(0,0,256,256);for(let i=0;i<650;i++){const a=rand()*Math.PI*2,r=Math.sqrt(rand())*116,x=128+Math.cos(a)*r,y=128+Math.sin(a)*r;c.fillStyle=['#466138','#5a7441','#789253','#314d31'][i%4];c.beginPath();c.ellipse(x,y,3+rand()*8,1.5+rand()*4,a,0,Math.PI*2);c.fill()}const map=new T.CanvasTexture(atlas);map.colorSpace=T.SRGBColorSpace;const leaves=new T.MeshStandardMaterial({map,alphaTest:.4,side:T.DoubleSide,roughness:.95,color:0xd4dfc3});
+ const leafGeometry=new T.PlaneGeometry(1,1),trunkGeometry=new T.CylinderGeometry(.15,.27,1,10),branchGeometry=new T.CylinderGeometry(.45,.8,1,6),chunks=new Map(),meshes=[],dummy=new T.Object3D();
+ for(const tree of trees){const key=Math.floor(tree.x/64)+':'+Math.floor(tree.z/64);if(!chunks.has(key))chunks.set(key,[]);chunks.get(key).push(tree)}
+ for(const [key,records]of chunks){const trunks=[],branches=[],cards=[];for(const {x,z}of records){const r=seededRandom((seed^Math.floor(x*127)^Math.floor(z*313))>>>0),height=5+r()*3,y=heightAt(x,z),pine=biomeWeights(x,z,seed).snow>.45||r()<.25;trunks.push({x,y:y+height/2,z,sx:.8+r()*.5,sy:height,sz:.8+r()*.5,rx:0,ry:r()*6,rz:0});
+  if(!pine)for(let k=0;k<6;k++)cards.push({x:x+(r()-.5)*.9,y:y+height*(.72+r()*.17),z:z+(r()-.5)*.9,sx:3.5,sy:3.3,sz:1,rx:(r()-.5)*.7,ry:k*Math.PI/3,rz:(r()-.5)*.25});
+  for(let i=0;i<6;i++){const a=i*2.4+r()*.4,level=pine?.45+i*.09:.57+(i%3)*.12,reach=(pine?1.9-i*.2:1.7+r()*.6),bx=x+Math.sin(a)*reach,bz=z+Math.cos(a)*reach;branches.push({x:(x+bx)/2,y:y+height*level,z:(z+bz)/2,sx:.10,sy:reach*1.3,sz:.10,rx:Math.PI/2-.35,ry:a,rz:0});for(let j=0;j<3;j++)cards.push({x:bx+(r()-.5)*.9,y:y+height*level+(pine?.8:r()*.8),z:bz+(r()-.5)*.9,sx:pine?2.4:2.8,sy:pine?1.8:2.5,sz:1,rx:(r()-.5)*.65,ry:a+j*Math.PI/3,rz:(r()-.5)*.3});}
+ }
+ const [kx,kz]=key.split(':').map(Number);for(const [geometry,material,data,range]of [[trunkGeometry,wood,trunks,190],[branchGeometry,wood,branches,150],[leafGeometry,leaves,cards,175]]){const m=new T.InstancedMesh(geometry,material,data.length);data.forEach((d,i)=>{dummy.position.set(d.x,d.y,d.z);dummy.rotation.set(d.rx,d.ry,d.rz);dummy.scale.set(d.sx,d.sy,d.sz);dummy.updateMatrix();m.setMatrixAt(i,dummy.matrix)});m.castShadow=geometry!==leafGeometry;m.receiveShadow=true;m.userData.terrainFixed=true;m.userData.naturalChunk={x:kx*64+32,z:kz*64+32,range};m.computeBoundingSphere();scene.add(m);meshes.push(m)}
+ }
+ return meshes;
+}
+export function updateNaturalForest(batches,player){for(const b of batches){const c=b.userData.naturalChunk;if(c)b.visible=Math.hypot(c.x-player.x,c.z-player.z)<c.range+46;}}

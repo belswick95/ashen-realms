@@ -1,4 +1,4 @@
-import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261103-travel11';
+import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261103-world12';
 // Eldervale's shared low-poly human rig. The same geometry powers players,
 // NPCs, remote adventurers and the live character-creation preview.
 // Rig pivots are preserved for existing movement, equipment and combat animations.
@@ -9,16 +9,17 @@ export function buildHumanoid(T,root,look={}){
  let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
  function mat(color,rough=.85){const k='mat'+color+':'+rough;if(!cache.has(k))cache.set(k,new T.MeshStandardMaterial({color,roughness:rough,flatShading:false}));cache.get(k).userData.eldervaleShared=true;return cache.get(k)}
  function geo(key,make){if(!cache.has(key))cache.set(key,make());cache.get(key).userData.eldervaleShared=true;return cache.get(key)}
- const faceMat=mat(skin),cloth=fabricMaterial(T,shirt,cache),trousers=fabricMaterial(T,pants,cache),hairMat=mat(hairColor),boots=mat(0x272523),beltMat=mat(0x57362a);
+ const faceMat=mat(skin,.72),cloth=fabricMaterial(T,shirt,cache),trousers=fabricMaterial(T,pants,cache),hairMat=mat(hairColor),boots=mat(0x272523),beltMat=mat(0x57362a);
  function mesh(g,m,parent,x,y,z,sx=1,sy=1,sz=1){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;if(parent===root&&y>1.07&&y<1.98)o.userData.tunic=true;parent.add(o);return o}
- const sphere=geo('humanSphere',()=>new T.SphereGeometry(1,6,4));
+ if(typeof document!=='undefined'&&!faceMat.bumpMap){let pores=cache.get('skinPores');if(!pores){const c=document.createElement('canvas');c.width=c.height=64;const ctx=c.getContext('2d'),pixels=ctx.createImageData(64,64);let seed=93;for(let i=0;i<4096;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const v=190+(seed>>>26);pixels.data.set([v,v,v,255],i*4)}ctx.putImageData(pixels,0,0);pores=new T.CanvasTexture(c);pores.wrapS=pores.wrapT=T.RepeatWrapping;pores.userData.eldervaleShared=true;cache.set('skinPores',pores)}faceMat.bumpMap=pores;faceMat.bumpScale=.002;faceMat.needsUpdate=true;}
+ const sphere=geo('humanSphere',()=>new T.SphereGeometry(1,12,8));
  const box=(w,h,d)=>geo('humanBox'+w+':'+h+':'+d,()=>new T.BoxGeometry(w,h,d));
  // Tailored torso: broad shoulders, natural taper to the waist, curved chest/back.
  const torsoShape=geo('humanTailoredTorso',()=>new T.LatheGeometry([
   new T.Vector2(.255,0),new T.Vector2(.30,.09),new T.Vector2(.325,.25),
   new T.Vector2(.355,.48),new T.Vector2(.395,.66),new T.Vector2(.36,.81),
   new T.Vector2(.285,.88)
- ],12));
+ ],24));
  const torso=mesh(torsoShape,cloth,root,0,1.08,0,1,1,.77);
  // Collar and belt avoid the separated "floating toy" silhouette.
  mesh(geo('humanCollar',()=>new T.CylinderGeometry(.14,.16,.045,12)),cloth,root,0,1.965,0,1,1,.80);
@@ -49,7 +50,7 @@ export function buildHumanoid(T,root,look={}){
    [.315,.249,.228,-.007],[.365,.244,.229,-.007],[.40,.247,.238,-.010],
    [.47,.245,.237,-.013],[.53,.224,.218,-.016],[.59,.170,.180,-.020],[.64,.080,.090,-.025]
   ];
-  const positions=[],indices=[],sides=14;
+  const positions=[],indices=[],sides=24;
   for(const [y,rx,rz,off] of rings)for(let j=0;j<sides;j++){
    const a=j/sides*Math.PI*2;
    const front=Math.sin(a),x=Math.cos(a)*rx*(faceStyle==='Broad'?1.10:faceStyle==='Angular'&&y<.22?.88:1);
@@ -92,10 +93,10 @@ export function buildHumanoid(T,root,look={}){
  for(const side of [-1,1]){const ear=mesh(sphere,faceMat,head,side*.256,2.405,-.012,.035,.082,.047);ear.rotation.z=side*.13}
  // Close-fitted hairstyle volumes and swept strands are attached to the skull.
  const style=look.hair||'Side swept';
- const hairCap=mesh(geo('humanHairCapV3',()=>new T.SphereGeometry(1,8,4,0,Math.PI*2,0,Math.PI*.56)),hairMat,head,0,2.679,-.015,.244,style==='Buzz cut'?.075:.125,.220);
+ const hairCap=mesh(geo('humanHairCapV3',()=>new T.SphereGeometry(1,20,10,0,Math.PI*2,0,Math.PI*.56)),hairMat,head,0,2.679,-.015,.244,style==='Buzz cut'?.075:.125,.220);
  // Tapered, overlapping locks replace rectangular hair blocks. Shared geometry
  // keeps the extra silhouette detail inexpensive for crowds and mobile devices.
- const lock=geo('humanTaperedHairLockV1',()=>new T.ConeGeometry(.045,.22,5));
+ const lock=geo('humanTaperedHairLockV1',()=>new T.ConeGeometry(.045,.22,10,2));
  if(style==='Side swept'){
   for(let i=0;i<7;i++){
    const strand=mesh(lock,hairMat,head,-.19+i*.062,2.675-i*.006,.154-i*.004,1,1,.78);
@@ -127,7 +128,7 @@ export function buildHumanoid(T,root,look={}){
   const beardGeo=geo('humanBeardJawV2',()=>new T.LatheGeometry([
    new T.Vector2(.065,0),new T.Vector2(.110,.035),new T.Vector2(.152,.080),
    new T.Vector2(.168,.125),new T.Vector2(.142,.174)
-  ],12));
+  ],24));
   const beard=mesh(beardGeo,hairMat,head,0,2.155,.065,1,long?1.1:.77,.91);
   for(const side of [-1,1]){const sideburn=mesh(sphere,hairMat,head,side*.193,2.300,.07,.029,.125,.085);sideburn.rotation.z=side*.15}
 

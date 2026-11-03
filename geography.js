@@ -1,5 +1,6 @@
+import {generatedWorld,configureWorld} from './procedural-world.js?v=release-20261103-world12';
 // Shared world-space outlines. The 3D scene and both maps consume this data.
-export const worldRoads=[[[-275,-215],[-340,-235]],[[-340,-235],[-340,-240]],[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
+export let worldRoads=generatedWorld?.roads||[[[-275,-215],[-340,-235]],[[-340,-235],[-340,-240]],[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
 export function roadPoints(a,b,segments=32){
  const dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz)||1;
  const seed=Math.sin(a[0]*127.1+b[1]*311.7)*43758.5453;
@@ -31,9 +32,9 @@ export function ribbonGeometry(T,points,width){
  return geometry;
 }
 
-export const landscapeSettlements=[[0,0],[-60,45],[75,-55],[105,103],[-210,145],[260,-185],[225,215],[-275,-215],[-114,82],[187,74],[-152,-133],[164,-116]];
-export const landscapeLakes=[{x:-91,z:80,rx:18,rz:12,name:'Moonmere Lake'},{x:157,z:77,rx:24,rz:16,name:'Silverfin Lake'},{x:244,z:175,rx:16,rz:12,name:'Greenwatch Pond'}];
-export const worldRivers=[
+export let landscapeSettlements=generatedWorld?generatedWorld.towns.map(t=>[t.x,t.z]):[[0,0],[-60,45],[75,-55],[105,103],[-210,145],[260,-185],[225,215],[-275,-215],[-114,82],[187,74],[-152,-133],[164,-116]];
+export let landscapeLakes=generatedWorld?.lakes||[{x:-91,z:80,rx:18,rz:12,name:'Moonmere Lake'},{x:157,z:77,rx:24,rz:16,name:'Silverfin Lake'},{x:244,z:175,rx:16,rz:12,name:'Greenwatch Pond'}];
+export let worldRivers=generatedWorld?.rivers||[
  {name:'Silverwater',width:9,points:[[-420,110],[-325,90],[-230,105],[-140,100],[-91,80],[-20,65],[50,80],[115,65],[157,77],[180,110],[250,125],[330,115],[420,95]]},
  {name:'Westmere Run',width:6,points:[[-180,-420],[-160,-310],[-190,-230],[-195,-175],[-195,-115],[-135,-45],[-140,40],[-91,80]]},
  {name:'Eastwater',width:7,points:[[420,-220],[345,-185],[310,-100],[250,-25],[205,30],[157,77]]}
@@ -43,5 +44,8 @@ export function segmentDistance(x,z,a,b){
  const t=length?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/length)):0;
  return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);
 }
-export const roadLines=worldRoads.map(([a,b])=>roadPoints(a,b));
+export let roadLines=worldRoads.map(([a,b])=>roadPoints(a,b));
 export function distanceToRoad(x,z){let d=Infinity;for(const line of roadLines)for(let i=1;i<line.length;i++)d=Math.min(d,segmentDistance(x,z,line[i-1],line[i]));return d}
+
+// Login audio loads geography before authentication; reconfigure its live bindings before the game imports.
+export function initializeGeography(config){const plan=configureWorld(config);if(!plan)return;worldRoads=plan.roads;landscapeSettlements=plan.towns.map(t=>[t.x,t.z]);landscapeLakes=plan.lakes;worldRivers=plan.rivers;roadLines=worldRoads.map(([a,b])=>roadPoints(a,b));}
