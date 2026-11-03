@@ -67,3 +67,9 @@ body.compact-layout #account-name{min-width:0;overflow:hidden;white-space:nowrap
 body.compact-layout #logout{flex-shrink:0}
 body.compact-layout #side>.tabs{display:flex!important}
 body.compact-layout #side>.tabs button{width:auto}
+/* The canvas follows the CSS viewport immediately, including Safari page-zoom changes. */
+#world-canvas{position:fixed;inset:0;width:100vw!important;height:100dvh!important;max-width:none;max-height:none;display:block}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body.compact-layout #side>.tabs button .fantasy-tab-icon{width:30px!important;height:30px!important}
+body.compact-layout #game-ui #health-hud #hud-name{font-size:12px}
+body.compact-layout #map-widget .minimap-brand{font-size:13px}

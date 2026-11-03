@@ -1,38 +1,38 @@
-import {fromPlayerRow} from './player-save.js?v=release-20261103-mobile2';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-mobile2';
-import {worldTemplates} from './world-templates.js?v=release-20261103-mobile2';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-mobile2';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-mobile2';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-mobile2';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-mobile2';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-mobile2';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-mobile2';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-mobile2';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-mobile2';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-mobile2';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-mobile2';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-mobile2';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-mobile2';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-mobile2';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-mobile2';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-mobile2';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-mobile2';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures} from './responsive.js?v=release-20261103-mobile2';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-viewport3';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-viewport3';
+import {worldTemplates} from './world-templates.js?v=release-20261103-viewport3';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-viewport3';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-viewport3';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-viewport3';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-viewport3';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-viewport3';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-viewport3';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-viewport3';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-viewport3';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-viewport3';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-viewport3';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-viewport3';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-viewport3';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-viewport3';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-viewport3';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-viewport3';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-viewport3';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-viewport3';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-mobile2';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-mobile2';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-mobile2';
-import {buildForest} from './forest.js?v=release-20261103-mobile2';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-mobile2';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-mobile2';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-viewport3';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-viewport3';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-viewport3';
+import {buildForest} from './forest.js?v=release-20261103-viewport3';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-viewport3';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-viewport3';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-mobile2';
-import {createCape} from './cape.js?v=release-20261103-mobile2';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-mobile2';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-mobile2';
+import {buildPlateArmor} from './armor.js?v=release-20261103-viewport3';
+import {createCape} from './cape.js?v=release-20261103-viewport3';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-viewport3';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-viewport3';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
-const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
+const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
 const skyLight=new T.HemisphereLight(0xcfe4ff,0x5a4d33,2);scene.add(skyLight);const sun=new T.DirectionalLight(0xffe9b6,2.3);sun.position.set(12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);scene.add(sun.target);renderer.shadowMap.type=T.PCFSoftShadowMap;
 Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:.5,far:140});sun.shadow.normalBias=.10;sun.shadow.bias=-.0003;sun.shadow.camera.updateProjectionMatrix();
 // Seeded procedural canvas textures, cached and shared across meshes.
@@ -1042,7 +1042,7 @@ function say(s){addSystemMessage(s)}function captureSave(){const snapshot={...sa
 window.eldervaleCaptureSave=captureSave;
 function save(){captureSave();window.eldervaleSave?.()}
 document.querySelector('#reset').onclick=()=>window.eldervaleReset?.();
-let dest=null,action=null,yaw=.75,pitch=.8,zoom=24,drag=false,down=null;const ray=new T.Raycaster(),pointer=new T.Vector2();
+let dest=null,action=null,yaw=.75,pitch=.8,zoom=deviceProfile({width:innerWidth,height:innerHeight,touch:navigator.maxTouchPoints>0,coarse:matchMedia('(any-pointer:coarse)').matches}).compact?18:24,drag=false,down=null;const ray=new T.Raycaster(),pointer=new T.Vector2();
 installTouchGestures(renderer.domElement,{onPinch:ratio=>{zoom=T.MathUtils.clamp(zoom*ratio,9,42);drag=true;down=null},onHold:p=>renderer.domElement.dispatchEvent(new PointerEvent('pointerup',{clientX:p.x,clientY:p.y,button:2,pointerType:'touch',bubbles:true}))});
 renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
 renderer.domElement.addEventListener('pointerdown',e=>{if(e.button!==0&&e.button!==2)return;responsiveLayout.collapse();down=[e.clientX,e.clientY];drag=false;renderer.domElement.setPointerCapture(e.pointerId)});
@@ -1178,7 +1178,7 @@ for(const other of remotePlayers.values()){
  other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.animator.update(dt,{attack:other.attackAnim,block:other.blockAnim,distance,speed:distance/Math.max(dt,.001)});
 }
 const focus=player.position;stabilizeSun(T,sun,focus);camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));camera.lookAt(focus.x,focus.y+1.35,focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}texture('water',0x577f83).offset.y=performance.now()*.000012;for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();renderer.render(scene,camera);hitNumbers.update(elapsed);const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});draw();say('Welcome to Eldervale!');frame();
+draw();say('Welcome to Eldervale!');frame();
 
 // World editor rendering bridge. Authority and durable writes live in Postgres RPCs.
 const worldInstances=new Map();

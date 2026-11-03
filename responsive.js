@@ -34,3 +34,13 @@ export function installTouchGestures(canvas,{onPinch,onHold}){
  canvas.addEventListener('pointermove',e=>{if(!points.has(e.pointerId))return;points.set(e.pointerId,{x:e.clientX,y:e.clientY});if(origin&&Math.hypot(e.clientX-origin.x,e.clientY-origin.y)>6)cancel();if(pinching){e.stopImmediatePropagation();if(points.size===2){const [a,b]=[...points.values()],next=Math.hypot(a.x-b.x,a.y-b.y);if(distance>0&&next>0)onPinch(distance/next);distance=next}}},{capture:true});
  for(const type of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(type,e=>{if(e.pointerType!=='touch')return;cancel();points.delete(e.pointerId);if(pinching){e.stopImmediatePropagation();if(!points.size){pinching=false;distance=0}}},{capture:true});
 }
+
+// Safari can resize its visual viewport without a window resize (zoom/browser chrome).
+export function bindGameViewport(canvas,onResize){
+ canvas.id='world-canvas';let frame=0;
+ const update=()=>{frame=0;const box=canvas.getBoundingClientRect();onResize(Math.max(1,Math.round(box.width)),Math.max(1,Math.round(box.height)))};
+ const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)};
+ addEventListener('resize',schedule);globalThis.visualViewport?.addEventListener('resize',schedule);addEventListener('orientationchange',schedule);
+ const observer=typeof ResizeObserver==='function'?new ResizeObserver(schedule):null;observer?.observe(canvas);update();
+ return ()=>{removeEventListener('resize',schedule);globalThis.visualViewport?.removeEventListener('resize',schedule);removeEventListener('orientationchange',schedule);observer?.disconnect();if(frame)cancelAnimationFrame(frame)};
+}
