@@ -127,3 +127,11 @@ body.fantasy-hud .hud-panel-close{background:transparent!important;box-shadow:no
 body.fantasy-hud #social-panel .social-tabs{display:flex;gap:4px;margin:2px 0 4px}body.fantasy-hud #social-panel .social-tabs button{padding:3px 8px!important;min-height:24px!important;font-size:10px}body.fantasy-hud #social-panel .social-content{padding:0!important}body.fantasy-hud #social-note:empty{display:none}
 @media(max-height:550px){body.fantasy-hud #social-panel .social-tabs button{min-height:20px!important;padding:1px 5px!important}body.fantasy-hud #social-panel #world-chat-input,body.fantasy-hud #social-panel #world-chat-form button{min-height:26px!important;padding:3px 6px!important}}
 @media(max-height:360px){body.fantasy-hud #movement-pad{transform:scale(.75);transform-origin:bottom left;bottom:145px}}
+body.fantasy-hud #social-panel:not(.collapsed){display:flex;flex-direction:column;height:190px!important;max-height:190px!important;box-sizing:border-box}
+body.fantasy-hud #social-panel .social-head,body.fantasy-hud #social-panel .social-tabs{flex:0 0 auto;margin:0!important;min-height:0}
+body.fantasy-hud #social-panel .social-content{flex:1;min-height:0;overflow:hidden}
+body.fantasy-hud #social-chat:not([hidden]){display:flex;flex-direction:column;height:100%;min-height:0}
+body.fantasy-hud #social-panel:not(.collapsed) #world-chat-lines{flex:1;min-height:0!important;height:auto!important;max-height:none!important;margin:4px 0!important}
+body.fantasy-hud #world-chat-form{flex:0 0 30px;min-height:30px;display:flex;margin:0!important}
+body.fantasy-hud #world-chat-form input,body.fantasy-hud #world-chat-form button{height:30px!important;min-height:30px!important;box-sizing:border-box;padding:3px 7px!important;margin:0!important}
+@media(max-height:550px){body.fantasy-hud #social-panel:not(.collapsed){height:140px!important;max-height:140px!important}body.fantasy-hud #social-panel .social-tabs button{height:20px!important;min-height:20px!important}body.fantasy-hud #social-panel .social-head{height:24px!important;padding:0!important}}
