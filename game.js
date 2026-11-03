@@ -1,45 +1,49 @@
-import {actorMenuLabel} from './context-label.js?v=release-20261103-context10';
-import {fixedObstacles,obstacleBlocks} from './navigation-obstacles.js?v=release-20261103-context10';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-context10';
-import {createGroundDrops} from './ground-drops.js?v=release-20261103-context10';
-import {createCombatHealth} from './combat-health.js?v=release-20261103-context10';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-context10';
-import {castle,inCastle} from './castle-layout.js?v=release-20261103-context10';
-import {createMotionTrack} from './motion-track.js?v=release-20261103-context10';
-import {lightingAt} from './world-lighting.js?v=release-20261103-context10';
-import {sculptPatches} from './terrain-patches.js?v=release-20261103-context10';
-import {fromPlayerRow} from './player-save.js?v=release-20261103-context10';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-context10';
-import {worldTemplates} from './world-templates.js?v=release-20261103-context10';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-context10';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-context10';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-context10';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-context10';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-context10';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-context10';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-context10';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-context10';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-context10';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-context10';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-context10';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-context10';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-context10';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-context10';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-context10';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-context10';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-context10';
+import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261103-travel11';
+import {createRegionStreamer} from './region-streamer.js?v=release-20261103-travel11';
+import {searchRoute} from './route-search.js?v=release-20261103-travel11';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261103-travel11';
+import {actorMenuLabel} from './context-label.js?v=release-20261103-travel11';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261103-travel11';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-travel11';
+import {createGroundDrops} from './ground-drops.js?v=release-20261103-travel11';
+import {createCombatHealth} from './combat-health.js?v=release-20261103-travel11';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-travel11';
+import {castle,inCastle} from './castle-layout.js?v=release-20261103-travel11';
+import {createMotionTrack} from './motion-track.js?v=release-20261103-travel11';
+import {lightingAt} from './world-lighting.js?v=release-20261103-travel11';
+import {sculptPatches} from './terrain-patches.js?v=release-20261103-travel11';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-travel11';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-travel11';
+import {worldTemplates} from './world-templates.js?v=release-20261103-travel11';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-travel11';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-travel11';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-travel11';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-travel11';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-travel11';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-travel11';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-travel11';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-travel11';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-travel11';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-travel11';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-travel11';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-travel11';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-travel11';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-travel11';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-travel11';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-travel11';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-travel11';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-context10';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-context10';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-context10';
-import {buildForest} from './forest.js?v=release-20261103-context10';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-context10';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-context10';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-travel11';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-travel11';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-travel11';
+import {buildForest} from './forest.js?v=release-20261103-travel11';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-travel11';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-travel11';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-context10';
-import {createCape} from './cape.js?v=release-20261103-context10';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-context10';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-context10';
+import {buildPlateArmor} from './armor.js?v=release-20261103-travel11';
+import {createCape} from './cape.js?v=release-20261103-travel11';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-travel11';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-travel11';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -213,7 +217,7 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
 }
 function buildingLabel(group,caption){
  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=96;const ctx=canvas.getContext('2d');ctx.fillStyle='#28372e';ctx.fillRect(0,0,512,96);ctx.strokeStyle='#cbb77d';ctx.lineWidth=5;ctx.strokeRect(3,3,506,90);ctx.font='bold 31px Georgia';ctx.textAlign='center';ctx.fillStyle='#f0d99b';ctx.fillText(caption.toUpperCase(),256,60,490);
- const sign=new T.Mesh(new T.PlaneGeometry(2.8,.46),new T.MeshBasicMaterial({map:new T.CanvasTexture(canvas)}));sign.position.set(0,2.82,1.945);group.add(sign);
+ const labelTexture=new T.CanvasTexture(canvas);labelTexture.userData.entityOwned=true;const sign=new T.Mesh(new T.PlaneGeometry(2.8,.46),new T.MeshBasicMaterial({map:labelTexture}));sign.position.set(0,2.82,1.945);group.add(sign);
 }
 for(let i=0;i<520;i++){const a=i*2.399,r=14+Math.sqrt(i)*17,x=Math.sin(a)*r,z=Math.cos(a)*r;if(i%4===0)rock(x,z);else tree(x,z)}
 // Oakcross: a walkable settlement, with a clear central square and houses around its edges.
@@ -339,63 +343,21 @@ function walkAllowed(from,to){
  // Swept movement sampled at sub-character intervals prevents tunneling through thin walls.
  const distance=Math.hypot(to.x-from.x,to.z-from.z),samples=Math.max(1,Math.ceil(distance/.18));
  for(let i=1;i<=samples;i++){const t=i/samples,px=from.x+(to.x-from.x)*t,pz=from.z+(to.z-from.z)*t;if(window.eldervalePropCollision?.(px,pz)||window.eldervaleCastleCollision?.(px,pz))return {blocked:true,terrain:true};if(!landscape.canWalk(from.x+(to.x-from.x)*t,from.z+(to.z-from.z)*t))return {blocked:true,terrain:true}}
+ const minX=Math.min(from.x,to.x),maxX=Math.max(from.x,to.x),minZ=Math.min(from.z,to.z),maxZ=Math.max(from.z,to.z);
  for(const h of houseInteriors){
-  const a=houseLocal(h,from),b=houseLocal(h,to);
-  const radius=.26,limitX=1.91+radius,limitZ=1.83+radius;
-  let previous=a;
-  for(let i=1;i<=samples;i++){
-   const q=a.clone().lerp(b,i/samples);
-   const inFootprint=Math.abs(q.x)<limitX&&Math.abs(q.z)<limitZ;
-   if(!inFootprint){previous=q;continue}
-   const interior=Math.abs(q.x)<1.91-radius&&Math.abs(q.z)<1.83-radius;
-   const prevInterior=Math.abs(previous.x)<1.91-radius&&Math.abs(previous.z)<1.83-radius;
-   if(interior&&prevInterior){previous=q;continue}
-   // The front entrance is the only permitted crossing.
-   const doorway=Math.abs(q.x)<.49&&Math.abs(previous.x)<.49;
-   const nearFront=q.z>1.20&&previous.z>1.20;
-   if(h.open&&doorway&&nearFront){previous=q;continue}
-   return {blocked:true,house:h,doorway};
-  }
+  const g=h.group,radiusWorld=Math.hypot(2.17*g.scale.x,2.09*g.scale.z);if(g.position.x+radiusWorld<minX||g.position.x-radiusWorld>maxX||g.position.z+radiusWorld<minZ||g.position.z-radiusWorld>maxZ)continue;
+  const c=Math.cos(g.rotation.y),s=Math.sin(g.rotation.y),ax=((from.x-g.position.x)*c-(from.z-g.position.z)*s)/g.scale.x,az=((from.x-g.position.x)*s+(from.z-g.position.z)*c)/g.scale.z,bx=((to.x-g.position.x)*c-(to.z-g.position.z)*s)/g.scale.x,bz=((to.x-g.position.x)*s+(to.z-g.position.z)*c)/g.scale.z;
+  let previousX=ax,previousZ=az;
+  for(let i=1;i<=samples;i++){const t=i/samples,x=ax+(bx-ax)*t,z=az+(bz-az)*t;if(Math.abs(x)>=2.17||Math.abs(z)>=2.09){previousX=x;previousZ=z;continue}const inside=Math.abs(x)<1.65&&Math.abs(z)<1.57,wasInside=Math.abs(previousX)<1.65&&Math.abs(previousZ)<1.57;if(inside&&wasInside){previousX=x;previousZ=z;continue}const doorway=Math.abs(x)<.49&&Math.abs(previousX)<.49;if(h.open&&doorway&&z>1.2&&previousZ>1.2){previousX=x;previousZ=z;continue}return {blocked:true,house:h,doorway};}
  }
  return {blocked:false};
 }
-// Lightweight A* on a local 1.5m grid. Replans on goal changes, not every frame.
-function findWalkPath(start,goal,maxCells=14000){
- if(walkAllowed(start,goal).blocked===false)return [goal.clone()];
- const cell=1.0,margin=30,originX=Math.min(start.x,goal.x)-margin,originZ=Math.min(start.z,goal.z)-margin;
- const cols=Math.min(480,Math.ceil((Math.abs(start.x-goal.x)+margin*2)/cell)+1);
- const rows=Math.min(480,Math.ceil((Math.abs(start.z-goal.z)+margin*2)/cell)+1);
- const coord=p=>[Math.max(0,Math.min(cols-1,Math.round((p.x-originX)/cell))),Math.max(0,Math.min(rows-1,Math.round((p.z-originZ)/cell)))];
- const point=(x,z)=>{const wx=originX+x*cell,wz=originZ+z*cell;return new T.Vector3(wx,landscape.walkHeight(wx,wz),wz)};
- const [sx,sz]=coord(start),[gx,gz]=coord(goal);
- const key=(x,z)=>z*cols+x;
- const startKey=key(sx,sz),goalKey=key(gx,gz);
- const nodes=new Map([[startKey,{x:sx,z:sz,g:0,f:0,prev:null}]]),open=[startKey],closed=new Set();
- const directions=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]];
- let best=startKey,bestH=Infinity,iterations=0;
- while(open.length&&iterations++<maxCells){
-  let at=0;for(let j=1;j<open.length;j++)if(nodes.get(open[j]).f<nodes.get(open[at]).f)at=j;
-  const id=open.splice(at,1)[0],n=nodes.get(id);if(closed.has(id))continue;closed.add(id);
-  const h=Math.hypot(n.x-gx,n.z-gz);
-  if(h<bestH){bestH=h;best=id}
-  if(id===goalKey)break;
-  for(const [dx,dz] of directions){
-   const x=n.x+dx,z=n.z+dz;if(x<0||z<0||x>=cols||z>=rows)continue;
-   const nid=key(x,z);if(closed.has(nid))continue;
-   if(walkAllowed(point(n.x,n.z),point(x,z)).blocked)continue;if(dx&&dz&&(walkAllowed(point(n.x,n.z),point(n.x+dx,n.z)).blocked||walkAllowed(point(n.x,n.z),point(n.x,n.z+dz)).blocked))continue;
-   const g=n.g+Math.hypot(dx,dz),existing=nodes.get(nid);
-   if(!existing||g<existing.g){nodes.set(nid,{x,z,g,f:g+Math.hypot(x-gx,z-gz),prev:id});open.push(nid)}
-  }
- }
- if(best!==goalKey&&bestH>2.5)return [];if(best===startKey)return [];
- const result=[];let id=best;
- while(id!==startKey&&result.length<maxCells){const n=nodes.get(id);result.push(point(n.x,n.z));id=n.prev;if(id==null)break}
- result.reverse();
- // Replace grid zigzags with long straight, collision-checked walking segments.
- const smooth=[];let anchor=start;for(let i=0;i<result.length;){let furthest=i;for(let j=result.length-1;j>i;j--){if(!walkAllowed(anchor,result[j]).blocked){furthest=j;break}}smooth.push(result[furthest]);anchor=result[furthest];i=furthest+1}result.splice(0,result.length,...smooth);
- if(best===goalKey&&!walkAllowed(result[result.length-1]||start,goal).blocked)result.push(goal.clone());
- return result;
-}
+// The same incremental search serves synchronous offline AI and cancellable player routes.
+function routeSteps(start,goal,maxNodes=30000){return searchRoute({start,goal,maxNodes,heightAt:landscape.walkHeight,canTravel:(a,b)=>!walkAllowed(a,b).blocked})}
+function findWalkPath(start,goal,maxCells=30000){const work=routeSteps(start,goal,maxCells);let next;do{next=work.next()}while(!next.done);return next.value.map(p=>new T.Vector3(p.x,p.y,p.z));}
+const areaLoading=createLoadingPanel();var navigationGeneration=0,routeController=null,routePending=false;
+renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();window.eldervaleGraphicsRecovery?.end();const ticket=areaLoading.begin('Restoring the game view…');window.eldervaleGraphicsRecovery=ticket;setTimeout(()=>{if(window.eldervaleGraphicsRecovery===ticket)ticket.fail?.('The graphics connection was interrupted. Reload to reconnect.',()=>location.reload())},10000)});
+renderer.domElement.addEventListener('webglcontextrestored',()=>{window.eldervaleGraphicsRecovery?.end();window.eldervaleGraphicsRecovery=null;});
 
 function routeTo(target){
  const goal=target.clone();goal.y=landscape.walkHeight(goal.x,goal.z);
@@ -415,19 +377,20 @@ function routeTo(target){
  return goal;
 }
 var navigationAfterDoor=null,pendingPickup=null;let walkQueue=[],mapDestination=null;
-function setWalkDestination(point){
- navigationAfterDoor=null;if(action?.kind!=='creature')combatTurns.cancel();
- const target=routeTo(point);
- const stops=[target,...walkQueue];
- walkQueue=[];
- const all=[];
- let current=player.position.clone();
- for(const stop of stops){
-  const path=findWalkPath(current,stop);
-  if(!path.length&&current.distanceTo(stop)>.4){say('That destination is currently unreachable.');break}
-  all.push(...path);current=stop;
- }
- dest=all.shift()||null;walkQueue=all;mapDestination=all.at(-1)?.clone()||dest?.clone()||null;if(window.eldervaleAuthority){const route=[dest,...walkQueue].filter(Boolean).slice(0,128).map(p=>[p.x,p.z]);const target=action?.realmId||action?.worldEntityId||action?.mob?.realmId||action?.profile?.realmId||action?.house?.realmId;void window.eldervaleRealm?.command('move',{path:route,target:target||null,kind:action?.kind||'walk'})}
+async function setWalkDestination(point){
+ const generation=++navigationGeneration;routeController?.abort();const controller=new AbortController();routeController=controller;routePending=true;
+ navigationAfterDoor=null;walkQueue=[];if(action?.kind!=='creature')combatTurns.cancel();
+ const target=routeTo(point),stops=[target,...walkQueue],requestAction=action;walkQueue=[];dest=null;mapDestination=point.clone();markClick(point.x,point.z,requestAction?'interact':'walk');
+ const ticket=areaLoading.begin('Finding a clear route…',{cancel:()=>{controller.abort();navigationGeneration++;routePending=false;mapDestination=null;void window.eldervaleRealm?.command('stop')}});
+ let pausePromise=null;const pauseTimer=setTimeout(()=>{if(generation===navigationGeneration&&window.eldervaleAuthority&&!realmInCombat)pausePromise=window.eldervaleRealm?.command('stop')},120);
+ try{
+  await window.eldervaleRegionStreamer?.idle();
+  if(controller.signal.aborted)return;
+  const all=[];let current=player.position.clone();for(const stop of stops){const path=await runFrameWork(routeSteps(current,stop),{signal:controller.signal,onProgress:p=>ticket.progress(0,0,p?.visited?'Checking paths around nearby obstacles…':null)});if(!path.length&&Math.hypot(current.x-stop.x,current.z-stop.z)>.4){say('That destination is currently unreachable.');break}all.push(...path.map(p=>new T.Vector3(p.x,p.y,p.z)));current=stop;}
+  clearTimeout(pauseTimer);if(pausePromise)await pausePromise;if(generation!==navigationGeneration)return;ticket.end();
+  dest=all.shift()||null;walkQueue=all;mapDestination=all.at(-1)?.clone()||dest?.clone()||null;
+  if(window.eldervaleAuthority){const route=[dest,...walkQueue].filter(Boolean).slice(0,128).map(p=>[p.x,p.z]);const target=requestAction?.realmId||requestAction?.worldEntityId||requestAction?.mob?.realmId||requestAction?.profile?.realmId||requestAction?.house?.realmId;await window.eldervaleRealm?.command('move',{path:route,target:target||null,kind:requestAction?.kind||'walk'});}
+ }catch(error){if(error.name!=='AbortError'){say('The route could not be loaded. Please choose a destination again.');console.warn('Route loading:',error);}}finally{clearTimeout(pauseTimer);ticket.end();if(generation===navigationGeneration)routePending=false;}
 }
 
 function updateHouseRoofs(){
@@ -839,7 +802,7 @@ function spawnNPC(profile,index){profile.realmId||='base:npc:'+profile.name;
  const model=buildHumanoid(T,root,{skin:palettes[index%palettes.length],shirt:profile.color,pants:0x474442,hairColor:hairs[index%hairs.length],hair:['Short crop','Side swept','Spiky','Buzz cut','Long'][index%5]});
  if(/guard|warden|sentinel|soldier/i.test(profile.role+' '+profile.name)){
   const plates=buildPlateArmor(T,root,model);for(const slot of ['chest','legs','boots'])for(const part of plates[slot])part.visible=true;model.torso.visible=false;for(const part of model.clothingMeshes)part.visible=false;
-  if(profile.whiteArmor)for(const slot of ['chest','legs','boots'])for(const part of plates[slot]){part.material=part.material.clone();part.material.color.setHex(0xdfe6e6);part.material.metalness=.55;part.material.roughness=.44;}
+  if(profile.whiteArmor)for(const slot of ['chest','legs','boots'])for(const part of plates[slot]){part.material=part.material.clone();part.material.userData.eldervaleShared=false;part.material.color.setHex(0xdfe6e6);part.material.metalness=.55;part.material.roughness=.44;}
   const weapon=makeWeapon(T,'longsword');attachWeapon(model,weapon,'longsword');root.userData.armed=true;
  }
  const activity=profile.activity||({smith:'smith',banker:'read',herbalist:'garden',merchant:'trade',innkeeper:'trade',steward:'read'}[profile.role]);
@@ -1199,12 +1162,12 @@ drapeRoads();draw();say('Welcome to Eldervale!');frame();
 
 // World editor rendering bridge. Authority and durable writes live in Postgres RPCs.
 const worldInstances=new Map();
-function removeWorldEntity(id){const entry=worldInstances.get(id);if(!entry)return;const actor=entry.actor;if(combatTurns.target===actor)combatTurns.cancel();if(action?.root===entry.root||action?.mob===actor){action=null;dest=null;walkQueue=[]}if(conversation?.profile===actor?.profile)closeDialog();
+function removeWorldEntity(id){const entry=worldInstances.get(id);if(!entry)return;const actor=entry.actor;if(combatTurns.target===actor)combatTurns.cancel();if(action&&(action.root===entry.root||actor&&action.mob===actor)){action=null;dest=null;walkQueue=[]}if(actor&&conversation?.profile===actor.profile)closeDialog();
  for(let i=targets.length-1;i>=0;i--)if(targets[i].userData.worldEntityId===id)targets.splice(i,1);
  for(const list of [npcs,creatures]){const i=list.indexOf(actor);if(i>=0)list.splice(i,1)}
  landscape.removeFloor(id);
  if(entry.house){const i=houseInteriors.indexOf(entry.house);if(i>=0)houseInteriors.splice(i,1)}
- entry.root.removeFromParent();const disposed=new Set();entry.root.traverse(o=>{for(const resource of [o.geometry,...(Array.isArray(o.material)?o.material:[o.material])])if(resource&&!resource.userData?.eldervaleShared&&!disposed.has(resource)){resource.dispose?.();disposed.add(resource)}});worldInstances.delete(id);
+ entry.root.removeFromParent();disposeEntityResources(entry.root);realmObjectTargets.delete(id);worldInstances.delete(id);
 }
 window.eldervaleWorldBridge={
  apply(rows){for(const row of rows){removeWorldEntity(row.id);if(row.deleted)continue;const d=row.data,base=worldTemplates[d.template];if(!base&&d.kind!=='item'){console.warn('Unknown world template',d.template);continue}const config={...base,...d};let root,actor,h;
@@ -1232,19 +1195,26 @@ window.eldervaleWorldBridge={
 };
 
 // Stream persistent scenery/actors around the player rather than rendering the entire saved world.
-const persistentRows=new Map(),applyNearby=window.eldervaleWorldBridge.apply;
-window.eldervaleWorldBridge.apply=rows=>{for(const row of rows){persistentRows.set(row.id,row);removeWorldEntity(row.id);if(!row.deleted&&Math.hypot(row.data.x-player.position.x,row.data.z-player.position.z)<180)applyNearby([row])}};
-setInterval(()=>{for(const [id,row]of persistentRows){if(row.deleted)continue;const distance=Math.hypot(row.data.x-player.position.x,row.data.z-player.position.z),entry=worldInstances.get(id);if(!entry&&distance<180)applyNearby([row]);else if(entry&&distance>220&&combatTurns.target!==entry.actor&&conversation?.profile!==entry.actor?.profile)removeWorldEntity(id)}},2000);
+const persistentRows=new Map(),applyNearby=window.eldervaleWorldBridge.apply;let regionTicket=null,regionResume=null;
+const regionStreamer=createRegionStreamer({rows:persistentRows,loaded:worldInstances,position:()=>player.position,
+ apply:row=>{applyNearby([row]);const entry=worldInstances.get(row.id);if(entry?.house)entry.root.visible=entry.root.position.distanceToSquared(player.position)<155*155;const target=targets.find(t=>t.userData.worldEntityId===row.id);if(target)realmObjectTargets.set(row.id,target);const pose=realmActorCache.get(row.id);if(pose)applyRealmActor(pose);const object=realmObjectState.get(row.id);if(object)applyRealmObject(object);},
+ remove:removeWorldEntity,canRemove:id=>{const e=worldInstances.get(id);return !e||!e.actor||combatTurns.target!==e.actor&&(!conversation||conversation.profile!==e.actor.profile)},
+ onProgress:({pending,done,total,error})=>{if(pending){if(!regionTicket){regionTicket=areaLoading.begin('Loading nearby area…');regionResume=!realmInCombat&&!routePending&&mapDestination?{goal:mapDestination.clone(),generation:navigationGeneration}:null;if(regionResume)void window.eldervaleRealm?.command('stop');}regionTicket.progress(done,total,'Preparing buildings, scenery and residents…');}else if(regionTicket&&!error){regionTicket.end();regionTicket=null;const resume=regionResume;regionResume=null;if(resume&&resume.generation===navigationGeneration&&!routePending)void setWalkDestination(resume.goal);}},
+ onError:error=>{console.warn('Area loading:',error);regionTicket?.fail('This area could not be loaded. Reload to reconnect.',()=>location.reload());}
+});window.eldervaleRegionStreamer=regionStreamer;
+window.eldervaleWorldBridge.apply=rows=>regionStreamer.upsert(rows);
+setInterval(()=>void regionStreamer.scan().catch(()=>{}),1200);
 
 var realmPlayerPose=null,realmInCombat=false;var playerMotion=createMotionTrack(),realmFrameTime=0;var cameraFocus=null;var terrainCameraLift=0;var attackStyle='slash';
 function interpolateRealm(actor,dt){if(actor.motion){const sample=actor.motion.sample();if(sample){actor.root.position.x=sample.x;actor.root.position.z=sample.z;actor.root.rotation.y=sample.yaw;}return}if(!actor.serverPose)return;const target=new T.Vector3(actor.serverPose.x,actor.root.position.y,actor.serverPose.z);if(actor.root.position.distanceToSquared(target)>100)actor.root.position.copy(target);else actor.root.position.lerp(target,1-Math.exp(-14*dt));actor.root.rotation.y=actor.serverPose.yaw;}
-const realmActorCache=new Map(),realmObjectTargets=new Map(),realmMerchant={root:merchant,profile:{level:5,hp:45,maxHp:45}};
+const realmActorCache=new Map(),realmObjectState=new Map(),realmObjectTargets=new Map(),realmMerchant={root:merchant,profile:{level:5,hp:45,maxHp:45}};
 const baseRealmId=(kind,x,z)=>'base:'+kind+':'+Number(x).toFixed(1)+':'+Number(z).toFixed(1);
 creatures.forEach((m,i)=>m.realmId='base:creature:'+i);
 houseInteriors.forEach((h,i)=>h.realmId='base:door:'+i);
 for(const target of targets){const a=target.userData;if(['tree','rock','chest','merchant'].includes(a.kind))a.realmId=baseRealmId(a.kind,a.x,a.z);else if(a.kind==='door')a.realmId=a.house.realmId;else if(a.kind==='npc')a.realmId=a.profile.realmId;else if(a.kind==='creature')a.realmId=a.mob.realmId;if(a.realmId)realmObjectTargets.set(a.realmId,target);}
 function realmActor(id){if(id==='base:merchant:-3.0:7.0')return realmMerchant;const custom=worldInstances.get(id)?.actor;return custom||creatures.find(a=>a.realmId===id)||npcs.find(a=>a.realmId===id)}
 function applyRealmActor(row){let actor=realmActor(row.id);if(!actor&&row.id.startsWith('base:npc:')){const p=extraResidents.find(p=>'base:npc:'+p.name===row.id);if(p){actor=spawnNPC({...p,realmId:row.id},npcs.length);spawnedResidents.add(extraResidents.indexOf(p))}}if(!actor)return;actor.serverPose=row;actor.motion||=createMotionTrack();actor.motion.push(realmFrameTime,{x:row.x,z:row.z,yaw:row.yaw,moving:!!row.target});actor.root.visible=row.hp>0;actor.alive=row.hp>0;if(actor.config){actor.hp=row.hp;actor.maxHp=row.data.hp;actor.config={...actor.config,...row.data}}if(actor.profile){actor.profile.level=row.data.level;actor.profile.hp=row.hp;actor.profile.maxHp=row.data.hp;}return actor;}
+function applyRealmObject(object){const gate=worldInstances.get(object.id)?.root;if(gate?.userData.leftGate){gate.userData.gateOpen=object.open;gate.userData.leftGate.rotation.y=object.open?-Math.PI*.48:0;gate.userData.rightGate.rotation.y=object.open?Math.PI*.48:0;}const custom=worldInstances.get(object.id),house=custom?.house||houseInteriors.find(h=>h.realmId===object.id);if(house){house.open=object.open;house.doorPivot.rotation.y=house.open?-Math.PI*.53:0;}const t=realmObjectTargets.get(object.id);if(t)t.userData.availableAt=object.available_at;}
 window.eldervaleRealmBridge={
  snapshot(data,selfId){groundDrops.sync(data.groundDrops||[]);tradePanel.sync(data.trade);npcDuelIds=new Set((data.npcDuels||[]).flatMap(d=>[d.guard,d.monster]));combatPlayerIds=new Set((data.actors||[]).map(a=>a.target).filter(Boolean));realmFrameTime=Date.parse(data.stateTime||data.time);attackStyle=data.motion.attack_style||'slash';
   for(const [id,g]of Object.entries(goods))if(g.custom)state[id]=Number(data.self.stats?.[id])||0;const savedRow=fromPlayerRow(data.self);for(const k of ['gold','wood','ore','fishingPole','bait','rawFish','woodXP','miningXP','armorOwned','weaponsOwned','shieldsOwned','jewelryOwned','bank','attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP','amulet','trinket','starterChestClaimed','starterShieldsGranted','starterBattleaxeGranted','starterDaggerGranted','starterJewelryGranted'])if(savedRow[k]!==undefined)state[k]=savedRow[k];
@@ -1252,7 +1222,7 @@ window.eldervaleRealmBridge={
   if(signature!==incoming){refreshArmor();refreshWeapon();refreshShield()}playerMotion.push(realmFrameTime,{x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0});realmPlayerPose={x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0};if(!realmPlayerPose.moving){dest=null;walkQueue=[];mapDestination=null;}
   realmInCombat=false;for(const id of data.removedActors||[]){const a=realmActor(id);if(a){a.root.visible=false;a.deleted=true;}}for(const row of data.actors){const a=realmActor(row.id);if(a)a.deleted=false;realmActorCache.set(row.id,row);applyRealmActor(row);if(row.target===selfId)realmInCombat=true;}
   window.eldervaleUpdatePlayers(data.players);for(const entry of data.players){const other=remotePlayers.get(entry.id);if(other){other.hp=entry.hp;other.maxHp=entry.maxHp}}
-  for(const object of [...data.objects,...(data.gates||[])]){const gate=worldInstances.get(object.id)?.root;if(gate?.userData.leftGate){gate.userData.gateOpen=object.open;gate.userData.leftGate.rotation.y=object.open?-Math.PI*.48:0;gate.userData.rightGate.rotation.y=object.open?Math.PI*.48:0;}const custom=worldInstances.get(object.id),house=custom?.house||houseInteriors.find(h=>h.realmId===object.id);if(house){house.open=object.open;house.doorPivot.rotation.y=house.open?-Math.PI*.53:0;}const t=realmObjectTargets.get(object.id);if(t)t.userData.availableAt=object.available_at;}
+  for(const object of [...data.objects,...(data.gates||[])]){realmObjectState.set(object.id,object);applyRealmObject(object);}
   window.eldervaleShops=data.shops||{};captureSave();draw();services.refresh?.();
  },
  event(e,selfId){if(e.type==='npc_windup'){const a=realmActor(e.attacker),b=realmActor(e.target);if(a){a.attackAnim=.55;a.previewAttack=.55;}if(b)b.blockAnim=.75;return}if(e.type==='npc_hit'){const a=realmActor(e.target);if(a){hitNumbers.show(a.root,e.damage,e.blocked,3);if(a.root.position.distanceTo(player.position)<20)combatSound(e.blocked?'metal':'impact');}return}const actor=realmActor(e.target),root=actor?.root,isSelf=e.player===selfId,other=remotePlayers.get(e.player);if(e.type==='fishing'){const target=isSelf?player:other?.root;if(target){const rod=new T.Mesh(new T.CylinderGeometry(.018,.035,2.5,7),new T.MeshStandardMaterial({color:0x9a7950}));rod.position.set(-.5,1.8,.8);rod.rotation.x=.6;target.add(rod);setTimeout(()=>{target.remove(rod);rod.geometry.dispose();rod.material.dispose()},1500)}if(isSelf)say('You catch a fish. +25 Fishing XP');return}if(e.type==='preview'){if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}return}if(e.type==='windup'){if(isSelf&&e.side==='player')combatSound(e.style||'slash');if(e.style&&isSelf)attackStyle=e.style;if(e.side==='player'){if(isSelf){combat.attackAnim=.55;combat.blockAnim=0;faceTarget(player,root?.position||player.position)}else if(other){other.attackAnim=.55;other.attackStyle=e.style||'slash';}if(actor)actor.blockAnim=1.1;}else{if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}if(isSelf){combat.attackAnim=0;combat.blockAnim=1.15;}else if(other)other.blockAnim=1.15;}}
@@ -1262,8 +1232,6 @@ window.eldervaleRealmBridge={
   else if(e.type==='notice'&&isSelf)say(e.text);else if(e.type==='death'&&isSelf){say('Defeated '+(actor?.name||'opponent')+'.');action=null;}else if(e.type==='gather'&&isSelf){say('Resource gathered. +25 XP');action=null;}else if(e.type==='player_death'&&isSelf){say('You fell in battle and returned to Oakcross.');action=null;}
  }
 };
-// World edits arriving between tick snapshots receive the last authoritative pose.
-const applyWorldRender=window.eldervaleWorldBridge.apply;window.eldervaleWorldBridge.apply=rows=>{applyWorldRender(rows);for(const row of rows){const target=targets.find(t=>t.userData.worldEntityId===row.id);if(target)realmObjectTargets.set(row.id,target);const pose=realmActorCache.get(row.id);if(pose)applyRealmActor(pose)}};
 
 const terrainBaseline=landscape.heights.slice(),terrainRows=new Map(),anchorHeights=new WeakMap(),instanceBase=new WeakMap();
 function conformSurface(root){root.updateMatrixWorld(true);root.traverse(mesh=>{if(!mesh.isMesh||!mesh.visible||mesh.material?.visible===false||!mesh.geometry)return;const p=mesh.geometry.attributes.position;for(let i=0;i<p.count;i++){const point=mesh.localToWorld(new T.Vector3(p.getX(i),0,p.getZ(i)));point.y=landscape.heightAt(point.x,point.z)+.065;mesh.worldToLocal(point);p.setY(i,point.y)}p.needsUpdate=true;mesh.geometry.computeVertexNormals()});}
@@ -1275,7 +1243,7 @@ function rebuildTerrain(){
  for(const batch of [...forestBatches,tufts]){const values=instanceBase.get(batch);for(let i=0;i<batch.count;i++){const {matrix,ground:height}=values[i],m=matrix.clone();m.elements[13]+=landscape.heightAt(m.elements[12],m.elements[14])-height;batch.setMatrixAt(i,m)}batch.instanceMatrix.needsUpdate=true;batch.computeBoundingSphere()}
  for(const entry of worldInstances.values())if(entry.root.userData.surface)conformSurface(entry.root);
 }
-const applyTerrainRender=window.eldervaleWorldBridge.apply;window.eldervaleWorldBridge.apply=rows=>{let changed=false;for(const row of rows)if(row.data.template?.startsWith('terrain_')){terrainRows.set(row.id,row);changed=true}if(changed)rebuildTerrain();applyTerrainRender(rows);};
+const applyTerrainRender=window.eldervaleWorldBridge.apply;window.eldervaleWorldBridge.apply=async rows=>{let changed=false;for(const row of rows)if(row.data.template?.startsWith('terrain_')){terrainRows.set(row.id,row);changed=true}if(changed){const ticket=areaLoading.begin('Updating the landscape…');try{await runFrameWork((function*(){yield;rebuildTerrain();})());}finally{ticket.end();}}await applyTerrainRender(rows);};
 const lanternPool=Array.from({length:4},()=>{const light=new T.PointLight(0xffce8a,0,24,1.5);scene.add(light);return light});let nextLampUpdate=0;
 townAnimations.push(()=>{if(performance.now()<nextLampUpdate)return;nextLampUpdate=performance.now()+400;const fixtures=scene.children.filter(o=>o.userData.lamp&&o.position.distanceToSquared(player.position)<55*55).sort((a,b)=>a.position.distanceToSquared(player.position)-b.position.distanceToSquared(player.position));lanternPool.forEach((light,i)=>{const fixture=fixtures[i];light.intensity=fixture?(window.eldervaleWorldNight?6:1):0;if(fixture)light.position.copy(fixture.position).add(new T.Vector3(.4,3,0))})});
 
@@ -1292,6 +1260,9 @@ window.eldervaleCastleCollision=(x,z)=>{for(const row of persistentRows.values()
 
 window.eldervaleRemovedActors=ids=>{for(const id of ids){const a=realmActor(id);if(a){a.deleted=true;a.root.visible=false;}}};
 
-window.eldervalePropCollision=(x,z)=>{if(fixedObstacles.some(d=>obstacleBlocks(d,x,z)))return true;for(const row of persistentRows.values())if(!row.deleted&&row.data.kind==='object'&&obstacleBlocks(row.data,x,z))return true;for(const [id,t]of realmObjectTargets)if(id.startsWith('base:')&&['tree','rock'].includes(t.userData.kind)&&obstacleBlocks({template:t.userData.kind,x:t.userData.x,z:t.userData.z},x,z))return true;return false;};
+let propCollisionIndex=null;
+window.eldervalePropCollision=(x,z)=>{if(!propCollisionIndex){const data=[...fixedObstacles];for(const row of persistentRows.values())if(!row.deleted&&row.data.kind==='object')data.push(row.data);for(const [id,t]of realmObjectTargets)if(id.startsWith('base:')&&['tree','rock'].includes(t.userData.kind))data.push({template:t.userData.kind,x:t.userData.x,z:t.userData.z});propCollisionIndex=createObstacleIndex(data);}return propCollisionIndex.blocked(x,z);};
+const applyNavigationWorld=window.eldervaleWorldBridge.apply;window.eldervaleWorldBridge.apply=async rows=>{await applyNavigationWorld(rows);if(rows.length)propCollisionIndex=null;};
+
 
 window.eldervaleMapItems=()=>persistentRows.values();

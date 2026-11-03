@@ -1,6 +1,6 @@
-import {dragonModel} from './monster-dragon.js?v=release-20261103-context10';
-import {castleObject} from './castle-models.js?v=release-20261103-context10';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261103-context10';
+import {dragonModel} from './monster-dragon.js?v=release-20261103-travel11';
+import {castleObject} from './castle-models.js?v=release-20261103-travel11';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261103-travel11';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);
