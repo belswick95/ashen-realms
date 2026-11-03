@@ -1,4 +1,4 @@
-import {goods} from './economy.js?v=release-20261103-walk19';
+import {goods} from './economy.js?v=release-20261103-roam20';
 export function createGroundDrops(T,scene,landscape,targets){
  const entries=new Map();
  function remove(id){const e=entries.get(id);if(!e)return;const i=targets.indexOf(e.hit);if(i>=0)targets.splice(i,1);e.root.removeFromParent();e.root.traverse(o=>{o.geometry?.dispose();o.material?.map?.dispose();o.material?.dispose()});entries.delete(id)}
