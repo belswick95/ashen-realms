@@ -1,3 +1,4 @@
+import {combatLevel} from './combat-level.js?v=release-20261103-shared1';
 // Backward-compatible mapping between browser saves and the existing JSONB columns.
 // Authentication supplies the owner id; saved client data cannot choose another owner.
 export const skillKeys=['attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP'];
@@ -9,7 +10,7 @@ export function toPlayerRow(s,user){
  if(!user?.id)throw Error('A signed-in player is required to save.');
  const previous=object(s._cloud),skills={...object(previous.skills)};
  for(const key of skillKeys)skills[key]=count(s[key]);
- return {user_id:user.id,character_name:user.user_metadata?.username||'Adventurer',level:Math.max(1,count(s.level)),xp:count(s.combatXP),gold:count(s.gold),health:Math.min(100,count(s.hp??100)),max_health:100,
+ return {user_id:user.id,character_name:user.user_metadata?.username||'Adventurer',level:combatLevel(s),xp:count(s.combatXP),gold:count(s.gold),health:Math.min(100,count(s.hp??100)),max_health:100,
  world_position:{...object(previous.world_position),x:number(s.x),y:number(s.z)},
  stats:{...object(previous.stats),wood:count(s.wood),ore:count(s.ore),woodXP:count(s.woodXP),miningXP:count(s.miningXP),kills:count(s.kills)},
  inventory:{...object(previous.inventory),armorOwned:list(s.armorOwned),weaponsOwned:list(s.weaponsOwned),shieldsOwned:list(s.shieldsOwned),jewelryOwned:list(s.jewelryOwned),bank:object(s.bank)},
