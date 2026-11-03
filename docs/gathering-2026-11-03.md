@@ -4,7 +4,7 @@
 
 Trees offer “Chop down tree” on right click and start on left click. An axe may be carried or wielded. Each tree supplies 1–5 logs, with an occasional two-log harvest. Depleted trees become shared stumps and regrow after 45 seconds. The World Studio tree editor exposes regrowth time and minimum/maximum logs. Logs use the requested triangular three-log icon.
 
-The server controls timing, supplies, XP, stock and depletion. Clients only animate authoritative jobs. Private job tables and helper functions are inaccessible to player SQL roles. Existing merchant fishing stock now includes nets.
+The server controls timing, supplies, XP, stock and depletion. Clients only animate authoritative jobs. Private job tables and internal helpers are inaccessible to player SQL roles. Only the session-checked request entry permits authenticated execution; the legacy entry remains private. Existing merchant fishing stock now includes nets.
 
 References: https://oldschool.runescape.wiki/w/Tree (normal tree regrowth 35.4–58.8 seconds); https://oldschool.runescape.wiki/w/Fishing_spot_%28small_net%2C_bait%29 (net versus rod and bait). Eldervale intentionally allows multiple logs per normal tree.
 

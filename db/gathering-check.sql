@@ -1,6 +1,11 @@
 begin;
 select set_config('request.jwt.claim.sub','91c5b7f0-7018-4290-a190-c2bba0ca492d',true);
 select set_config('request.jwt.claims','{"sub":"91c5b7f0-7018-4290-a190-c2bba0ca492d","role":"authenticated"}',true);
+-- Verify the public RPC as a player, not as the database owner.
+select set_config('test.realm_session',(select session_id::text from eldervale_private.realm_players where user_id=auth.uid()),true);
+set local role authenticated;
+select public.world_command(current_setting('test.realm_session')::uuid,'sync') ? 'gathering' as player_entry_works;
+reset role;
 -- Reversible validation against the existing schema; no player changes commit.
 do $$declare uid uuid:=auth.uid();sid uuid;tree text:='test:gather:tree';spot text:='test:gather:fish';n integer;err text;result jsonb;
 begin

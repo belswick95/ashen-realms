@@ -125,3 +125,7 @@ do $$declare body text;old text;new text;begin
  select pg_get_functiondef('eldervale_private.can_step(double precision,double precision,double precision,double precision)'::regprocedure) into body;
  if position('available_at is null' in body)=0 then body:=replace(body,'and(kind in(''tree'',''rock'')', 'and (kind<>''tree'' or available_at is null or available_at<=clock_timestamp()) and(kind in(''tree'',''rock'')');execute body;end if;
 end $$;
+
+-- The public invoker delegates to this authenticated, session-checked entry.
+grant execute on function eldervale_private.realm_request(uuid,text,jsonb,uuid,bigint) to authenticated;
+revoke all on function eldervale_private.realm_request_before_gathering(uuid,text,jsonb,uuid,bigint) from public,anon,authenticated;
