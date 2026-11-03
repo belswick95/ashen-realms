@@ -145,3 +145,35 @@ body.fantasy-hud #map-controls{position:static!important;display:flex!important;
 body.fantasy-hud #map-controls>button{width:30px!important;height:30px!important;min-height:30px!important;border-radius:6px!important;font:16px Arial}
 body.fantasy-hud #map-controls #run-toggle{width:68px!important;height:30px!important;min-height:30px!important;border-radius:7px!important;font-size:11px}
 @media(max-height:550px){body.fantasy-hud #map-widget{width:132px!important;padding:3px!important}body.fantasy-hud #minimap{width:120px!important;height:120px!important;margin-bottom:8px!important}body.fantasy-hud #map-widget .map-head{top:91px;right:0}body.fantasy-hud #map-controls{gap:4px!important}body.fantasy-hud #map-controls>button{width:28px!important;height:30px!important}body.fantasy-hud #map-controls #run-toggle{width:58px!important}}
+/* Unified third-person HUD: peripheral information, clear central play space. */
+body.fantasy-hud{--hud-edge:14px;--hud-panel:#101d27ed;--hud-line:#9a8b6259;--hud-text:#e8dfc7}
+body.fantasy-hud #account-bar{top:var(--hud-edge)!important;left:var(--hud-edge)!important;bottom:auto!important;padding:4px 7px!important;min-height:24px!important;border:0!important;background:#101d27b8!important;border-radius:6px!important;font:11px Arial!important;box-shadow:none!important}
+body.fantasy-hud #account-name{display:none}
+body.fantasy-hud #logout{min-height:24px!important;padding:2px 8px!important;font-size:10px!important}
+body.fantasy-hud #game-ui #health-hud{position:fixed!important;top:50px!important;bottom:auto!important;left:var(--hud-edge)!important;transform:none!important;transform-origin:center!important;width:244px!important;max-width:244px!important;min-width:0!important;padding:9px!important;gap:8px!important;border:1px solid var(--hud-line)!important;border-left:3px solid #b19a68!important;border-radius:7px!important;background:linear-gradient(115deg,#23343eea,#101c27df)!important;box-shadow:0 5px 18px #0005!important;pointer-events:auto!important}
+body.fantasy-hud #health-hud #player-portrait{display:block!important;width:42px!important;height:52px!important;border:1px solid #7e765555;border-radius:5px;background:#15232b}
+body.fantasy-hud #health-hud #hud-name{font:600 12px Georgia!important;letter-spacing:.5px!important;margin-bottom:5px!important;color:#efdfb7}
+body.fantasy-hud #health-hud .health-track{height:12px!important;border:1px solid #8f876366!important;border-radius:3px!important;background:#07121b!important;box-shadow:inset 0 1px 3px #0009}
+body.fantasy-hud #health-hud #hud-info{font:9px Arial!important;letter-spacing:1px;color:#abaeaa}
+body.fantasy-hud #special-attack{display:none!important}
+body.fantasy-hud #owner-studio-toggle{left:var(--hud-edge)!important;top:137px!important;bottom:auto!important;min-height:28px!important;padding:4px 9px!important;font:11px Georgia!important}
+body.fantasy-hud #world-clock{top:var(--hud-edge)!important;background:#101d27a6!important;border:0!important;border-radius:5px!important;color:#c7c7ba;font:10px Arial!important;padding:5px 9px!important;letter-spacing:.3px}
+body.fantasy-hud #world-report-button{bottom:84px!important;left:auto!important;right:var(--hud-edge)!important;transform:none!important;padding:3px 7px!important;min-height:22px!important;font:9px Arial!important;opacity:.7}
+body.fantasy-hud #side,body.fantasy-hud #social-panel,body.fantasy-hud #dialog{backdrop-filter:blur(9px)}
+body.fantasy-hud #side{border-color:var(--hud-line)!important;border-radius:9px!important;background:linear-gradient(140deg,#243641ed,#101d27f5)!important;box-shadow:0 6px 20px #0007!important}
+body.fantasy-hud #side>.tabs button{border-color:#7e826666!important;box-shadow:inset 0 1px #e0d7bb17,0 2px 4px #0005!important}
+body.fantasy-hud #inventory-gold{background:#0d1b2599!important;color:#ddc99b;font:12px Georgia;border-bottom-color:var(--hud-line)}
+body.fantasy-hud #dialog{width:min(440px,calc(100vw - 28px))!important;padding:14px!important;border-left:3px solid #b19a68!important}
+body.fantasy-hud .dialog-top{border-bottom:1px solid var(--hud-line);padding-bottom:8px;margin-bottom:10px}
+body.fantasy-hud #dialog-name{font:17px Georgia;color:#ead8b0}body.fantasy-hud .dialog-badge{font:8px Arial;letter-spacing:2px;color:#a9afa9}
+body.fantasy-hud #dialog-portrait{border-radius:8px;border:1px solid var(--hud-line)}
+body.fantasy-hud #dialog-text{font:13px/1.65 Arial;color:#d8d9cd}
+body.fantasy-hud #contextmenu{padding:5px!important;min-width:180px}
+body.fantasy-hud #contextmenu button{display:block;width:100%;text-align:left;background:transparent!important;border:0!important;border-radius:4px!important;box-shadow:none!important;padding:8px 10px!important;font:12px Arial}
+body.fantasy-hud #contextmenu button:hover{background:#84907124!important}
+body.fantasy-hud dialog h2{font-family:Georgia;font-weight:400;color:#e7d5aa}
+body.fantasy-hud dialog input,body.fantasy-hud dialog select,body.fantasy-hud dialog textarea{background:#0b1823!important;color:#e2dfce!important;border:1px solid #76816b66!important;border-radius:5px!important}
+body.fantasy-hud #combat-notice{bottom:25px!important;top:auto!important;left:50%!important;transform:translateX(-50%);background:#10202bdc;border:1px solid #ac986066;border-radius:6px;font:12px Georgia}
+@media(max-height:550px){body.fantasy-hud{--hud-edge:8px}body.fantasy-hud #game-ui #health-hud{top:42px!important;left:8px!important;width:174px!important;max-width:174px!important;padding:6px!important;gap:5px!important}body.fantasy-hud #health-hud #player-portrait{display:none!important}body.fantasy-hud #owner-studio-toggle{top:112px!important;font-size:10px!important}body.fantasy-hud #world-clock{max-width:145px!important;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}body.fantasy-hud #world-report-button{bottom:73px!important}body.fantasy-hud #dialog{bottom:75px!important;max-height:calc(100dvh - 100px)!important;overflow:auto}}
+body.fantasy-hud:not(.landscape-required) #social-panel,body.fantasy-hud:not(.landscape-required) #game-ui #health-hud{visibility:visible!important}
+@media(max-height:550px){body.fantasy-hud #owner-studio-toggle{left:190px!important;top:44px!important;max-width:115px!important}body.fantasy-hud #combat-notice{bottom:84px!important;max-width:40vw;font-size:11px}}
