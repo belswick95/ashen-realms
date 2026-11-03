@@ -1,4 +1,5 @@
-import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261103-travel11';
+import {generatedWorld} from './procedural-world.js?v=release-20261103-world12';
+import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261103-world12';
 export const townMusic=[
  {id:'oakcross',name:'Oakcross',x:0,z:0,radius:50,title:'Lord of the Land'},
  {id:'northwatch',name:'Northwatch',x:-60,z:45,radius:22,title:'Night Vigil'},
@@ -17,9 +18,10 @@ export const townMusic=[
 export const loginMusic={id:'login',name:'The gates of Eldervale',title:'Stoneworld Battle'};
 export function musicRegion(position,current=null){
  if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.z))return null;
+ const towns=generatedWorld?[...generatedWorld.towns.map((t,i)=>({...t,id:['oakcross','northwatch','suncrest'][i],radius:48,title:['Lord of the Land','Night Vigil','Angevin'][i]})),townMusic.find(t=>t.id==='castle')]:townMusic;
  const distance=town=>Math.hypot(position.x-town.x,position.z-town.z);
- if(current&&townMusic.includes(current)&&distance(current)<current.radius+6)return current;
- return townMusic.filter(t=>distance(t)<=t.radius).sort((a,b)=>distance(a)-distance(b))[0]||null;
+ if(current&&towns.some(t=>t.id===current.id)&&distance(current)<current.radius+6)return current;
+ return towns.filter(t=>distance(t)<=t.radius).sort((a,b)=>distance(a)-distance(b))[0]||null;
 }
 export function wildernessSound(position){
  if(!position)return 'forest';const {x,z}=position;

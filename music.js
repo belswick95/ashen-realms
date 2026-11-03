@@ -1,4 +1,4 @@
-import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261103-travel11';
+import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261103-world12';
 let singleton;
 // One audio engine spans sign-in and gameplay. Music and environment have
 // separate buses; natural ambience is never represented as a music track.
