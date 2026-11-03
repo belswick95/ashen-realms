@@ -1,5 +1,5 @@
 // Shared world-space outlines. The 3D scene and both maps consume this data.
-export const worldRoads=[[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
+export const worldRoads=[[[-275,-215],[-340,-235]],[[-340,-235],[-340,-240]],[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
 export function roadPoints(a,b,segments=32){
  const dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz)||1;
  const seed=Math.sin(a[0]*127.1+b[1]*311.7)*43758.5453;
@@ -15,6 +15,7 @@ export function lakeOutline(lake,factor=1){
  });
 }
 export function ribbonGeometry(T,points,width){
+ points=points.filter((p,i)=>!i||Math.hypot(p[0]-points[i-1][0],p[1]-points[i-1][1])>1e-5);
  const positions=[],uv=[],indices=[];
  let traveled=0;
  for(let i=0;i<points.length;i++){

@@ -9,7 +9,7 @@ export function attachWeapon(rig,model,key){
 }
 export function attachShield(rig,model){
  // The handle meets the palm, the upper panel rests along the bent forearm.
- model.position.set(.065,.10,.025);
- model.rotation.set(.70,1.02,-.10);
+ model.position.set(0,.13,.08);
+ model.rotation.set(.70,1.02,-.10);model.userData.shieldMount=true;
  rig.leftHand.add(model);return model;
 }

@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import {townMusic,musicRegion,wildernessSound,audioPreference} from '../audio-regions.js';
 import {landscapeSettlements} from '../geography.js';import {coverPoint} from '../login-fire.js';
 test('every actual town has a distinct licensed recording on disk',()=>{
- const credits=JSON.parse(fs.readFileSync(new URL('../assets/audio/credits.json',import.meta.url)));assert.equal(townMusic.length,landscapeSettlements.length);assert.equal(new Set(townMusic.map(t=>t.title)).size,townMusic.length);
+ const credits=JSON.parse(fs.readFileSync(new URL('../assets/audio/credits.json',import.meta.url)));assert.equal(townMusic.length,landscapeSettlements.length+1);assert.equal(new Set(townMusic.map(t=>t.title)).size,townMusic.length);
  for(const [x,z] of landscapeSettlements){const region=musicRegion({x,z});assert.ok(region,`${x},${z} requires music`);const credit=credits.find(c=>c.id===region.id);assert.equal(credit.title,region.title);assert.equal(credit.license,'CC BY 4.0');assert.ok(fs.statSync(new URL('..'+credit.file,import.meta.url)).size>100000)}
  assert.ok(credits.some(c=>c.id==='login'&&c.title==='Stoneworld Battle'));
 });

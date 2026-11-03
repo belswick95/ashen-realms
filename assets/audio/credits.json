@@ -141,5 +141,16 @@
     "file": "/assets/audio/ashen-ruins.mp3",
     "duration": 126.91,
     "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
+  },
+  {
+    "id": "castle",
+    "title": "Crown of the Heartlands",
+    "artist": "Eldervale",
+    "source": "/scripts/compose-castle.py",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/castle.mp3",
+    "duration": 101.05,
+    "changes": "Original synthesized lute, flute and strings composition created for Eldervale Castle."
   }
 ]

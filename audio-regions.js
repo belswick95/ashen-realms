@@ -1,4 +1,4 @@
-import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261103-nature7';
+import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261103-castle8';
 export const townMusic=[
  {id:'oakcross',name:'Oakcross',x:0,z:0,radius:50,title:'Lord of the Land'},
  {id:'northwatch',name:'Northwatch',x:-60,z:45,radius:22,title:'Night Vigil'},
@@ -11,7 +11,8 @@ export const townMusic=[
  {id:'moonmere',name:'Moonmere',x:-114,z:82,radius:24,title:'Evening Fall (Harp)'},
  {id:'silverfin',name:'Silverfin',x:187,z:74,radius:24,title:'Lost Frontier'},
  {id:'pinehollow',name:'Pinehollow',x:-152,z:-133,radius:24,title:'Willow and the Light'},
- {id:'stonebridge',name:'Stonebridge',x:164,z:-116,radius:24,title:'The Britons'}
+ {id:'stonebridge',name:'Stonebridge',x:164,z:-116,radius:24,title:'The Britons'},
+ {id:'castle',name:'Eldervale Castle',x:-340,z:-305,radius:76,title:'Crown of the Heartlands',artist:'Eldervale'}
 ];
 export const loginMusic={id:'login',name:'The gates of Eldervale',title:'Stoneworld Battle'};
 export function musicRegion(position,current=null){

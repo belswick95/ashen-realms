@@ -3,10 +3,12 @@
 Browser-based medieval fantasy RPG using Three.js, Supabase authentication,
 player persistence, gathering, equipment and multiplayer social features.
 
-Graphics overhaul work stays on `work/character-overhaul-unreleased`.
-The production branch is `feature/materials-character-animation`.
-No release is authorized by a development branch push.
-See [overhaul status](docs/OVERHAUL_STATUS.md) for verified work and remaining gaps.
+Production is deployed from `main` with the manual `deploy-hostinger.yml` workflow.
+A branch push alone does not publish the game.
+
+See [World Studio guide](owner-guide.html) for world building, item creation,
+moderator roles and the in-game terminal. The terminal uses server-validated game
+commands; hosting and code deployment remain separate operations.
 
 ## Local checks
 
