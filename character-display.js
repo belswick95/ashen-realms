@@ -1,5 +1,5 @@
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261102-turns1';
-import {buildHumanoid} from './humanoid.js?v=release-20261102-turns1';import {buildPlateArmor} from './armor.js?v=release-20261102-turns1';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261102-turns1';import {makeShield,shieldCatalog} from './shields.js?v=release-20261102-turns1';import {createCape} from './cape.js?v=release-20261102-turns1';import {createHumanoidAnimator} from './animation.js?v=release-20261102-turns1';import {safeAppearance} from './appearance.js?v=release-20261102-turns1';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-owner1';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-owner1';import {buildPlateArmor} from './armor.js?v=release-20261103-owner1';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261103-owner1';import {makeShield,shieldCatalog} from './shields.js?v=release-20261103-owner1';import {createCape} from './cape.js?v=release-20261103-owner1';import {createHumanoidAnimator} from './animation.js?v=release-20261103-owner1';import {safeAppearance} from './appearance.js?v=release-20261103-owner1';
 export function publicCharacter(appearance={},equipment={}){
  if(!equipment||typeof equipment!=='object'||Array.isArray(equipment))equipment={};
  const armor={};for(const key of ['helm','chest','legs','boots','cape'])armor[key]=equipment.armor?.[key]===true;

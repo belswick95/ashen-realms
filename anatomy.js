@@ -25,5 +25,5 @@ export function fabricMaterial(T,color,cache){
   }
   material.map=texture;material.bumpMap=texture;material.bumpScale=.004;
  }
- cache.set(key,material);return material;
+ material.userData.eldervaleShared=true;cache.set(key,material);return material;
 }

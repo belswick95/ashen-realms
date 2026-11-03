@@ -1,4 +1,4 @@
-import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261102-turns1';
+import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261103-owner1';
 // Eldervale's shared low-poly human rig. The same geometry powers players,
 // NPCs, remote adventurers and the live character-creation preview.
 // Rig pivots are preserved for existing movement, equipment and combat animations.
@@ -7,8 +7,8 @@ export function buildHumanoid(T,root,look={}){
  const skin=parse(look.skin,0xc9916b),shirt=parse(look.shirt,0x426e68),pants=parse(look.pants,0x353b3e),hairColor=parse(look.hairColor,0x392820);
  const caches=buildHumanoid.caches||(buildHumanoid.caches=new WeakMap());
  let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
- function mat(color,rough=.85){const k='mat'+color+':'+rough;if(!cache.has(k))cache.set(k,new T.MeshStandardMaterial({color,roughness:rough,flatShading:false}));return cache.get(k)}
- function geo(key,make){if(!cache.has(key))cache.set(key,make());return cache.get(key)}
+ function mat(color,rough=.85){const k='mat'+color+':'+rough;if(!cache.has(k))cache.set(k,new T.MeshStandardMaterial({color,roughness:rough,flatShading:false}));cache.get(k).userData.eldervaleShared=true;return cache.get(k)}
+ function geo(key,make){if(!cache.has(key))cache.set(key,make());cache.get(key).userData.eldervaleShared=true;return cache.get(key)}
  const faceMat=mat(skin),cloth=fabricMaterial(T,shirt,cache),trousers=fabricMaterial(T,pants,cache),hairMat=mat(hairColor),boots=mat(0x272523),beltMat=mat(0x57362a);
  function mesh(g,m,parent,x,y,z,sx=1,sy=1,sz=1){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;if(parent===root&&y>1.07&&y<1.98)o.userData.tunic=true;parent.add(o);return o}
  const sphere=geo('humanSphere',()=>new T.SphereGeometry(1,6,4));
