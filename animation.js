@@ -2,7 +2,7 @@
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
  let phase=0,blend=0,time=0,impact=0;const restY=new WeakMap();let combatBlend=0,runBlend=0;
- return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false,weapon=null,block=0,locomotion=null}={}){
+ return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false,weapon=null,block=0,locomotion=null,style=null}={}){
   if(!Number.isFinite(dt)||dt<=0)return;
   dt=Math.min(dt,.1);time+=dt;
   distance=Number.isFinite(distance)?Math.max(0,distance):0;
@@ -12,7 +12,7 @@ export function createHumanoidAnimator(rig){
   impact=Math.max(incoming,impact*Math.exp(-9*dt));
   const moving=distance>1e-6;
   blend+=(moving?1-blend:-blend)*(1-Math.exp(-12*dt));
-  const mode=locomotion||(attack>0||block>0?'combat':speed>2.8?'run':'walk');
+  const mode=locomotion||(attack>0||block>0?'combat':speed>3.5?'run':'walk');
   const transition=1-Math.exp(-12*dt);
   combatBlend+=((mode==='combat'?1:0)-combatBlend)*transition;
   runBlend+=((mode==='run'&&moving?1:0)-runBlend)*transition;
@@ -71,9 +71,9 @@ export function createHumanoidAnimator(rig){
   if(!armed||twoHanded||attack>0)rig.rightArm.rotation.z=0;
   if(attack>0&&!twoHanded){
    const t=Math.max(0,Math.min(1,1-attack/.55)),s=t*t*(3-2*t),pulse=Math.sin(t*Math.PI);
-   if(weapon==='shortsword'||weapon==='dagger'){
-    rig.rightArm.rotation.x=-.45-.55*pulse;rig.rightElbow.rotation.x=-.8+.72*pulse;rig.rightHand.rotation.x=1.25*pulse;rig.rightArm.rotation.z=-.12;
-   }else if(weapon==='scimitar'){
+   if(style==='stab'||style==='lunge'||!style&&(weapon==='shortsword'||weapon==='dagger')){
+    rig.rightArm.rotation.x=-.45-(style==='lunge'?.95:.65)*pulse;rig.rightElbow.rotation.x=-.8+.72*pulse;rig.rightHand.rotation.x=1.25*pulse;rig.rightArm.rotation.z=-.12;
+   }else if(style==='slash'||weapon==='scimitar'){
     rig.rightArm.rotation.x=-.75+pulse*.35;rig.rightArm.rotation.y=-.85+s*1.7;rig.rightArm.rotation.z=-.30-pulse*.20;rig.rightElbow.rotation.x=-.40;rig.rightHand.rotation.z=-.35+s*.65;
    }else{
     rig.rightArm.rotation.x=-1.35+s*1.8;rig.rightArm.rotation.y=.30-s*.60;rig.rightArm.rotation.z=-.30+s*.20;rig.rightElbow.rotation.x=-.45+pulse*.15;
@@ -84,14 +84,14 @@ export function createHumanoidAnimator(rig){
    const V=rig.root.position.constructor;
    if(attack>0){
     const t=Math.max(0,Math.min(1,1-attack/.55)),swing=Math.sin(t*Math.PI),angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle)),target=new V(0,1.82+swing*.10,.46+swing*.06);
-    rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
+    if(style==='stab'||style==='lunge'){direction.set(0,.25,1).normalize();target.set(0,1.55,.45+swing*(style==='lunge'?.7:.4))}rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
    }else{
     // Carry the greatsword upright along the right shoulder; the free arm walks naturally.
     rig.solveArm('right',new V(-.68,1.54,.30),new V(-.20,1,-.04).normalize(),new V(0,0,1));
    }
   }
   if(block>0&&attack<=0){
-   if(twoHanded&&rig.solveArm){const V=rig.root.position.constructor,direction=new V(-.65,.65,.30).normalize(),target=new V(-.12,1.88,.40);rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10),direction)}
+   if(twoHanded&&rig.solveArm){const V=rig.root.position.constructor,direction=new V(-.65,.65,.30).normalize(),target=new V(-.12,1.88,.40);if(style==='stab'||style==='lunge'){direction.set(0,.25,1).normalize();target.set(0,1.55,.45+swing*(style==='lunge'?.7:.4))}rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10),direction)}
    else if(shield){rig.leftArm.rotation.x=-.90;rig.leftArm.rotation.z=.24;rig.leftElbow.rotation.x=-.85}
    else{rig.rightArm.rotation.x=-.85;rig.rightElbow.rotation.x=-.7;rig.rightHand.rotation.z=-.45}
   }

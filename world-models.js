@@ -1,4 +1,4 @@
-import {buildCharacterDisplay} from './character-display.js?v=release-20261103-builder5';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261103-motion6';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(['human','goblin','skeleton'].includes(d.species)||d.kind==='npc'){
