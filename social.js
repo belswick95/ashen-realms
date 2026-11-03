@@ -1,5 +1,5 @@
-import {startMultiplayer} from './multiplayer.js?v=release-20261103-scenery25';
-import {setChatMessages,setFeedIdentity,addSystemMessage} from './chat-feed.js?v=release-20261103-scenery25';
+import {startMultiplayer} from './multiplayer.js?v=release-20261103-gather26';
+import {setChatMessages,setFeedIdentity,addSystemMessage} from './chat-feed.js?v=release-20261103-gather26';
 // Eldervale social panel. Only authenticated players can use these features.
 export function startSocial(db,user){
 const panel=document.querySelector('#social-panel'),tabs=panel.querySelectorAll('[data-social-tab]'),chatList=panel.querySelector('#world-chat-lines'),chatForm=panel.querySelector('#world-chat-form'),chatInput=panel.querySelector('#world-chat-input'),friendList=panel.querySelector('#friend-list'),search=panel.querySelector('#friend-search'),searchResult=panel.querySelector('#friend-results'),note=panel.querySelector('#social-note');

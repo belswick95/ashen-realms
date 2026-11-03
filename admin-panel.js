@@ -1,9 +1,9 @@
-import {itemIcons} from './item-icons.js?v=release-20261103-scenery25';
-import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261103-scenery25';
-import {goods} from './economy.js?v=release-20261103-scenery25';
+import {itemIcons} from './item-icons.js?v=release-20261103-gather26';
+import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261103-gather26';
+import {goods} from './economy.js?v=release-20261103-gather26';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==null)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
 export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
- const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261103-scenery25';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261103-gather26';document.head.append(css);
  const button=el('button','♛ World studio',{id:'owner-studio-toggle',type:'button'}),panel=el('dialog',null,{id:'owner-studio'});document.body.append(button,panel);
  panel.innerHTML='<header><div><small>ELDERVALE · OWNER ACCESS</small><h2>World studio</h2></div><button type="button" data-close aria-label="Close studio">×</button></header><nav aria-label="Owner tools"></nav><div class="studio-workspace"></div><footer role="status">Changes are saved to the server and audited.</footer>';
  const owner=snapshot.owner;let tab=owner?'World':'Players',rows=new Map(),selected=null,placing=false,selecting=false,busy=false,overview=null,current=snapshot,formData=null;
@@ -46,6 +46,7 @@ export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
    const stock=field(form,'Shop inventory: one itemID,buyPrice,sellPrice,stock per line (stock -1 = unlimited). Leave empty for standard market.','shopText',Object.entries(starting.shop||{}).map(([id,s])=>[id,s.buy,s.sell,s.stock].join(',')).join('\n'),'textarea');
    const help=el('small','Example: fishingPole,35,12,-1  ·  bait,2,1,1000  ·  rawFish,12,6,100');form.append(help);const catalog=el('details');catalog.append(el('summary','Item ID reference'),el('pre',Object.entries(goods).map(([id,g])=>id+' — '+g.name).join('\n')));form.append(catalog);
   }
+  if(['tree','pine'].includes(starting.template)){field(grid,'Tree regrowth seconds (15–3600)','resourceRespawn',starting.resourceRespawn||45,'number');field(grid,'Minimum logs per tree','resourceMinLogs',starting.resourceMinLogs||1,'number');field(grid,'Maximum logs per tree','resourceMaxLogs',starting.resourceMaxLogs||5,'number')}
   if(starting.template.startsWith('terrain_')){field(grid,'Terrain radius (2–30m)','radius',starting.radius||10,'number');field(grid,'Raise / lower (-8 to +8m)','elevation',starting.elevation||0,'number')}
   if(['castle_wall','castle_gate'].includes(starting.template))field(grid,'Wall / gate length (6–50m)','length',starting.length||24,'number');
   if(starting.template==='road'){field(grid,'Path length (2–50m)','length',starting.length||10,'number');field(grid,'Path width (1–8m)','width',starting.width||2.5,'number')}
