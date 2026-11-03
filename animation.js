@@ -74,9 +74,9 @@ export function createHumanoidAnimator(rig){
   }
   // Outside combat, carry a one-handed sword low beside the body instead of
   // freezing both arms in the fighting-ready pose while the legs move.
-  const travelCarry=walkBlend*blend;
+  const travelCarry=walkBlend;
   if(armed&&!twoHanded&&attack<=0&&block<=0&&['longsword','scimitar','shortsword','dagger'].includes(weapon)){
-   rig.rightArm.rotation.x=rig.rightArm.rotation.x*(1-travelCarry)+(.04-armWave*.10)*travelCarry;
+   rig.rightArm.rotation.x=rig.rightArm.rotation.x*(1-travelCarry)+(.04-armWave*.10*blend)*travelCarry;
    rig.rightElbow.rotation.x=rig.rightElbow.rotation.x*(1-travelCarry)-.10*travelCarry;
    rig.rightHand.rotation.x=1.2*travelCarry;
   }
@@ -93,7 +93,7 @@ export function createHumanoidAnimator(rig){
    }
   }
   for(const child of rig.leftHand?.children||[])if(child.userData.shieldMount)child.rotation.set(...(block>0&&attack<=0?[0,0,0]:[.70,1.02,-.10]));
-  if(shield&&!twoHanded){rig.leftArm.rotation.x=(-.15-gait*.03*blend)*(1-travelCarry)+(.03+armWave*.06)*travelCarry;rig.leftArm.rotation.z=.10;rig.leftElbow.rotation.x=-.55*(1-travelCarry)-.16*travelCarry;rig.leftHand?.rotation.set(0,0,0)}
+  if(shield&&!twoHanded){rig.leftArm.rotation.x=(-.15-gait*.03*blend)*(1-travelCarry)+(.03+armWave*.06*blend)*travelCarry;rig.leftArm.rotation.z=.10;rig.leftElbow.rotation.x=-.55*(1-travelCarry)-.16*travelCarry;rig.leftHand?.rotation.set(0,0,0)}
   if(twoHanded&&rig.solveArm){
    const V=rig.root.position.constructor;
    if(attack>0){
