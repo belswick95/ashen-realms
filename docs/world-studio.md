@@ -44,3 +44,25 @@ Player combat level is `floor((Attack level + Defence level + Strength level) / 
 Deployment order: apply `shared-world.sql`, seed catalog/static world (`realm-seed-*.sql`, `realm-water.sql`), apply `shared-world-refinements.sql`, `shared-world-collision.sql` , `shared-world-stream.sql` and `shared-world-preview.sql`, upload matching client, then apply `shared-world-activate.sql`. Never activate an older client build. Rollback: disable `eldervale_world_tick` in `cron.job`, set `realm_clock.enabled=false`, restore the previous client, and restore owner-scoped DML grants to `player_saves`. Preserve the runtime tables for recovery; don't delete character or world data.
 
 Validation includes database transactions under separate authenticated identities, server-only movement/combat/economy checks, rejected forged writes/session IDs, and two browser views applying identical health/death/events. The implementation uses [Supabase Cron](https://supabase.com/docs/guides/cron), with server-side private functions and the existing owner authorization model.
+
+## Fishing, shops, terrain and tutorial starts
+
+The night lighting now keeps a minimum ambient/moonlight level and uses four pooled warm lights around nearby street lamps. Towns have more lamp fixtures without adding dozens of active GPU lights. Main paths and town approaches are reprojected onto the finished terrain after building grading; streets use orthogonal approaches rather than a fan of straight spokes.
+
+Fishing item IDs are `fishingPole`, `bait`, and `rawFish`. Buy a pole and bait from a normal market, carry them in inventory, and click a **Fishing spot** on a shoreline. There is an initial spot on Moonmere's eastern shore at X -70, Z 80. One successful cast consumes one bait and gives a raw fish plus 25 Fishing XP. Casts have a four-second server cooldown and require free inventory capacity. Bait stacks in one slot; the pole and each fish use inventory slots. Markets offer bait individually or ten at a time. Equipment grants still arrive in the bank, so withdraw supplies before fishing.
+
+To build your own shop: create/select an NPC in World, choose the **Merchant / shop** service, and enter inventory lines in this format:
+
+```
+fishingPole,35,12,-1
+bait,2,1,1000
+rawFish,12,6,100
+```
+
+Columns are item ID, buy price, sell price, and stock. Stock -1 means unlimited. An Item ID reference is next to the editor. Saving an NPC inventory resets its stock to the entered amounts; purchases/sales then change shared stock transactionally. Empty inventory uses the standard market catalog. Placeable market stalls support the same stock editor. Sell prices cannot exceed buy prices. Other players cannot edit stock or prices.
+
+The new World palette includes **Fountain**, **Fishing spot**, **Path segment**, and grass/sand/stone/snow terrain patches. Path length and width are editable; heading rotates the segment. Terrain patches have radius and raise/lower values, applied in stable order and restored on deletion. Shape terrain before placing buildings: sculpting must stay clear of existing buildings and use gentle slopes. These patches are local landscape edits; they do not regenerate the entire base world or redesign its river network. Nearby vegetation, ground-anchored props and paths are reseated when terrain changes. Place objects on dry land and inspect entrances before opening the area to players.
+
+For a tutorial: build the terrain and paths, place buildings and a fountain, add a guide with your own dialogue pages (one line per page), add a merchant selling the pole and bait, then place a shoreline Fishing spot. Stand at the desired entrance and use **Server → Set my position as new-character / tutorial start**. Only newly created characters start there; existing characters retain their positions. This provides authorable tutorial geography/dialogue/services, rather than a quest-objective scripting system.
+
+Validation covers server fishing requirements, bait consumption and stack slots, duplicate-request protection, custom prices/shared stock, bulk bait purchases and editable starting location. Terrain rebuild/delete and minimum night illumination have deterministic tests; focused rendering checks verify road vertices remain seated after final grading. The scene is not claimed to have every possible hand-built overlap eliminated—use the builder to review custom layouts as you place them.
