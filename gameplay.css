@@ -84,3 +84,28 @@ body.compact-layout #map-widget .minimap-brand{font-size:13px}
 
 /* Touch movement stays separate from camera dragging and the right-hand HUD. */
 #movement-pad{display:none;position:fixed;left:14px;bottom:100px;z-index:40;grid-template-columns:repeat(3,40px);gap:4px;touch-action:none}#movement-pad button{height:40px;padding:0;background:#15251bd9;color:#ead8a7;border:1px solid #a58b55;border-radius:9px;font-size:18px;touch-action:none}#movement-pad [data-key=KeyW]{grid-column:2}#movement-pad [data-key=KeyA]{grid-column:1;grid-row:2}#movement-pad [data-key=KeyS]{grid-column:2;grid-row:2}#movement-pad [data-key=KeyD]{grid-column:3;grid-row:2}#movement-pad [data-jump]{grid-column:2;grid-row:3;font-size:11px}@media(any-pointer:coarse) and (orientation:landscape){body:not(.landscape-required) #movement-pad{display:grid}}body:has(#auth-screen:not([hidden])) #movement-pad{display:none}
+/* Restrained iron, leather and antique brass HUD for the third-person camera. */
+body.fantasy-hud{--frame:#ad905a;--ink:#e9ddbe;--glass:#101b20ed}
+body.fantasy-hud #side{position:fixed!important;right:max(14px,env(safe-area-inset-right))!important;bottom:14px!important;top:auto!important;left:auto!important;width:330px!important;height:60px!important;max-height:calc(100dvh - 100px)!important;padding:7px!important;background:linear-gradient(145deg,#31332d,#10191e)!important;border:1px solid var(--frame)!important;border-radius:14px!important;box-shadow:0 8px 25px #0008,inset 0 0 0 3px #050b1055;overflow:visible!important}
+body.fantasy-hud #side>.tabs{position:absolute;bottom:7px;left:7px;right:7px;display:flex!important;gap:5px;margin:0;height:44px}
+body.fantasy-hud #side>.tabs button{flex:1;min-width:0!important;height:44px!important;min-height:44px!important;padding:6px!important;border-radius:9px!important}
+body.fantasy-hud:not(.hud-panel-open) #side>:not(.tabs){display:none!important}
+body.fantasy-hud.hud-panel-open #side{height:min(510px,calc(100dvh - 105px))!important;padding:35px 12px 68px!important;display:flex;flex-direction:column;overflow:hidden!important}
+body.fantasy-hud .hud-panel-close{position:absolute;top:3px;right:8px;padding:0;width:30px;height:28px;background:none;border:0;color:#e6d1a2;font-size:25px}
+body.fantasy-hud #side .compact-close,body.fantasy-hud #side .compact-panel-title{display:none!important}
+body.fantasy-hud #inventory{grid-auto-rows:64px!important;overflow:auto;gap:8px}
+body.fantasy-hud .slot{height:64px!important;border:1px solid #a18b574f!important;border-radius:8px!important;background:radial-gradient(ellipse at top,#39413988,#0c1519)!important}
+body.fantasy-hud #map-widget{width:190px!important;padding:10px!important;border-radius:105px 105px 24px 24px!important;background:linear-gradient(145deg,#34372d,#131d22)!important;border:2px solid #ac915e!important;box-shadow:inset 0 0 0 3px #111b20,0 8px 25px #0007}
+body.fantasy-hud #minimap{display:block;width:166px!important;height:166px!important;border-radius:50%;border:3px solid #b29a65;box-shadow:0 0 0 3px #10191c,inset 0 0 20px #0008;object-fit:cover;margin:5px auto!important}
+body.fantasy-hud #map-widget .minimap-brand,body.fantasy-hud #map-widget .map-head span,body.fantasy-hud #map-widget>small{display:none!important}
+body.fantasy-hud #map-widget .map-head{justify-content:center}
+body.fantasy-hud #map-toggle{background:transparent;border:0;font:11px Georgia;letter-spacing:2px;padding:2px!important;min-height:22px!important}
+body.fantasy-hud #map-controls{display:flex!important;justify-content:center;gap:7px}
+body.fantasy-hud #map-controls>button{border-radius:50%;min-width:30px;min-height:30px;padding:4px;margin:0}
+body.fantasy-hud #social-panel{background:#101b20d9!important;border:1px solid #9c87555c!important;border-radius:10px!important;box-shadow:0 5px 20px #0005;max-width:320px}
+body.fantasy-hud #social-panel.collapsed #world-chat-lines{display:none!important}
+body.fantasy-hud #health-hud{transform:scale(.85) translateX(-50%)!important;transform-origin:bottom left;background:#101b20dc!important;border:1px solid #ab90576b!important;border-radius:12px!important}
+body.fantasy-hud dialog,body.fantasy-hud #dialog,body.fantasy-hud #contextmenu{color:var(--ink);background:linear-gradient(145deg,#29322e,#101b20 65%)!important;border:1px solid var(--frame)!important;border-radius:12px!important;box-shadow:inset 0 0 0 3px #070d1155,0 20px 70px #000a}
+body.fantasy-hud dialog::backdrop{background:#060c14a6;backdrop-filter:blur(4px)}
+body.fantasy-hud dialog button,body.fantasy-hud #dialog button{border-radius:6px;background:linear-gradient(#78613c,#423922);border:1px solid #b69b63;color:#f1e5c8}
+@media(max-height:550px){body.fantasy-hud #map-widget{width:136px!important;padding:7px!important}body.fantasy-hud #minimap{width:110px!important;height:110px!important}body.fantasy-hud #side{width:290px!important}body.fantasy-hud.hud-panel-open #side{height:calc(100dvh - 28px)!important;max-height:none!important}}

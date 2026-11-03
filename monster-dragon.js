@@ -1,9 +1,10 @@
+import {creatureMaterial} from './creature-material.js?v=release-20261103-hud13';
 // Original articulated Eldervale dragon: four clawed feet, long neck, jaw, tail and ribbed wings.
 export function dragonModel(T,parent,d){
  const g=new T.Group();parent.add(g);let phase=0,travel=0;const mats=new Map(),legs=[],tails=[],wings=[];
- const mat=c=>{if(!mats.has(c))mats.set(c,new T.MeshStandardMaterial({color:c,roughness:.73}));return mats.get(c)};
+ const mat=c=>{if(!mats.has(c))mats.set(c,creatureMaterial(T,c,'scales'));return mats.get(c)};
  const mesh=(geo,c,x,y,z,p=g)=>{const m=new T.Mesh(geo,mat(c));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;p.add(m);return m};
- const ell=(x,y,z,a,b,c,col=0x794d3f,p=g)=>{const m=mesh(new T.SphereGeometry(1,12,8),col,x,y,z,p);m.scale.set(a,b,c);return m};
+ const ell=(x,y,z,a,b,c,col=0x794d3f,p=g)=>{const m=mesh(new T.SphereGeometry(1,24,16),col,x,y,z,p);m.scale.set(a,b,c);return m};
  const joint=(x,y,z,p=g)=>{const q=new T.Group();q.position.set(x,y,z);p.add(q);return q};
  const cone=(x,y,z,r,h,col,p=g)=>mesh(new T.ConeGeometry(r,h,7),col,x,y,z,p);
  ell(0,1.15,-.12,.68,.73,1.16);ell(0,.95,.30,.48,.56,.85,0xba9469);ell(0,1.55,.67,.40,.64,.39);const neck=joint(0,1.9,.95);ell(0,.15,.06,.29,.65,.29,0x86523e,neck);ell(0,.46,.36,.35,.26,.55,0x80503e,neck);ell(0,.37,.72,.30,.16,.35,0x7a4738,neck);
