@@ -54,12 +54,13 @@ export function createHumanoidAnimator(rig){
   // Visual pelvis compression keeps contact feet at their standing ground height.
   // Physics, saved positions and pathfinding roots are never translated.
   const bob=(down-length+flight)*blend;rig.root.rotation.x=lean;
-  for(const child of rig.root.children){if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg;child.position.y=restY.get(child)+(upperBody?(baseDown-length)*blend:bob)}
+  for(const child of rig.root.children){if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg;child.position.y=restY.get(child)+(upperBody?((baseDown-length)*(1-walkBlend)-.025*walkBlend)*blend:bob)}
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
   const armSwing=(.11*combatBlend+.32*walkBlend+.45*runBlend)*blend;
-  rig.leftArm.rotation.x=-gait*armSwing+Math.sin(time*1.7)*.018*(1-blend);
-  rig.rightArm.rotation.x=gait*armSwing-Math.sin(time*1.7)*.018*(1-blend);
+  const armWave=Math.cos(phase);
+  rig.leftArm.rotation.x=armWave*armSwing+Math.sin(time*1.7)*.018*(1-blend);
+  rig.rightArm.rotation.x=-armWave*armSwing-Math.sin(time*1.7)*.018*(1-blend);
   const elbow=-.10-.78*runBlend*blend;
   rig.leftElbow.rotation.x=elbow-Math.max(0,gait)*.06*blend;
   rig.rightElbow.rotation.x=elbow-Math.max(0,-gait)*.06*blend;
@@ -70,6 +71,14 @@ export function createHumanoidAnimator(rig){
    rig.rightArm.rotation.z=-.10;
    rig.rightElbow.rotation.x=-.22;
    rig.rightHand?.rotation.set(0,0,0);
+  }
+  // Outside combat, carry a one-handed sword low beside the body instead of
+  // freezing both arms in the fighting-ready pose while the legs move.
+  const travelCarry=walkBlend*blend;
+  if(armed&&!twoHanded&&attack<=0&&block<=0&&['longsword','scimitar','shortsword','dagger'].includes(weapon)){
+   rig.rightArm.rotation.x=rig.rightArm.rotation.x*(1-travelCarry)+(.04-armWave*.10)*travelCarry;
+   rig.rightElbow.rotation.x=rig.rightElbow.rotation.x*(1-travelCarry)-.10*travelCarry;
+   rig.rightHand.rotation.x=1.2*travelCarry;
   }
   // Reset combat channels every frame so interrupted attacks cannot leave a pose stuck.
   if(!armed||twoHanded||attack>0)rig.rightArm.rotation.z=0;
@@ -84,7 +93,7 @@ export function createHumanoidAnimator(rig){
    }
   }
   for(const child of rig.leftHand?.children||[])if(child.userData.shieldMount)child.rotation.set(...(block>0&&attack<=0?[0,0,0]:[.70,1.02,-.10]));
-  if(shield&&!twoHanded){rig.leftArm.rotation.x=-.15-gait*.03*blend;rig.leftArm.rotation.z=.10;rig.leftElbow.rotation.x=-.55;rig.leftHand?.rotation.set(0,0,0)}
+  if(shield&&!twoHanded){rig.leftArm.rotation.x=(-.15-gait*.03*blend)*(1-travelCarry)+(.03+armWave*.06)*travelCarry;rig.leftArm.rotation.z=.10;rig.leftElbow.rotation.x=-.55*(1-travelCarry)-.16*travelCarry;rig.leftHand?.rotation.set(0,0,0)}
   if(twoHanded&&rig.solveArm){
    const V=rig.root.position.constructor;
    if(attack>0){

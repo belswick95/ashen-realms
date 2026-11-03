@@ -1,11 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';import {buildCharacterDisplay} from '../character-display.js';
 const direction=(o,v)=>o.localToWorld(v).sub(o.getWorldPosition(new T.Vector3())).normalize();
-test('one-handed swords point forward and upward while the shield faces the outside of the left forearm',()=>{
+test('swords carry low during relaxed walking and remain ready during idle and running',()=>{
  for(const weapon of ['longsword','scimitar','shortsword'])for(const speed of [0,1.5,5]){
   const d=buildCharacterDisplay(T,new T.Group(),{},{weapon,shield:'kite'});
   for(let i=0;i<30;i++)d.update(1/60,{distance:speed/60,speed});d.visual.updateMatrixWorld(true);
   const sword=d.rig.rightHand.children[0],shield=d.rig.leftHand.children[0],blade=direction(sword,new T.Vector3(0,1,0)),face=direction(shield,new T.Vector3(0,0,1));
-  assert.ok(blade.y>.45&&blade.z>.45,'blade rises diagonally ahead of the hand');assert.ok(face.x>.65&&face.z>.25,'shield front points out and ahead, not toward the body');assert.ok(Math.abs(face.y)<.2,'shield remains upright');
+  if(speed>0&&speed<3.5)assert.ok(blade.y<-.5&&blade.z>0,'walking carries the sword down beside the hip');else assert.ok(blade.y>.4&&blade.z>.45,'idle and run retain a ready blade');assert.ok(face.x>.65&&face.z>.25,'shield front points out and ahead, not toward the body');assert.ok(Math.abs(face.y)<.55,'shield remains at the side without inverting');
   assert.ok(sword.getWorldPosition(new T.Vector3()).y<1.55,'sword hand stays near the hip');
  }
 });
