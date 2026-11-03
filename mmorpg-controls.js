@@ -4,7 +4,7 @@ export function movementInput(keys,yaw,cameraYaw,rightMouse,dt){
  const side=Number(has('KeyD')||has('ArrowRight'))-Number(has('KeyA')||has('ArrowLeft'));
  if(!rightMouse)yaw-=side*2.25*dt;else yaw=cameraYaw+Math.PI;
  const strafe=clamp(Number(has('KeyE'))-Number(has('KeyQ'))+(rightMouse?side:0));
- let x=Math.sin(yaw)*forward+Math.cos(yaw)*strafe,z=Math.cos(yaw)*forward-Math.sin(yaw)*strafe;const length=Math.hypot(x,z);if(length>1){x/=length;z/=length}return {x,z,yaw,moving:length>.001};
+ yaw=Math.atan2(Math.sin(yaw),Math.cos(yaw));let x=Math.sin(yaw)*forward-Math.cos(yaw)*strafe,z=Math.cos(yaw)*forward+Math.sin(yaw)*strafe;const length=Math.hypot(x,z);if(length>1){x/=length;z/=length}return {x,z,yaw,moving:length>.001};
 }
 export function jumpHeight(timestamp,now){const t=(now-Date.parse(timestamp))/800;return t>=0&&t<=1?2.8*t*(1-t):0}
 export function installMMOControls({element,getYaw,getCameraYaw,isRightMouse,isBlocked,onInput,onJump,onSprint}){
