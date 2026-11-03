@@ -1,4 +1,4 @@
-import {combatLevel} from './combat-level.js?v=release-20261103-hud13';
+import {combatLevel} from './combat-level.js?v=release-20261103-chat14';
 // Backward-compatible mapping between browser saves and the existing JSONB columns.
 // Authentication supplies the owner id; saved client data cannot choose another owner.
 export const skillKeys=['attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP'];

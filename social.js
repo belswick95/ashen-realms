@@ -1,5 +1,5 @@
-import {startMultiplayer} from './multiplayer.js?v=release-20261103-hud13';
-import {setChatMessages,setFeedIdentity,addSystemMessage} from './chat-feed.js?v=release-20261103-hud13';
+import {startMultiplayer} from './multiplayer.js?v=release-20261103-chat14';
+import {setChatMessages,setFeedIdentity,addSystemMessage} from './chat-feed.js?v=release-20261103-chat14';
 // Eldervale social panel. Only authenticated players can use these features.
 export function startSocial(db,user){
 const panel=document.querySelector('#social-panel'),tabs=panel.querySelectorAll('[data-social-tab]'),chatList=panel.querySelector('#world-chat-lines'),chatForm=panel.querySelector('#world-chat-form'),chatInput=panel.querySelector('#world-chat-input'),friendList=panel.querySelector('#friend-list'),search=panel.querySelector('#friend-search'),searchResult=panel.querySelector('#friend-results'),note=panel.querySelector('#social-note');
@@ -16,7 +16,7 @@ async function refreshFriends(){const {data:rows,error}=await db.from('player_fr
 async function findPlayers(){const q=search.value.trim();searchResult.replaceChildren();if(q.length<3){info('Enter at least three characters to search.');return}const {data,error}=await db.from('player_profiles').select('user_id,username').ilike('username',q.replace(/[%_]/g,'')+'%').neq('user_id',user.id).limit(15);if(error){info(error.message);return}if(!data?.length)searchResult.append(el('p','No matching players.'));for(const p of data||[]){const item=el('div',undefined,'friend-row');item.append(el('span',p.username));const add=el('button','Add friend');add.onclick=async()=>{const {error}=await db.from('player_friendships').insert({requester_id:user.id,recipient_id:p.user_id});if(error)info(error.code==='23505'?'Friend request already exists.':error.message);else{info('Friend request sent.');refreshFriends()}};item.append(add);searchResult.append(item)}}
 panel.querySelector('#friend-search-button').onclick=findPlayers;search.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();findPlayers()}});
 const toggle=panel.querySelector('#social-toggle');
-toggle.onclick=()=>{panel.classList.toggle('collapsed');toggle.textContent=panel.classList.contains('collapsed')?'Show Chat':'Hide Chat';if(!panel.classList.contains('collapsed'))show(active)};
+toggle.onclick=()=>{panel.classList.toggle('collapsed');const minimized=panel.classList.contains('collapsed');toggle.textContent=minimized?'Chat':'−';toggle.title=minimized?'Open chat':'Minimize chat';toggle.setAttribute('aria-label',toggle.title);toggle.setAttribute('aria-expanded',String(!minimized));if(!panel.classList.contains('collapsed'))show(active)};
 const chatChannel=db.channel('eldervale-world-chat').on('postgres_changes',{event:'*',schema:'public',table:'world_chat'},payload=>{refreshChat();const row=payload.eventType==='INSERT'?payload.new:null;if(row?.sender_id&&row.sender_id!==user.id)window.eldervaleShowChatBubble?.(row.sender_id,row.sender_name,row.body)}).subscribe();
 // Position broadcasts are separate from infrequent Presence membership updates.
 let connection=document.querySelector('#multiplayer-status');if(!connection){connection=document.createElement('span');connection.id='multiplayer-status';connection.setAttribute('role','status');connection.setAttribute('aria-live','polite');document.querySelector('#account-bar').append(connection)}
