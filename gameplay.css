@@ -7,3 +7,63 @@
 .equipment-combat-stats{grid-column:1 / -1;margin:2px 0;padding:9px;border:1px solid #8c784544;border-radius:4px;color:#ddc99c;font:11px/1.6 Arial;text-align:center;background:#0f1e18}
 #combat-notice[data-turn=enemy]{border-color:#bc745f;color:#ffdfcb}#combat-notice[data-turn=player]{border-color:#bca15f;color:#f4e2b5}
 .combat-swords{display:inline-block;width:23px;height:23px;flex-shrink:0;color:#e6c483;vertical-align:middle}.player-combat-level{display:flex;gap:10px;align-items:center;padding:13px;margin-bottom:12px;border:1px solid #a18a59;background:#23382d;color:#eedbad;border-radius:6px;font:14px Georgia}.player-menu-heading{display:flex;align-items:center;gap:7px;color:#f2d69d}
+
+/* Keep the playfield fixed; allow scrolling inside each opened interface. */
+html.game-viewport,html.game-viewport body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+body.game-active{--hud-left:max(8px,env(safe-area-inset-left));--hud-right:max(8px,env(safe-area-inset-right));--hud-bottom:max(8px,env(safe-area-inset-bottom));-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body.game-active #side{min-height:0}
+body.game-active #side> :is(#inventory,#equipment,#skills,#friends-tab,#blocked-tab,#settings-tab){min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#b29b66 #15251d}
+body.game-active #side>.tabs{flex:0 0 auto}
+body.game-active #contextmenu{max-height:calc(var(--visible-height,100dvh) - 16px);overflow-y:auto;overscroll-behavior:contain}
+body.compact-layout #account-bar{left:var(--hud-left)!important;top:max(6px,env(safe-area-inset-top))!important;bottom:auto!important;max-width:190px;min-height:32px;padding:4px 7px!important;font-size:10px!important;gap:5px}
+body.compact-layout #account-bar button{min-height:28px;padding:4px 7px!important;font:10px Arial!important;margin:0 0 0 5px}
+body.compact-layout #multiplayer-status{display:none}
+body.compact-layout #owner-studio-toggle{top:46px!important;left:var(--hud-left)!important;max-width:150px;min-height:32px;margin:0;padding:6px 9px!important;font:600 11px Georgia!important}
+body.compact-layout #world-report-button{top:84px!important;bottom:auto!important;left:var(--hud-left)!important;transform:none!important;min-height:30px;max-width:150px;margin:0;padding:5px 8px!important;font:10px Arial!important}
+body.compact-layout #world-clock{top:max(6px,env(safe-area-inset-top))!important;max-width:170px;min-height:0;padding:5px 7px!important;font:10px Arial!important;white-space:nowrap}
+body.compact-layout #game-ui #health-hud{left:50%!important;top:44px!important;bottom:auto!important;transform:translateX(-50%);width:190px!important;min-width:0!important;max-width:27vw!important;padding:6px!important;gap:5px;min-height:0;border-radius:6px;pointer-events:none}
+body.compact-layout #game-ui #health-hud #player-portrait,body.compact-layout #special-attack{display:none!important}
+body.compact-layout #game-ui #health-hud #hud-name{font:600 11px Georgia;margin-bottom:3px}
+body.compact-layout #game-ui #health-hud .health-track{height:13px}
+body.compact-layout #game-ui #health-hud #hud-info{font-size:9px}
+body.compact-layout #side{top:auto!important;left:auto!important;right:var(--hud-right)!important;bottom:var(--hud-bottom)!important;width:min(300px,44vw)!important;min-width:0!important;max-width:calc(100vw - var(--hud-left) - var(--hud-right));height:56px!important;max-height:calc(var(--visible-height,100dvh) - 16px);padding:4px!important;overflow:hidden}
+body.compact-layout #side>.tabs{gap:3px;min-height:44px;overflow-x:auto;overflow-y:hidden}
+body.compact-layout #side>.tabs button{width:0;flex:1 0 38px;min-height:44px!important;height:44px;padding:4px!important}
+body.compact-layout #side>.tabs button .fantasy-tab-icon{width:27px!important;height:27px!important}
+body.compact-layout.compact-panel-open #side{width:min(350px,48vw)!important;height:min(350px,calc(var(--visible-height,100dvh) - 16px))!important;padding:42px 6px 6px!important;z-index:150}
+body.compact-layout.compact-panel-open .compact-panel-title{top:13px;font-size:12px}
+body.compact-layout.compact-panel-open .compact-close{top:0;right:4px;height:38px;min-height:38px;font-size:24px}
+body.compact-layout #inventory{flex:1 1 auto;grid-auto-rows:48px;min-height:0;padding-right:3px}
+body.compact-layout #equipment,body.compact-layout #skills,body.compact-layout #settings-tab{flex:1 1 auto;padding-right:4px}
+body.compact-layout.compact-panel-open #game-ui #health-hud{visibility:hidden}
+body.compact-layout #social-panel,body.compact-layout #social-panel.collapsed{left:var(--hud-left)!important;right:auto!important;bottom:var(--hud-bottom)!important;top:auto!important;width:min(200px,30vw)!important;max-width:calc(100vw - var(--hud-left) - var(--hud-right));max-height:min(190px,calc(var(--visible-height,100dvh) - 125px))!important;overflow:hidden!important}
+body.compact-layout #social-panel .social-head{padding:4px 5px;gap:4px}
+body.compact-layout #social-toggle{min-height:30px!important;margin:0;padding:4px 6px!important;font-size:10px!important}
+body.compact-layout #social-panel.collapsed #world-chat-lines{max-height:30px!important;height:30px!important;overflow-y:auto}
+body.compact-layout #map-widget{top:max(6px,env(safe-area-inset-top))!important;right:var(--hud-right)!important;bottom:auto!important;left:auto!important;width:140px!important;min-width:0!important;padding:5px!important}
+body.compact-layout #map-widget .minimap-brand{font-size:12px;letter-spacing:1px;margin-bottom:3px}
+body.compact-layout #map-widget .map-head button{height:28px;min-height:28px;margin:0;padding:4px!important;font:10px Arial!important}
+body.compact-layout #minimap{width:126px!important;height:92px!important;margin-top:4px}
+body.compact-layout #map-controls{position:static!important;display:grid!important;grid-template-columns:32px 32px minmax(0,1fr);gap:3px!important;margin-top:4px}
+body.compact-layout #map-controls>button{min-width:0!important;width:100%;min-height:32px!important;height:32px;padding:3px!important;margin:0!important;font:13px Arial!important}
+body.compact-layout #map-controls #run-toggle{min-width:0;gap:2px;font-size:10px!important}
+body.compact-layout #run-toggle svg{width:17px;height:20px;flex-shrink:0}
+body.compact-layout #world-announcement{top:105px!important;max-width:35vw!important;padding:6px!important;font-size:11px!important}
+body.compact-layout #combat-notice{top:108px;bottom:auto;max-width:38vw;font-size:11px;pointer-events:none}
+body.compact-layout #owner-studio[open]{display:flex;flex-direction:column;width:calc(100vw - var(--hud-left) - var(--hud-right))!important;max-width:1000px;height:min(650px,calc(var(--visible-height,100dvh) - 16px));max-height:calc(var(--visible-height,100dvh) - 16px);margin:auto;padding:0;overflow:hidden}
+body.compact-layout #owner-studio header{flex:0 0 auto;padding:8px 12px}
+body.compact-layout #owner-studio h2{font-size:19px}
+body.compact-layout #owner-studio nav{flex:0 0 auto;padding:5px 10px;gap:5px}
+body.compact-layout #owner-studio nav button{padding:5px 9px;min-height:32px;font-size:12px}
+body.compact-layout #owner-studio .studio-workspace{flex:1 1 auto;min-height:0;max-height:none;padding:10px 12px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+body.compact-layout #owner-studio footer{flex:0 0 auto;padding:6px 12px;font-size:11px}
+body.compact-layout #service-panel{max-height:calc(var(--visible-height,100dvh) - 16px);padding:12px;overscroll-behavior:contain}
+body.compact-layout .service-head h2{font-size:20px;margin:3px 0 8px}
+body.compact-layout .service-wallet{padding:7px}
+body.compact-layout .service-items{min-height:80px;max-height:40dvh}
+@media(max-height:330px){body.compact-layout #map-widget{width:118px!important}body.compact-layout #minimap{width:104px!important;height:64px!important}body.compact-layout #map-controls{grid-template-columns:25px 25px minmax(0,1fr)}body.compact-layout #world-clock{max-width:150px;font-size:9px!important}body.compact-layout #game-ui #health-hud{top:38px!important;width:160px!important}body.compact-layout #map-widget .map-head{display:none}body.compact-layout #social-panel .social-head strong{display:none}body.compact-layout #owner-studio header small{display:none}}
+body.compact-layout #account-bar{display:flex;align-items:center;flex-wrap:nowrap;width:max-content;max-width:min(190px,calc(50vw - var(--hud-left) - 85px))!important}
+body.compact-layout #account-name{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+body.compact-layout #logout{flex-shrink:0}
+body.compact-layout #side>.tabs{display:flex!important}
+body.compact-layout #side>.tabs button{width:auto}
