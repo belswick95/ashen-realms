@@ -33,7 +33,7 @@ export function createHumanoidAnimator(rig){
   // in the same crouch throughout the whole walking cycle.
   const supportReach=Math.max(0,...phases.filter(u=>u<stance).map(u=>Math.abs(reach*(1-2*u/stance))));
   const supportDown=Math.sqrt(Math.max(.1,(length-.015)**2-supportReach**2));
-  const down=baseDown+(supportDown-baseDown)*walkBlend*.5,flight=0;
+  const down=baseDown+(supportDown-baseDown)*walkBlend,flight=0;
   for(const [leg,knee,ankle,offset] of [[rig.leftLeg,rig.leftKnee,rig.leftAnkle,0],[rig.rightLeg,rig.rightKnee,rig.rightAnkle,.5]]){
    const u=((phase/(Math.PI*2)+offset)%1+1)%1,swing=u>=stance,t=swing?(u-stance)/(1-stance):u/stance;
    // Walk: relaxed contact/passing/contact with a low, almost straight recovery.
