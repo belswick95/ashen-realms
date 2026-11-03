@@ -1,8 +1,8 @@
-import {itemIcons} from './item-icons.js?v=release-20261103-castle9';
-import {fishingItems} from './fishing.js?v=release-20261103-castle9';
-import {weaponCatalog,iconForWeapon} from './weapons.js?v=release-20261103-castle9';
-import {shieldCatalog} from './shields.js?v=release-20261103-castle9';
-import {jewelryCatalog} from './jewelry.js?v=release-20261103-castle9';
+import {itemIcons} from './item-icons.js?v=release-20261103-context10';
+import {fishingItems} from './fishing.js?v=release-20261103-context10';
+import {weaponCatalog,iconForWeapon} from './weapons.js?v=release-20261103-context10';
+import {shieldCatalog} from './shields.js?v=release-20261103-context10';
+import {jewelryCatalog} from './jewelry.js?v=release-20261103-context10';
 const armor={helm:'Iron full helm',chest:'Iron platebody',legs:'Iron platelegs',boots:'Iron boots',cape:'Crimson cape'};
 export const goods={...fishingItems,wood:{name:'Logs',buy:6,sell:3,icon:'🪵'},ore:{name:'Iron ore',buy:10,sell:5,icon:'🪨'}};
 for(const [key,item] of Object.entries(weaponCatalog))goods['weapon:'+key]={name:item.name,buy:key==='twohand'?120:key==='battleaxe'?90:key==='dagger'?20:45,sell:key==='twohand'?40:key==='battleaxe'?30:12,icon:iconForWeapon(key),field:'weaponsOwned',key};

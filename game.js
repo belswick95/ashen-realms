@@ -1,44 +1,45 @@
-import {fixedObstacles,obstacleBlocks} from './navigation-obstacles.js?v=release-20261103-castle9';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-castle9';
-import {createGroundDrops} from './ground-drops.js?v=release-20261103-castle9';
-import {createCombatHealth} from './combat-health.js?v=release-20261103-castle9';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-castle9';
-import {castle,inCastle} from './castle-layout.js?v=release-20261103-castle9';
-import {createMotionTrack} from './motion-track.js?v=release-20261103-castle9';
-import {lightingAt} from './world-lighting.js?v=release-20261103-castle9';
-import {sculptPatches} from './terrain-patches.js?v=release-20261103-castle9';
-import {fromPlayerRow} from './player-save.js?v=release-20261103-castle9';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-castle9';
-import {worldTemplates} from './world-templates.js?v=release-20261103-castle9';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-castle9';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-castle9';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-castle9';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-castle9';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-castle9';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-castle9';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-castle9';
-import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-castle9';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-castle9';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-castle9';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-castle9';
-import {createPlayerHUD} from './player-hud.js?v=release-20261103-castle9';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-castle9';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261103-castle9';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-castle9';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-castle9';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-castle9';
+import {actorMenuLabel} from './context-label.js?v=release-20261103-context10';
+import {fixedObstacles,obstacleBlocks} from './navigation-obstacles.js?v=release-20261103-context10';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261103-context10';
+import {createGroundDrops} from './ground-drops.js?v=release-20261103-context10';
+import {createCombatHealth} from './combat-health.js?v=release-20261103-context10';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261103-context10';
+import {castle,inCastle} from './castle-layout.js?v=release-20261103-context10';
+import {createMotionTrack} from './motion-track.js?v=release-20261103-context10';
+import {lightingAt} from './world-lighting.js?v=release-20261103-context10';
+import {sculptPatches} from './terrain-patches.js?v=release-20261103-context10';
+import {fromPlayerRow} from './player-save.js?v=release-20261103-context10';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261103-context10';
+import {worldTemplates} from './world-templates.js?v=release-20261103-context10';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261103-context10';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261103-context10';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261103-context10';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261103-context10';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261103-context10';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261103-context10';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261103-context10';
+import {mapPoint,mapDestination as minimapDestination} from './minimap.js?v=release-20261103-context10';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261103-context10';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261103-context10';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261103-context10';
+import {createPlayerHUD} from './player-hud.js?v=release-20261103-context10';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261103-context10';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261103-context10';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261103-context10';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261103-context10';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261103-context10';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261103-castle9';
-import {createHumanoidAnimator} from './animation.js?v=release-20261103-castle9';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-castle9';
-import {buildForest} from './forest.js?v=release-20261103-castle9';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-castle9';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-castle9';
+import {buildHumanoid} from './humanoid.js?v=release-20261103-context10';
+import {createHumanoidAnimator} from './animation.js?v=release-20261103-context10';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261103-context10';
+import {buildForest} from './forest.js?v=release-20261103-context10';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261103-context10';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261103-context10';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261103-castle9';
-import {createCape} from './cape.js?v=release-20261103-castle9';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-castle9';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-castle9';
+import {buildPlateArmor} from './armor.js?v=release-20261103-context10';
+import {createCape} from './cape.js?v=release-20261103-context10';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261103-context10';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261103-context10';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -568,7 +569,7 @@ window.eldervaleUpdatePlayers=entries=>{
 window.eldervaleShowChatBubble=(id,name,message)=>{
  if(!id||!message)return;const old=chatBubbles.get(id);old?.node.remove();
  const node=document.createElement('div');node.style.cssText='position:fixed;max-width:230px;padding:7px 10px;border:1px solid #d1b878;border-radius:12px;background:#f5e8c9;color:#29251d;box-shadow:0 3px 12px #0009;text-align:center;font:12px Arial;overflow-wrap:anywhere;pointer-events:none';
- const strong=document.createElement('strong');strong.textContent=String(name||'Adventurer').slice(0,24);const text=document.createElement('div');text.textContent=String(message).slice(0,240);node.append(strong,text);bubbleLayer.append(node);chatBubbles.set(id,{node,expires:performance.now()+6500});
+ node.className='overhead-chat-bubble';node.textContent=String(message).slice(0,240);bubbleLayer.append(node);chatBubbles.set(id,{node,expires:performance.now()+6500});
 };
 function updateOverheadChat(){
  const selfId=window.eldervaleUserId;const projected=new T.Vector3();
@@ -1066,10 +1067,10 @@ if(hits[0]?.object.userData.kind==='worldObject'){say('World decoration');return
 if(hits[0]?.object.userData.kind==='groundDrop'){const d=hits[0].object.userData;const take=()=>{pendingPickup={...d};action=null;setWalkDestination(new T.Vector3(d.x,0,d.z));};if(e.button===2)showMenu(e.clientX,e.clientY,[['Take '+d.name+' ×'+d.amount,take],['Cancel',()=>{}]]);else take();return}
 pendingPickup=null;
 if(hits[0]?.object.userData.kind==='worldItem'){window.eldervaleWorldPickup?.(hits[0].object.userData.worldEntityId);return}
-if(hits[0]?.object.userData.kind==='player'){const other=remotePlayers.get(hits[0].object.userData.playerId);if(other&&e.button===2){const row=document.createElement('span');row.className='player-menu-heading';row.innerHTML=crossedSwords;row.append(document.createTextNode(other.combatLevel+' '+other.username));showMenu(e.clientX,e.clientY,[[row,()=>say(other.username+' · Combat level '+other.combatLevel)],['Trade with '+other.username,()=>tradePanel.request(hits[0].object.userData.playerId)],['Cancel',()=>{}]])}return}
+if(hits[0]?.object.userData.kind==='player'){const other=remotePlayers.get(hits[0].object.userData.playerId);if(other&&e.button===2){const row=actorMenuLabel({name:other.username,level:other.combatLevel,playerLevel:combatLevel(state),accountId:hits[0].object.userData.playerId,player:true});showMenu(e.clientX,e.clientY,[[row,()=>say(other.username+' · Combat level '+other.combatLevel)],['Trade with '+other.username,()=>tradePanel.request(hits[0].object.userData.playerId)],['Cancel',()=>{}]])}return}
 if(e.button===2){
  const choices=[];
- if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?'Attack '+a.mob.name:a.kind==='npc'?'Talk to '+a.profile.name:a.kind==='merchant'?'Trade with merchant':a.kind==='altar'?'Pray at altar':a.kind==='hearth'?'Cook and eat fish':a.kind==='castleGate'?'Open / close great gate':a.kind==='fishing'?'Fish here':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.type==='bank'?'Use bank':a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):a.kind==='castleGate'?new T.Vector3(a.x,0,a.z+(player.position.z>a.z?4:-4)):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+a.kind,()=>say(a.kind==='creature'?a.mob.name+' · Combat '+(a.mob.config?.level||1)+' · '+Math.max(0,a.mob.hp)+' / '+a.mob.maxHp+' HP':a.kind==='npc'?a.profile.name+' — '+a.profile.role+' · Combat '+a.profile.level+' · '+a.profile.hp+' / '+(a.profile.maxHp||a.profile.hp)+' HP':a.kind==='merchant'?'Traveling merchant · Combat 5 · 45 / 45 HP. Buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':(Date.parse(a.availableAt)>(window.eldervaleServerTime?.()||Date.now())?'This '+a.kind+' is recovering.':'A harvestable '+a.kind+'.'))])}
+ if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?actorMenuLabel({prefix:'Attack ',name:a.mob.name,level:a.mob.config?.level||1,playerLevel:combatLevel(state)}):a.kind==='npc'?actorMenuLabel({prefix:'Talk to ',name:a.profile.name,level:a.profile.level||1,playerLevel:combatLevel(state)}):a.kind==='merchant'?actorMenuLabel({prefix:'Trade with ',name:'Traveling merchant',level:5,playerLevel:combatLevel(state)}):a.kind==='altar'?'Pray at altar':a.kind==='hearth'?'Cook and eat fish':a.kind==='castleGate'?'Open / close great gate':a.kind==='fishing'?'Fish here':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.type==='bank'?'Use bank':a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):a.kind==='castleGate'?new T.Vector3(a.x,0,a.z+(player.position.z>a.z?4:-4)):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+(a.kind==='creature'?a.mob.name:a.kind==='npc'?a.profile.name:a.kind==='merchant'?'Traveling merchant':a.kind),()=>say(a.kind==='creature'?a.mob.name+' · Combat '+(a.mob.config?.level||1)+' · '+Math.max(0,a.mob.hp)+' / '+a.mob.maxHp+' HP':a.kind==='npc'?a.profile.name+' — '+a.profile.role+' · Combat '+a.profile.level+' · '+a.profile.hp+' / '+(a.profile.maxHp||a.profile.hp)+' HP':a.kind==='merchant'?'Traveling merchant · Combat 5 · 45 / 45 HP. Buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':(Date.parse(a.availableAt)>(window.eldervaleServerTime?.()||Date.now())?'This '+a.kind+' is recovering.':'A harvestable '+a.kind+'.'))])}
  if(hitGround)choices.push(['Walk here',()=>{action=null;setWalkDestination(point);closeDialog();if(dest)markClick(dest.x,dest.z,'walk')}]);
  choices.push(['Cancel',()=>{}]);showMenu(e.clientX,e.clientY,choices);return;
 }
