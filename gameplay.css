@@ -135,3 +135,13 @@ body.fantasy-hud #social-panel:not(.collapsed) #world-chat-lines{flex:1;min-heig
 body.fantasy-hud #world-chat-form{flex:0 0 30px;min-height:30px;display:flex;margin:0!important}
 body.fantasy-hud #world-chat-form input,body.fantasy-hud #world-chat-form button{height:30px!important;min-height:30px!important;box-sizing:border-box;padding:3px 7px!important;margin:0!important}
 @media(max-height:550px){body.fantasy-hud #social-panel:not(.collapsed){height:140px!important;max-height:140px!important}body.fantasy-hud #social-panel .social-tabs button{height:20px!important;min-height:20px!important}body.fantasy-hud #social-panel .social-head{height:24px!important;padding:0!important}}
+/* Compass-first navigation: map remains unobstructed, controls sit beneath it. */
+body.fantasy-hud #map-widget{width:180px!important;padding:4px 4px 0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;isolation:isolate}
+body.fantasy-hud #minimap{width:168px!important;height:168px!important;margin:5px auto 9px!important;border:2px solid #95886b!important;box-shadow:0 0 0 3px #18242de6,0 5px 16px #0006!important;border-radius:50%!important}
+body.fantasy-hud .map-north{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2;padding:0 5px;background:#17232a;color:#e1d3ac;font:600 11px Georgia;text-shadow:0 1px 2px #000;pointer-events:none}
+body.fantasy-hud #map-widget .map-head{position:absolute;right:3px;top:135px;z-index:3;width:30px;height:30px}
+body.fantasy-hud #map-widget #map-toggle{display:grid;place-items:center;width:30px!important;height:30px!important;min-height:30px!important;padding:5px!important;letter-spacing:0;border-radius:7px!important}
+body.fantasy-hud #map-controls{position:static!important;display:flex!important;align-items:center;justify-content:center;gap:6px!important;padding:0 0 3px;margin:0!important}
+body.fantasy-hud #map-controls>button{width:30px!important;height:30px!important;min-height:30px!important;border-radius:6px!important;font:16px Arial}
+body.fantasy-hud #map-controls #run-toggle{width:68px!important;height:30px!important;min-height:30px!important;border-radius:7px!important;font-size:11px}
+@media(max-height:550px){body.fantasy-hud #map-widget{width:132px!important;padding:3px!important}body.fantasy-hud #minimap{width:120px!important;height:120px!important;margin-bottom:8px!important}body.fantasy-hud #map-widget .map-head{top:91px;right:0}body.fantasy-hud #map-controls{gap:4px!important}body.fantasy-hud #map-controls>button{width:28px!important;height:30px!important}body.fantasy-hud #map-controls #run-toggle{width:58px!important}}
