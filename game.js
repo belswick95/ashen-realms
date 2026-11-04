@@ -48,7 +48,7 @@ import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-2026110
 import {goods,sanitizeBank,inventoryUsed,createServicePanel} from './economy.js?v=release-20261104-motion47';
 import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261104-motion47';
 import {mapPoint} from './minimap.js?v=release-20261104-motion47';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261104-motion47';
+import {townResidents,animateTownActivity,townPropLayout} from './town-life.js?v=release-20261104-motion47';
 import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-motion47';
 import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-motion47';
 import {createPlayerHUD} from './player-hud.js?v=release-20261104-motion47';
@@ -854,8 +854,8 @@ function spawnNPC(profile,index){profile.realmId||='base:npc:'+profile.name;
  profile.activity=activity;
  let workProp=null;
  if(activity==='carry'||activity==='read'){
-  workProp=new T.Group();root.add(workProp);workProp.position.set(0,activity==='carry'?1.64:1.70,.40);
-  box(activity==='carry'?.52:.40,activity==='carry'?.34:.055,.28,activity==='carry'?0x795737:0xb7a781,0,0,0,workProp,activity==='carry'?'wood':'cloth');
+  const layout=townPropLayout(activity);workProp=new T.Group();workProp.userData.heldWorkProp=true;root.add(workProp);workProp.position.set(0,layout.y,layout.z);
+  box(layout.width,layout.height,layout.depth,activity==='carry'?0x795737:0xb7a781,0,0,0,workProp,activity==='carry'?'wood':'cloth');
   if(activity==='carry')for(const x of [-.20,.20])box(.035,.36,.30,0x4f3e2e,x,0,0,workProp,'wood');
  }else if(['smith','sweep','garden'].includes(activity)){
   workProp=new T.Group();model.rightHand.add(workProp);workProp.rotation.x=activity==='smith'?1.3:.18;
@@ -1166,8 +1166,8 @@ for(const marker of markers.slice()){marker.age+=dt;const t=marker.age/1.05;mark
 ensureTownResidents();
 for(const npc of npcs){
  npc.root.visible=npc.alive!==false&&!npc.deleted&&npc.root.position.distanceToSquared(player.position)<85*85;
- if(!npc.root.visible||npc.deleted)continue;if(window.eldervaleAuthority){const before=npc.root.position.clone();interpolateRealm(npc,dt);const distance=npc.root.position.distanceTo(before);npc.travelHold=distance>.001?.35:Math.max(0,(npc.travelHold||0)-dt);npc.previewAttack=Math.max(0,(npc.previewAttack||0)-dt);npc.blockAnim=Math.max(0,(npc.blockAnim||0)-dt);npc.animator.update(dt,{distance,speed:distance/dt,attack:npc.previewAttack,block:npc.blockAnim||0,locomotion:npc.previewAttack>0?'combat':'walk',weapon:npc.profile.weapon,armed:!!npc.root.userData.armed});npc.attackEffect?.update(npc.previewAttack);if(!npc.previewAttack)animateTownActivity(npc.rig,npc.profile.activity,performance.now()*.001+npc.phase,distance>.001||(npc.travelHold||0)>0);continue}
- if(npc.workProp)npc.workProp.visible=conversation?.profile!==npc.profile;
+ if(!npc.root.visible||npc.deleted)continue;if(window.eldervaleAuthority){const before=npc.root.position.clone();interpolateRealm(npc,dt);const distance=npc.root.position.distanceTo(before);npc.travelHold=distance>.001?.35:Math.max(0,(npc.travelHold||0)-dt);npc.previewAttack=Math.max(0,(npc.previewAttack||0)-dt);npc.blockAnim=Math.max(0,(npc.blockAnim||0)-dt);npc.animator.update(dt,{distance,speed:distance/dt,attack:npc.previewAttack,block:npc.blockAnim||0,locomotion:npc.previewAttack>0?'combat':'walk',weapon:npc.profile.weapon,armed:!!npc.root.userData.armed});npc.attackEffect?.update(npc.previewAttack);const working=!npc.root.userData.armed&&!npc.previewAttack&&!npc.blockAnim&&conversation?.profile!==npc.profile;if(npc.workProp)npc.workProp.visible=working;if(working)animateTownActivity(npc.rig,npc.profile.activity,performance.now()*.001+npc.phase,distance>.001||(npc.travelHold||0)>0);continue}
+ if(npc.workProp)npc.workProp.visible=!npc.root.userData.armed&&!npc.previewAttack&&!npc.blockAnim&&conversation?.profile!==npc.profile;
  if(conversation?.profile===npc.profile){faceTarget(npc.root,player.position);npc.animator.update(dt,{armed:!!npc.root.userData.armed});continue}
  if(Math.hypot(npc.root.position.x-npc.goal.x,npc.root.position.z-npc.goal.z)<.6)npc.wait-=dt;
  if(npc.profile.behavior==='stationary'){
@@ -1200,7 +1200,7 @@ for(const npc of npcs){
  if(actualDistance<.0001&&toward.lengthSq()>.1){npc.stuck+=dt;if(npc.stuck>1.5){npc.goal.copy(npc.home);npc.path=[];npc.pathGoal=null;npc.wait=1;npc.stuck=0}}
  else npc.stuck=0;
  npc.previewAttack=Math.max(0,(npc.previewAttack||0)-dt);npc.animator.update(dt,{distance:actualDistance,speed:actualDistance/Math.max(dt,.001),armed:!!npc.root.userData.armed,attack:npc.previewAttack,weapon:npc.profile.weapon});
- npc.attackEffect?.update(npc.previewAttack);if(!npc.previewAttack)animateTownActivity(npc.rig,npc.profile.activity,performance.now()*.001+npc.phase,actualDistance>.0001);
+ npc.attackEffect?.update(npc.previewAttack);if(!npc.root.userData.armed&&!npc.previewAttack&&!npc.blockAnim&&conversation?.profile!==npc.profile)animateTownActivity(npc.rig,npc.profile.activity,performance.now()*.001+npc.phase,actualDistance>.0001);
  if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position);
 }
 player.position.y=landscape.walkHeight(player.position.x,player.position.z)+floorOffset(currentInterior.floor,player.position.x,player.position.z)+jumpHeight(localJumpAt,window.eldervaleServerTime?.()||Date.now());
