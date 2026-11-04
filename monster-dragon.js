@@ -1,4 +1,4 @@
-import {creatureMaterial} from './creature-material.js?v=release-20261104-itemart30';
+import {creatureMaterial} from './creature-material.js?v=release-20261104-phone31';
 // Original articulated Eldervale dragon: four clawed feet, long neck, jaw, tail and ribbed wings.
 export function dragonModel(T,parent,d){
  const g=new T.Group();parent.add(g);let phase=0,travel=0;const mats=new Map(),legs=[],tails=[],wings=[];

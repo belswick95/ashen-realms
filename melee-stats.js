@@ -1,5 +1,5 @@
-import {weaponCatalog} from './weapons.js?v=release-20261104-itemart30';
-import {shieldCatalog} from './shields.js?v=release-20261104-itemart30';
+import {weaponCatalog} from './weapons.js?v=release-20261104-phone31';
+import {shieldCatalog} from './shields.js?v=release-20261104-phone31';
 export const armorCatalog={
  helm:{name:'Iron full helm',slot:'Head',defence:4,reduction:1,desc:'Iron head protection.'},
  chest:{name:'Iron platebody',slot:'Body',defence:10,reduction:3,desc:'Plate armor that absorbs melee damage.'},

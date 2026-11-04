@@ -1,0 +1,56 @@
+/* Phone HUD has one layout contract, independent of the older desktop cascade. */
+body.fantasy-hud.phone-layout{
+ --phone-left:max(8px,calc(env(safe-area-inset-left) + 6px));
+ --phone-right:max(8px,calc(env(safe-area-inset-right) + 6px));
+ --phone-top:max(8px,env(safe-area-inset-top));
+ --phone-bottom:max(10px,env(safe-area-inset-bottom));
+ --phone-chat-height:clamp(96px,calc(var(--visible-height,100dvh) - 204px),116px);
+}
+body.fantasy-hud.phone-layout #account-bar{display:none!important}
+body.fantasy-hud.phone-layout #game-ui #health-hud{left:var(--phone-left)!important;top:var(--phone-top)!important;bottom:auto!important;width:176px!important;max-width:176px!important;min-height:62px;padding:6px 8px!important;transform:none!important;z-index:35}
+body.fantasy-hud.phone-layout #health-hud #player-portrait{display:none!important}
+body.fantasy-hud.phone-layout #health-hud #hud-name{font-size:12px!important;margin:0 0 3px!important}
+body.fantasy-hud.phone-layout #health-hud #hud-info{font-size:9px!important;letter-spacing:.3px}
+body.fantasy-hud.phone-layout #owner-studio-toggle{position:fixed!important;z-index:36!important;left:calc(var(--phone-left) + 184px)!important;top:var(--phone-top)!important;width:92px!important;max-width:92px!important;height:30px!important;min-height:30px!important;margin:0!important;padding:3px 5px!important;font-size:10px!important}
+body.fantasy-hud.phone-layout #world-clock{display:none!important;top:var(--phone-top)!important;max-width:130px!important;font-size:9px!important;padding:5px!important;pointer-events:none}
+body.fantasy-hud.phone-layout #map-widget{top:var(--phone-top)!important;right:var(--phone-right)!important;left:auto!important;bottom:auto!important;width:128px!important;height:144px!important;padding:0!important;z-index:35}
+body.fantasy-hud.phone-layout #minimap{width:104px!important;height:104px!important;margin:3px auto 5px!important;border-width:2px!important}
+body.fantasy-hud.phone-layout #map-widget .map-head{top:75px!important;right:3px!important;width:30px!important;height:30px!important}
+body.fantasy-hud.phone-layout #map-widget #map-toggle{width:30px!important;height:30px!important;min-height:30px!important;padding:5px!important}
+body.fantasy-hud.phone-layout #map-controls{display:flex!important;position:static!important;gap:4px!important;height:32px!important;padding:0!important;margin:0!important}
+body.fantasy-hud.phone-layout #map-controls>button{width:30px!important;min-width:30px!important;height:32px!important;min-height:32px!important;margin:0!important;padding:3px!important}
+body.fantasy-hud.phone-layout #map-controls #run-toggle{width:60px!important;min-width:60px!important;height:32px!important;font-size:10px!important;gap:2px!important}
+body.fantasy-hud.phone-layout #social-panel:not(.collapsed),body.fantasy-hud.phone-layout #social-panel.collapsed{left:var(--phone-left)!important;top:calc(var(--phone-top) + 74px)!important;bottom:auto!important;width:clamp(210px,29vw,260px)!important;max-width:260px!important;transform:none!important;padding:5px!important;z-index:35;overflow:hidden!important}
+body.fantasy-hud.phone-layout #social-panel:not(.collapsed){height:var(--phone-chat-height)!important;max-height:var(--phone-chat-height)!important;display:flex!important}
+body.fantasy-hud.phone-layout #social-panel .social-head{height:24px!important;min-height:24px!important;padding:0!important;display:flex!important;justify-content:space-between!important;align-items:center!important}
+body.fantasy-hud.phone-layout #social-panel .social-head strong{display:block!important;font-size:10px!important;letter-spacing:.5px}
+body.fantasy-hud.phone-layout #social-toggle{width:32px!important;height:24px!important;min-height:24px!important;padding:0!important;margin:0!important}
+body.fantasy-hud.phone-layout #social-panel .social-tabs,body.fantasy-hud.phone-layout #social-chat>small{display:none!important}
+body.fantasy-hud.phone-layout #social-panel #world-chat-lines{height:auto!important;min-height:0!important;max-height:none!important;flex:1!important;margin:2px 0!important;padding:0 3px!important}
+body.fantasy-hud.phone-layout #social-panel .world-line{font-size:10px!important;line-height:1.3!important}
+body.fantasy-hud.phone-layout #social-panel #world-chat-form{flex:0 0 30px!important;height:30px!important;min-height:30px!important;gap:4px!important}
+body.fantasy-hud.phone-layout #social-panel #world-chat-input{font-size:16px!important;width:0!important;flex:1!important;min-width:0!important;padding:3px 6px!important}
+body.fantasy-hud.phone-layout #social-panel.collapsed{height:34px!important;max-height:34px!important}
+body.fantasy-hud.phone-layout #social-panel.collapsed .social-content{display:none!important}
+body.fantasy-hud.phone-layout #movement-pad{left:calc(var(--phone-left) + 8px)!important;bottom:var(--phone-bottom)!important;top:auto!important;right:auto!important;width:100px!important;height:100px!important;transform:none!important;opacity:.6;z-index:96}
+body.fantasy-hud.phone-layout #movement-stick{width:38px!important;height:38px!important}
+body.fantasy-hud.phone-layout #touch-jump{position:fixed!important;inset:auto!important;right:calc(var(--phone-right) + 8px)!important;bottom:calc(var(--phone-bottom) + 66px)!important;width:54px!important;height:54px!important;min-width:54px!important;min-height:54px!important;max-width:54px!important;max-height:54px!important;margin:0!important;padding:4px!important;border-radius:50%!important;z-index:96}
+body.fantasy-hud.phone-layout #touch-jump svg{width:24px!important;height:24px!important}
+body.fantasy-hud.phone-layout #touch-jump span{font-size:9px!important}
+body.fantasy-hud.phone-layout #side{right:var(--phone-right)!important;bottom:var(--phone-bottom)!important;width:280px!important;max-width:46vw!important;height:54px!important;padding:5px!important;z-index:60}
+body.fantasy-hud.phone-layout #side>.tabs{height:44px!important;left:5px!important;right:5px!important;bottom:4px!important;gap:3px!important}
+body.fantasy-hud.phone-layout #side>.tabs button{min-width:0!important;width:auto!important;height:44px!important;min-height:44px!important;padding:5px!important;margin:0!important}
+body.fantasy-hud.phone-layout #side>.tabs .fantasy-tab-icon{width:27px!important;height:27px!important}
+body.fantasy-hud.phone-layout.hud-panel-open #side{width:min(340px,46vw)!important;max-width:46vw!important;height:calc(var(--visible-height,100dvh) - 20px - env(safe-area-inset-bottom))!important;max-height:calc(var(--visible-height,100dvh) - 20px)!important;padding:35px 10px 62px!important;z-index:110}
+body.fantasy-hud.phone-layout.hud-panel-open #map-widget,body.fantasy-hud.phone-layout.hud-panel-open #touch-jump{visibility:hidden!important}
+body.fantasy-hud.phone-layout #settings-tab #world-report-button{position:static!important;inset:auto!important;transform:none!important;display:block!important;min-height:40px!important;width:100%!important;margin:10px 0!important;font-size:12px!important;opacity:1!important}
+body.fantasy-hud.phone-layout>#world-report-button{display:none!important}
+body.fantasy-hud.phone-layout:has(#world-chat-input:focus) #movement-pad,body.fantasy-hud.phone-layout:has(#world-chat-input:focus) #touch-jump{visibility:hidden!important}
+body.fantasy-hud.phone-layout:has(#world-chat-input:focus) #social-panel{top:auto!important;bottom:8px!important}
+body.fantasy-hud.phone-layout #game-ui #health-hud{height:62px!important;max-height:62px!important;overflow:hidden!important}
+body.fantasy-hud.phone-layout #health-hud #hud-name,body.fantasy-hud.phone-layout #health-hud #hud-info{display:block!important;line-height:12px!important}
+body.fantasy-hud.phone-layout #health-hud .health-track{height:11px!important;margin:3px 0!important}
+body.fantasy-hud.phone-layout #health-hud .xp-track{height:4px!important;margin:3px 0!important}
+body.fantasy-hud.phone-layout #health-hud #hud-health{line-height:9px!important;font-size:9px!important}
+body.fantasy-hud.phone-layout #social-friends{max-height:100%;overflow:auto}
+body.fantasy-hud.phone-layout #social-panel:has(#social-friends:not([hidden])) .social-tabs{display:flex!important;height:20px!important}

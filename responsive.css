@@ -3,7 +3,7 @@ body.compact-layout{overscroll-behavior:none}
 body.compact-layout #side{left:auto;right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));width:min(320px,calc(100vw - 16px));max-width:none;height:58px;padding:6px;z-index:65}
 body.compact-layout #side>.tabs{margin:0;gap:5px}
 body.compact-layout #side>.tabs button{min-height:44px!important}
-body.compact-layout:not(.compact-panel-open) #side>:not(.tabs){display:none!important}
+body.compact-layout:not(.fantasy-hud):not(.compact-panel-open) #side>:not(.tabs){display:none!important}
 body.compact-layout.compact-panel-open #side{width:min(320px,42vw);height:min(300px,calc(100dvh - 24px));padding-top:50px}
 body.compact-layout.compact-panel-open .compact-close{display:block;position:absolute;right:6px;top:3px;min-width:44px;min-height:44px;margin:0}
 body.compact-layout #inventory{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:52px;align-content:start}
