@@ -6,7 +6,7 @@ For the most reliable iPhone experience, open Safari's Share menu, choose **Add 
 
 Chat starts as a compact Chat button on phones and tablets; tap it to open. Desktop chat starts open. This choice is made at game startup, not reset on every rotation or resize.
 
-Magic Keyboard and other hardware keyboards use the same controls as desktop, even when touch input is available: W/S or up/down move, A/D or left/right turn, Q/E strafe, Space jumps, Shift runs. Keyboard events use physical codes when available and key-name fallbacks otherwise. Browser shortcut combinations and text entry are left alone. Tap/click the world after typing to return focus to movement. Release, loss of focus and orientation changes clear held movement.
+Magic Keyboard and other hardware keyboards use the same controls as desktop, even when touch input is available: W/S or up/down move, A/D or left/right turn, Q/E strafe, Space jumps, Shift runs. Keyboard events use physical codes when available and key-name fallbacks otherwise. Browser shortcut combinations and text entry are left alone. Press Enter/Return while playing to open chat and start typing, including on iPad keyboards. Enter while typing keeps the normal send-message behavior. Other text fields and dialogs keep their own Enter actions. Tap/click the world after typing to return focus to movement. Release, loss of focus and orientation changes clear held movement.
 
 Browser checks emulate a touch device receiving physical keyboard events; they are not a test on physical Magic Keyboard hardware.
 

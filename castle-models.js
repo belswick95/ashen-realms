@@ -1,4 +1,4 @@
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-screen32';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-chat33';
 export function castleObject(T,g,id,d={}){
  const stone=new T.MeshStandardMaterial({map:surfaceTexture(T,'masonry',0x92958b),roughness:.92}),trim=new T.MeshStandardMaterial({color:0xb6b5a5,roughness:.8}),wood=new T.MeshStandardMaterial({map:surfaceTexture(T,'wood',0x5e3c27),roughness:.85}),iron=new T.MeshStandardMaterial({color:0x323a3a,metalness:.65,roughness:.45});
  const box=(x,y,z,w,h,l,mat=stone,parent=g)=>{const m=new T.Mesh(scaleSurfaceUV(new T.BoxGeometry(w,h,l),w,h,l),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;parent.add(m);return m};
