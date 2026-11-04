@@ -1,3 +1,4 @@
+import {sampleRunCycle} from './run-cycle.js?v=release-20261104-motion28';
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
@@ -20,13 +21,13 @@ export function createHumanoidAnimator(rig){
   // Combat keeps the existing short, planted approach. Walking has an extended
   // recovery and low foot lift; running has a flight phase and high recovery.
   const stance=.60*combatBlend+.52*walkBlend+.32*runBlend;
-  const strideLength=(1.1+.45*pace)*combatBlend+(2.25+.20*pace)*walkBlend+2.80*runBlend;
+  const strideLength=(1.1+.45*pace)*combatBlend+(2.25+.20*pace)*walkBlend+3.4*runBlend;
   const footLift=.12*combatBlend+.09*walkBlend+.30*runBlend;
-  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?2.80:2.25+.20*pace;
+  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?3.4:2.25+.20*pace;
   phase+=distance*Math.PI*2/cycleLength;
   const gait=Math.sin(phase),stride=(.24+run*.12)*blend;
   const upper=Math.abs(rig.leftKnee.position.y),lower=rig.leftAnkle?Math.abs(rig.leftAnkle.position.y):.42*(rig.legScale||1.3),length=upper+lower;
-  const lean=.17*runBlend*blend;
+  const lean=.12*runBlend*blend;
   const reach=strideLength*stance/(2*rig.root.scale.z),baseDown=Math.sqrt(Math.max(.1,length*length-reach*reach))-.03*runBlend-.002;
   const phases=[((phase/(Math.PI*2))%1+1)%1,((phase/(Math.PI*2)+.5)%1+1)%1],contacts=phases.filter(u=>u<stance);
   // Extend the supporting leg through mid-stance instead of holding both knees
@@ -54,7 +55,7 @@ export function createHumanoidAnimator(rig){
   // Visual pelvis compression keeps contact feet at their standing ground height.
   // Physics, saved positions and pathfinding roots are never translated.
   const walkRise=.014*(1-Math.cos(phase*2))*walkBlend*blend;const bob=(down-length+flight)*blend;rig.root.rotation.x=lean;
-  for(const child of rig.root.children){if(rig.skinned&&child.isSkinnedMesh)continue;if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg;child.position.y=restY.get(child)+(upperBody?((baseDown-length)*(1-walkBlend)-.025*walkBlend)*blend+walkRise:bob)}
+  for(const child of rig.root.children){if(child.userData.attachedCape||rig.skinned&&child.isSkinnedMesh)continue;if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg;child.position.y=restY.get(child)+(upperBody?((baseDown-length)*combatBlend+(-.035+.004*Math.cos(phase*2))*runBlend-.025*walkBlend)*blend+walkRise:bob)}
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
   const armSwing=(.11*combatBlend+.32*walkBlend+.45*runBlend)*blend;
@@ -64,6 +65,15 @@ export function createHumanoidAnimator(rig){
   const elbow=-.10-.78*runBlend*blend;
   rig.leftElbow.rotation.x=elbow-Math.max(0,gait)*.06*blend;
   rig.rightElbow.rotation.x=elbow-Math.max(0,-gait)*.06*blend;
+  // Retarget measured running joint motion onto the existing body; never move
+  // the authoritative root with animation. Distance determines playback phase.
+  const captured=sampleRunCycle(phase/(Math.PI*2)),runWeight=runBlend*blend;
+  for(const [side,index] of [['left',0],['right',5]]){
+   for(const [part,j] of [['Leg',0],['Knee',1],['Ankle',2],['Arm',3],['Elbow',4]]){
+    const joint=rig[side+part];if(joint)joint.rotation.x+=(captured[index+j]-joint.rotation.x)*runWeight;
+   }
+  }
+  if(rig.leftHand)rig.leftHand.rotation.y=-Math.PI/2*runWeight;if(rig.rightHand)rig.rightHand.rotation.y=Math.PI/2*runWeight;
   // Armed idle: elbows forward, right hand presenting the blade diagonally ahead,
   // left forearm carrying the shield ahead of the torso. Blend out during attack.
   if(armed&&!twoHanded&&attack<=0){
@@ -109,7 +119,7 @@ export function createHumanoidAnimator(rig){
    else if(shield&&rig.solveArm){const V=rig.root.position.constructor;rig.solveArm('left',new V(.12,rig.skinned?1.94:1.68,rig.skinned?.45:.62),new V(0,1,0),new V(0,0,1))}
    else{rig.rightArm.rotation.x=-.85;rig.rightElbow.rotation.x=-.7;rig.rightHand.rotation.z=-.45}
   }
-  if(rig.head){rig.head.rotation.x=-gait*.012*blend-impact*.06;rig.head.rotation.z=Math.sin(time*.7)*.008*(1-blend)}
+  if(rig.head){rig.head.rotation.y=0;rig.head.rotation.x=-gait*.012*blend-impact*.06;rig.head.rotation.z=Math.sin(time*.7)*.008*(1-blend)}
   if(rig.neck)rig.neck.scale.y=1+Math.sin(time*1.7)*.008*(1-blend);
   // Never translate the whole rig: grounded feet and gameplay root stay stable.
   if(rig.torso){

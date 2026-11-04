@@ -13,3 +13,27 @@ Phones/tablets use a translucent camera-relative thumbstick on the left, a separ
 Validation: 40 Node test files passed; explicit male full-body geometry and saved appearance colors are covered. Browser checks cover full renderer/model/armor, touch cancellation, movement and jump, chat visibility, device bounds, overlap and authentication workflows. Rollback-only database integration tests verified ownership, equipment capacity, exact mounted/walking speed ratio, zero-energy riding, castle/building/gathering restrictions and the authenticated public RPC. The production mount migration was applied only after those checks passed; it uses guarded mount-specific edits with unchanged function identities and permissions.
 
 Artwork credits and applicable licenses are available at `/assets/ART-CREDITS.html`. MakeHuman graphics are CC0; the adapted horse artwork remains CC BY-SA 3.0. Sources: https://www.makehumancommunity.org/about/license.html and https://github.com/0ad/0ad/tree/master/binaries/data/mods/public/art . Touch design reference: https://developer.apple.com/design/human-interface-guidelines/game-controls .
+
+### Movement and cape follow-up (motion28)
+
+The current male mesh, skinning data and appearance options are unchanged. Running
+uses CMU subject 35 / take 17 joint motion, resampled and retargeted to the existing
+rig. Playback follows distance travelled; animation cannot move the server root.
+The source BVH is reproducibly processed with `scripts/build-run-cycle.mjs`.
+
+Local keyboard movement reconciles against the latest acknowledged server pose
+after the movement queue drains. Only other actors use delayed interpolation.
+Repeated keydown events and heartbeat/frame packet duplication are suppressed;
+releasing a movement key preserves held Shift. NPC carrying/reading uses reachable
+hand targets and other work poses fade when movement begins. Guard sword profiles
+now select the relaxed sword carry.
+
+Cape shoulder pins follow the body bone; the cloth avoids posed leg capsules with
+an armor clearance margin. Its mesh is excluded from the animator's generic child
+translation so it cannot receive that motion twice. Cape ownership and visibility
+are unchanged.
+
+Validation: packet/reconciliation regressions, run-loop continuity, cape/leg
+clearance through a complete run sequence, NPC grip positions, real WebGL poses,
+and existing controls/character tests. Live account QA uses temporary credentials
+outside the repository and restores the original player position afterward.

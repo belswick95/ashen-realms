@@ -1,0 +1,9 @@
+// Animation only: CMU subject 35, take 17, Bruce Hahne BVH conversion.
+// Usage: node scripts/build-run-cycle.mjs /path/to/35_17.bvh
+import fs from 'node:fs';import * as T from 'three';import {BVHLoader} from 'three/examples/jsm/loaders/BVHLoader.js';
+const {skeleton,clip}=new BVHLoader().parse(fs.readFileSync(process.argv[2],'utf8')),root=skeleton.bones[0],mixer=new T.AnimationMixer(root);mixer.clipAction(clip).play();const position=name=>skeleton.bones.find(b=>b.name===name).getWorldPosition(new T.Vector3()),wrap=a=>Math.atan2(Math.sin(a),Math.cos(a)),angle=(a,b)=>Math.atan2(-(b.z-a.z),-(b.y-a.y));
+// Exclude the BVH calibration frame. One complete steady run cycle, resampled.
+const frames=[];for(let i=0;i<48;i++){mixer.setTime((30+i*90/48)/120);root.updateMatrixWorld(true);const row=[];for(const side of ['Left','Right']){const hip=position(side+'UpLeg'),knee=position(side+'Leg'),foot=position(side+'Foot'),toe=position(side+'ToeBase'),arm=position(side+'Arm'),elbow=position(side+'ForeArm'),hand=position(side+'Hand');const thigh=angle(hip,knee),shin=angle(knee,foot);row.push(thigh-.12,Math.max(0,wrap(shin-thigh)),wrap(-Math.atan2(toe.y-foot.y,toe.z-foot.z)-shin),angle(arm,elbow)-.12,Math.min(-.15,wrap(angle(elbow,hand)-angle(arm,elbow))));}frames.push(row.map(v=>+v.toFixed(5)))}
+// Remove capture drift at the seam without changing the middle of the stride.
+const seam=frames[0].map((v,j)=>wrap(v-frames[47][j]));for(let i=0;i<6;i++){const a=frames[47-i],w=(6-i)/6;for(let j=0;j<a.length;j++)a[j]+=seam[j]*w;}
+fs.writeFileSync('run-cycle.js','// CMU 35_17 run/jog, retargeted sagittal joint angles; see assets/ART-CREDITS.html.\nexport const runCycle='+JSON.stringify(frames)+';\nexport function sampleRunCycle(phase){const f=((phase%1+1)%1)*runCycle.length,i=Math.floor(f),t=f-i,a=runCycle[i],b=runCycle[(i+1)%runCycle.length];return a.map((v,j)=>v+Math.atan2(Math.sin(b[j]-v),Math.cos(b[j]-v))*t)}\n');

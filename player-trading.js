@@ -1,4 +1,4 @@
-import {goods,inventoryEntries,quantity} from './economy.js?v=release-20261104-male27';
+import {goods,inventoryEntries,quantity} from './economy.js?v=release-20261104-motion28';
 const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e};
 export function createTradePanel(state){
  const panel=node('dialog');panel.id='player-trade';document.body.append(panel);let current=null,signature='',dismissed=null;

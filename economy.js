@@ -1,9 +1,9 @@
-import {mountCatalog} from './mounts.js?v=release-20261104-male27';
-import {itemIcons} from './item-icons.js?v=release-20261104-male27';
-import {fishingItems} from './fishing.js?v=release-20261104-male27';
-import {weaponCatalog,iconForWeapon} from './weapons.js?v=release-20261104-male27';
-import {shieldCatalog} from './shields.js?v=release-20261104-male27';
-import {jewelryCatalog} from './jewelry.js?v=release-20261104-male27';
+import {mountCatalog} from './mounts.js?v=release-20261104-motion28';
+import {itemIcons} from './item-icons.js?v=release-20261104-motion28';
+import {fishingItems} from './fishing.js?v=release-20261104-motion28';
+import {weaponCatalog,iconForWeapon} from './weapons.js?v=release-20261104-motion28';
+import {shieldCatalog} from './shields.js?v=release-20261104-motion28';
+import {jewelryCatalog} from './jewelry.js?v=release-20261104-motion28';
 const armor={helm:'Iron full helm',chest:'Iron platebody',legs:'Iron platelegs',boots:'Iron boots',cape:'Crimson cape'};
 export const goods={...fishingItems,wood:{name:'Logs',buy:6,sell:3,icon:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 34l-3-10q7-7 14-1l3 11" fill="#755034" stroke="#493322" stroke-width="1.5"/><ellipse cx="13" cy="34" rx="8" ry="7" fill="#c8a36e" stroke="#5d4028" stroke-width="1.5"/><ellipse cx="13" cy="34" rx="4.5" ry="3.8" fill="none" stroke="#937044"/><path d="m11 33 3 2" stroke="#937044"/><path d="M27 34l-3-10q7-7 14-1l3 11" fill="#755034" stroke="#493322" stroke-width="1.5"/><ellipse cx="34" cy="34" rx="8" ry="7" fill="#c8a36e" stroke="#5d4028" stroke-width="1.5"/><ellipse cx="34" cy="34" rx="4.5" ry="3.8" fill="none" stroke="#937044"/><path d="m32 33 3 2" stroke="#937044"/><path d="M17 19l-3-10q7-7 14-1l3 11" fill="#755034" stroke="#493322" stroke-width="1.5"/><ellipse cx="24" cy="19" rx="8" ry="7" fill="#c8a36e" stroke="#5d4028" stroke-width="1.5"/><ellipse cx="24" cy="19" rx="4.5" ry="3.8" fill="none" stroke="#937044"/><path d="m22 18 3 2" stroke="#937044"/></svg>'},ore:{name:'Iron ore',buy:10,sell:5,icon:'🪨'}};
 for(const [key,item] of Object.entries(weaponCatalog))goods['weapon:'+key]={name:item.name,buy:key==='twohand'?120:key==='battleaxe'?90:key==='dagger'?20:45,sell:key==='twohand'?40:key==='battleaxe'?30:12,icon:iconForWeapon(key),field:'weaponsOwned',key};
