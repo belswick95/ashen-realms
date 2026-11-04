@@ -1,69 +1,70 @@
-import {obstructionDistance} from './camera-obstruction.js?v=release-20261104-studio39';
-import {slideStep,locomotionDistance} from './movement-collision.js?v=release-20261104-studio39';
-import {createWildlife} from './wildlife.js?v=release-20261104-studio39';
-import {createProfessionVisuals} from './profession-visuals.js?v=release-20261104-studio39';
-import {makeDroppedItemModel} from './item-models.js?v=release-20261104-studio39';
-import {createProfessionPanel} from './professions.js?v=release-20261104-studio39';
-import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261104-studio39';
-import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261104-studio39';
-import {createHorseMount} from './horse-mount.js?v=release-20261104-studio39';
-import {playHorseHoof} from './music.js?v=release-20261104-studio39';
-import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261104-studio39';
-import {createGroundDressing} from './environment-detail.js?v=release-20261104-studio39';
-import {createWaterSystem} from './water-rendering.js?v=release-20261104-studio39';
-import {fishingDock} from './waterfront.js?v=release-20261104-studio39';
-import {createSurfaceCoverIndex,isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261104-studio39';
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261104-studio39';
-import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261104-studio39';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261104-studio39';
-import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261104-studio39';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261104-studio39';
-import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261104-studio39';
-import {createRegionStreamer} from './region-streamer.js?v=release-20261104-studio39';
-import {searchRoute} from './route-search.js?v=release-20261104-studio39';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261104-studio39';
-import {actorMenuLabel} from './context-label.js?v=release-20261104-studio39';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261104-studio39';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261104-studio39';
-import {createGroundDrops} from './ground-drops.js?v=release-20261104-studio39';
-import {createCombatHealth} from './combat-health.js?v=release-20261104-studio39';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261104-studio39';
-import {castle,inCastle} from './castle-layout.js?v=release-20261104-studio39';
-import {createMotionTrack,reconcileLocalPose} from './motion-track.js?v=release-20261104-studio39';
-import {lightingAt} from './world-lighting.js?v=release-20261104-studio39';
-import {sculptPatches} from './terrain-patches.js?v=release-20261104-studio39';
-import {fromPlayerRow} from './player-save.js?v=release-20261104-studio39';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261104-studio39';
-import {worldTemplates} from './world-templates.js?v=release-20261104-studio39';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261104-studio39';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261104-studio39';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261104-studio39';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261104-studio39';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261104-studio39';
-import {goods,sanitizeBank,inventoryUsed,createServicePanel} from './economy.js?v=release-20261104-studio39';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261104-studio39';
-import {mapPoint} from './minimap.js?v=release-20261104-studio39';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261104-studio39';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-studio39';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-studio39';
-import {createPlayerHUD} from './player-hud.js?v=release-20261104-studio39';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261104-studio39';
-import {stabilizeSun,shadowQuality} from './sun-shadow.js?v=release-20261104-studio39';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261104-studio39';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261104-studio39';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261104-studio39';
+import {panelStateKey} from './panel-state.js?v=release-20261104-mobile40';
+import {obstructionDistance} from './camera-obstruction.js?v=release-20261104-mobile40';
+import {slideStep,locomotionDistance} from './movement-collision.js?v=release-20261104-mobile40';
+import {createWildlife} from './wildlife.js?v=release-20261104-mobile40';
+import {createProfessionVisuals} from './profession-visuals.js?v=release-20261104-mobile40';
+import {makeDroppedItemModel} from './item-models.js?v=release-20261104-mobile40';
+import {createProfessionPanel} from './professions.js?v=release-20261104-mobile40';
+import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261104-mobile40';
+import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261104-mobile40';
+import {createHorseMount} from './horse-mount.js?v=release-20261104-mobile40';
+import {playHorseHoof} from './music.js?v=release-20261104-mobile40';
+import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261104-mobile40';
+import {createGroundDressing} from './environment-detail.js?v=release-20261104-mobile40';
+import {createWaterSystem} from './water-rendering.js?v=release-20261104-mobile40';
+import {fishingDock} from './waterfront.js?v=release-20261104-mobile40';
+import {createSurfaceCoverIndex,isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261104-mobile40';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261104-mobile40';
+import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261104-mobile40';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261104-mobile40';
+import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261104-mobile40';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261104-mobile40';
+import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261104-mobile40';
+import {createRegionStreamer} from './region-streamer.js?v=release-20261104-mobile40';
+import {searchRoute} from './route-search.js?v=release-20261104-mobile40';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261104-mobile40';
+import {actorMenuLabel} from './context-label.js?v=release-20261104-mobile40';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261104-mobile40';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261104-mobile40';
+import {createGroundDrops} from './ground-drops.js?v=release-20261104-mobile40';
+import {createCombatHealth} from './combat-health.js?v=release-20261104-mobile40';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261104-mobile40';
+import {castle,inCastle} from './castle-layout.js?v=release-20261104-mobile40';
+import {createMotionTrack,reconcileLocalPose} from './motion-track.js?v=release-20261104-mobile40';
+import {lightingAt} from './world-lighting.js?v=release-20261104-mobile40';
+import {sculptPatches} from './terrain-patches.js?v=release-20261104-mobile40';
+import {fromPlayerRow} from './player-save.js?v=release-20261104-mobile40';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261104-mobile40';
+import {worldTemplates} from './world-templates.js?v=release-20261104-mobile40';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261104-mobile40';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261104-mobile40';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261104-mobile40';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261104-mobile40';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261104-mobile40';
+import {goods,sanitizeBank,inventoryUsed,createServicePanel} from './economy.js?v=release-20261104-mobile40';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261104-mobile40';
+import {mapPoint} from './minimap.js?v=release-20261104-mobile40';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261104-mobile40';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-mobile40';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-mobile40';
+import {createPlayerHUD} from './player-hud.js?v=release-20261104-mobile40';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261104-mobile40';
+import {stabilizeSun,shadowQuality} from './sun-shadow.js?v=release-20261104-mobile40';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261104-mobile40';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261104-mobile40';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261104-mobile40';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261104-studio39';
-import {createHumanoidAnimator} from './animation.js?v=release-20261104-studio39';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261104-studio39';
-import {buildForest} from './forest.js?v=release-20261104-studio39';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261104-studio39';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261104-studio39';
+import {buildHumanoid} from './humanoid.js?v=release-20261104-mobile40';
+import {createHumanoidAnimator} from './animation.js?v=release-20261104-mobile40';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261104-mobile40';
+import {buildForest} from './forest.js?v=release-20261104-mobile40';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261104-mobile40';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261104-mobile40';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261104-studio39';
-import {createCape} from './cape.js?v=release-20261104-studio39';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261104-studio39';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261104-studio39';
+import {buildPlateArmor} from './armor.js?v=release-20261104-mobile40';
+import {createCape} from './cape.js?v=release-20261104-mobile40';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261104-mobile40';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261104-mobile40';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -627,7 +628,7 @@ const mapControls=document.createElement('div');mapControls.id='map-controls';ma
 for(const [label,title,handler] of [['+','Zoom in',()=>{minimapExtent=Math.max(35,minimapExtent*.8)}],['−','Zoom out',()=>{minimapExtent=Math.min(180,minimapExtent*1.25)}]]){const button=document.createElement('button');button.type='button';button.textContent=label;button.setAttribute('aria-label',title);button.style.cssText='min-height:30px;min-width:30px;padding:4px 7px;margin:0;font-size:14px';button.onclick=()=>{handler();drawMap(mapCtx,mapCanvas,false)};mapControls.append(button)}
 const runButton=document.createElement('button');runButton.id='run-toggle';runButton.type='button';runButton.innerHTML=footIcon+'<span id="run-energy">100</span>';runButton.setAttribute('aria-label','Toggle run');runButton.setAttribute('aria-pressed','false');mapControls.append(runButton);document.querySelector('#map-widget').append(mapControls);
 function updateRunButton(){runButton.disabled=mounted;runButton.classList.toggle('mounted',mounted);const energy=Math.ceil(state.runEnergy);if(runButton.dataset.energy===String(energy)&&runButton.getAttribute('aria-pressed')===String(running)&&runButton.dataset.mounted===String(mounted))return;runButton.dataset.energy=energy;runButton.setAttribute('aria-pressed',String(running));runButton.querySelector('span').textContent=mounted?'3×':energy;runButton.title=mounted?'Mounted · 3× walking speed · no energy drain':(running?'Running':'Walking')+' · Energy '+energy+'/100';}
-runButton.onclick=()=>{if(window.eldervaleAuthority){void window.eldervaleRealm?.command('run',{enabled:!running});return}if(!running&&state.runEnergy<5){say('Recover a little energy before running again.');return}running=!running;updateRunButton()};updateRunButton();
+let lastRunTouch=-Infinity;runButton.onclick=e=>{if(e?.detail&&performance.now()-lastRunTouch<700)return;if(mounted){say('Mounted travel uses a constant speed without sprint energy.');return}if(window.eldervaleAuthority){void window.eldervaleRealm?.command('run',{enabled:!running});return}if(!running&&state.runEnergy<5){say('Recover a little energy before running again.');return}running=!running;updateRunButton()};runButton.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!runButton.disabled){e.preventDefault();e.stopPropagation();lastRunTouch=performance.now();runButton.onclick();}});updateRunButton();
 const mapCtx=mapCanvas.getContext('2d'),largeCtx=largeMap.getContext('2d');
 
 // One deterministic terrain atlas is shared by the minimap and world map.
@@ -1006,10 +1007,12 @@ function drawSkills(){
  skillsPanel.append(grid);
  const footer=document.createElement('div');footer.className='skills-footer';footer.textContent='✦ Total level '+total+'  ·  '+skillDefinitions.length+' skills';skillsPanel.append(footer);
 }
+let lastPanelKey=null;
 function draw(){
  inventoryGold.hidden=activeTab!=='inventory';inventoryGold.textContent='🪙 '+state.gold.toLocaleString()+' gold';
  playerHUD.update({combatLevel:combatLevel(state),hp:combat.hp,maxHp:combat.maxHp,xp:combat.xp,kills:combat.kills,gold:state.gold,helmet:!!state.equipped.helm,weapon:weaponCatalog[state.equippedWeapon]});
  stats.innerHTML='<p><strong>Health: '+Math.ceil(combat.hp)+' / '+combat.maxHp+'</strong><br>Combat: '+level(combat.xp)+' ('+combat.xp+' XP)<br>Defeated: '+combat.kills+'<br>Gold: '+state.gold+'<br>Woodcutting: '+level(state.woodXP)+' ('+state.woodXP+' XP)<br>Mining: '+level(state.miningXP)+' ('+state.miningXP+' XP)</p>';
+ const panelKey=panelStateKey(state,activeTab,attackStyle,goods);if(panelKey===lastPanelKey)return;lastPanelKey=panelKey;
  inventory.innerHTML='';for(const child of [...equipment.children])if(!child.classList.contains('mount-slot'))child.remove();
  const mountSlot=equipment.querySelector('.mount-slot')||document.createElement('button');mountSlot.type='button';mountSlot.className='equip-slot mount-slot';mountSlot.setAttribute('aria-label',state.equippedMount?'Dismount '+mountCatalog[state.equippedMount].name:'Mount: Empty');const mountSignature=JSON.stringify([state.equippedMount,state.mountsOwned]);if(mountSlot.dataset.signature!==mountSignature){mountSlot.dataset.signature=mountSignature;mountSlot.innerHTML='<span class="item-icon">'+mountCatalog.armoredWhiteHorse.icon+'</span><span class="mount-slot-text"><strong>'+(state.equippedMount?'Dismount':'Mount')+'</strong><span>'+(mountCatalog[state.equippedMount]?.name||'Choose a mount')+'</span><small>'+(state.equippedMount?'3× walking speed · no energy drain':'Separate from your armor')+'</small></span>';mountSlot.title=state.equippedMount?'Tap to dismount. Mounts also dismount automatically inside buildings and castles.':'Tap to equip a mount.';mountSlot.onclick=e=>{if(state.equippedMount){equipMount(state.equippedMount);return}if(state.mountsOwned.length===1){equipMount(state.mountsOwned[0]);return}const choices=state.mountsOwned.map(k=>[(state.equippedMount===k?'Unequip ':'Equip ')+mountCatalog[k].name,()=>equipMount(k)]);if(choices.length)showMenu(e.clientX,e.clientY,choices);else say('Mounts can be granted or stocked by the owner in World Studio.')};}if(!mountSlot.isConnected)equipment.prepend(mountSlot);
  if(state.equippedWeapon){const styles=document.createElement('div');styles.className='attack-styles';for(const [key,label,hint]of [['stab','Stab','Awards Attack XP. Higher Attack improves accuracy.'],['slash','Slash','Awards Strength XP. Higher Strength increases damage.'],['lunge','Lunge','Splits combat XP equally between Attack and Strength.']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.title=hint;b.setAttribute('aria-label',label+' — '+hint);b.setAttribute('aria-pressed',String(attackStyle===key));b.onclick=()=>{if(window.eldervaleAuthority)void window.eldervaleRealm.command('attack_style',{style:key});else{attackStyle=key;draw()}};styles.append(b)}equipment.append(styles)}
@@ -1140,7 +1143,7 @@ function updateWorldSky(){
 }
 const clock=new T.Clock();let lastAutosave=performance.now();
 function frame(){requestAnimationFrame(frame);if(!document.querySelector('#auth-screen').hidden||window.eldervaleWorldLoading===true)return;updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.1);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}const frameStart=player.position.clone();const manual=mmoControls.update(dt,performance.now());if(window.eldervaleAuthority&&reconcileLocalPose(player.position,realmPlayerPose,dt,{active:!!manual,pending:!!window.eldervaleRealm?.movementPending()})&&!realmInCombat)player.rotation.y=realmPlayerPose.yaw;
-if(manual){player.rotation.y=manual.yaw;if(!window.eldervaleAuthority||performance.now()-lastMovementAck<700){const step=new T.Vector3(player.position.x+manual.x*mountSpeed(mounted,running)*dt,player.position.y,player.position.z+manual.z*mountSpeed(mounted,running)*dt);const resolved=slideStep(player.position,step,(a,b)=>!walkAllowed(a,b).blocked);player.position.set(resolved.x,resolved.y,resolved.z);if(window.eldervaleAuthority&&realmPlayerPose){const error=Math.hypot(player.position.x-realmPlayerPose.x,player.position.z-realmPlayerPose.z);if(error>2.2){const correction=Math.min(1,dt*8);player.position.x+=(realmPlayerPose.x-player.position.x)*correction;player.position.z+=(realmPlayerPose.z-player.position.z)*correction;}}}}
+if(manual){player.rotation.y=manual.yaw;if(!window.eldervaleAuthority||performance.now()-lastMovementAck<700){const step=new T.Vector3(player.position.x+manual.x*mountSpeed(mounted,running)*dt,player.position.y,player.position.z+manual.z*mountSpeed(mounted,running)*dt);const resolved=slideStep(player.position,step,(a,b)=>!walkAllowed(a,b).blocked);player.position.set(resolved.x,resolved.y,resolved.z);if(window.eldervaleAuthority&&realmPlayerPose){const error=Math.hypot(player.position.x-realmPlayerPose.x,player.position.z-realmPlayerPose.z);if(error>Math.max(2.2,mountSpeed(mounted,running)*.5)){const correction=Math.min(1,dt*8);player.position.x+=(realmPlayerPose.x-player.position.x)*correction;player.position.z+=(realmPlayerPose.z-player.position.z)*correction;}}}}
 if(!window.eldervaleAuthority&&action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<weaponStats(state.equippedWeapon).reach){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
 if(!window.eldervaleAuthority&&dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?weaponStats(state.equippedWeapon).reach*.88:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(mountSpeed(mounted,running)*dt,distance));
  const collision=walkAllowed(player.position,proposed);
@@ -1199,7 +1202,7 @@ const traveled=Math.hypot(player.position.x-frameStart.x,player.position.z-frame
 if(!window.eldervaleAuthority&&!mounted){const energyStep=stepEnergy(state.runEnergy,running,traveled>.001,dt);state.runEnergy=energyStep.energy;running=energyStep.running;if(energyStep.exhausted)say('You are out of energy and slow to a walk.')}updateRunButton();
 if(!window.eldervaleAuthority)mounted=!!state.equippedMount&&mountAllowed(player.position.x,player.position.z,persistentRows.values());
 const gaitDistance=locomotionDistance(traveled,manual,mountSpeed(mounted,running),dt);
-const pose=playerAnimator.update(dt,{locomotion:running?'run':(window.eldervaleAuthority?realmInCombat:combatTurns.target||action?.kind==='creature')?'combat':'walk',style:attackStyle,weapon:state.equippedWeapon,block:combat.blockAnim,distance:mounted?0:gaitDistance,speed:mounted?0:gaitDistance/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim,twoHanded:state.equippedWeapon==='twohand',shield:!!state.equippedShield,armed:!!state.equippedWeapon});
+const pose=playerAnimator.update(dt,{locomotion:running?'run':(window.eldervaleAuthority?realmInCombat:combatTurns.target||action?.kind==='creature')?'combat':'jog',style:attackStyle,weapon:state.equippedWeapon,block:combat.blockAnim,distance:mounted?0:gaitDistance,speed:mounted?0:gaitDistance/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim,twoHanded:state.equippedWeapon==='twohand',shield:!!state.equippedShield,armed:!!state.equippedWeapon});
 body.rotation.y=combat.attackAnim>0?Math.sin((1-combat.attackAnim/.55)*Math.PI)*-.15:T.MathUtils.lerp(body.rotation.y,0,1-Math.exp(-10*dt));
 body.rotation.z=combat.hitAnim>0?Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12:T.MathUtils.lerp(body.rotation.z,0,1-Math.exp(-12*dt));
 body.position.y=0;if(!mounted)groundFeet(avatar,body,pose?.contacts);playerHorse.update({active:mounted,distance:gaitDistance,rig:avatar,visual:body,groundHeight:landscape.walkHeight});merchantAnimator.update(dt);
@@ -1210,7 +1213,7 @@ for(const other of remotePlayers.values()){
  if(!window.eldervaleAuthority)other.root.rotation.y+=delta*(1-Math.exp(-12*dt));
  const distance=before.distanceTo(other.root.position);
  const gaitDistance=other.moveIntent?Math.max(distance,mountSpeed(other.mounted,other.running)*dt):distance;
- other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.animator.update(dt,{mounted:other.mounted,locomotion:other.running?'run':other.attackAnim>0||other.blockAnim>0?'combat':'walk',style:other.attackStyle,attack:other.attackAnim,block:other.blockAnim,distance:other.mounted?0:gaitDistance,speed:other.mounted?0:gaitDistance/Math.max(dt,.001)});other.animator.visual.position.y=0;if(!other.mounted)groundFeet(other.animator.rig,other.animator.visual);other.horse.update({active:other.mounted,distance:gaitDistance,rig:other.animator.rig,visual:other.animator.visual,groundHeight:landscape.walkHeight});if(other.mounted)other.animator.updateCape?.(dt,distance>.001?1:0,{mounted:true,mountRoot:other.horse.root});
+ other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.animator.update(dt,{mounted:other.mounted,locomotion:other.running?'run':other.attackAnim>0||other.blockAnim>0?'combat':'jog',style:other.attackStyle,attack:other.attackAnim,block:other.blockAnim,distance:other.mounted?0:gaitDistance,speed:other.mounted?0:gaitDistance/Math.max(dt,.001)});other.animator.visual.position.y=0;if(!other.mounted)groundFeet(other.animator.rig,other.animator.visual);other.horse.update({active:other.mounted,distance:gaitDistance,rig:other.animator.rig,visual:other.animator.visual,groundHeight:landscape.walkHeight});if(other.mounted)other.animator.updateCape?.(dt,distance>.001?1:0,{mounted:true,mountRoot:other.horse.root});
 }
 gatheringVisuals.update(window.eldervaleServerTime?.()||Date.now());professionVisuals.update(window.eldervaleServerTime?.()||Date.now());cape.update(dt,pose?.blend||0,{mounted,mountRoot:playerHorse.root});for(const [id,until]of depletedTrees)if(Date.parse(until)<=(window.eldervaleServerTime?.()||Date.now()))setTreeDepleted(id,false);
 if(!cameraFocus){cameraFocus=player.position.clone();yaw=player.rotation.y+Math.PI;}if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;if((traveled>.002||manual)&&!down&&!mmoControls.touchActive&&performance.now()-lastCameraDrag>1800){const behind=player.rotation.y+Math.PI;yaw+=Math.atan2(Math.sin(behind-yaw),Math.cos(behind-yaw))*(1-Math.exp(-3*dt));}stabilizeSun(T,sun,focus);if(renderer.shadowMap.enabled&&performance.now()>=nextShadowRefresh){sun.shadow.needsUpdate=true;nextShadowRefresh=performance.now()+shadowRefresh;}camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+(mounted?2.45:1.75)+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position,.35);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;const eye=new T.Vector3(focus.x,focus.y+1.5,focus.z),cameraVector=camera.position.clone().sub(eye),cameraDistance=cameraVector.length();cameraWallRay.set(eye,cameraVector.normalize());cameraWallRay.far=cameraDistance;const walls=[];for(const root of cameraWorldOccluders)if(root.visible&&Math.hypot(root.position.x-player.position.x,root.position.z-player.position.z)<45)root.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});for(const h of houseInteriors)if(h.group.position.distanceToSquared(player.position)<1600)h.group.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});const obstruction=cameraWallRay.intersectObjects(walls,false)[0];cameraObstructionDistance=obstructionDistance(cameraObstructionDistance,obstruction?obstruction.distance-.3:cameraDistance,cameraDistance,dt);camera.position.copy(eye).addScaledVector(cameraVector,cameraObstructionDistance);camera.lookAt(focus.x,focus.y+(mounted?2.05:1.35),focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const root of waterAnimationRoots)root.userData.animateWater(performance.now()*.001);for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();naturalSky.update(camera,performance.now(),skyHour,skyDaylight,sun.userData.direction);meadow.update(player.position,performance.now());wildlife.update(player.position,window.eldervaleServerTime?.()||Date.now(),skyDaylight);if(Math.floor(performance.now()/500)!==window._forestFrame){window._forestFrame=Math.floor(performance.now()/500);updateNaturalForest(forestBatches,player.position);groundDressing.update(player.position);}waterSystem.update(camera,performance.now(),skyDaylight,clientSettings.reducedMotion);renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}

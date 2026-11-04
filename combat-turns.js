@@ -12,5 +12,5 @@ export function createCombatTurns({interval,onWindup,onImpact,onEnd=()=>{}}){
   else{side=side==='player'?'enemy':'player';phase='ready';remaining=0}
  }};
 }
-export const WALK_SPEED=3.2;
+export const WALK_SPEED=6.4;
 export const SPRINT_SPEED=WALK_SPEED*2;

@@ -1,4 +1,4 @@
-import {nextFrame} from './frame-work.js?v=release-20261104-studio39';
+import {nextFrame} from './frame-work.js?v=release-20261104-mobile40';
 // Upserts are keyed by entity ID, so repeated snapshots never rebuild unchanged scenery.
 export function createRegionStreamer({rows,loaded,position,apply,remove,onProgress=()=>{},onError=()=>{},yieldFrame=nextFrame,now=()=>performance.now(),loadRadius=180,unloadRadius=220,budget=5,canRemove=()=>true}){
  const pending=new Map();let running=null,done=0,total=0;const versions=new Map();const revision=row=>row.revision??JSON.stringify(row.data);

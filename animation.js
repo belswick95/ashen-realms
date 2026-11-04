@@ -1,4 +1,4 @@
-import {sampleRunCycle} from './run-cycle.js?v=release-20261104-studio39';
+import {sampleRunCycle} from './run-cycle.js?v=release-20261104-mobile40';
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
@@ -16,14 +16,14 @@ export function createHumanoidAnimator(rig){
   const mode=locomotion||(attack>0||block>0?'combat':speed>3.5?'run':'walk');
   const transition=1-Math.exp(-12*dt);
   combatBlend+=((mode==='combat'?1:0)-combatBlend)*transition;
-  runBlend+=((mode==='run'&&moving?1:0)-runBlend)*transition;
+  runBlend+=((moving?(mode==='run'?1:mode==='jog'?.65:0):0)-runBlend)*transition;
   const walkBlend=Math.max(0,1-combatBlend-runBlend),run=runBlend,pace=Math.min(1,speed/1.9);
   // Combat keeps the existing short, planted approach. Walking has an extended
   // recovery and low foot lift; running has a flight phase and high recovery.
   const stance=.60*combatBlend+.52*walkBlend+.32*runBlend;
   const strideLength=(1.1+.45*pace)*combatBlend+(2.25+.20*pace)*walkBlend+3.4*runBlend;
   const footLift=.12*combatBlend+.09*walkBlend+.30*runBlend;
-  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?3.4:2.25+.20*pace;
+  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?6.0:mode==='jog'?4.2:2.25+.20*pace;
   phase+=distance*Math.PI*2/cycleLength;
   const gait=Math.sin(phase),stride=(.24+run*.12)*blend;
   const upper=Math.abs(rig.leftKnee.position.y),lower=rig.leftAnkle?Math.abs(rig.leftAnkle.position.y):.42*(rig.legScale||1.3),length=upper+lower;
