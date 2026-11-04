@@ -1,4 +1,4 @@
-import {sampleRunCycle} from './run-cycle.js?v=release-20261104-mobile40';
+import {sampleRunCycle} from './run-cycle.js?v=release-20261104-jog41';
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
@@ -57,7 +57,7 @@ export function createHumanoidAnimator(rig){
   // Physics, saved positions and pathfinding roots are never translated.
   const walkRise=.014*(1-Math.cos(phase*2))*walkBlend*blend;const bob=(down-length+flight)*blend;rig.root.rotation.x=lean;
   // Running armor and torso share pelvis compression; keep the relaxed walk profile.
-  for(const child of rig.root.children){if(child.userData.attachedCape||rig.skinned&&child.isSkinnedMesh)continue;if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg,legacyUpper=((baseDown-length)*combatBlend+(-.035+.004*Math.cos(phase*2))*runBlend-.025*walkBlend)*blend+walkRise;child.position.y=restY.get(child)+(upperBody?legacyUpper*(1-runBlend)+(bob+walkRise)*runBlend:bob+walkRise*runBlend)}
+  for(const child of rig.root.children){if(child.userData.attachedCape||rig.skinned&&child.isSkinnedMesh)continue;if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg,legacyUpper=((baseDown-length)*combatBlend+(-.035+.004*Math.cos(phase*2))*runBlend-.025*walkBlend)*blend+walkRise;child.position.y=restY.get(child)+(upperBody?legacyUpper*(1-Math.min(1,runBlend/.65))+(bob+walkRise*runBlend)*Math.min(1,runBlend/.65):bob+walkRise*runBlend)}
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
   const armSwing=(.11*combatBlend+.32*walkBlend+.45*runBlend)*blend;

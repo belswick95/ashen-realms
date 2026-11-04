@@ -1,4 +1,4 @@
-import {entityDefaults} from './world-templates.js?v=release-20261104-mobile40';
+import {entityDefaults} from './world-templates.js?v=release-20261104-jog41';
 export const worldPresets={
  timber_home:{label:'Timber cottage · furnished home',template:'cottage',name:'Timber cottage',room:'home',stone:false,scale:1.2,roof:0x70503c},
  stone_home:{label:'Stone townhouse · furnished home',template:'cottage',name:'Stone townhouse',room:'home',stone:true,scale:1.8,roof:0x515c69},
