@@ -1,6 +1,6 @@
 // Presentation follows the server's current jobs, including jobs already active
 // when another player enters the area. It never grants catches, logs, or XP.
-export function createGatheringVisuals(T,scene,{getActor,makeAxe}){
+export function createGatheringVisuals(T,scene,{getActor,makeAxe,onChop=()=>{}}){
  const active=new Map();let jobs=[];
  const wood=new T.MeshStandardMaterial({color:0x8e653f,roughness:.9}),lineMat=new T.LineBasicMaterial({color:0xd6ddd2,transparent:true,opacity:.8});
  function tool(method){const g=new T.Group();g.userData.gatheringTool=true;if(method==='woodcut'){g.add(makeAxe());g.rotation.x=1.3;return g;}
@@ -10,6 +10,7 @@ export function createGatheringVisuals(T,scene,{getActor,makeAxe}){
  function sync(rows){jobs=Array.isArray(rows)?rows:[];const ids=new Set(jobs.map(j=>j.player));for(const id of active.keys())if(!ids.has(id))remove(id);}
  function update(now){for(const job of jobs){const actor=getActor(job.player);if(!actor?.rig)continue;let a=active.get(job.player);if(a&&(a.method!==job.method||a.actor.rig!==actor.rig)){remove(job.player);a=null}if(!a){const hidden=[...actor.rig.rightHand.children,...actor.rig.leftHand.children].filter(o=>o.isGroup&&o.visible);for(const o of hidden)o.visible=false;const model=tool(job.method);actor.rig.rightHand.add(model);a={actor,tool:model,method:job.method,hidden};if(job.method==='rod'){const geo=new T.BufferGeometry().setFromPoints([new T.Vector3(),new T.Vector3()]);a.line=new T.Line(geo,lineMat);scene.add(a.line);a.bob=new T.Mesh(new T.SphereGeometry(.055,7,5),new T.MeshStandardMaterial({color:0xb34d3d}));scene.add(a.bob);}active.set(job.player,a);}
  const r=actor.rig,t=(now-Date.parse(job.startedAt))*.001,period=job.method==='woodcut'?3:job.method==='net'?4.5:4,u=((t%period)+period)%period/period,swing=Math.sin(u*Math.PI*2),cut=Math.pow(Math.max(0,Math.sin(u*Math.PI)),3);
+ if(job.method==='woodcut'){const beat=Math.floor(t/period-.5);if(a.cutBeat!==undefined&&beat>a.cutBeat)onChop(actor.root);a.cutBeat=beat;}
  r.rightArm.rotation.x=job.method==='woodcut'?-.85+cut*1.35:job.method==='net'?-.55+Math.sin(u*Math.PI*2)*.25:-.48+Math.sin(t*1.1)*.035;
  r.rightElbow.rotation.x=job.method==='woodcut'?-.65+cut*.48:job.method==='net'?-.6+cut*.35:-.55;
  r.leftArm.rotation.x=job.method==='woodcut'?-.22:job.method==='net'?-.35:-.40;r.leftElbow.rotation.x=job.method==='woodcut'?-.2:-.65;r.rightHand.rotation.x=job.method==='woodcut'?swing*.1:job.method==='net'?.25:0;

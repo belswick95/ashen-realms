@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {obstructionDistance} from '../camera-obstruction.js';
+test('camera clears a wall immediately and returns smoothly after passing it',()=>{assert.equal(obstructionDistance(10,3,10,.016),3);const first=obstructionDistance(3,10,10,.016);assert.ok(first>3&&first<4);let distance=3;for(let i=0;i<120;i++)distance=obstructionDistance(distance,10,10,1/60);assert.ok(distance>9.99&&distance<=10)});

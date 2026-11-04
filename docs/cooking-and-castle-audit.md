@@ -1,0 +1,11 @@
+# Castle and cooking audit — work in progress
+
+Live armor must remain unchanged. No tutorial quests or training logic are authorized in this pass.
+
+Confirmed from the live world: royal anvil (-337,-294), furnace (-341,-294), spinning wheel (-337,-290), tanning rack (-343,-290), mill (-343,-286), practice chest (-334,-284) and workbench (-325,-294) are courtyard objects. Existing smithy is centered (-312,-281), kitchen (-365,-282), chapel (-313,-315), bank (-366,-312), great hall (-340,-334). Do not move equipment until room footprints, door access and collision are verified. New castle should have connected profession rooms, an accessible upper floor and a stairway; decorative upper floors alone do not meet the requirement.
+
+Cooking already exists: raw fish/meat, wheat → flour, flour + water → dough, dough → bread; server-owned timed jobs, ingredient consumption, cooking XP, burnt food and a level-dependent burn chance. Verify the live deployed recipes and stove selection. Expand with utensils (knife, mixing bowl, pot, pie dish, cake tin), eggs, milk, butter, cheese, tomatoes, potatoes, apples, berries; then staged pizza, pie, cake and stew recipes. Every new item requires matching canonical inventory and flattened drop artwork. Never grant food/XP from animation callbacks.
+
+Reference: https://oldschool.runescape.wiki/w/Cooking ; https://oldschool.runescape.wiki/w/Range ; https://oldschool.runescape.wiki/w/Cooking/Burn_level . Fish/meat can use fires; bread/pies/cakes need a range. Separate preparation from cooking, consume ingredients server-side, award cooking XP on success, make burn probability decrease with skill and eventually reach a recipe-specific no-burn threshold.
+
+Local fixes implemented: camera eases back out after clearing obstructions; woodcut sound fires once at the impact phase of each server-timed axe swing, with a 20m audibility limit and no sounds after job removal. Unit checks pass. Release body38 includes these two fixes and coherent run pelvis/torso compression (live-code drift 0.1142 units; fixed settled drift <0.000001). Still required: authenticated live reproduction of run jitter, visual/audio checks, castle reconstruction, cooking expansion and end-to-end multiplayer verification.
