@@ -1,13 +1,14 @@
-import {createBankView} from './bank-ui.js?v=release-20261104-professions29';
-import {noteId,bankNoteDescriptor} from './bank-notes.js?v=release-20261104-professions29';
-import {professionItems} from './profession-data.js?v=release-20261104-professions29';
-import {professionIcon} from './profession-icons.js?v=release-20261104-professions29';
-import {mountCatalog} from './mounts.js?v=release-20261104-professions29';
-import {itemIcons} from './item-icons.js?v=release-20261104-professions29';
-import {fishingItems} from './fishing.js?v=release-20261104-professions29';
-import {weaponCatalog,iconForWeapon} from './weapons.js?v=release-20261104-professions29';
-import {shieldCatalog} from './shields.js?v=release-20261104-professions29';
-import {jewelryCatalog} from './jewelry.js?v=release-20261104-professions29';
+import {meshItemIcon} from './item-appearance.js?v=release-20261104-itemart30';
+import {createBankView} from './bank-ui.js?v=release-20261104-itemart30';
+import {noteId,bankNoteDescriptor} from './bank-notes.js?v=release-20261104-itemart30';
+import {professionItems} from './profession-data.js?v=release-20261104-itemart30';
+import {professionIcon} from './profession-icons.js?v=release-20261104-itemart30';
+import {mountCatalog} from './mounts.js?v=release-20261104-itemart30';
+import {itemIcons} from './item-icons.js?v=release-20261104-itemart30';
+import {fishingItems} from './fishing.js?v=release-20261104-itemart30';
+import {weaponCatalog,iconForWeapon} from './weapons.js?v=release-20261104-itemart30';
+import {shieldCatalog} from './shields.js?v=release-20261104-itemart30';
+import {jewelryCatalog} from './jewelry.js?v=release-20261104-itemart30';
 const armor={helm:'Iron full helm',chest:'Iron platebody',legs:'Iron platelegs',boots:'Iron boots',cape:'Crimson cape'};
 export const goods={...fishingItems,wood:{name:'Logs',buy:6,sell:3,icon:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 34l-3-10q7-7 14-1l3 11" fill="#755034" stroke="#493322" stroke-width="1.5"/><ellipse cx="13" cy="34" rx="8" ry="7" fill="#c8a36e" stroke="#5d4028" stroke-width="1.5"/><ellipse cx="13" cy="34" rx="4.5" ry="3.8" fill="none" stroke="#937044"/><path d="m11 33 3 2" stroke="#937044"/><path d="M27 34l-3-10q7-7 14-1l3 11" fill="#755034" stroke="#493322" stroke-width="1.5"/><ellipse cx="34" cy="34" rx="8" ry="7" fill="#c8a36e" stroke="#5d4028" stroke-width="1.5"/><ellipse cx="34" cy="34" rx="4.5" ry="3.8" fill="none" stroke="#937044"/><path d="m32 33 3 2" stroke="#937044"/><path d="M17 19l-3-10q7-7 14-1l3 11" fill="#755034" stroke="#493322" stroke-width="1.5"/><ellipse cx="24" cy="19" rx="8" ry="7" fill="#c8a36e" stroke="#5d4028" stroke-width="1.5"/><ellipse cx="24" cy="19" rx="4.5" ry="3.8" fill="none" stroke="#937044"/><path d="m22 18 3 2" stroke="#937044"/></svg>'},ore:{name:'Iron ore',buy:10,sell:5,icon:'🪨'}};
 for(const [id,d]of Object.entries(professionItems))goods[id]={...goods[id],...d,icon:professionIcon(d)};
@@ -16,6 +17,7 @@ for(const [key,name] of Object.entries(armor))goods['armor:'+key]={name,buy:60,s
 for(const [key,item] of Object.entries(shieldCatalog))goods['shield:'+key]={name:item.name,buy:40,sell:12,icon:'🛡',field:'shieldsOwned',key};
 for(const [key,item] of Object.entries(jewelryCatalog))goods['jewelry:'+key]={name:item.name,buy:75,sell:20,icon:item.icon,field:'jewelryOwned',key};
 for(const [key,item] of Object.entries(mountCatalog))goods['mount:'+key]={name:item.name,buy:2500,sell:750,icon:item.icon,field:'mountsOwned',key};
+for(const [id,g]of Object.entries(goods))g.icon=meshItemIcon(id,g);
 export function registerBankNotes(){for(const [id,g]of Object.entries(goods))if(!g.noteOf&&!g.stackable&&g.notable!==false)goods[noteId(id)]=bankNoteDescriptor(id,g)}
 registerBankNotes();
 const count=v=>Number.isFinite(Number(v))?Math.max(0,Math.min(1e9,Math.floor(Number(v)))):0;
@@ -58,4 +60,4 @@ export function createServicePanel(state,{onChange,onOpen}){
 }
 
 const customIcons=Object.fromEntries(Object.entries(itemIcons).map(([key,d])=>[key,d.svg]));
-export function registerWorldItems(catalog={}){for(const [id,d] of Object.entries(catalog))if(/^custom_[a-z0-9_]{2,35}$/.test(id)&&d.custom&&customIcons[d.icon])goods[id]={...d,icon:customIcons[d.icon],iconKey:d.icon};registerBankNotes();}
+export function registerWorldItems(catalog={}){for(const [id,d] of Object.entries(catalog))if(/^custom_[a-z0-9_]{2,35}$/.test(id)&&d.custom&&customIcons[d.icon])goods[id]={...d,icon:customIcons[d.icon],iconKey:d.icon};for(const [id,g]of Object.entries(goods))if(g.custom)g.icon=meshItemIcon(id,g);registerBankNotes();}

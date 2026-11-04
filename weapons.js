@@ -1,3 +1,4 @@
+import {meshItemIcon} from './item-appearance.js?v=release-20261104-itemart30';
 // Procedural low-poly iron equipment. Meshes share materials and are attached to the right hand.
 export const weaponCatalog={
  battleaxe:{name:'Iron battleaxe',kind:'weapon',damage:14,attack:16,speed:2.8,reach:2.2,desc:'A one-handed double-headed iron battleaxe.'},
@@ -64,14 +65,4 @@ export function makeWeapon(T,key){
  group.rotation.z=key==='twohand'?-.12:0;group.scale.setScalar(.8);
  return group
 }
-export const weaponIcons={
- battleaxe:'<path d="M22 5H27V44H22Z" fill="#936c35"/><path d="M22 12L9 6L4 15L8 27L22 21M27 12L40 6L45 15L41 27L27 21" fill="#9baeb6" stroke="#e1e7dc" stroke-width="2"/>',
- dagger:'<path d="M22 10L26 10L28 27L24 32L20 27Z" fill="#b9c8cf" stroke="#edf3e7" stroke-width="2"/><path d="M15 29H33M24 29V43" stroke="#b18d56" stroke-width="4"/>',
- scimitar:'<path d="M11 39Q33 26 37 5Q44 27 15 43Z" fill="#bccbd0" stroke="#f4e8c8" stroke-width="2"/><path d="M12 35L5 42M7 34L17 43" stroke="#ac8952" stroke-width="4"/>',
- longsword:'<path d="M22 5L26 5L28 30L24 37L20 30Z" fill="#b9c8cf" stroke="#edf3e7" stroke-width="2"/><path d="M12 32H36M24 32V44" stroke="#b18d56" stroke-width="4"/>',
- twohand:'<path d="M22 3L26 3L30 29L24 36L18 29Z" fill="#b5c5cd" stroke="#f0f0e5" stroke-width="2"/><path d="M10 30H38M24 30V45" stroke="#a88450" stroke-width="4"/>',
- shortsword:'<path d="M22 11L26 11L28 28L24 34L20 28Z" fill="#b9c8cf" stroke="#eaf1e9" stroke-width="2"/><path d="M15 30H33M24 30V42" stroke="#b18d56" stroke-width="4"/>',
- pickaxe:'<path d="M23 12L28 12L27 43H22Z" fill="#815b37"/><path d="M5 15Q23 1 43 15L34 18L24 14L13 19Z" fill="#aab9c1" stroke="#e9e9df" stroke-width="2"/>',
- axe:'<path d="M24 8L29 8L27 44H23Z" fill="#79532f"/><path d="M25 9L10 5L4 14L10 28L25 23Z" fill="#aebec5" stroke="#e8e9dd" stroke-width="2"/>'
-};
-export function iconForWeapon(key){return '<svg viewBox="0 0 48 48" aria-hidden="true">'+(weaponIcons[key]||'')+'</svg>'}
+export function iconForWeapon(key){return meshItemIcon('weapon:'+key)}

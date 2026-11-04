@@ -1,66 +1,66 @@
-import {createProfessionVisuals} from './profession-visuals.js?v=release-20261104-professions29';
-import {makeItemModel} from './item-models.js?v=release-20261104-professions29';
-import {createProfessionPanel} from './professions.js?v=release-20261104-professions29';
-import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261104-professions29';
-import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261104-professions29';
-import {createHorseMount} from './horse-mount.js?v=release-20261104-professions29';
-import {playHorseHoof} from './music.js?v=release-20261104-professions29';
-import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261104-professions29';
-import {createGroundDressing} from './environment-detail.js?v=release-20261104-professions29';
-import {createWaterSystem} from './water-rendering.js?v=release-20261104-professions29';
-import {fishingDock} from './waterfront.js?v=release-20261104-professions29';
-import {isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261104-professions29';
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261104-professions29';
-import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261104-professions29';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261104-professions29';
-import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261104-professions29';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261104-professions29';
-import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261104-professions29';
-import {createRegionStreamer} from './region-streamer.js?v=release-20261104-professions29';
-import {searchRoute} from './route-search.js?v=release-20261104-professions29';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261104-professions29';
-import {actorMenuLabel} from './context-label.js?v=release-20261104-professions29';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261104-professions29';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261104-professions29';
-import {createGroundDrops} from './ground-drops.js?v=release-20261104-professions29';
-import {createCombatHealth} from './combat-health.js?v=release-20261104-professions29';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261104-professions29';
-import {castle,inCastle} from './castle-layout.js?v=release-20261104-professions29';
-import {createMotionTrack,reconcileLocalPose} from './motion-track.js?v=release-20261104-professions29';
-import {lightingAt} from './world-lighting.js?v=release-20261104-professions29';
-import {sculptPatches} from './terrain-patches.js?v=release-20261104-professions29';
-import {fromPlayerRow} from './player-save.js?v=release-20261104-professions29';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261104-professions29';
-import {worldTemplates} from './world-templates.js?v=release-20261104-professions29';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261104-professions29';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261104-professions29';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261104-professions29';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261104-professions29';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261104-professions29';
-import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261104-professions29';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261104-professions29';
-import {mapPoint} from './minimap.js?v=release-20261104-professions29';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261104-professions29';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-professions29';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-professions29';
-import {createPlayerHUD} from './player-hud.js?v=release-20261104-professions29';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261104-professions29';
-import {stabilizeSun} from './sun-shadow.js?v=release-20261104-professions29';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261104-professions29';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261104-professions29';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261104-professions29';
+import {createProfessionVisuals} from './profession-visuals.js?v=release-20261104-itemart30';
+import {makeDroppedItemModel} from './item-models.js?v=release-20261104-itemart30';
+import {createProfessionPanel} from './professions.js?v=release-20261104-itemart30';
+import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261104-itemart30';
+import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261104-itemart30';
+import {createHorseMount} from './horse-mount.js?v=release-20261104-itemart30';
+import {playHorseHoof} from './music.js?v=release-20261104-itemart30';
+import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261104-itemart30';
+import {createGroundDressing} from './environment-detail.js?v=release-20261104-itemart30';
+import {createWaterSystem} from './water-rendering.js?v=release-20261104-itemart30';
+import {fishingDock} from './waterfront.js?v=release-20261104-itemart30';
+import {isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261104-itemart30';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261104-itemart30';
+import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261104-itemart30';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261104-itemart30';
+import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261104-itemart30';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261104-itemart30';
+import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261104-itemart30';
+import {createRegionStreamer} from './region-streamer.js?v=release-20261104-itemart30';
+import {searchRoute} from './route-search.js?v=release-20261104-itemart30';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261104-itemart30';
+import {actorMenuLabel} from './context-label.js?v=release-20261104-itemart30';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261104-itemart30';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261104-itemart30';
+import {createGroundDrops} from './ground-drops.js?v=release-20261104-itemart30';
+import {createCombatHealth} from './combat-health.js?v=release-20261104-itemart30';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261104-itemart30';
+import {castle,inCastle} from './castle-layout.js?v=release-20261104-itemart30';
+import {createMotionTrack,reconcileLocalPose} from './motion-track.js?v=release-20261104-itemart30';
+import {lightingAt} from './world-lighting.js?v=release-20261104-itemart30';
+import {sculptPatches} from './terrain-patches.js?v=release-20261104-itemart30';
+import {fromPlayerRow} from './player-save.js?v=release-20261104-itemart30';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261104-itemart30';
+import {worldTemplates} from './world-templates.js?v=release-20261104-itemart30';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261104-itemart30';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261104-itemart30';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261104-itemart30';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261104-itemart30';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261104-itemart30';
+import {goods,sanitizeBank,createServicePanel} from './economy.js?v=release-20261104-itemart30';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261104-itemart30';
+import {mapPoint} from './minimap.js?v=release-20261104-itemart30';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261104-itemart30';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-itemart30';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-itemart30';
+import {createPlayerHUD} from './player-hud.js?v=release-20261104-itemart30';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261104-itemart30';
+import {stabilizeSun} from './sun-shadow.js?v=release-20261104-itemart30';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261104-itemart30';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261104-itemart30';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261104-itemart30';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261104-professions29';
-import {createHumanoidAnimator} from './animation.js?v=release-20261104-professions29';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261104-professions29';
-import {buildForest} from './forest.js?v=release-20261104-professions29';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261104-professions29';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261104-professions29';
+import {buildHumanoid} from './humanoid.js?v=release-20261104-itemart30';
+import {createHumanoidAnimator} from './animation.js?v=release-20261104-itemart30';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261104-itemart30';
+import {buildForest} from './forest.js?v=release-20261104-itemart30';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261104-itemart30';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261104-itemart30';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261104-professions29';
-import {createCape} from './cape.js?v=release-20261104-professions29';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261104-professions29';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261104-professions29';
+import {buildPlateArmor} from './armor.js?v=release-20261104-itemart30';
+import {createCape} from './cape.js?v=release-20261104-itemart30';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261104-itemart30';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261104-itemart30';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -1018,7 +1018,7 @@ function draw(){
  for(let i=0;i<state.ore;i++)slots.push({kind:'ore'});for(const id of Object.keys(goods).filter(k=>!goods[k].field&&!['wood','ore'].includes(k)))if(state[id]>0){for(let i=0;i<(goods[id].stackable?1:state[id]);i++)slots.push({kind:'supply',key:id,count:state[id]})}
  for(let i=0;i<16;i++){
   const item=slots[i],d=document.createElement('button');d.className='slot';
-  if(item){const itemId=item.kind==='mount'?'mount:'+item.key:item.kind==='weapon'?'weapon:'+item.key:item.kind==='armor'?'armor:'+item.key:item.kind==='shield'?'shield:'+item.key:item.kind==='jewelry'?'jewelry:'+item.key:item.kind==='supply'?item.key:item.kind==='log'?'wood':'ore';const icon=document.createElement('span');icon.className='item-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=item.kind==='mount'?mountCatalog[item.key].icon:item.kind==='supply'?goods[item.key].icon+(goods[item.key].stackable?' <small>'+item.count+'</small>':''):item.kind==='jewelry'?jewelryCatalog[item.key].icon:item.kind==='weapon'?iconForWeapon(item.key):item.kind==='shield'?'<svg viewBox="0 0 48 48"><path d="M9 6H39V25L24 43L9 25Z" fill="#8499a5" stroke="#d7bc7a" stroke-width="3"/><circle cx="24" cy="21" r="5" fill="#d7bc7a"/></svg>':item.kind==='armor'?({cape:'<svg viewBox="0 0 48 48"><path d="M15 6L33 6L40 42Q24 35 8 42Z" fill="#873a4b" stroke="#d6b57c" stroke-width="2"/><circle cx="15" cy="7" r="3" fill="#d6b57c"/><circle cx="33" cy="7" r="3" fill="#d6b57c"/></svg>',helm:'<svg viewBox="0 0 48 48"><path d="M10 26V19Q10 5 24 5T38 19V26L33 37H28V25H20V37H15Z" fill="#a9b5bb" stroke="#e4d6a9" stroke-width="2"/><path d="M13 22H35" stroke="#5d6972" stroke-width="4"/></svg>',chest:'<svg viewBox="0 0 48 48"><path d="M14 5L6 14L11 26L16 23V42H32V23L37 26L42 14L34 5L28 10H20Z" fill="#9daeb8" stroke="#d8d5bd" stroke-width="2"/><path d="M16 16L24 22L32 16M24 22V39" stroke="#566a76" stroke-width="3"/></svg>',legs:'<svg viewBox="0 0 48 48"><path d="M12 5H36L33 42H25L24 22L23 42H15Z" fill="#a1adb4" stroke="#e4d6a9" stroke-width="2"/><path d="M13 14H35" stroke="#64717b" stroke-width="4"/></svg>',boots:'<svg viewBox="0 0 48 48"><path d="M9 7H20V29L25 34V41H5V34L9 27ZM28 7H39V29L44 34V41H24V34L28 27Z" fill="#7e8d96" stroke="#c3bfa7" stroke-width="2"/></svg>'})[item.key]:item.kind==='log'?goods.wood.icon:goods.ore.icon;d.append(icon);d.setAttribute('aria-label',item.kind==='mount'?mountCatalog[item.key].name:item.kind==='supply'?goods[item.key].name:item.kind==='jewelry'?jewelryCatalog[item.key].name:item.kind==='weapon'?weaponCatalog[item.key].name:item.kind==='shield'?shieldCatalog[item.key].name:item.kind==='armor'?armorCatalog[item.key].name:item.kind==='log'?'Log':'Ore');
+  if(item){const itemId=item.kind==='mount'?'mount:'+item.key:item.kind==='weapon'?'weapon:'+item.key:item.kind==='armor'?'armor:'+item.key:item.kind==='shield'?'shield:'+item.key:item.kind==='jewelry'?'jewelry:'+item.key:item.kind==='supply'?item.key:item.kind==='log'?'wood':'ore';const icon=document.createElement('span');icon.className='item-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=goods[itemId].icon+(goods[itemId].stackable?' <small>'+item.count+'</small>':'');d.append(icon);d.setAttribute('aria-label',item.kind==='mount'?mountCatalog[item.key].name:item.kind==='supply'?goods[item.key].name:item.kind==='jewelry'?jewelryCatalog[item.key].name:item.kind==='weapon'?weaponCatalog[item.key].name:item.kind==='shield'?shieldCatalog[item.key].name:item.kind==='armor'?armorCatalog[item.key].name:item.kind==='log'?'Log':'Ore');
    d.dataset.itemId=itemId;d.setAttribute('aria-label',goods[itemId].name);d.title=goods[itemId].name+' — '+((item.kind==='armor'||item.kind==='weapon')?'Click to equip • Right-click for options':'Right-click for options');
    d.onclick=()=>{if(professions.selected&&professions.combine(itemId))return;if(item.kind==='mount'){equipMount(item.key);return}if(item.kind==='log'||item.kind==='ore'){professions.use(itemId);return}if(item.kind==='supply'){if(goods[item.key].noteOf){say('Exchange this note at a bank before using the item. Deposit it, select Items, then withdraw.');return}if(goods[item.key].category==='Tools'){professions.use(itemId);return}if(goods[item.key].heal>0){void window.eldervaleRealm?.command(goods[item.key].profession?'skill_consume':'consume',{item:item.key});return}say(item.key==='fishingPole'?'Carry the pole and bait, then click a shoreline fishing spot.':goods[item.key].name+' ×'+state[item.key]);return}if(item.kind==='jewelry')equipJewelry(item.key);else if(item.kind==='armor')toggleArmor(item.key);else if(item.kind==='weapon')equipWeapon(item.key);else if(item.kind==='shield')equipShield(item.key)};
    d.oncontextmenu=e=>{e.preventDefault();const choices=item.kind==='mount'?[['Equip '+mountCatalog[item.key].name,()=>equipMount(item.key)],['Examine',()=>say(mountCatalog[item.key].description)]]:item.kind==='jewelry'?[['Equip '+jewelryCatalog[item.key].name,()=>equipJewelry(item.key)],['Examine',()=>say(jewelryCatalog[item.key].description)]]:item.kind==='weapon'? [['Equip '+weaponCatalog[item.key].name,()=>equipWeapon(item.key)],['Examine',()=>say(weaponCatalog[item.key].desc)]]:item.kind==='shield'?[['Equip '+shieldCatalog[item.key].name,()=>equipShield(item.key)],['Examine',()=>say(shieldCatalog[item.key].desc)]]:item.kind==='armor'?
@@ -1026,20 +1026,13 @@ function draw(){
     [['Examine',()=>say(item.kind==='supply'?goods[item.key].name+(item.key==='bait'?' — stackable bait consumed by fishing.':item.key==='fishingPole'?' — carry this pole and bait to fish.':' — sell your catch to a merchant.'):item.kind==='log'?'Freshly cut logs.':'Unrefined ore.')]];if(!goods[itemId].noteOf)choices.unshift(['Use '+goods[itemId].name,()=>professions.use(itemId)]);else choices.unshift(['Bank note',()=>say(goods[itemId].description)]);choices.push(['Drop',()=>requestDrop(state,itemId)]);showMenu(e.clientX,e.clientY,choices)};
   }else{d.disabled=true}inventory.append(d);
  }
- for(const slot of ['amulet','trinket']){const current=jewelryCatalog[state[slot]],button=document.createElement('button');button.className='equip-slot';const name=slot==='amulet'?'Amulet':'Trinket (ring)';button.setAttribute('aria-label',name+': '+(current?.name||'Empty'));button.innerHTML='<span class="item-icon">'+(slot==='amulet'?'📿':'💍')+'</span><span class="equip-caption">'+name+'</span>';button.title=current?current.name+' — '+current.description:'Choose jewelry · starter pieces are in the armory chest';button.onclick=e=>{const choices=state.jewelryOwned.filter(k=>jewelryCatalog[k].slot===slot).map(k=>['Equip '+jewelryCatalog[k].name,()=>equipJewelry(k)]);if(current)choices.unshift(['Remove '+current.name,()=>equipJewelry(state[slot])]);if(choices.length)showMenu(e.clientX,e.clientY,choices);else say('Collect starter jewelry from the armory chest.')};equipment.append(button)}
- const equipmentIcons={
- cape:'<svg viewBox="0 0 48 48"><path d="M15 6L33 6L40 42Q24 35 8 42Z" fill="#873a4b" stroke="#d6b57c" stroke-width="2"/><circle cx="15" cy="7" r="3" fill="#d6b57c"/><circle cx="33" cy="7" r="3" fill="#d6b57c"/></svg>',
- helm:'<svg viewBox="0 0 48 48"><path d="M10 26V19Q10 5 24 5T38 19V26L33 37H28V25H20V37H15Z" fill="#a9b5bb" stroke="#e4d6a9" stroke-width="2"/><path d="M13 22H35" stroke="#5d6972" stroke-width="4"/></svg>',
- chest:'<svg viewBox="0 0 48 48"><path d="M14 5L6 14L11 26L16 23V42H32V23L37 26L42 14L34 5L28 10H20Z" fill="#9daeb8" stroke="#d8d5bd" stroke-width="2"/><path d="M16 16L24 22L32 16M24 22V39" stroke="#566a76" stroke-width="3"/></svg>',
- legs:'<svg viewBox="0 0 48 48"><path d="M12 5H36L33 42H25L24 22L23 42H15Z" fill="#a1adb4" stroke="#e4d6a9" stroke-width="2"/><path d="M13 14H35" stroke="#64717b" stroke-width="4"/></svg>',
- boots:'<svg viewBox="0 0 48 48"><path d="M9 7H20V29L25 34V41H5V34L9 27ZM28 7H39V29L44 34V41H24V34L28 27Z" fill="#7e8d96" stroke="#c3bfa7" stroke-width="2"/></svg>'
- };
+ for(const slot of ['amulet','trinket']){const current=jewelryCatalog[state[slot]],button=document.createElement('button');button.className='equip-slot';const name=slot==='amulet'?'Amulet':'Trinket (ring)';button.setAttribute('aria-label',name+': '+(current?.name||'Empty'));button.innerHTML='<span class="item-icon">'+(goods['jewelry:'+(state[slot]||(slot==='amulet'?'woodlandAmulet':'prospectorsRing'))].icon)+'</span><span class="equip-caption">'+name+'</span>';button.title=current?current.name+' — '+current.description:'Choose jewelry · starter pieces are in the armory chest';button.onclick=e=>{const choices=state.jewelryOwned.filter(k=>jewelryCatalog[k].slot===slot).map(k=>['Equip '+jewelryCatalog[k].name,()=>equipJewelry(k)]);if(current)choices.unshift(['Remove '+current.name,()=>equipJewelry(state[slot])]);if(choices.length)showMenu(e.clientX,e.clientY,choices);else say('Collect starter jewelry from the armory chest.')};equipment.append(button)}
  const weaponSlot=document.createElement('button');weaponSlot.className='equip-slot';weaponSlot.setAttribute('aria-label','Weapon: '+(state.equippedWeapon?weaponCatalog[state.equippedWeapon].name:'Empty'));const weaponIcon=document.createElement('span');weaponIcon.className='item-icon';weaponIcon.innerHTML=state.equippedWeapon?iconForWeapon(state.equippedWeapon):'＋';const weaponLabel=document.createElement('span');weaponLabel.className='equip-caption';weaponLabel.textContent='Weapon';weaponSlot.append(weaponIcon,weaponLabel);weaponSlot.title='Attack +'+weaponStats(state.equippedWeapon).attack+' · Damage +'+weaponStats(state.equippedWeapon).damage+' · Turn '+weaponStats(state.equippedWeapon).speed+'s';weaponSlot.disabled=!state.equippedWeapon;weaponSlot.onclick=()=>state.equippedWeapon&&equipWeapon(state.equippedWeapon);equipment.append(weaponSlot);
- const shieldSlot=document.createElement('button');shieldSlot.className='equip-slot';shieldSlot.textContent=state.equippedShield?shieldCatalog[state.equippedShield].name:'Shield (empty)';shieldSlot.disabled=!state.equippedShield;shieldSlot.onclick=()=>state.equippedShield&&equipShield(state.equippedShield);equipment.append(shieldSlot);
+ const shieldSlot=document.createElement('button');shieldSlot.className='equip-slot';shieldSlot.setAttribute('aria-label',state.equippedShield?shieldCatalog[state.equippedShield].name:'Shield (empty)');shieldSlot.innerHTML='<span class="item-icon">'+(state.equippedShield?goods['shield:'+state.equippedShield].icon:'＋')+'</span><span class="equip-caption">Shield</span>';shieldSlot.disabled=!state.equippedShield;shieldSlot.onclick=()=>state.equippedShield&&equipShield(state.equippedShield);equipment.append(shieldSlot);
  for(const k of armorKeys){const item=document.createElement('button');item.className='equip-slot';
   item.setAttribute('aria-label',armorCatalog[k].slot+': '+(state.equipped[k]?armorCatalog[k].name:'Empty'));
   const icon=document.createElement('span');icon.className='item-icon';icon.setAttribute('aria-hidden','true');
-  if(state.equipped[k])icon.innerHTML=equipmentIcons[k];else icon.textContent='＋';
+  if(state.equipped[k])icon.innerHTML=goods['armor:'+k].icon;else icon.textContent='＋';
   const caption=document.createElement('span');caption.className='equip-caption';caption.textContent=armorCatalog[k].slot;
   item.append(icon,caption);
   item.disabled=!state.equipped[k];item.title=armorCatalog[k].desc+' Melee defence +'+armorCatalog[k].defence+' · Damage absorption '+armorCatalog[k].reduction+(state.equipped[k]?' · Click to unequip':' · Not worn');
@@ -1232,7 +1225,7 @@ window.eldervaleWorldBridge={
   }else if(['cottage','bank','inn','forge'].includes(d.template)){
    h=house(d.x,d.z,d.wallColor||0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stone:!!d.stone,roof:d.roof});h.realmId=row.id;root=h.group;landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
   }else{root=new T.Group();scene.add(root);root.position.set(d.x,landscape.walkHeight(d.x,d.z),d.z);
-   if(d.kind==='item'){const item=goods[d.item];if(!item){root.removeFromParent();continue}root.add(makeItemModel(T,d.item));root.position.y+=.12}
+   if(d.kind==='item'){const item=goods[d.item];if(!item){root.removeFromParent();continue}root.add(makeDroppedItemModel(T,d.item));root.position.y+=.025}
    else if(d.template==='plaza'){const mesh=new T.Mesh(new T.CircleGeometry(8,48),material(0xa39d8b,'masonry'));mesh.rotation.x=-Math.PI/2;mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);for(let i=0;i<geometry.attributes.uv.count;i++)geometry.attributes.uv.setXY(i,geometry.attributes.position.getX(i)/3,geometry.attributes.position.getZ(i)/3);const mesh=new T.Mesh(geometry,material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template,{...d,groundHeight:landscape.heightAt});if(d.template==='fishing_spot')root.position.y=d.waterHeight??.06;
    const hit=new T.Mesh(new T.BoxGeometry(d.template==='castle_gate'?9:1.3,d.template==='castle_gate'?7:2,1.3),new T.MeshBasicMaterial({visible:false}));hit.position.y=d.template==='castle_gate'?3.5:1;root.add(hit);hit.userData={kind:professionStations[d.template]||['hearth','campfire','well','fountain'].includes(d.template)?'profession':d.kind==='item'?'worldItem':d.template==='fishing_spot'?'fishing':d.template==='castle_gate'?'castleGate':d.template==='altar'?'altar':d.template==='hearth'?'hearth':d.template==='market'?'merchant':d.template==='tree'||d.template==='pine'?'tree':d.template==='rock'?'rock':'worldObject',x:d.x,z:d.z,station:['hearth','campfire'].includes(d.template)?'cooking':['well','fountain'].includes(d.template)?'water':d.template,resource:d.resource};targets.push(hit);
   }

@@ -1,0 +1,2666 @@
+[
+  {
+    "key": "item-fishingPole",
+    "id": "fishingPole",
+    "name": "Fishing pole",
+    "model": "rod",
+    "bounds": [
+      0.9099999666213988,
+      0.11999999731779099,
+      0.11999999731779099
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      134,
+      97
+    ],
+    "sha256": "e2e62874ffb5c457e0a0ef13d87131f6c64525e757d49a4a8f1a0c371e258107"
+  },
+  {
+    "key": "item-fishingNet",
+    "id": "fishingNet",
+    "name": "Fishing net",
+    "model": "net",
+    "bounds": [
+      0.9349999815225601,
+      0.18000000715255743,
+      0.41999998688697815
+    ],
+    "pixelBounds": [
+      20,
+      48,
+      126,
+      91
+    ],
+    "sha256": "b4003d7863dcdff63fa3831160d0ec470cd3f30874c0bc958522171212b60826"
+  },
+  {
+    "key": "item-bait",
+    "id": "bait",
+    "name": "Fishing bait",
+    "model": "bait",
+    "bounds": [
+      0.4615742564201355,
+      0.07999999821186066,
+      0.2691561132669449
+    ],
+    "pixelBounds": [
+      28,
+      45,
+      124,
+      94
+    ],
+    "sha256": "807e8e5235f609435a7ac91d5cd8ad11859eed0e4b5b2c5270fdc4f8fe56546a"
+  },
+  {
+    "key": "item-rawFish",
+    "id": "rawFish",
+    "name": "Raw river fish",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "5cc591c360d76189772c51c2c4977567e80de0f481618904ddb40e18a224cc23"
+  },
+  {
+    "key": "item-wood",
+    "id": "wood",
+    "name": "Logs",
+    "model": "logs",
+    "bounds": [
+      0.5899999916553498,
+      0.52999999165535,
+      0.607000011920929
+    ],
+    "pixelBounds": [
+      11,
+      19,
+      134,
+      131
+    ],
+    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+  },
+  {
+    "key": "item-ore",
+    "id": "ore",
+    "name": "Iron ore",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "306356cdfbf5c30625cd7e1a5c5c81f9334d0faaa4dbd7db2af3ee5ea99964b9"
+  },
+  {
+    "key": "item-matches",
+    "id": "matches",
+    "name": "Matches",
+    "model": "matches",
+    "bounds": [
+      0.4250000075250864,
+      0.1849999990314245,
+      0.268291111928188
+    ],
+    "pixelBounds": [
+      10,
+      38,
+      124,
+      115
+    ],
+    "sha256": "6fb1c37823b51282171b5e33e02944dbd37ec3782017a31fa67791af15fa43ad"
+  },
+  {
+    "key": "item-tinderbox",
+    "id": "tinderbox",
+    "name": "Tinderbox",
+    "model": "tinderbox",
+    "bounds": [
+      0.36000001430511475,
+      0.13999999843537808,
+      0.25
+    ],
+    "pixelBounds": [
+      7,
+      30,
+      137,
+      119
+    ],
+    "sha256": "c166c95b5ccc88be2041afc1df800c1ad6b3addfb970dc5e8d540be70b669572"
+  },
+  {
+    "key": "item-hammer",
+    "id": "hammer",
+    "name": "Smithing hammer",
+    "model": "hammer",
+    "bounds": [
+      0.6749999862909317,
+      0.15000000596046448,
+      0.3400000035762787
+    ],
+    "pixelBounds": [
+      21,
+      56,
+      137,
+      110
+    ],
+    "sha256": "b7de5369892cb3ce5646134592a45bd1ed82c30f16b216d10414c496a1403fe9"
+  },
+  {
+    "key": "item-knife",
+    "id": "knife",
+    "name": "Crafting knife",
+    "model": "knife",
+    "bounds": [
+      0.7149999916553498,
+      0.0500000007450582,
+      0.10999999940395355
+    ],
+    "pixelBounds": [
+      12,
+      48,
+      137,
+      94
+    ],
+    "sha256": "6f2055c401f4ef27c3bf171c82e7e674e6068e0b983653dd2924075da83e0279"
+  },
+  {
+    "key": "item-needle",
+    "id": "needle",
+    "name": "Needle",
+    "model": "needle",
+    "bounds": [
+      0.6730000022053719,
+      0.017999999225139757,
+      0.06599999964237213
+    ],
+    "pixelBounds": [
+      10,
+      50,
+      134,
+      93
+    ],
+    "sha256": "50818b1721c9c5225baead804c5f9a84f051da819c4285ead74f55efd6db7623"
+  },
+  {
+    "key": "item-chisel",
+    "id": "chisel",
+    "name": "Chisel",
+    "model": "chisel",
+    "bounds": [
+      0.7599999934434891,
+      0.0500000007450582,
+      0.07500000298023224
+    ],
+    "pixelBounds": [
+      9,
+      48,
+      137,
+      97
+    ],
+    "sha256": "46fa22662c9938a458719e8957e4ffa631ebfaca068a07467203a2539a6dcc64"
+  },
+  {
+    "key": "item-saw",
+    "id": "saw",
+    "name": "Carpenter\u2019s saw",
+    "model": "saw",
+    "bounds": [
+      0.7865086530230492,
+      0.0500000007450582,
+      0.2954251365302056
+    ],
+    "pixelBounds": [
+      18,
+      52,
+      130,
+      91
+    ],
+    "sha256": "450d4245818750ad85264bd27475f3f5861a4e871e906226351783feeb16e86b"
+  },
+  {
+    "key": "item-rake",
+    "id": "rake",
+    "name": "Rake",
+    "model": "rake",
+    "bounds": [
+      0.6749999862909317,
+      0.060000000037252976,
+      0.19999999955296516
+    ],
+    "pixelBounds": [
+      15,
+      51,
+      137,
+      97
+    ],
+    "sha256": "8a02f0344942d26476ac498370cde26fe182b72611e2e12977185b9d36c82470"
+  },
+  {
+    "key": "item-seedDibber",
+    "id": "seedDibber",
+    "name": "Seed dibber",
+    "model": "dibber",
+    "bounds": [
+      0.794999985396862,
+      0.05999999865889555,
+      0.05999999865889549
+    ],
+    "pixelBounds": [
+      8,
+      48,
+      133,
+      91
+    ],
+    "sha256": "d6c36fd4377e87c4a97985afe3425eb6189ebc2ab1a5f1366e8bd56869a42299"
+  },
+  {
+    "key": "item-spade",
+    "id": "spade",
+    "name": "Spade",
+    "model": "spade",
+    "bounds": [
+      0.7399999868869782,
+      0.0525000004470349,
+      0.23000000417232513
+    ],
+    "pixelBounds": [
+      16,
+      51,
+      137,
+      98
+    ],
+    "sha256": "d652b74b6a439c6724e087cfd2d40f9b04ba6b9d965d9bd01d3e1910ec116605"
+  },
+  {
+    "key": "item-pestle",
+    "id": "pestle",
+    "name": "Pestle and mortar",
+    "model": "mortar",
+    "bounds": [
+      0.36000001430511475,
+      0.3363860458848303,
+      0.36000001430511475
+    ],
+    "pixelBounds": [
+      28,
+      31,
+      116,
+      129
+    ],
+    "sha256": "14589876f9b20647e7eb8c620820ded6218f7d9ce1b63169688cbcbfd1b52c75"
+  },
+  {
+    "key": "item-boxTrap",
+    "id": "boxTrap",
+    "name": "Box trap",
+    "model": "trap",
+    "bounds": [
+      0.44999998807907104,
+      0.3175000060349703,
+      0.4000000059604645
+    ],
+    "pixelBounds": [
+      7,
+      12,
+      137,
+      132
+    ],
+    "sha256": "0b42099dffdf7c038bd8010474726ae61637dade236d17c0e2198399e3aac7a8"
+  },
+  {
+    "key": "item-lockpick",
+    "id": "lockpick",
+    "name": "Lockpick",
+    "model": "lockpick",
+    "bounds": [
+      0.5968966048955917,
+      0.04500000178813935,
+      0.14000172726809978
+    ],
+    "pixelBounds": [
+      17,
+      44,
+      127,
+      97
+    ],
+    "sha256": "2ac29040089dbda77ff2896db4914a9268e7307946e879d520c4e625f56246af"
+  },
+  {
+    "key": "item-copperOre",
+    "id": "copperOre",
+    "name": "Copper ore",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "c0422d2ad7a34658f80296bb2070dd7c29d027302b373b76ac099aeb7e6af1c4"
+  },
+  {
+    "key": "item-tinOre",
+    "id": "tinOre",
+    "name": "Tin ore",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "b8693f737762e35c00dd13be70cfe94dc2316b6dc1471ab6bfefc273b2cb41aa"
+  },
+  {
+    "key": "item-coal",
+    "id": "coal",
+    "name": "Coal",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "3f15dc85203ce1a1a99b2144e9675c39bcacc7cc14d3329569930aadb5dff334"
+  },
+  {
+    "key": "item-silverOre",
+    "id": "silverOre",
+    "name": "Silver ore",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "edbbf8f2a0625cbb70f9ec7f5ff2adb936bc1ef0ac2c38ac9c340671d9a79724"
+  },
+  {
+    "key": "item-goldOre",
+    "id": "goldOre",
+    "name": "Gold ore",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "6c3da88d9702af909a447ebe19ac8850f6f86f0aaa02743cbe9a270940587418"
+  },
+  {
+    "key": "item-mithrilOre",
+    "id": "mithrilOre",
+    "name": "Mithril ore",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "e307c39e7bfc8e83ece7337e527a5f95d6a9aa03f022ac2110ac03ebe291d5f3"
+  },
+  {
+    "key": "item-adamantOre",
+    "id": "adamantOre",
+    "name": "Adamantite ore",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "325bb5837d1d37984fad9d4394afa7f54e4d85103699d6067a0bab0665500469"
+  },
+  {
+    "key": "item-runiteOre",
+    "id": "runiteOre",
+    "name": "Runite ore",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "cb315ba8acd94fad3928f3226c40ee57f1fec847702528ba32a028f5e911a496"
+  },
+  {
+    "key": "item-bronzeBar",
+    "id": "bronzeBar",
+    "name": "Bronze bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "91998e1a748716df987a75eed525a84c47fb3c089da93600a6c04d3f0d90c41e"
+  },
+  {
+    "key": "item-ironBar",
+    "id": "ironBar",
+    "name": "Iron bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "f6c06cbd519a14b9f070288d843cfd1f90da85b708a01ba0cc026404ba6754cd"
+  },
+  {
+    "key": "item-steelBar",
+    "id": "steelBar",
+    "name": "Steel bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "2fe9d9d658d9142c54e8fb5f4e47ad31dcbe116cc7d5719131bccf8402a19d41"
+  },
+  {
+    "key": "item-silverBar",
+    "id": "silverBar",
+    "name": "Silver bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "cd70bb533da1f81268ddad1c292200bbbb78da8455ed51df33b34d4ae7ad0523"
+  },
+  {
+    "key": "item-goldBar",
+    "id": "goldBar",
+    "name": "Gold bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "ef01fe49156d56e8c4a742b9d6ca57b1c01693c3670320a47c05a49b7955355c"
+  },
+  {
+    "key": "item-mithrilBar",
+    "id": "mithrilBar",
+    "name": "Mithril bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "87534cbb14f6ea2ea921118a8f0b7822c55e6c144127ccddfa0975bfa78b78be"
+  },
+  {
+    "key": "item-adamantBar",
+    "id": "adamantBar",
+    "name": "Adamantite bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "8457b99ee9d7e499b0d72af1e608a3f9301837ea8be0e1b01bbd6d9dea70c2c1"
+  },
+  {
+    "key": "item-runiteBar",
+    "id": "runiteBar",
+    "name": "Runite bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "8faa8ebcfab26a572046cbb7d5b8464ece4d94ac721b8695a3148e650a7dd052"
+  },
+  {
+    "key": "item-oakLogs",
+    "id": "oakLogs",
+    "name": "Oak logs",
+    "model": "logs",
+    "bounds": [
+      0.5899999916553498,
+      0.52999999165535,
+      0.607000011920929
+    ],
+    "pixelBounds": [
+      11,
+      19,
+      134,
+      131
+    ],
+    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+  },
+  {
+    "key": "item-willowLogs",
+    "id": "willowLogs",
+    "name": "Willow logs",
+    "model": "logs",
+    "bounds": [
+      0.5899999916553498,
+      0.52999999165535,
+      0.607000011920929
+    ],
+    "pixelBounds": [
+      11,
+      19,
+      134,
+      131
+    ],
+    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+  },
+  {
+    "key": "item-mapleLogs",
+    "id": "mapleLogs",
+    "name": "Maple logs",
+    "model": "logs",
+    "bounds": [
+      0.5899999916553498,
+      0.52999999165535,
+      0.607000011920929
+    ],
+    "pixelBounds": [
+      11,
+      19,
+      134,
+      131
+    ],
+    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+  },
+  {
+    "key": "item-yewLogs",
+    "id": "yewLogs",
+    "name": "Yew logs",
+    "model": "logs",
+    "bounds": [
+      0.5899999916553498,
+      0.52999999165535,
+      0.607000011920929
+    ],
+    "pixelBounds": [
+      11,
+      19,
+      134,
+      131
+    ],
+    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+  },
+  {
+    "key": "item-ashes",
+    "id": "ashes",
+    "name": "Ashes",
+    "model": "ashes",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "2aa2c01c91690e061659239f9760a668d1563ae4b50df803b35a5451d0af0b05"
+  },
+  {
+    "key": "item-plank",
+    "id": "plank",
+    "name": "Timber plank",
+    "model": "plank",
+    "bounds": [
+      0.6499999761581421,
+      0.15000000074505807,
+      0.379999997317791
+    ],
+    "pixelBounds": [
+      7,
+      48,
+      137,
+      96
+    ],
+    "sha256": "82ff3b970a75b92c3d558ac1b9868bde0201368bab0752d52e082ab95abd6c5b"
+  },
+  {
+    "key": "item-oakPlank",
+    "id": "oakPlank",
+    "name": "Oak plank",
+    "model": "plank",
+    "bounds": [
+      0.6499999761581421,
+      0.15000000074505807,
+      0.379999997317791
+    ],
+    "pixelBounds": [
+      7,
+      48,
+      137,
+      96
+    ],
+    "sha256": "82ff3b970a75b92c3d558ac1b9868bde0201368bab0752d52e082ab95abd6c5b"
+  },
+  {
+    "key": "item-nails",
+    "id": "nails",
+    "name": "Bronze nails",
+    "model": "nails",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "57ad20975454520229522fe6e6e7699caa7017ebd43493f51b7dfa16de28bb63"
+  },
+  {
+    "key": "item-steelNails",
+    "id": "steelNails",
+    "name": "Steel nails",
+    "model": "nails",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "57ad20975454520229522fe6e6e7699caa7017ebd43493f51b7dfa16de28bb63"
+  },
+  {
+    "key": "item-thread",
+    "id": "thread",
+    "name": "Thread",
+    "model": "thread",
+    "bounds": [
+      0.3199999928474426,
+      0.265000000372529,
+      0.3199999928474426
+    ],
+    "pixelBounds": [
+      25,
+      16,
+      119,
+      128
+    ],
+    "sha256": "372d8dc9e4772135edd8cf4b82105d2ab492b2355fa10011766704c5e47702b7"
+  },
+  {
+    "key": "item-hide",
+    "id": "hide",
+    "name": "Animal hide",
+    "model": "hide",
+    "bounds": [
+      0.5,
+      0.04500000178813935,
+      0.44999998807907104
+    ],
+    "pixelBounds": [
+      7,
+      38,
+      137,
+      106
+    ],
+    "sha256": "7ca02963d31418c7ca746305dd39aba54fa9ef98e8c42f8301fcbab95926eeea"
+  },
+  {
+    "key": "item-leather",
+    "id": "leather",
+    "name": "Leather",
+    "model": "leather",
+    "bounds": [
+      0.5,
+      0.04500000178813935,
+      0.44999998807907104
+    ],
+    "pixelBounds": [
+      7,
+      38,
+      137,
+      106
+    ],
+    "sha256": "7ca02963d31418c7ca746305dd39aba54fa9ef98e8c42f8301fcbab95926eeea"
+  },
+  {
+    "key": "item-leatherGloves",
+    "id": "leatherGloves",
+    "name": "Leather work gloves",
+    "model": "gloves",
+    "bounds": [
+      0.5,
+      0.04500000178813935,
+      0.44999998807907104
+    ],
+    "pixelBounds": [
+      7,
+      38,
+      137,
+      106
+    ],
+    "sha256": "7ca02963d31418c7ca746305dd39aba54fa9ef98e8c42f8301fcbab95926eeea"
+  },
+  {
+    "key": "item-flax",
+    "id": "flax",
+    "name": "Flax",
+    "model": "herb",
+    "bounds": [
+      0.3599999982118607,
+      0.4300000002980232,
+      0.028799999356269836
+    ],
+    "pixelBounds": [
+      31,
+      12,
+      113,
+      131
+    ],
+    "sha256": "b00779a97ab30d135a74fe2e439c3ef879b8c71bd6e202c934cba526d9a6be8c"
+  },
+  {
+    "key": "item-bowString",
+    "id": "bowString",
+    "name": "Bow string",
+    "model": "thread",
+    "bounds": [
+      0.3199999928474426,
+      0.265000000372529,
+      0.3199999928474426
+    ],
+    "pixelBounds": [
+      25,
+      16,
+      119,
+      128
+    ],
+    "sha256": "372d8dc9e4772135edd8cf4b82105d2ab492b2355fa10011766704c5e47702b7"
+  },
+  {
+    "key": "item-arrowShafts",
+    "id": "arrowShafts",
+    "name": "Arrow shafts",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "e1d53e16e2712699f3f52a8b2bff5f3e5dd5688a0c7c9b5d6d2b1c90e8e6d70c"
+  },
+  {
+    "key": "item-feathers",
+    "id": "feathers",
+    "name": "Feathers",
+    "model": "feather",
+    "bounds": [
+      0.3599999982118607,
+      0.4300000002980232,
+      0.028799999356269836
+    ],
+    "pixelBounds": [
+      31,
+      12,
+      113,
+      131
+    ],
+    "sha256": "6cb476d0e42c7c6592cc86aad5ef72e09631911336e5e25ffc5f3b8c76b4670d"
+  },
+  {
+    "key": "item-headlessArrows",
+    "id": "headlessArrows",
+    "name": "Headless arrows",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "e1d53e16e2712699f3f52a8b2bff5f3e5dd5688a0c7c9b5d6d2b1c90e8e6d70c"
+  },
+  {
+    "key": "item-arrowTips",
+    "id": "arrowTips",
+    "name": "Iron arrowtips",
+    "model": "tips",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "e1d53e16e2712699f3f52a8b2bff5f3e5dd5688a0c7c9b5d6d2b1c90e8e6d70c"
+  },
+  {
+    "key": "item-arrows",
+    "id": "arrows",
+    "name": "Iron arrows",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "e1d53e16e2712699f3f52a8b2bff5f3e5dd5688a0c7c9b5d6d2b1c90e8e6d70c"
+  },
+  {
+    "key": "item-unstrungBow",
+    "id": "unstrungBow",
+    "name": "Unstrung bow",
+    "model": "bow",
+    "bounds": [
+      0.632875382900238,
+      0.05000000260770321,
+      0.21074149757623672
+    ],
+    "pixelBounds": [
+      27,
+      45,
+      134,
+      88
+    ],
+    "sha256": "614b1d67f77ee1a77353e165de9fa7a0f5d8572260234d5f1130704c64c5a869"
+  },
+  {
+    "key": "item-shortbow",
+    "id": "shortbow",
+    "name": "Handcrafted shortbow",
+    "model": "bow",
+    "bounds": [
+      0.632875382900238,
+      0.05000000260770321,
+      0.21074149757623672
+    ],
+    "pixelBounds": [
+      27,
+      45,
+      134,
+      88
+    ],
+    "sha256": "614b1d67f77ee1a77353e165de9fa7a0f5d8572260234d5f1130704c64c5a869"
+  },
+  {
+    "key": "item-uncutGem",
+    "id": "uncutGem",
+    "name": "Uncut sapphire",
+    "model": "gem",
+    "bounds": [
+      0.41103583574295044,
+      0.28772508502006533,
+      0.41103583574295044
+    ],
+    "pixelBounds": [
+      23,
+      35,
+      121,
+      109
+    ],
+    "sha256": "34a5c9ab36486ed54509b5b490978122ccb66ee835b0ceeaaffe924c48b3e9c5"
+  },
+  {
+    "key": "item-cutGem",
+    "id": "cutGem",
+    "name": "Cut sapphire",
+    "model": "gem",
+    "bounds": [
+      0.41103583574295044,
+      0.28772508502006533,
+      0.41103583574295044
+    ],
+    "pixelBounds": [
+      23,
+      35,
+      121,
+      109
+    ],
+    "sha256": "6491b194d3cf55c16330ea0a06918d64cc7fbbd67cad2e7d0cd56e638e740179"
+  },
+  {
+    "key": "item-silverRing",
+    "id": "silverRing",
+    "name": "Silver signet",
+    "model": "ring",
+    "bounds": [
+      0.38999998569488525,
+      0.07000000029802331,
+      0.38999998569488525
+    ],
+    "pixelBounds": [
+      25,
+      45,
+      119,
+      99
+    ],
+    "sha256": "0f67b836954c095d2ed7b685513fce11adac126a6ad6e542bf58974e43887f20"
+  },
+  {
+    "key": "item-grimyHerb",
+    "id": "grimyHerb",
+    "name": "Grimy herb",
+    "model": "herb",
+    "bounds": [
+      0.3599999982118607,
+      0.4300000002980232,
+      0.028799999356269836
+    ],
+    "pixelBounds": [
+      31,
+      12,
+      113,
+      131
+    ],
+    "sha256": "b00779a97ab30d135a74fe2e439c3ef879b8c71bd6e202c934cba526d9a6be8c"
+  },
+  {
+    "key": "item-cleanHerb",
+    "id": "cleanHerb",
+    "name": "Clean herb",
+    "model": "herb",
+    "bounds": [
+      0.3599999982118607,
+      0.4300000002980232,
+      0.028799999356269836
+    ],
+    "pixelBounds": [
+      31,
+      12,
+      113,
+      131
+    ],
+    "sha256": "b00779a97ab30d135a74fe2e439c3ef879b8c71bd6e202c934cba526d9a6be8c"
+  },
+  {
+    "key": "item-vial",
+    "id": "vial",
+    "name": "Empty vial",
+    "model": "vial",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "be5271e0a3e536f824c1606b12da9993fb016a133d2ab66beae7fec980c38950"
+  },
+  {
+    "key": "item-vialWater",
+    "id": "vialWater",
+    "name": "Vial of water",
+    "model": "vial",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "a25871b9337ac5672c76ddef751bdcdb8b7409dff1dca08292c7e36b35b4deec"
+  },
+  {
+    "key": "item-unfinishedPotion",
+    "id": "unfinishedPotion",
+    "name": "Unfinished remedy",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "3414b9a51bf979ff7ecf0efe4818de87a60dbfe9a4186d9202c9bea9748cbe4e"
+  },
+  {
+    "key": "item-berries",
+    "id": "berries",
+    "name": "Red berries",
+    "model": "berries",
+    "bounds": [
+      0.3495392896278037,
+      0.3200000005960465,
+      0.28882792647377153
+    ],
+    "pixelBounds": [
+      33,
+      30,
+      119,
+      118
+    ],
+    "sha256": "0acc7b12e0392cf6d0a11fe4acc724bf7ca36351cb581b4c1f0e07833c645311"
+  },
+  {
+    "key": "item-healingPotion",
+    "id": "healingPotion",
+    "name": "Healing draught",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "c260ea70244f48db61fd1059d7f0979ac9b063b9c17e5e92e46bb4bccebc546f"
+  },
+  {
+    "key": "item-herbSeeds",
+    "id": "herbSeeds",
+    "name": "Herb seeds",
+    "model": "seeds",
+    "bounds": [
+      0.46000000834465027,
+      0.43550000265240674,
+      0.46000000834465027
+    ],
+    "pixelBounds": [
+      29,
+      27,
+      115,
+      114
+    ],
+    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+  },
+  {
+    "key": "item-wheatSeeds",
+    "id": "wheatSeeds",
+    "name": "Wheat seeds",
+    "model": "seeds",
+    "bounds": [
+      0.46000000834465027,
+      0.43550000265240674,
+      0.46000000834465027
+    ],
+    "pixelBounds": [
+      29,
+      27,
+      115,
+      114
+    ],
+    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+  },
+  {
+    "key": "item-wheat",
+    "id": "wheat",
+    "name": "Wheat",
+    "model": "wheat",
+    "bounds": [
+      0.3599999982118607,
+      0.4300000002980232,
+      0.028799999356269836
+    ],
+    "pixelBounds": [
+      31,
+      12,
+      113,
+      131
+    ],
+    "sha256": "823d73b1ffefede5ef5cd99fad92b0a877c50ef2d81bad6f405ee60a0df57c4e"
+  },
+  {
+    "key": "item-flour",
+    "id": "flour",
+    "name": "Flour",
+    "model": "sack",
+    "bounds": [
+      0.46000000834465027,
+      0.43550000265240674,
+      0.46000000834465027
+    ],
+    "pixelBounds": [
+      29,
+      27,
+      115,
+      114
+    ],
+    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+  },
+  {
+    "key": "item-water",
+    "id": "water",
+    "name": "Water flask",
+    "model": "vial",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "be5271e0a3e536f824c1606b12da9993fb016a133d2ab66beae7fec980c38950"
+  },
+  {
+    "key": "item-dough",
+    "id": "dough",
+    "name": "Bread dough",
+    "model": "dough",
+    "bounds": [
+      0.5980000108480453,
+      0.2530000045895577,
+      0.39100000709295274
+    ],
+    "pixelBounds": [
+      23,
+      44,
+      121,
+      100
+    ],
+    "sha256": "6297461cd2f9ed4ba55985813796f4d4a33f5edb760b2a71b2947a16d8d78255"
+  },
+  {
+    "key": "item-bread",
+    "id": "bread",
+    "name": "Fresh bread",
+    "model": "bread",
+    "bounds": [
+      0.5980000108480453,
+      0.26650000207126145,
+      0.39100000709295274
+    ],
+    "pixelBounds": [
+      23,
+      38,
+      121,
+      101
+    ],
+    "sha256": "a5c53fdc1b6b6722abb971b1a1590cd818570e168494ff9d59fd71832ce2327b"
+  },
+  {
+    "key": "item-rawMeat",
+    "id": "rawMeat",
+    "name": "Raw game meat",
+    "model": "meat",
+    "bounds": [
+      0.5980000108480453,
+      0.2530000045895577,
+      0.39100000709295274
+    ],
+    "pixelBounds": [
+      23,
+      44,
+      121,
+      100
+    ],
+    "sha256": "935848b2e62448db3f583666950e0b16614dacbb4713ab6f86aa1c4f7417256b"
+  },
+  {
+    "key": "item-cookedMeat",
+    "id": "cookedMeat",
+    "name": "Roast game meat",
+    "model": "meat",
+    "bounds": [
+      0.5980000108480453,
+      0.2530000045895577,
+      0.39100000709295274
+    ],
+    "pixelBounds": [
+      23,
+      44,
+      121,
+      100
+    ],
+    "sha256": "d61a77f20a7b180f612d0412199ed14369dbd607ba48da1355191780d4c028d5"
+  },
+  {
+    "key": "item-cookedFish",
+    "id": "cookedFish",
+    "name": "Cooked river fish",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "3c459c7e657c7a50d9fdcdf9067dcf6bdb638c39d412126952c1b9cea06ea630"
+  },
+  {
+    "key": "item-burntFood",
+    "id": "burntFood",
+    "name": "Burnt food",
+    "model": "food",
+    "bounds": [
+      0.5980000108480453,
+      0.26650000207126145,
+      0.39100000709295274
+    ],
+    "pixelBounds": [
+      23,
+      38,
+      121,
+      101
+    ],
+    "sha256": "7dda39da5c691152585867127f491f7ece15fd125bbdcb2a503bdafe592beb7b"
+  },
+  {
+    "key": "item-runeEssence",
+    "id": "runeEssence",
+    "name": "Rune essence",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "c8ea59538ecf5e481ff65144367c2693d7fdfb8499f266d0a062242b66dce901"
+  },
+  {
+    "key": "item-airRune",
+    "id": "airRune",
+    "name": "Air rune",
+    "model": "rune",
+    "bounds": [
+      0.47999998927116394,
+      0.09749999893829227,
+      0.47999998927116394
+    ],
+    "pixelBounds": [
+      26,
+      45,
+      118,
+      102
+    ],
+    "sha256": "9a699a0013536d6f0047af35e5d95522016d71e380d362d9e2689b5804788883"
+  },
+  {
+    "key": "item-fireRune",
+    "id": "fireRune",
+    "name": "Fire rune",
+    "model": "rune",
+    "bounds": [
+      0.47999998927116394,
+      0.09749999893829227,
+      0.47999998927116394
+    ],
+    "pixelBounds": [
+      26,
+      45,
+      118,
+      102
+    ],
+    "sha256": "eb105681f2342006b3f3a258fa0f13e28084e50afa23cd5c44b88e272a871a06"
+  },
+  {
+    "key": "item-trapBait",
+    "id": "trapBait",
+    "name": "Hunter bait",
+    "model": "berries",
+    "bounds": [
+      0.3495392896278037,
+      0.3200000005960465,
+      0.28882792647377153
+    ],
+    "pixelBounds": [
+      33,
+      30,
+      119,
+      118
+    ],
+    "sha256": "0acc7b12e0392cf6d0a11fe4acc724bf7ca36351cb581b4c1f0e07833c645311"
+  },
+  {
+    "key": "item-fur",
+    "id": "fur",
+    "name": "Soft fur",
+    "model": "hide",
+    "bounds": [
+      0.5,
+      0.04500000178813935,
+      0.44999998807907104
+    ],
+    "pixelBounds": [
+      7,
+      38,
+      137,
+      106
+    ],
+    "sha256": "7ca02963d31418c7ca746305dd39aba54fa9ef98e8c42f8301fcbab95926eeea"
+  },
+  {
+    "key": "item-steelBrace",
+    "id": "steelBrace",
+    "name": "Steel reinforcement",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "449fe690e65cd5ed06b8943204a523d9e5c6db77d677254ef6f8408a537f7bad"
+  },
+  {
+    "key": "item-mithrilFittings",
+    "id": "mithrilFittings",
+    "name": "Mithril fittings",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "449fe690e65cd5ed06b8943204a523d9e5c6db77d677254ef6f8408a537f7bad"
+  },
+  {
+    "key": "item-adamantFittings",
+    "id": "adamantFittings",
+    "name": "Adamantite fittings",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "449fe690e65cd5ed06b8943204a523d9e5c6db77d677254ef6f8408a537f7bad"
+  },
+  {
+    "key": "item-runiteFittings",
+    "id": "runiteFittings",
+    "name": "Runite fittings",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "449fe690e65cd5ed06b8943204a523d9e5c6db77d677254ef6f8408a537f7bad"
+  },
+  {
+    "key": "item-weapon_battleaxe",
+    "id": "weapon:battleaxe",
+    "name": "Iron battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.35385399189765765,
+      0.8485375579892894,
+      0.760470199584961
+    ],
+    "pixelBounds": [
+      50,
+      20,
+      106,
+      115
+    ],
+    "sha256": "fb972963e1f1d7575f16dc678ae3c08272ca201bd266189a62e3313ed3cdbc52"
+  },
+  {
+    "key": "item-weapon_dagger",
+    "id": "weapon:dagger",
+    "name": "Iron dagger",
+    "model": "weapon",
+    "bounds": [
+      0.28485691210150543,
+      0.6958899736945955,
+      0.10399999618530274
+    ],
+    "pixelBounds": [
+      46,
+      23,
+      97,
+      127
+    ],
+    "sha256": "ad3da4e19cc1d2170caf777131a7470b174d867b1b867bbdbe210e918a86dc30"
+  },
+  {
+    "key": "item-weapon_scimitar",
+    "id": "weapon:scimitar",
+    "name": "Iron scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.6825425217743156,
+      1.1986110069889748,
+      0.10399999618530274
+    ],
+    "pixelBounds": [
+      40,
+      33,
+      98,
+      121
+    ],
+    "sha256": "435f9606ee9c4f706b6a0660ae62c2f941598b560e7701818c61c42a1592368c"
+  },
+  {
+    "key": "item-weapon_longsword",
+    "id": "weapon:longsword",
+    "name": "Iron longsword",
+    "model": "weapon",
+    "bounds": [
+      0.45618569259320574,
+      1.2317942350421744,
+      0.10399999618530274
+    ],
+    "pixelBounds": [
+      49,
+      21,
+      88,
+      127
+    ],
+    "sha256": "e8ba1856a6e3241d1ff846df04ba9860884706fbbdac80e1d6bcebe5713ca898"
+  },
+  {
+    "key": "item-weapon_twohand",
+    "id": "weapon:twohand",
+    "name": "Iron 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.6799717927766918,
+      1.9379409731037949,
+      0.10399999618530274
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      87,
+      126
+    ],
+    "sha256": "53def99cb64972c8e780d1a7982c155b0f584d4b763f817cb6cc7074af2e7b5f"
+  },
+  {
+    "key": "item-weapon_shortsword",
+    "id": "weapon:shortsword",
+    "name": "Iron shortsword",
+    "model": "weapon",
+    "bounds": [
+      0.3589652388387863,
+      0.8935202497686432,
+      0.10399999618530274
+    ],
+    "pixelBounds": [
+      47,
+      23,
+      90,
+      126
+    ],
+    "sha256": "d09aa92eeca055fac25d85872471c56d42992214b048d5ea92f37a636aa0394f"
+  },
+  {
+    "key": "item-weapon_pickaxe",
+    "id": "weapon:pickaxe",
+    "name": "Iron pickaxe",
+    "model": "weapon",
+    "bounds": [
+      0.3447265974272431,
+      0.8266067043040332,
+      0.8612200260162354
+    ],
+    "pixelBounds": [
+      51,
+      26,
+      110,
+      114
+    ],
+    "sha256": "cd819bbce48c1fbb5732aa8cd8952e47d207ff8fbaeaef9690c70c163d64a9a5"
+  },
+  {
+    "key": "item-weapon_axe",
+    "id": "weapon:axe",
+    "name": "Iron axe",
+    "model": "weapon",
+    "bounds": [
+      0.3092012243420657,
+      0.9152697708721323,
+      0.403611820936203
+    ],
+    "pixelBounds": [
+      61,
+      15,
+      101,
+      116
+    ],
+    "sha256": "f1c9ef0d5fdfdb42d19ba3147125fc56f5510fb2288fff827c27fb7e885b23a5"
+  },
+  {
+    "key": "item-armor_helm",
+    "id": "armor:helm",
+    "name": "Iron full helm",
+    "model": "helm",
+    "bounds": [
+      0.37699998617172237,
+      0.6299999999999999,
+      0.5284500025570393
+    ],
+    "pixelBounds": [
+      32,
+      22,
+      105,
+      123
+    ],
+    "sha256": "d4b309d8c6831e0954b0fb0a0be9af91f53fcad6b4701df43216be725b381ed4"
+  },
+  {
+    "key": "item-armor_chest",
+    "id": "armor:chest",
+    "name": "Iron platebody",
+    "model": "chest",
+    "bounds": [
+      0.9440399980926514,
+      1.1450001001358032,
+      0.5885999891161918
+    ],
+    "pixelBounds": [
+      39,
+      17,
+      109,
+      127
+    ],
+    "sha256": "246d740429f3f920a8e675eaf69a1c8629c0cbbd238e07f0a4e379795bb78116"
+  },
+  {
+    "key": "item-armor_legs",
+    "id": "armor:legs",
+    "name": "Iron platelegs",
+    "model": "legs",
+    "bounds": [
+      0.7453440059604645,
+      1.1930961772359412,
+      0.3799999952316284
+    ],
+    "pixelBounds": [
+      41,
+      12,
+      103,
+      130
+    ],
+    "sha256": "4de85780f003f79e50d56d0fd865f4279c38904eba4b9894e1b948765d110b91"
+  },
+  {
+    "key": "item-armor_boots",
+    "id": "armor:boots",
+    "name": "Iron boots",
+    "model": "boots",
+    "bounds": [
+      0.6053439904632568,
+      0.2344813335272533,
+      0.4103813171386719
+    ],
+    "pixelBounds": [
+      10,
+      31,
+      127,
+      113
+    ],
+    "sha256": "ce987e24af077ac593e8a7d1f204ac7e6315458b8e541d1a4cba424df7917ee9"
+  },
+  {
+    "key": "item-armor_cape",
+    "id": "armor:cape",
+    "name": "Crimson cape",
+    "model": "cape",
+    "bounds": [
+      1.2867201566696167,
+      2.030000002682209,
+      0.28363962441682816
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      108,
+      130
+    ],
+    "sha256": "9692a78e383567364087fac51c8d75b5f57470d3e1fc9f91c2d87f7243bf42f6"
+  },
+  {
+    "key": "item-shield_square",
+    "id": "shield:square",
+    "name": "Iron square shield",
+    "model": "shield",
+    "bounds": [
+      0.7614000022411346,
+      0.9493999910354614,
+      0.3269319995909929
+    ],
+    "pixelBounds": [
+      33,
+      14,
+      108,
+      132
+    ],
+    "sha256": "d9477e7cb191c87d93df46f651be6e889a8578c4648b98eb13f38a22ac633696"
+  },
+  {
+    "key": "item-shield_kite",
+    "id": "shield:kite",
+    "name": "Iron kiteshield",
+    "model": "shield",
+    "bounds": [
+      0.8560505139827728,
+      1.3445339918136594,
+      0.3269319995909929
+    ],
+    "pixelBounds": [
+      39,
+      13,
+      103,
+      124
+    ],
+    "sha256": "08d3e824884fa140c12b59482555bd8de1cd62f26ca31a25c4611d2c42a72da0"
+  },
+  {
+    "key": "item-jewelry_woodlandAmulet",
+    "id": "jewelry:woodlandAmulet",
+    "name": "Woodland amulet",
+    "model": "amulet",
+    "bounds": [
+      0.4699999988079071,
+      0.18000000715255737,
+      0.5650000029802322
+    ],
+    "pixelBounds": [
+      33,
+      47,
+      120,
+      101
+    ],
+    "sha256": "d7b9ab79a452a47ee4fc28204bb704d4950cb2957d50c94f91efe182c73305eb"
+  },
+  {
+    "key": "item-jewelry_prospectorsRing",
+    "id": "jewelry:prospectorsRing",
+    "name": "Prospector\u2019s ring",
+    "model": "ring",
+    "bounds": [
+      0.38999998569488525,
+      0.07000000029802331,
+      0.38999998569488525
+    ],
+    "pixelBounds": [
+      25,
+      45,
+      119,
+      99
+    ],
+    "sha256": "6dd9b7ea64aea20a63f43e9d91284d1095d1c1dcd4bdad8816a5046a8a80d2e9"
+  },
+  {
+    "key": "item-mount_armoredWhiteHorse",
+    "id": "mount:armoredWhiteHorse",
+    "name": "Armored white horse",
+    "model": "horse",
+    "bounds": [
+      1.3781184196472167,
+      2.9689198974519964,
+      5.118120002746582
+    ],
+    "pixelBounds": [
+      19,
+      38,
+      97,
+      116
+    ],
+    "sha256": "bc080660bfce031bb23ec8187c1ed3b8a8ad423d1ff510f0cb9ca31af21b9087"
+  },
+  {
+    "key": "item-gold",
+    "id": "gold",
+    "name": "Gold",
+    "model": "coins",
+    "bounds": [
+      0.40446250029410474,
+      0.10900000037252905,
+      0.41747001049442467
+    ],
+    "pixelBounds": [
+      23,
+      38,
+      120,
+      103
+    ],
+    "sha256": "28e5098c90a7fef171488019a27b47ebc798ee0ad7cc6bff9625321950ffbc20"
+  },
+  {
+    "key": "model-sack",
+    "id": "preview_sack",
+    "name": "sack",
+    "model": "sack",
+    "bounds": [
+      0.46000000834465027,
+      0.43550000265240674,
+      0.46000000834465027
+    ],
+    "pixelBounds": [
+      29,
+      27,
+      115,
+      114
+    ],
+    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+  },
+  {
+    "key": "model-ore",
+    "id": "preview_ore",
+    "name": "ore",
+    "model": "ore",
+    "bounds": [
+      0.6000000238418579,
+      0.42000001668930054,
+      0.6000000238418579
+    ],
+    "pixelBounds": [
+      26,
+      37,
+      118,
+      107
+    ],
+    "sha256": "cbbaff2a7873a97bf178d31585761612efc00ba75c1c6d981d68bc8e22927105"
+  },
+  {
+    "key": "model-bar",
+    "id": "preview_bar",
+    "name": "bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "449fe690e65cd5ed06b8943204a523d9e5c6db77d677254ef6f8408a537f7bad"
+  },
+  {
+    "key": "model-logs",
+    "id": "preview_logs",
+    "name": "logs",
+    "model": "logs",
+    "bounds": [
+      0.5899999916553498,
+      0.52999999165535,
+      0.607000011920929
+    ],
+    "pixelBounds": [
+      11,
+      19,
+      134,
+      131
+    ],
+    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+  },
+  {
+    "key": "model-potion",
+    "id": "preview_potion",
+    "name": "potion",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "7fe24bce37414f87ab4fa139b52c49347f7bb945604847c453b7e9aa4fc64d5c"
+  },
+  {
+    "key": "model-vial",
+    "id": "preview_vial",
+    "name": "vial",
+    "model": "vial",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "be5271e0a3e536f824c1606b12da9993fb016a133d2ab66beae7fec980c38950"
+  },
+  {
+    "key": "model-bread",
+    "id": "preview_bread",
+    "name": "bread",
+    "model": "bread",
+    "bounds": [
+      0.5980000108480453,
+      0.26650000207126145,
+      0.39100000709295274
+    ],
+    "pixelBounds": [
+      23,
+      38,
+      121,
+      101
+    ],
+    "sha256": "a5c53fdc1b6b6722abb971b1a1590cd818570e168494ff9d59fd71832ce2327b"
+  },
+  {
+    "key": "model-fish",
+    "id": "preview_fish",
+    "name": "fish",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "5cc591c360d76189772c51c2c4977567e80de0f481618904ddb40e18a224cc23"
+  },
+  {
+    "key": "model-apple",
+    "id": "preview_apple",
+    "name": "apple",
+    "model": "apple",
+    "bounds": [
+      0.36000001430511475,
+      0.43000000745058065,
+      0.36000001430511475
+    ],
+    "pixelBounds": [
+      34,
+      23,
+      110,
+      116
+    ],
+    "sha256": "1a30f86dac223735db84e02546af2e53c4f9dd8ca05e90638af17443e52782fe"
+  },
+  {
+    "key": "model-herb",
+    "id": "preview_herb",
+    "name": "herb",
+    "model": "herb",
+    "bounds": [
+      0.3599999982118607,
+      0.4300000002980232,
+      0.028799999356269836
+    ],
+    "pixelBounds": [
+      31,
+      12,
+      113,
+      131
+    ],
+    "sha256": "b00779a97ab30d135a74fe2e439c3ef879b8c71bd6e202c934cba526d9a6be8c"
+  },
+  {
+    "key": "model-gem",
+    "id": "preview_gem",
+    "name": "gem",
+    "model": "gem",
+    "bounds": [
+      0.41103583574295044,
+      0.28772508502006533,
+      0.41103583574295044
+    ],
+    "pixelBounds": [
+      23,
+      35,
+      121,
+      109
+    ],
+    "sha256": "c79e64df2681148683bddb3fe787b1df092dbed3bd005b6b27dc662a7c56d5f8"
+  },
+  {
+    "key": "model-ring",
+    "id": "preview_ring",
+    "name": "ring",
+    "model": "ring",
+    "bounds": [
+      0.38999998569488525,
+      0.07000000029802331,
+      0.38999998569488525
+    ],
+    "pixelBounds": [
+      25,
+      45,
+      119,
+      99
+    ],
+    "sha256": "6dd9b7ea64aea20a63f43e9d91284d1095d1c1dcd4bdad8816a5046a8a80d2e9"
+  },
+  {
+    "key": "model-rune",
+    "id": "preview_rune",
+    "name": "rune",
+    "model": "rune",
+    "bounds": [
+      0.47999998927116394,
+      0.09749999893829227,
+      0.47999998927116394
+    ],
+    "pixelBounds": [
+      26,
+      45,
+      118,
+      102
+    ],
+    "sha256": "01c4a42222c9df614347af04e79ae251505d84ad5450c4bc9d386ca700102945"
+  },
+  {
+    "key": "model-plank",
+    "id": "preview_plank",
+    "name": "plank",
+    "model": "plank",
+    "bounds": [
+      0.6499999761581421,
+      0.15000000074505807,
+      0.379999997317791
+    ],
+    "pixelBounds": [
+      7,
+      48,
+      137,
+      96
+    ],
+    "sha256": "82ff3b970a75b92c3d558ac1b9868bde0201368bab0752d52e082ab95abd6c5b"
+  },
+  {
+    "key": "model-nails",
+    "id": "preview_nails",
+    "name": "nails",
+    "model": "nails",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "57ad20975454520229522fe6e6e7699caa7017ebd43493f51b7dfa16de28bb63"
+  },
+  {
+    "key": "model-arrows",
+    "id": "preview_arrows",
+    "name": "arrows",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "e1d53e16e2712699f3f52a8b2bff5f3e5dd5688a0c7c9b5d6d2b1c90e8e6d70c"
+  },
+  {
+    "key": "model-hide",
+    "id": "preview_hide",
+    "name": "hide",
+    "model": "hide",
+    "bounds": [
+      0.5,
+      0.04500000178813935,
+      0.44999998807907104
+    ],
+    "pixelBounds": [
+      7,
+      38,
+      137,
+      106
+    ],
+    "sha256": "7ca02963d31418c7ca746305dd39aba54fa9ef98e8c42f8301fcbab95926eeea"
+  },
+  {
+    "key": "model-seeds",
+    "id": "preview_seeds",
+    "name": "seeds",
+    "model": "seeds",
+    "bounds": [
+      0.46000000834465027,
+      0.43550000265240674,
+      0.46000000834465027
+    ],
+    "pixelBounds": [
+      29,
+      27,
+      115,
+      114
+    ],
+    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+  },
+  {
+    "key": "model-feather",
+    "id": "preview_feather",
+    "name": "feather",
+    "model": "feather",
+    "bounds": [
+      0.3599999982118607,
+      0.4300000002980232,
+      0.028799999356269836
+    ],
+    "pixelBounds": [
+      31,
+      12,
+      113,
+      131
+    ],
+    "sha256": "6cb476d0e42c7c6592cc86aad5ef72e09631911336e5e25ffc5f3b8c76b4670d"
+  },
+  {
+    "key": "model-bow",
+    "id": "preview_bow",
+    "name": "bow",
+    "model": "bow",
+    "bounds": [
+      0.632875382900238,
+      0.05000000260770321,
+      0.21074149757623672
+    ],
+    "pixelBounds": [
+      27,
+      45,
+      134,
+      88
+    ],
+    "sha256": "614b1d67f77ee1a77353e165de9fa7a0f5d8572260234d5f1130704c64c5a869"
+  },
+  {
+    "key": "model-trap",
+    "id": "preview_trap",
+    "name": "trap",
+    "model": "trap",
+    "bounds": [
+      0.44999998807907104,
+      0.3175000060349703,
+      0.4000000059604645
+    ],
+    "pixelBounds": [
+      7,
+      12,
+      137,
+      132
+    ],
+    "sha256": "0b42099dffdf7c038bd8010474726ae61637dade236d17c0e2198399e3aac7a8"
+  },
+  {
+    "key": "model-mortar",
+    "id": "preview_mortar",
+    "name": "mortar",
+    "model": "mortar",
+    "bounds": [
+      0.36000001430511475,
+      0.3363860458848303,
+      0.36000001430511475
+    ],
+    "pixelBounds": [
+      28,
+      31,
+      116,
+      129
+    ],
+    "sha256": "14589876f9b20647e7eb8c620820ded6218f7d9ce1b63169688cbcbfd1b52c75"
+  },
+  {
+    "key": "model-leather",
+    "id": "preview_leather",
+    "name": "leather",
+    "model": "leather",
+    "bounds": [
+      0.5,
+      0.04500000178813935,
+      0.44999998807907104
+    ],
+    "pixelBounds": [
+      7,
+      38,
+      137,
+      106
+    ],
+    "sha256": "7ca02963d31418c7ca746305dd39aba54fa9ef98e8c42f8301fcbab95926eeea"
+  },
+  {
+    "key": "model-food",
+    "id": "preview_food",
+    "name": "food",
+    "model": "food",
+    "bounds": [
+      0.5980000108480453,
+      0.26650000207126145,
+      0.39100000709295274
+    ],
+    "pixelBounds": [
+      23,
+      38,
+      121,
+      101
+    ],
+    "sha256": "a5c53fdc1b6b6722abb971b1a1590cd818570e168494ff9d59fd71832ce2327b"
+  },
+  {
+    "key": "model-meat",
+    "id": "preview_meat",
+    "name": "meat",
+    "model": "meat",
+    "bounds": [
+      0.5980000108480453,
+      0.2530000045895577,
+      0.39100000709295274
+    ],
+    "pixelBounds": [
+      23,
+      44,
+      121,
+      100
+    ],
+    "sha256": "935848b2e62448db3f583666950e0b16614dacbb4713ab6f86aa1c4f7417256b"
+  },
+  {
+    "key": "model-berries",
+    "id": "preview_berries",
+    "name": "berries",
+    "model": "berries",
+    "bounds": [
+      0.3495392896278037,
+      0.3200000005960465,
+      0.28882792647377153
+    ],
+    "pixelBounds": [
+      33,
+      30,
+      119,
+      118
+    ],
+    "sha256": "0acc7b12e0392cf6d0a11fe4acc724bf7ca36351cb581b4c1f0e07833c645311"
+  },
+  {
+    "key": "model-pear",
+    "id": "style_pear",
+    "name": "Pear",
+    "model": "pear",
+    "bounds": [
+      0.2880000114440918,
+      0.5870000085234641,
+      0.2880000114440918
+    ],
+    "pixelBounds": [
+      46,
+      17,
+      99,
+      122
+    ],
+    "sha256": "35819cd256dfcc80da808c666290bc73daa023512fa202ac3bf9ab73668f5bfc"
+  },
+  {
+    "key": "model-orange",
+    "id": "style_orange",
+    "name": "Orange",
+    "model": "orange",
+    "bounds": [
+      0.36000001430511475,
+      0.43000000745058065,
+      0.36000001430511475
+    ],
+    "pixelBounds": [
+      34,
+      23,
+      110,
+      116
+    ],
+    "sha256": "0c4088481e1d091323d0f132119d4a294bb9274d9d8d9b97406116ddf4ff9b77"
+  },
+  {
+    "key": "model-pizza",
+    "id": "style_pizza",
+    "name": "Pizza",
+    "model": "pizza",
+    "bounds": [
+      0.5,
+      0.10899999961256986,
+      0.5000000149011612
+    ],
+    "pixelBounds": [
+      7,
+      49,
+      98,
+      112
+    ],
+    "sha256": "18b48dc64976eee1cb87055e95ddef746049da11884bc910b4aef5bcfca10cbc"
+  },
+  {
+    "key": "model-pie",
+    "id": "style_pie",
+    "name": "Pie",
+    "model": "pie",
+    "bounds": [
+      0.47999998927116394,
+      0.17999999959021806,
+      0.47999998927116394
+    ],
+    "pixelBounds": [
+      25,
+      43,
+      119,
+      110
+    ],
+    "sha256": "dfc3c7ec9f943fc80faf6d666e0871cf8ab481b45a40474832667b9bd733587b"
+  },
+  {
+    "key": "model-cake",
+    "id": "style_cake",
+    "name": "Cake",
+    "model": "cake",
+    "bounds": [
+      0.5,
+      0.2850000017881394,
+      0.5000000149011612
+    ],
+    "pixelBounds": [
+      7,
+      44,
+      98,
+      126
+    ],
+    "sha256": "fb05b4b12e649c365fc534b2321f729a8560f9dfa4ea3ad5f32681bb815c5e28"
+  },
+  {
+    "key": "model-salmon",
+    "id": "style_salmon",
+    "name": "Salmon",
+    "model": "salmon",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "c120b8943250b9e9cbb7ac50193ba4388dac4698e8b3cde6da7d44016a289385"
+  },
+  {
+    "key": "model-lobster",
+    "id": "style_lobster",
+    "name": "Lobster",
+    "model": "lobster",
+    "bounds": [
+      0.7599999932944774,
+      0.14399999678134917,
+      0.5979999959468842
+    ],
+    "pixelBounds": [
+      30,
+      42,
+      131,
+      96
+    ],
+    "sha256": "571588251b98128874f834a4f4e8d8c4a165c79571177ad7a0819910a8e779ec"
+  },
+  {
+    "key": "model-shrimp",
+    "id": "style_shrimp",
+    "name": "Shrimp",
+    "model": "shrimp",
+    "bounds": [
+      0.31200016121870633,
+      0.09000000357627869,
+      0.4804437526816955
+    ],
+    "pixelBounds": [
+      14,
+      41,
+      115,
+      99
+    ],
+    "sha256": "8e416e5fdae901d379f0e52f34b6a6ab7057044c577028fc48931c35ae44ca35"
+  },
+  {
+    "key": "model-chicken",
+    "id": "style_chicken",
+    "name": "Chicken",
+    "model": "chicken",
+    "bounds": [
+      0.6200000071525573,
+      0.2530000045895577,
+      0.5205000039190054
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      121,
+      111
+    ],
+    "sha256": "f5e0c766daae806f77531a68df3fedc798ef33f62e1097df4a53933d79dd27aa"
+  },
+  {
+    "key": "model-egg",
+    "id": "style_egg",
+    "name": "Egg",
+    "model": "egg",
+    "bounds": [
+      0.24000000953674316,
+      0.36000001430511475,
+      0.24000000953674316
+    ],
+    "pixelBounds": [
+      39,
+      26,
+      105,
+      118
+    ],
+    "sha256": "a3f0fb7eb8c79c708d61bc73d3d2169d7d9047f2fa21d8b6a583163f656013f2"
+  },
+  {
+    "key": "model-cheese",
+    "id": "style_cheese",
+    "name": "Cheese",
+    "model": "cheese",
+    "bounds": [
+      0.5,
+      0.07999999821186077,
+      0.5000000149011612
+    ],
+    "pixelBounds": [
+      7,
+      47,
+      98,
+      110
+    ],
+    "sha256": "f6a04a4fb89f73faf5ff0024fa804ad33202138c0fdc7e3e0e3a4a38369a9575"
+  },
+  {
+    "key": "model-soup",
+    "id": "style_soup",
+    "name": "Soup",
+    "model": "soup",
+    "bounds": [
+      0.46000000834465027,
+      0.2650000045448542,
+      0.46000000834465027
+    ],
+    "pixelBounds": [
+      26,
+      34,
+      118,
+      101
+    ],
+    "sha256": "521352493a09f764471d13b14e876b9a2b2e82f443da7533fa63a5c79b919842"
+  },
+  {
+    "key": "model-carrot",
+    "id": "style_carrot",
+    "name": "Carrot",
+    "model": "carrot",
+    "bounds": [
+      0.20000000298023224,
+      0.20000000298023235,
+      0.7150000032782555
+    ],
+    "pixelBounds": [
+      27,
+      33,
+      120,
+      105
+    ],
+    "sha256": "d94d6dd923eecdb43ca49f232aa418c8bcff969796ad46afd1a0fd1baea69d6d"
+  },
+  {
+    "key": "model-mushroom",
+    "id": "style_mushroom",
+    "name": "Mushroom",
+    "model": "mushroom",
+    "bounds": [
+      0.3799999952316284,
+      0.2890000015497207,
+      0.3799999952316284
+    ],
+    "pixelBounds": [
+      26,
+      32,
+      118,
+      108
+    ],
+    "sha256": "2f87132959a000f9303bf5014811b97a495169f5743fe8803462f05b214167eb"
+  },
+  {
+    "key": "model-potion-blue_potion",
+    "id": "style_blue_potion",
+    "name": "Blue potion",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "37a2b62265a2e6de1f53a8d070129aecf9022ef520e572d99b5e910f57ae44e0"
+  },
+  {
+    "key": "model-potion-green_potion",
+    "id": "style_green_potion",
+    "name": "Green potion",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "5064262bee600baec5f57f4498431faaf0fc3aca1286e63a2d5965c47dbadc0e"
+  }
+]
