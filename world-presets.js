@@ -1,8 +1,9 @@
-import {entityDefaults} from './world-templates.js?v=release-20261104-jog41';
+import {entityDefaults} from './world-templates.js?v=release-20261104-studio42';
 export const worldPresets={
+ castle_keep:{label:'Castle keep · three stories, hall and bedrooms',template:'cottage',name:'Castle keep',room:'hall',upperRoom:'home',stories:3,stone:true,scale:3.5,roof:0x485d68},
  timber_home:{label:'Timber cottage · furnished home',template:'cottage',name:'Timber cottage',room:'home',stone:false,scale:1.2,roof:0x70503c},
- stone_home:{label:'Stone townhouse · furnished home',template:'cottage',name:'Stone townhouse',room:'home',stone:true,scale:1.8,roof:0x515c69},
- timber_inn:{label:'Timber inn · tables and bar',template:'inn',name:'Traveler’s Rest',stone:false,scale:2.1,roof:0x814f34},
+ stone_home:{label:'Stone townhouse · furnished home',template:'cottage',name:'Stone townhouse',room:'home',stone:true,stories:2,upperRoom:'home',scale:1.8,roof:0x515c69},
+ timber_inn:{label:'Timber inn · tables and bar',template:'inn',name:'Traveler’s Rest',stone:false,stories:2,upperRoom:'home',scale:2.1,roof:0x814f34},
  stone_bank:{label:'Stone bank · counters and vault',template:'bank',name:'Royal bank',stone:true,scale:2.3,roof:0x485d68},
  stone_smithy:{label:'Stone smithy · forge interior',template:'forge',name:'Ironworker’s smithy',stone:true,scale:2,roof:0x564e48},
  great_hall:{label:'Grand stone hall · furnished',template:'cottage',name:'Great Hall',room:'hall',stone:true,scale:3.3,roof:0x485d68},

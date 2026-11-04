@@ -2,7 +2,7 @@
 
 Existing: permanent click placement, editing and deletion/restoration; position, yaw and uniform scale; NPC dialogue pages and roles; visual shop stock rows with prices and quantity; merchant buy/sell transactions. Selling already pays gold through server validation. Release studio39 UI addition: left/right 45-degree buttons, cardinal headings and named size presets. These change the form only until Save/Place is used.
 
-Missing: reliable placement on interior floors/upper stories, snap/grid and preview ghosts; distinct building geometry rather than renamed houses; atomic furnished prefabs; grouped transform/delete/undo; a server-backed owner quest editor; stock-responsive transaction quotes. Do not present these as implemented.
+Studio42 implemented: a server-backed owner quest editor with published/draft definitions, frozen accepted versions, collect/talk/kill progress and atomic rewards; shared floor/stair state and upper-story placement; two- and three-story buildings with room-specific furnishing; stock-responsive buy/sell quotes, bulk totals, stale-price checks and fixed unlimited stock. Remaining: snap/grid ghosts, atomic functional furnished prefabs, grouped transforms/undo, additional architecture styles, quest prerequisites and branching dialogue. Ground and upper-floor collision remain intentionally simple.
 
 Building library: timber cottage, timber longhouse, stone townhouse, stone bank/vault, smithy with forge/anvil, workshop, kitchen/refectory, inn with bedrooms, chapel, armory/practice hall, stable and outhouse. Each needs small/medium/large footprints, door and interior collision, room/floor identifiers, interaction anchors and furnished/default-empty choices. Multi-story rooms require server height/floor validation and accessible stairs, not decorative floors. Place a building and its contents in one server transaction with a group ID; rotation transforms every child and collision footprint. Undo must restore the entire group. Practice actors must use a separate non-damaging activity, never normal combat with hidden health.
 
@@ -17,3 +17,5 @@ Research:
 - https://dev.epicgames.com/documentation/fortnite/using-npc-spawner-devices-in-unreal-editor-for-fortnite — reusable NPC presets and behavior configuration.
 
 Preserve the existing live armor. Castle interior/cooking work remains active; this document does not mark that work complete.
+
+Merchant limits in this version: owner sets base buy/sell prices and initial stock. Target supply is initialized from that quantity, with a minimum of ten. The server curve is bounded at 65–150% and buyback at 75% of the ask. These bounds are fixed rather than per-merchant controls. Saving a merchant resets stock.

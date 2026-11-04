@@ -1,70 +1,72 @@
-import {panelStateKey} from './panel-state.js?v=release-20261104-jog41';
-import {obstructionDistance} from './camera-obstruction.js?v=release-20261104-jog41';
-import {slideStep,locomotionDistance} from './movement-collision.js?v=release-20261104-jog41';
-import {createWildlife} from './wildlife.js?v=release-20261104-jog41';
-import {createProfessionVisuals} from './profession-visuals.js?v=release-20261104-jog41';
-import {makeDroppedItemModel} from './item-models.js?v=release-20261104-jog41';
-import {createProfessionPanel} from './professions.js?v=release-20261104-jog41';
-import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261104-jog41';
-import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261104-jog41';
-import {createHorseMount} from './horse-mount.js?v=release-20261104-jog41';
-import {playHorseHoof} from './music.js?v=release-20261104-jog41';
-import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261104-jog41';
-import {createGroundDressing} from './environment-detail.js?v=release-20261104-jog41';
-import {createWaterSystem} from './water-rendering.js?v=release-20261104-jog41';
-import {fishingDock} from './waterfront.js?v=release-20261104-jog41';
-import {createSurfaceCoverIndex,isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261104-jog41';
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261104-jog41';
-import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261104-jog41';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261104-jog41';
-import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261104-jog41';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261104-jog41';
-import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261104-jog41';
-import {createRegionStreamer} from './region-streamer.js?v=release-20261104-jog41';
-import {searchRoute} from './route-search.js?v=release-20261104-jog41';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261104-jog41';
-import {actorMenuLabel} from './context-label.js?v=release-20261104-jog41';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261104-jog41';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261104-jog41';
-import {createGroundDrops} from './ground-drops.js?v=release-20261104-jog41';
-import {createCombatHealth} from './combat-health.js?v=release-20261104-jog41';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261104-jog41';
-import {castle,inCastle} from './castle-layout.js?v=release-20261104-jog41';
-import {createMotionTrack,reconcileLocalPose} from './motion-track.js?v=release-20261104-jog41';
-import {lightingAt} from './world-lighting.js?v=release-20261104-jog41';
-import {sculptPatches} from './terrain-patches.js?v=release-20261104-jog41';
-import {fromPlayerRow} from './player-save.js?v=release-20261104-jog41';
-import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261104-jog41';
-import {worldTemplates} from './world-templates.js?v=release-20261104-jog41';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261104-jog41';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261104-jog41';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261104-jog41';
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261104-jog41';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261104-jog41';
-import {goods,sanitizeBank,inventoryUsed,createServicePanel} from './economy.js?v=release-20261104-jog41';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261104-jog41';
-import {mapPoint} from './minimap.js?v=release-20261104-jog41';
-import {townResidents,animateTownActivity} from './town-life.js?v=release-20261104-jog41';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-jog41';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-jog41';
-import {createPlayerHUD} from './player-hud.js?v=release-20261104-jog41';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261104-jog41';
-import {stabilizeSun,shadowQuality} from './sun-shadow.js?v=release-20261104-jog41';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261104-jog41';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261104-jog41';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261104-jog41';
+import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261104-studio42';
+import {createQuestJournal} from './quests.js?v=release-20261104-studio42';
+import {panelStateKey} from './panel-state.js?v=release-20261104-studio42';
+import {obstructionDistance} from './camera-obstruction.js?v=release-20261104-studio42';
+import {slideStep,locomotionDistance} from './movement-collision.js?v=release-20261104-studio42';
+import {createWildlife} from './wildlife.js?v=release-20261104-studio42';
+import {createProfessionVisuals} from './profession-visuals.js?v=release-20261104-studio42';
+import {makeDroppedItemModel} from './item-models.js?v=release-20261104-studio42';
+import {createProfessionPanel} from './professions.js?v=release-20261104-studio42';
+import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261104-studio42';
+import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261104-studio42';
+import {createHorseMount} from './horse-mount.js?v=release-20261104-studio42';
+import {playHorseHoof} from './music.js?v=release-20261104-studio42';
+import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261104-studio42';
+import {createGroundDressing} from './environment-detail.js?v=release-20261104-studio42';
+import {createWaterSystem} from './water-rendering.js?v=release-20261104-studio42';
+import {fishingDock} from './waterfront.js?v=release-20261104-studio42';
+import {createSurfaceCoverIndex,isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261104-studio42';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261104-studio42';
+import {installMMOControls,jumpHeight} from './mmorpg-controls.js?v=release-20261104-studio42';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261104-studio42';
+import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261104-studio42';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261104-studio42';
+import {runFrameWork,createLoadingPanel} from './frame-work.js?v=release-20261104-studio42';
+import {createRegionStreamer} from './region-streamer.js?v=release-20261104-studio42';
+import {searchRoute} from './route-search.js?v=release-20261104-studio42';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261104-studio42';
+import {actorMenuLabel} from './context-label.js?v=release-20261104-studio42';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261104-studio42';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261104-studio42';
+import {createGroundDrops} from './ground-drops.js?v=release-20261104-studio42';
+import {createCombatHealth} from './combat-health.js?v=release-20261104-studio42';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261104-studio42';
+import {castle,inCastle} from './castle-layout.js?v=release-20261104-studio42';
+import {createMotionTrack,reconcileLocalPose} from './motion-track.js?v=release-20261104-studio42';
+import {lightingAt} from './world-lighting.js?v=release-20261104-studio42';
+import {sculptPatches} from './terrain-patches.js?v=release-20261104-studio42';
+import {fromPlayerRow} from './player-save.js?v=release-20261104-studio42';
+import {combatLevel,skillLevel,crossedSwords} from './combat-level.js?v=release-20261104-studio42';
+import {worldTemplates} from './world-templates.js?v=release-20261104-studio42';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261104-studio42';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261104-studio42';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261104-studio42';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261104-studio42';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261104-studio42';
+import {goods,sanitizeBank,inventoryUsed,createServicePanel} from './economy.js?v=release-20261104-studio42';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261104-studio42';
+import {mapPoint} from './minimap.js?v=release-20261104-studio42';
+import {townResidents,animateTownActivity} from './town-life.js?v=release-20261104-studio42';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-studio42';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-studio42';
+import {createPlayerHUD} from './player-hud.js?v=release-20261104-studio42';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261104-studio42';
+import {stabilizeSun,shadowQuality} from './sun-shadow.js?v=release-20261104-studio42';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261104-studio42';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261104-studio42';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261104-studio42';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261104-jog41';
-import {createHumanoidAnimator} from './animation.js?v=release-20261104-jog41';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261104-jog41';
-import {buildForest} from './forest.js?v=release-20261104-jog41';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261104-jog41';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261104-jog41';
+import {buildHumanoid} from './humanoid.js?v=release-20261104-studio42';
+import {createHumanoidAnimator} from './animation.js?v=release-20261104-studio42';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261104-studio42';
+import {buildForest} from './forest.js?v=release-20261104-studio42';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261104-studio42';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261104-studio42';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261104-jog41';
-import {createCape} from './cape.js?v=release-20261104-jog41';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261104-jog41';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261104-jog41';
+import {buildPlateArmor} from './armor.js?v=release-20261104-studio42';
+import {createCape} from './cape.js?v=release-20261104-studio42';
+import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261104-studio42';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261104-studio42';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
@@ -163,7 +165,7 @@ function rock(x,z){
  const smaller=new T.Mesh(new T.DodecahedronGeometry(.36,0),material(0x6f7770,'stone'));smaller.position.set(.68,.24,.18);smaller.castShadow=true;root.add(smaller);
  m.userData={kind:'rock',x,z};targets.push(m)
 }
-const houseInteriors=[];const mapProps=[];
+let currentInterior={floor:0,building:null};const playerFloorMap={};function floorOffset(floor,x,z){if(!floor)return 0;for(const row of persistentRows.values())if(!row.deleted&&['cottage','bank','inn','forge'].includes(row.data.template)&&validStoryPosition(row.data,x,z,floor))return storyOffset(row.data,floor);return 0}const houseInteriors=[];const mapProps=[];
 function house(x,z,c,scale=1.65,rotation=0,options={}){
  const sx=scale*(options.width||1),sz=scale*(options.depth||1),wallKind=options.stone?'masonry':'plaster',roofColor=options.roof||0x634332;
  // Keep full building footprints ashore, including existing lakeside hamlets.
@@ -230,7 +232,7 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  box(.12,.12,.09,0xc4a15d,.88,.93,.1,doorPivot,'stone');
  const doorHit=new T.Mesh(new T.BoxGeometry(1.15,1.95,.5),new T.MeshBasicMaterial({visible:false}));
  doorHit.position.set(0,.95,1.86);group.add(doorHit);
- const houseRecord={group,roofParts,inside:false,open:!!options.open,doorPivot,doorHit,type:options.type||'cottage',name:options.name||'Cottage',roofColor};
+ const houseRecord={group,roofParts,inside:false,open:!!options.open,doorPivot,doorHit,type:options.type||'cottage',name:options.name||'Cottage',roofColor,stories:options.stories||1};
  if(houseRecord.open)doorPivot.rotation.y=-Math.PI*.53;
  doorHit.userData={kind:'door',house:houseRecord};
  doorMesh.userData={kind:'door',house:houseRecord};targets.push(doorMesh);
@@ -376,7 +378,7 @@ function housePoint(h,x,z){return h.group.localToWorld(new T.Vector3(x,0,z))}
 function insideHouse(h,p){const q=houseLocal(h,p);return Math.abs(q.x)<1.92&&Math.abs(q.z)<1.82}
 function walkAllowed(from,to){
  // Swept movement sampled at sub-character intervals prevents tunneling through thin walls.
- const distance=Math.hypot(to.x-from.x,to.z-from.z),samples=Math.max(1,Math.ceil(distance/.18));
+ if(currentInterior.floor>0&&Math.hypot(from.x-player.position.x,from.z-player.position.z)<.1){const d=persistentRows.get(currentInterior.building)?.data;if(!d||!validStoryPosition(d,to.x,to.z,currentInterior.floor))return {blocked:true};for(const row of persistentRows.values())if(!row.deleted&&(row.data.floor||0)===currentInterior.floor&&row.data.kind==='object'&&row.data.building===currentInterior.building&&Math.abs(row.data.x-to.x)<.8*(row.data.scale||1)&&Math.abs(row.data.z-to.z)<.8*(row.data.scale||1))return {blocked:true};return {blocked:false}}const distance=Math.hypot(to.x-from.x,to.z-from.z),samples=Math.max(1,Math.ceil(distance/.18));
  for(let i=1;i<=samples;i++){const t=i/samples,px=from.x+(to.x-from.x)*t,pz=from.z+(to.z-from.z)*t;if(window.eldervalePropCollision?.(px,pz)||window.eldervaleCastleCollision?.(px,pz))return {blocked:true,terrain:true};if(!landscape.canWalk(from.x+(to.x-from.x)*t,from.z+(to.z-from.z)*t))return {blocked:true,terrain:true}}
  const minX=Math.min(from.x,to.x),maxX=Math.max(from.x,to.x),minZ=Math.min(from.z,to.z),maxZ=Math.max(from.z,to.z);
  for(const h of houseInteriors){
@@ -428,11 +430,16 @@ async function setWalkDestination(point){
  }catch(error){if(error.name!=='AbortError'){say('The route could not be loaded. Please choose a destination again.');console.warn('Route loading:',error);}}finally{clearTimeout(pauseTimer);ticket.end();if(generation===navigationGeneration)routePending=false;}
 }
 
+const stairActions=document.createElement('div');stairActions.id='stair-actions';stairActions.style.cssText='position:fixed;bottom:96px;left:50%;transform:translateX(-50%);z-index:80;display:none;gap:6px;padding:8px;border:1px solid #aa9566;border-radius:9px;background:#182b36ed;color:#ead9b5';document.body.append(stairActions);let nearbyStairs=null,stairsBusy=false;
+async function useStairs(direction){if(!nearbyStairs||stairsBusy)return;stairsBusy=true;try{await window.eldervaleRealm?.command('stop');await window.eldervaleRealm?.command('stairs',{building:nearbyStairs.id,floor:currentInterior.floor+direction})}finally{stairsBusy=false}}
+for(const [label,direction]of [['↑ Upstairs',1],['↓ Downstairs',-1]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.direction=direction;b.onclick=()=>void useStairs(direction);stairActions.append(b)}
+addEventListener('keydown',e=>{if(e.code==='KeyE'&&nearbyStairs&&!e.repeat&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();void useStairs(e.shiftKey?-1:1)}});
 function updateHouseRoofs(){
+ nearbyStairs=null;for(const row of persistentRows.values()){const d=row.data;if(row.deleted||!(d.stories>1)||!['cottage','bank','inn','forge'].includes(d.template))continue;const anchor=stairPosition(d);if(Math.hypot(player.position.x-anchor.x,player.position.z-anchor.z)<Math.max(1.3,.65*1.3*d.scale)&&(!currentInterior.floor||currentInterior.building===row.id)){nearbyStairs={id:row.id,data:d};break}}stairActions.style.display=nearbyStairs?'flex':'none';if(nearbyStairs)for(const b of stairActions.children)b.hidden=Number(b.dataset.direction)>0?currentInterior.floor>=nearbyStairs.data.stories-1:currentInterior.floor===0;
  for(const house of houseInteriors){
   const local=house.group.worldToLocal(player.position.clone());
   const inside=Math.abs(local.x)<1.93&&Math.abs(local.z)<1.84;
-  if(inside!==house.inside){house.inside=inside;for(const part of house.roofParts)part.visible=!inside}
+  if(house.stories)house.stories.floors.slice(1).forEach((room,i)=>room.visible=!inside||currentInterior.floor===i+1);if(house.stories)for(const item of house.stories.furnishings)if(item.userData.stairFloor!==undefined)item.visible=!inside||item.userData.stairFloor===currentInterior.floor;if(inside!==house.inside){house.inside=inside;for(const part of house.roofParts)part.visible=!inside}
  }
 }
 // Shared scenery primitives: low-poly timber, market awnings, wells and village clutter.
@@ -946,7 +953,7 @@ function strike(mob,rng=Math.random){if(combatTurns.target===mob)return;combatRn
 const dialoguePortrait=createDialoguePortrait(T,renderer,document.querySelector('#dialog-portrait'));
 const dialog=document.querySelector('#dialog'),dialogName=document.querySelector('#dialog-name'),dialogText=document.querySelector('#dialog-text'),dialogNext=document.querySelector('#dialog-next');let conversation=null;
 function closeDialog(){conversation=null;dialoguePortrait.close();dialog.hidden=true;document.body.classList.remove('npc-conversation')}
-function talkTo(profile){if(profile.role==='banker'){services.open('bank',profile.name);return}if(profile.role==='merchant'){services.open('shop',profile.name,profile.worldEntityId||profile.realmId);return}const npc=npcs.find(n=>n.profile===profile);if(!npc)return;dialoguePortrait.open(npc.root,profile.name);conversation={profile,index:0};dialog.hidden=false;document.body.classList.add('npc-conversation');dialogName.textContent=profile.name;showDialogLine();dialogNext.focus({preventScroll:true})}
+function talkTo(profile){const questNpc=profile.worldEntityId||profile.realmId;if(window.eldervaleQuestJournal?.hasFor(questNpc)){window.eldervaleQuestJournal.open(questNpc);return;}if(profile.role==='banker'){services.open('bank',profile.name);return}if(profile.role==='merchant'){services.open('shop',profile.name,profile.worldEntityId||profile.realmId);return}const npc=npcs.find(n=>n.profile===profile);if(!npc)return;dialoguePortrait.open(npc.root,profile.name);conversation={profile,index:0};dialog.hidden=false;document.body.classList.add('npc-conversation');dialogName.textContent=profile.name;showDialogLine();dialogNext.focus({preventScroll:true})}
 function showDialogLine(){if(!conversation)return;dialogText.textContent=conversation.profile.lines[conversation.index];dialoguePortrait.speak(dialogText.textContent);dialogNext.textContent=conversation.index===conversation.profile.lines.length-1?'Close':'Continue'}
 dialogNext.onclick=()=>{if(!conversation)return;if(++conversation.index>=conversation.profile.lines.length)closeDialog();else showDialogLine()};
 function closeMenu(){menu.hidden=true;menu.innerHTML=''}
@@ -1065,7 +1072,7 @@ renderer.domElement.addEventListener('mousedown',e=>{rightSteering=!!(e.buttons&
 document.addEventListener('mouseup',e=>{rightSteering=!!(e.buttons&2)});
 renderer.domElement.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-down[0],dy=e.clientY-down[1];dragDistance+=Math.hypot(dx,dy);if(dragDistance>4)drag=true;if(drag){yaw-=dx*.005;pitch=T.MathUtils.clamp(pitch+dy*.0035,-.10,1.15);lastCameraDrag=performance.now()}down=[e.clientX,e.clientY]});
 renderer.domElement.addEventListener('pointercancel',()=>{down=null;rightSteering=false});
-renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;rightSteering=false;if(drag)return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(targets.filter(t=>{let o=t;while(o){if(!o.visible)return false;o=o.parent}return true}),false);const point=new T.Vector3();const groundHit=ray.intersectObjects(walkSurfaces,false)[0];const hitGround=groundHit?point.copy(groundHit.point):null;
+renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;rightSteering=false;if(drag)return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(targets.filter(t=>{let o=t;while(o){if(!o.visible)return false;o=o.parent}return true}),false);const point=new T.Vector3();const groundHit=ray.intersectObjects(walkSurfaces.filter(o=>!o.userData.storyFloor||o.userData.storyFloor===currentInterior.floor),false)[0];const hitGround=groundHit?point.copy(groundHit.point):null;
 if(window.eldervaleBuilderClick?.({point:hitGround?{x:point.x,z:point.z}:null,entityId:hits[0]?.object.userData.worldEntityId||hits[0]?.object.userData.mob?.realmId||hits[0]?.object.userData.profile?.realmId,button:e.button}))return;
 if(hits[0]?.object.userData.kind==='profession'){const a=hits[0].object.userData;professions.open({station:a.station,target:a.worldEntityId||a.realmId});return;}
 if(hits[0]?.object.userData.kind==='rock'){const a=hits[0].object.userData,mine=()=>void window.eldervaleRealm?.command('skill_start',{recipe:'mine_'+(a.resource||'ore'),target:a.worldEntityId||a.realmId,amount:1});if(e.button===2)showMenu(e.clientX,e.clientY,[['Mine '+(goods[a.resource||'ore']?.name||'rock'),mine],['Examine',()=>say('Carry or equip a pickaxe. Higher ores require a higher Mining level.')],['Cancel',()=>{}]]);else mine();return;}
@@ -1194,9 +1201,9 @@ for(const npc of npcs){
  npc.attackEffect?.update(npc.previewAttack);if(!npc.previewAttack)animateTownActivity(npc.rig,npc.profile.activity,performance.now()*.001+npc.phase,actualDistance>.0001);
  if(action?.kind==='npc'&&action.root===npc.root&&dest)dest.copy(npc.root.position);
 }
-player.position.y=landscape.walkHeight(player.position.x,player.position.z)+jumpHeight(localJumpAt,window.eldervaleServerTime?.()||Date.now());
-for(const npc of npcs)npc.root.position.y=landscape.walkHeight(npc.root.position.x,npc.root.position.z);
-for(const mob of creatures)mob.root.position.y=landscape.walkHeight(mob.root.position.x,mob.root.position.z);
+player.position.y=landscape.walkHeight(player.position.x,player.position.z)+floorOffset(currentInterior.floor,player.position.x,player.position.z)+jumpHeight(localJumpAt,window.eldervaleServerTime?.()||Date.now());
+for(const npc of npcs)npc.root.position.y=landscape.walkHeight(npc.root.position.x,npc.root.position.z)+floorOffset(npc.serverPose?.data?.floor||npc.profile?.floor||0,npc.root.position.x,npc.root.position.z);
+for(const mob of creatures)mob.root.position.y=landscape.walkHeight(mob.root.position.x,mob.root.position.z)+floorOffset(mob.serverPose?.data?.floor||mob.config?.floor||0,mob.root.position.x,mob.root.position.z);
 if(!dest&&!walkQueue.length&&!realmPlayerPose?.moving)mapDestination=null;
 const traveled=Math.hypot(player.position.x-frameStart.x,player.position.z-frameStart.z);
 if(!window.eldervaleAuthority&&!mounted){const energyStep=stepEnergy(state.runEnergy,running,traveled>.001,dt);state.runEnergy=energyStep.energy;running=energyStep.running;if(energyStep.exhausted)say('You are out of energy and slow to a walk.')}updateRunButton();
@@ -1208,7 +1215,7 @@ body.rotation.z=combat.hitAnim>0?Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12:T.
 body.position.y=0;if(!mounted)groundFeet(avatar,body,pose?.contacts);playerHorse.update({active:mounted,distance:gaitDistance,rig:avatar,visual:body,groundHeight:landscape.walkHeight});merchantAnimator.update(dt);
 for(const other of remotePlayers.values()){
  const before=other.root.position.clone();
- if(window.eldervaleAuthority&&other.motion){const sample=other.motion.sample();if(sample){other.root.position.x=sample.x;other.root.position.z=sample.z;other.root.rotation.y=sample.yaw}}else other.root.position.lerp(other.target,1-Math.exp(-12*dt));other.root.position.y=landscape.walkHeight(other.root.position.x,other.root.position.z)+jumpHeight(other.jumpAt,window.eldervaleServerTime?.()||Date.now());
+ if(window.eldervaleAuthority&&other.motion){const sample=other.motion.sample();if(sample){other.root.position.x=sample.x;other.root.position.z=sample.z;other.root.rotation.y=sample.yaw}}else other.root.position.lerp(other.target,1-Math.exp(-12*dt));other.root.position.y=landscape.walkHeight(other.root.position.x,other.root.position.z)+floorOffset(playerFloorMap[id]||0,other.root.position.x,other.root.position.z)+jumpHeight(other.jumpAt,window.eldervaleServerTime?.()||Date.now());
  const delta=Math.atan2(Math.sin(other.yaw-other.root.rotation.y),Math.cos(other.yaw-other.root.rotation.y));
  if(!window.eldervaleAuthority)other.root.rotation.y+=delta*(1-Math.exp(-12*dt));
  const distance=before.distanceTo(other.root.position);
@@ -1216,7 +1223,7 @@ for(const other of remotePlayers.values()){
  other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.animator.update(dt,{mounted:other.mounted,locomotion:other.running?'run':other.attackAnim>0||other.blockAnim>0?'combat':'jog',style:other.attackStyle,attack:other.attackAnim,block:other.blockAnim,distance:other.mounted?0:gaitDistance,speed:other.mounted?0:gaitDistance/Math.max(dt,.001)});other.animator.visual.position.y=0;if(!other.mounted)groundFeet(other.animator.rig,other.animator.visual);other.horse.update({active:other.mounted,distance:gaitDistance,rig:other.animator.rig,visual:other.animator.visual,groundHeight:landscape.walkHeight});if(other.mounted)other.animator.updateCape?.(dt,distance>.001?1:0,{mounted:true,mountRoot:other.horse.root});
 }
 gatheringVisuals.update(window.eldervaleServerTime?.()||Date.now());professionVisuals.update(window.eldervaleServerTime?.()||Date.now());cape.update(dt,pose?.blend||0,{mounted,mountRoot:playerHorse.root});for(const [id,until]of depletedTrees)if(Date.parse(until)<=(window.eldervaleServerTime?.()||Date.now()))setTreeDepleted(id,false);
-if(!cameraFocus){cameraFocus=player.position.clone();yaw=player.rotation.y+Math.PI;}if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;if((traveled>.002||manual)&&!down&&!mmoControls.touchActive&&performance.now()-lastCameraDrag>1800){const behind=player.rotation.y+Math.PI;yaw+=Math.atan2(Math.sin(behind-yaw),Math.cos(behind-yaw))*(1-Math.exp(-3*dt));}stabilizeSun(T,sun,focus);if(renderer.shadowMap.enabled&&performance.now()>=nextShadowRefresh){sun.shadow.needsUpdate=true;nextShadowRefresh=performance.now()+shadowRefresh;}camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+(mounted?2.45:1.75)+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position,.35);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;const eye=new T.Vector3(focus.x,focus.y+1.5,focus.z),cameraVector=camera.position.clone().sub(eye),cameraDistance=cameraVector.length();cameraWallRay.set(eye,cameraVector.normalize());cameraWallRay.far=cameraDistance;const walls=[];for(const root of cameraWorldOccluders)if(root.visible&&Math.hypot(root.position.x-player.position.x,root.position.z-player.position.z)<45)root.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});for(const h of houseInteriors)if(h.group.position.distanceToSquared(player.position)<1600)h.group.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});const obstruction=cameraWallRay.intersectObjects(walls,false)[0];cameraObstructionDistance=obstructionDistance(cameraObstructionDistance,obstruction?obstruction.distance-.3:cameraDistance,cameraDistance,dt);camera.position.copy(eye).addScaledVector(cameraVector,cameraObstructionDistance);camera.lookAt(focus.x,focus.y+(mounted?2.05:1.35),focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const root of waterAnimationRoots)root.userData.animateWater(performance.now()*.001);for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();naturalSky.update(camera,performance.now(),skyHour,skyDaylight,sun.userData.direction);meadow.update(player.position,performance.now());wildlife.update(player.position,window.eldervaleServerTime?.()||Date.now(),skyDaylight);if(Math.floor(performance.now()/500)!==window._forestFrame){window._forestFrame=Math.floor(performance.now()/500);updateNaturalForest(forestBatches,player.position);groundDressing.update(player.position);}waterSystem.update(camera,performance.now(),skyDaylight,clientSettings.reducedMotion);renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
+if(!cameraFocus){cameraFocus=player.position.clone();yaw=player.rotation.y+Math.PI;}if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;if((traveled>.002||manual)&&!down&&!mmoControls.touchActive&&performance.now()-lastCameraDrag>1800){const behind=player.rotation.y+Math.PI;yaw+=Math.atan2(Math.sin(behind-yaw),Math.cos(behind-yaw))*(1-Math.exp(-3*dt));}stabilizeSun(T,sun,focus);if(renderer.shadowMap.enabled&&performance.now()>=nextShadowRefresh){sun.shadow.needsUpdate=true;nextShadowRefresh=performance.now()+shadowRefresh;}camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+(mounted?2.45:1.75)+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position,.35);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;const eye=new T.Vector3(focus.x,focus.y+1.5,focus.z),cameraVector=camera.position.clone().sub(eye),cameraDistance=cameraVector.length();cameraWallRay.set(eye,cameraVector.normalize());cameraWallRay.far=cameraDistance;const walls=[];for(const root of cameraWorldOccluders)if(root.visible&&Math.hypot(root.position.x-player.position.x,root.position.z-player.position.z)<45)root.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});for(const h of houseInteriors)if(h.group.position.distanceToSquared(player.position)<1600)h.group.traverse(o=>{if(o.isMesh&&o.visible&&o.material?.visible!==false&&!o.material?.transparent)walls.push(o)});const obstruction=cameraWallRay.intersectObjects(walls,false)[0];cameraObstructionDistance=obstructionDistance(cameraObstructionDistance,obstruction?obstruction.distance-.3:cameraDistance,cameraDistance,dt);camera.position.copy(eye).addScaledVector(cameraVector,cameraObstructionDistance);camera.lookAt(focus.x,focus.y+(mounted?2.05:1.35),focus.z);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const root of waterAnimationRoots)root.userData.animateWater(performance.now()*.001);for(const animateTown of townAnimations)animateTown(performance.now()*.001);updateHouseRoofs();for(const entry of worldInstances.values()){if(entry.house)continue;const d=entry.actor?.serverPose?.data||entry.actor?.profile||entry.actor?.config;const floor=d?.floor||entry.root.userData.storyFloor||0;entry.root.visible=floor===currentInterior.floor&&!entry.actor?.deleted&&entry.actor?.alive!==false&&!(entry.actor?.serverPose?.hp<=0);if(floor>0&&!entry.actor)entry.root.position.y=landscape.walkHeight(entry.root.position.x,entry.root.position.z)+floorOffset(floor,entry.root.position.x,entry.root.position.z);}for(const [id,other]of remotePlayers)other.root.visible=(playerFloorMap[id]||0)===currentInterior.floor;naturalSky.update(camera,performance.now(),skyHour,skyDaylight,sun.userData.direction);meadow.update(player.position,performance.now());wildlife.update(player.position,window.eldervaleServerTime?.()||Date.now(),skyDaylight);if(Math.floor(performance.now()/500)!==window._forestFrame){window._forestFrame=Math.floor(performance.now()/500);updateNaturalForest(forestBatches,player.position);groundDressing.update(player.position);}waterSystem.update(camera,performance.now(),skyDaylight,clientSettings.reducedMotion);renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}const bankHere=houseInteriors.find(h=>h.type==='bank'&&insideHouse(h,player.position));if(bankHere!==serviceBuilding){serviceBuilding=bankHere;if(bankHere)services.open('bank',bankHere.name)}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false);if(mapOpen)drawMap(largeCtx,largeMap,true)}}
 drapeRoads();draw();say('Welcome to Eldervale!');frame();
 
 // World editor rendering bridge. Authority and durable writes live in Postgres RPCs.
@@ -1224,7 +1231,7 @@ const worldInstances=new Map();
 function removeWorldEntity(id){const entry=worldInstances.get(id);if(!entry)return;const actor=entry.actor;if(combatTurns.target===actor)combatTurns.cancel();if(action&&(action.root===entry.root||actor&&action.mob===actor)){action=null;dest=null;walkQueue=[]}if(actor&&conversation?.profile===actor.profile)closeDialog();
  for(let i=targets.length-1;i>=0;i--)if(targets[i].userData.worldEntityId===id)targets.splice(i,1);
  for(const list of [npcs,creatures]){const i=list.indexOf(actor);if(i>=0)list.splice(i,1)}
- landscape.removeFloor(id);
+ landscape.removeFloor(id);for(let i=walkSurfaces.length-1;i>=0;i--){let parent=walkSurfaces[i];while(parent&&parent!==entry.root)parent=parent.parent;if(parent===entry.root)walkSurfaces.splice(i,1)}
  if(entry.house){const i=houseInteriors.indexOf(entry.house);if(i>=0)houseInteriors.splice(i,1)}
  waterAnimationRoots.delete(entry.root);cameraWorldOccluders.delete(entry.root);entry.root.removeFromParent();disposeEntityResources(entry.root);realmObjectTargets.delete(id);worldInstances.delete(id);
 }
@@ -1235,15 +1242,15 @@ window.eldervaleWorldBridge={
    const radius=d.roam||0,profile={...config,worldEntityId:row.id,x:d.x,z:d.z,name:d.name||base.name,color:config.color||0x8d7259,lines:(d.dialogue||base.dialogue).split('\n'),behavior:radius?'patrol':'stationary',patrol:[[d.x-radius,d.z],[d.x,d.z+radius],[d.x+radius,d.z],[d.x,d.z-radius]]};actor=spawnNPC(profile,npcs.length);actor.attackEffect=serviceAttackEffect(T,actor.rig,config.attackType);root=actor.root;
    if(config.weapon&&!root.userData.armed){attachWeapon(actor.rig,makeWeapon(T,config.weapon),config.weapon);root.userData.armed=true}
   }else if(['cottage','bank','inn','forge'].includes(d.template)){
-   h=house(d.x,d.z,d.wallColor||0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,furnished:d.furnished!==false,stone:!!d.stone,roof:d.roof});h.realmId=row.id;root=h.group;landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
-  }else{root=new T.Group();scene.add(root);root.position.set(d.x,landscape.walkHeight(d.x,d.z),d.z);
+   h=house(d.x,d.z,d.wallColor||0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stories:d.stories||1,furnished:d.furnished!==false,stone:!!d.stone,roof:d.roof});h.realmId=row.id;h.storyData=d;h.stories=addBuildingStories(T,h,d,{box,decorate:decorateTownBuilding,material});h.stories.floors.slice(1).forEach(room=>room.traverse(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&o.geometry.parameters.height===.085){o.userData.storyFloor=room.position.y/3;walkSurfaces.push(o)}}));root=h.group;landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
+  }else{root=new T.Group();scene.add(root);root.position.set(d.x,landscape.walkHeight(d.x,d.z)+floorOffset(d.floor,d.x,d.z),d.z);
    if(d.kind==='item'){const item=goods[d.item];if(!item){root.removeFromParent();continue}root.add(makeDroppedItemModel(T,d.item));root.position.y+=.025}
    else if(d.template==='plaza'){const mesh=new T.Mesh(new T.CircleGeometry(8,48),material(0xa39d8b,'masonry'));mesh.rotation.x=-Math.PI/2;mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);for(let i=0;i<geometry.attributes.uv.count;i++)geometry.attributes.uv.setXY(i,geometry.attributes.position.getX(i)/3,geometry.attributes.position.getZ(i)/3);const mesh=new T.Mesh(geometry,material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template,{...d,groundHeight:landscape.heightAt});if(d.template==='fishing_spot')root.position.y=d.waterHeight??.06;
    const hit=new T.Mesh(new T.BoxGeometry(d.template==='castle_gate'?9:1.3,d.template==='castle_gate'?7:2,1.3),new T.MeshBasicMaterial({visible:false}));hit.position.y=d.template==='castle_gate'?3.5:1;root.add(hit);hit.userData={kind:professionStations[d.template]||['hearth','campfire','well','fountain'].includes(d.template)?'profession':d.kind==='item'?'worldItem':d.template==='fishing_spot'?'fishing':d.template==='castle_gate'?'castleGate':d.template==='altar'?'altar':d.template==='hearth'?'hearth':d.template==='market'?'merchant':d.template==='tree'||d.template==='pine'?'tree':d.template==='rock'?'rock':'worldObject',x:d.x,z:d.z,station:['hearth','campfire'].includes(d.template)?'cooking':['well','fountain'].includes(d.template)?'water':d.template,resource:d.resource};targets.push(hit);
   }
-  if(root.userData.animateWater)waterAnimationRoots.add(root);if(['castle_wall','castle_tower','castle_gate'].includes(d.template))cameraWorldOccluders.add(root);if(actor)actor.realmId=row.id;if(!h)root.scale.multiplyScalar(d.scale||1);if(actor?.config)root.scale.setScalar(d.scale||1);root.rotation.y=d.yaw*Math.PI/180;root.traverse(o=>{if(targets.includes(o))o.userData.worldEntityId=row.id});root.userData.waterSource=d.template==='fountain';root.userData.lamp=d.template==='lantern';if(root.userData.surface){root.userData.surfaceData=d;root.userData.surfaceId=row.id;conformSurface(root)}worldInstances.set(row.id,{root,actor,house:h});
+  if(root.userData.animateWater)waterAnimationRoots.add(root);if(['castle_wall','castle_tower','castle_gate'].includes(d.template))cameraWorldOccluders.add(root);if(actor)actor.realmId=row.id;if(!h)root.scale.multiplyScalar(d.scale||1);if(actor?.config)root.scale.setScalar(d.scale||1);root.rotation.y=d.yaw*Math.PI/180;root.traverse(o=>{if(targets.includes(o))o.userData.worldEntityId=row.id});root.userData.storyFloor=d.floor||0;root.userData.waterSource=d.template==='fountain';root.userData.lamp=d.template==='lantern';if(root.userData.surface){root.userData.surfaceData=d;root.userData.surfaceId=row.id;conformSurface(root)}worldInstances.set(row.id,{root,actor,house:h});
  }},
- position:()=>({x:player.position.x,z:player.position.z,yaw:player.rotation.y*180/Math.PI}),
+ position:()=>({x:player.position.x,z:player.position.z,floor:currentInterior.floor,building:currentInterior.building,yaw:player.rotation.y*180/Math.PI}),
  teleport(x,z){if(window.eldervaleAuthority){say('Use the owner Teleport command.');return}combatTurns.cancel();dest=null;walkQueue=[];action=null;player.position.set(x,landscape.walkHeight(x,z),z);save()},
  preview(id){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('preview',{target:id});return}const a=worldInstances.get(id)?.actor;if(a){a.previewAttack=.55;a.attackAnim=.55;say('Preview: '+(a.profile?.attackType||a.config?.attackType||'melee'))}},
  highlight(id){const e=worldInstances.get(id);if(e)markClick(e.root.position.x,e.root.position.z,'interact')},
@@ -1275,14 +1282,14 @@ function realmActor(id){if(id==='base:merchant:-3.0:7.0')return realmMerchant;co
 function applyRealmActor(row){let actor=realmActor(row.id);if(!actor&&row.id.startsWith('base:npc:')){const p=extraResidents.find(p=>'base:npc:'+p.name===row.id);if(p){actor=spawnNPC({...p,realmId:row.id},npcs.length);spawnedResidents.add(extraResidents.indexOf(p))}}if(!actor)return;actor.serverPose=row;actor.motion||=createMotionTrack({delay:650});actor.motion.push(realmFrameTime,{x:row.x,z:row.z,yaw:row.yaw,moving:!!row.target});actor.root.visible=row.hp>0;actor.alive=row.hp>0;if(actor.config){actor.hp=row.hp;actor.maxHp=row.data.hp;actor.config={...actor.config,...row.data}}if(actor.profile){actor.profile.level=row.data.level;actor.profile.hp=row.hp;actor.profile.maxHp=row.data.hp;}return actor;}
 function applyRealmObject(object){const gate=worldInstances.get(object.id)?.root;if(gate?.userData.leftGate){gate.userData.gateOpen=object.open;gate.userData.leftGate.rotation.y=object.open?-Math.PI*.48:0;gate.userData.rightGate.rotation.y=object.open?Math.PI*.48:0;}const custom=worldInstances.get(object.id),house=custom?.house||houseInteriors.find(h=>h.realmId===object.id);if(house){house.open=object.open;house.doorPivot.rotation.y=house.open?-Math.PI*.53:0;}for(const vein of custom?.root.userData.oreVeins||[])vein.visible=!(Date.parse(object.available_at)>(window.eldervaleServerTime?.()||Date.now()));const t=realmObjectTargets.get(object.id);if(t)t.userData.availableAt=object.available_at;if(t?.userData.kind==='tree'||custom?.root.userData.harvestCanopy)setTreeDepleted(object.id,Date.parse(object.available_at)>(window.eldervaleServerTime?.()||Date.now()),object.available_at);}
 window.eldervaleRealmBridge={
- snapshot(data,selfId){window.eldervaleSelfId=selfId;window.eldervaleSkillCrops=data.skillCrops||[];professionVisuals.sync(data);lastMovementAck=performance.now();localJumpAt=data.motion.jump_at;groundDrops.sync(data.groundDrops||[]);tradePanel.sync(data.trade);npcDuelIds=new Set((data.npcDuels||[]).flatMap(d=>[d.guard,d.monster]));combatPlayerIds=new Set((data.actors||[]).map(a=>a.target).filter(Boolean));realmFrameTime=Date.parse(data.stateTime||data.time);attackStyle=data.motion.attack_style||'slash';
+ snapshot(data,selfId){currentInterior=data.interior||{floor:0,building:null};Object.assign(playerFloorMap,data.playerFloors||{});window.eldervaleInterior=currentInterior;window.eldervaleSelfId=selfId;window.eldervaleSkillCrops=data.skillCrops||[];professionVisuals.sync(data);lastMovementAck=performance.now();localJumpAt=data.motion.jump_at;groundDrops.sync((data.groundDrops||[]).filter(d=>(d.floor||0)===currentInterior.floor).map(d=>({...d,renderHeight:landscape.walkHeight(d.x,d.z)+floorOffset(d.floor,d.x,d.z)})));tradePanel.sync(data.trade);npcDuelIds=new Set((data.npcDuels||[]).flatMap(d=>[d.guard,d.monster]));combatPlayerIds=new Set((data.actors||[]).map(a=>a.target).filter(Boolean));realmFrameTime=Date.parse(data.stateTime||data.time);attackStyle=data.motion.attack_style||'slash';
   for(const [id,g]of Object.entries(goods))if(!g.field)state[id]=Number(data.self.stats?.[id])||0;const savedRow=fromPlayerRow(data.self);for(const k of ['gold','wood','ore','fishingPole','fishingNet','bait','rawFish','woodXP','miningXP','armorOwned','weaponsOwned','shieldsOwned','jewelryOwned','mountsOwned','equippedMount','bank','attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP','fletchingXP','runecraftingXP','constructionXP','hunterXP','amulet','trinket','starterChestClaimed','starterShieldsGranted','starterBattleaxeGranted','starterDaggerGranted','starterJewelryGranted'])if(savedRow[k]!==undefined)state[k]=savedRow[k];
   const signature=JSON.stringify([state.equipped,state.equippedWeapon,state.equippedShield]),incoming=JSON.stringify([savedRow.equipped,savedRow.equippedWeapon,savedRow.equippedShield]);state.equipped=savedRow.equipped;state.equippedWeapon=savedRow.equippedWeapon;state.equippedShield=savedRow.equippedShield;combat.hp=data.self.health;combat.maxHp=data.self.max_health;combat.xp=data.self.xp;combat.kills=savedRow.kills;state.runEnergy=data.motion.energy;running=data.motion.run;mounted=data.motion.mounted===true;
   if(signature!==incoming){gatheringVisuals.clear();refreshArmor();refreshWeapon();refreshShield()}playerMotion.push(realmFrameTime,{x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0});realmPlayerPose={x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0};if(!realmPlayerPose.moving){dest=null;walkQueue=[];mapDestination=null;}
   realmInCombat=false;for(const id of data.removedActors||[]){const a=realmActor(id);if(a){a.root.visible=false;a.deleted=true;}}for(const row of data.actors){const a=realmActor(row.id);if(a)a.deleted=false;realmActorCache.set(row.id,row);applyRealmActor(row);if(row.target===selfId)realmInCombat=true;}
   window.eldervaleUpdatePlayers(data.players);gatheringSelfId=selfId;gatheringVisuals.sync(data.gathering||[]);for(const entry of data.players){const other=remotePlayers.get(entry.id);if(other){other.hp=entry.hp;other.maxHp=entry.maxHp;other.jumpAt=entry.jumpAt}}
   for(const object of [...data.objects,...(data.gates||[])]){realmObjectState.set(object.id,object);applyRealmObject(object);}
-  professions.sync(data.professionJobs||[]);window.eldervaleShops=data.shops||{};captureSave();draw();services.refresh?.();
+  window.eldervaleQuestJournal??=createQuestJournal(state);window.eldervaleQuestJournal.sync(data.quests||[]);professions.sync(data.professionJobs||[]);window.eldervaleShops=data.shops||{};captureSave();draw();services.refresh?.();
  },
  event(e,selfId){if(e.type==='skill_notice'||e.type==='skill_complete'){if(e.player===selfId)say(e.text);return}if(e.type==='npc_windup'){const a=realmActor(e.attacker),b=realmActor(e.target);if(a){a.attackAnim=.55;a.previewAttack=.55;}if(b)b.blockAnim=.75;return}if(e.type==='npc_hit'){const a=realmActor(e.target);if(a){hitNumbers.show(a.root,e.damage,e.blocked,3);if(a.root.position.distanceTo(player.position)<20)combatSound(e.blocked?'metal':'impact');}return}const actor=realmActor(e.target),root=actor?.root,isSelf=e.player===selfId,other=remotePlayers.get(e.player);if(e.type==='fishing'){if(isSelf)say('You catch a fish. +25 Fishing XP');return}if(e.type==='woodcut'){if(e.depleted)applyRealmObject({id:e.target,available_at:e.availableAt});if(isSelf)say('You receive '+e.amount+' log'+(e.amount===1?'':'s')+'. +'+(25*e.amount)+' Woodcutting XP');return}if(e.type==='gather_end'){if(isSelf&&e.text)say(e.text);return}if(e.type==='preview'){if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}return}if(e.type==='windup'){if(isSelf&&e.side==='player')combatSound(e.style||'slash');if(e.style&&isSelf)attackStyle=e.style;if(e.side==='player'){if(isSelf){combat.attackAnim=.55;combat.blockAnim=0;faceTarget(player,root?.position||player.position)}else if(other){other.attackAnim=.55;other.attackStyle=e.style||'slash';}if(actor)actor.blockAnim=1.1;}else{if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}if(isSelf){combat.attackAnim=0;combat.blockAnim=1.15;}else if(other)other.blockAnim=1.15;}}
   else if(e.type==='hit'){const target=e.side==='player'?root:isSelf?player:other?.root;if(target)hitNumbers.show(target,e.damage,e.blocked,e.side==='player'?1.8:2.8);if(isSelf)combatSound(e.blocked?'metal':'impact');if(actor&&e.side==='player'){actor.hitAnim=e.blocked?0:.3;actor.blockAnim=e.blocked?.65:0;}}
@@ -1327,7 +1334,7 @@ let castleCollisionRows=null;window.eldervaleCastleCollision=(x,z)=>{for(const r
 window.eldervaleRemovedActors=ids=>{for(const id of ids){const a=realmActor(id);if(a){a.deleted=true;a.root.visible=false;}}};
 
 let propCollisionIndex=null;
-window.eldervalePropCollision=(x,z)=>{if(!propCollisionIndex){const data=generatedWorld?[]:[...fixedObstacles];for(const row of persistentRows.values())if(!row.deleted&&row.data.kind==='object'&&!depletedTrees.has(row.id))data.push(row.data);for(const [id,t]of realmObjectTargets)if(id.startsWith('base:')&&['tree','rock'].includes(t.userData.kind)&&!depletedTrees.has(id))data.push({template:t.userData.kind,x:t.userData.x,z:t.userData.z});propCollisionIndex=createObstacleIndex(data);}return propCollisionIndex.blocked(x,z);};
+window.eldervalePropCollision=(x,z)=>{if(!propCollisionIndex){const data=generatedWorld?[]:[...fixedObstacles];for(const row of persistentRows.values())if(!row.deleted&&row.data.kind==='object'&&!(row.data.floor>0)&&!depletedTrees.has(row.id))data.push(row.data);for(const [id,t]of realmObjectTargets)if(id.startsWith('base:')&&['tree','rock'].includes(t.userData.kind)&&!depletedTrees.has(id))data.push({template:t.userData.kind,x:t.userData.x,z:t.userData.z});propCollisionIndex=createObstacleIndex(data);}return propCollisionIndex.blocked(x,z);};
 const applyNavigationWorld=window.eldervaleWorldBridge.apply;window.eldervaleWorldBridge.apply=async rows=>{await applyNavigationWorld(rows);if(rows.length){castleCollisionRows=null;propCollisionIndex=null;meadow.invalidate();groundDressing.invalidate();waterSystem.setFishingSpots([...persistentRows.values()].filter(r=>!r.deleted&&r.data.template==='fishing_spot').map(r=>r.data));}};
 
 

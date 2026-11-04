@@ -23,7 +23,7 @@ export function decorateTownBuilding(T,record,{box,material}){
  const table=(x,z)=>{b(1.25,.12,.65,0x79583a,x,.85,z);for(const dx of [-.45,.45])b(.12,.7,.48,0x573d2d,x+dx,.44,z)};
  if(type==='bank'){
   // Tellering hall, two service windows, rear vault and deposit chests.
-  for(const x of [-1.05,1.05]){
+  for(const x of (record.stories>1?[-1.05]:[-1.05,1.05])){
    b(1.35,.85,.42,0x6b4b31,x,.55,-.38);b(1.43,.12,.53,0xb19a65,x,1.03,-.38);
    for(const dx of [-.57,.57])b(.055,.8,.06,0xb49a55,x+dx,1.48,-.38,'stone');
    b(1.25,.07,.07,0xb49a55,x,1.87,-.38,'stone');
@@ -44,7 +44,7 @@ export function decorateTownBuilding(T,record,{box,material}){
   const clock=new T.Mesh(new T.CircleGeometry(.27,24),material(0xe4d4a1));clock.position.set(0,4.65,.535);g.add(clock);roofParts.push(clock);
   removable(b(.025,.22,.035,0x3a3c35,0,4.73,.56,'stone'));removable(b(.18,.025,.035,0x3a3c35,.08,4.65,.56,'stone'));
  }else if(type==='inn'){
-  for(const x of [-1.1,1.1]){table(x,.2);for(const z of [-.4,.8])b(1,.3,.25,0x6d4b30,x,.35,z)}
+  for(const x of (record.stories>1?[-1.1]:[-1.1,1.1])){table(x,.2);for(const z of [-.4,.8])b(1,.3,.25,0x6d4b30,x,.35,z)}
   b(2.7,.9,.5,0x68442c,0,.55,-1.25);b(2.85,.12,.62,0x98774b,0,1.06,-1.25);
   for(const x of [-1.1,-.4,.4,1.1])b(.16,.22,.16,0xc7ae73,x,1.23,-1.25,'stone');
   for(const side of [-1,1]){b(.14,2.95,.12,0x59412d,side*1.05,1.55,1.96);b(3.8,.13,.15,0x59412d,0,2.25,1.96)}
@@ -54,12 +54,12 @@ export function decorateTownBuilding(T,record,{box,material}){
   b(.7,.55,.5,0x596367,.7,.4,.2,'stone');b(1,.18,.45,0x858c88,.7,.76,.2,'stone');
   removable(b(.6,2.4,.6,0x777b70,-1.1,4.1,-1.05,'masonry'));
  }else if(type==='chapel'){
-  for(const x of [-1.05,1.05])for(const z of [-.7,.2,.9]){b(.8,.35,.35,0x725639,x,.35,z);b(.8,.55,.1,0x725639,x,.65,z-.17)}
+  for(const x of (record.stories>1?[-1.05]:[-1.05,1.05]))for(const z of [-.7,.2,.9]){b(.8,.35,.35,0x725639,x,.35,z);b(.8,.55,.1,0x725639,x,.65,z-.17)}
   b(1.3,.8,.48,0xc7bfa5,0,.55,-1.35,'masonry');
   removable(b(.9,1.5,.85,0xb4b7ae,0,4.4,-.85,'masonry'));
   const bell=new T.Mesh(new T.ConeGeometry(.22,.35,10),material(0xba9950));bell.position.set(0,4.5,-.39);g.add(bell);roofParts.push(bell);
   removable(b(.08,.7,.08,0xd9bb70,0,5.5,-.85,'stone'));removable(b(.45,.08,.08,0xd9bb70,0,5.6,-.85,'stone'));
  }else if(type==='home'){
-  table(-.8,-.9);b(.85,.3,1.4,0x6b5038,1,.3,-.7);b(.75,.14,1.2,0x7e8a76,1,.52,-.7,'cloth');
+  table(-.8,record.stories>1?.9:-.9);const bedX=record.stories>1?-1:1;b(.85,.3,1.4,0x6b5038,bedX,.3,-.7);b(.75,.14,1.2,0x7e8a76,bedX,.52,-.7,'cloth');
  }
 }

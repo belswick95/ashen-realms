@@ -1,6 +1,6 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261104-jog41';
-import {createHumanoidAnimator} from './animation.js?v=release-20261104-jog41';
+import {buildHumanoid} from './humanoid.js?v=release-20261104-studio42';
+import {createHumanoidAnimator} from './animation.js?v=release-20261104-studio42';
 
 // Uses the same meshes as the player and NPCs, not a separate illustration.
 export function createCharacterPreview(host,initial){
