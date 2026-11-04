@@ -1,5 +1,5 @@
-import {fullHumanAsset as asset} from './full-human-asset.js?v=release-20261104-audit45';
-import {fabricMaterial,loftGeometry} from './anatomy.js?v=release-20261104-audit45';
+import {fullHumanAsset as asset} from './full-human-asset.js?v=release-20261104-motion46';
+import {fabricMaterial,loftGeometry} from './anatomy.js?v=release-20261104-motion46';
 const caches=new WeakMap();
 // One complete authored human body, skinned to the equipment/animation skeleton.
 // The partitions are clothing/material boundaries of that body, not primitive limbs.
@@ -35,7 +35,9 @@ export function buildHumanoid(T,root,look={}){
  const add=(g,m,parent,x,y,z,sx=1,sy=1,sz=1)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=o.receiveShadow=true;parent.add(o);return o};
  const geo=(key,make)=>{if(!cache.has(key)){const g=make();g.userData.eldervaleShared=true;cache.set(key,g)}return cache.get(key)};
  const eyeOrigin=new T.Vector3().fromArray(asset.landmarks['l-eye']).sub(bones.head.position);
- const sphere=geo('eyeSphere',()=>new T.SphereGeometry(1,12,8));for(const side of [-1,1]){eyes.push(add(sphere,eyeWhite,head,side*eyeOrigin.x,eyeOrigin.y,eyeOrigin.z,.023,.017,.022));add(geo('irisDisc',()=>new T.CircleGeometry(.009,16)),iris,head,side*eyeOrigin.x,eyeOrigin.y,eyeOrigin.z+.0225);add(geo('pupilDisc',()=>new T.CircleGeometry(.004,12)),pupil,head,side*eyeOrigin.x,eyeOrigin.y,eyeOrigin.z+.023);}
+ // Socket openings sit slightly outward from the asset's eye landmarks.
+ const eyeX=(Math.abs(eyeOrigin.x)+.009)*(look.face==='Broad'?1.06:1);
+ const sphere=geo('eyeSphere',()=>new T.SphereGeometry(1,12,8));for(const side of [-1,1]){eyes.push(add(sphere,eyeWhite,head,side*eyeX,eyeOrigin.y,eyeOrigin.z,.023,.017,.022));add(geo('irisDisc',()=>new T.CircleGeometry(.009,16)),iris,head,side*eyeX,eyeOrigin.y,eyeOrigin.z+.0225);add(geo('pupilDisc',()=>new T.CircleGeometry(.004,12)),pupil,head,side*eyeX,eyeOrigin.y,eyeOrigin.z+.023);}
  const style=look.hair||'Side swept',hairMeshes=[];
  const capKey='authored-scalp:'+style+':'+(look.face||'Balanced');let cap=cache.get(capKey);if(!cap){const full=geometry('head',look.face).clone(),p=full.attributes.position,normal=full.attributes.normal,indices=[];for(let i=0;i<full.index.count;i+=3){const tri=[full.index.getX(i),full.index.getX(i+1),full.index.getX(i+2)];if(tri.every(j=>p.getY(j)>(p.getZ(j)>.08?.15:style==='Long'?-.10:.055)))indices.push(...tri);}full.setIndex(indices);for(let i=0;i<p.count;i++)p.setXYZ(i,p.getX(i)+normal.getX(i)*.005,p.getY(i)+normal.getY(i)*.005,p.getZ(i)+normal.getZ(i)*.005);full.morphAttributes={};full.deleteAttribute('color');full.deleteAttribute('skinIndex');full.deleteAttribute('skinWeight');full.userData.eldervaleShared=true;cap=full;cache.set(capKey,cap)}hairMeshes.push(add(cap,hairMat,head,0,0,0));
  const tuft=geo('authoredHairLock',()=>loftGeometry(T,[[-.055,.002,.002],[-.02,.019,.009],[.025,.023,.012],[.055,.003,.003]],8));const count=style==='Long'?17:style==='Buzz cut'?0:7;for(let i=0;i<count;i++){const x=count===17?(i%7-3)*.039:(i-3)*.034,y=style==='Long'&&i>6?-.015:.223,z=style==='Long'&&i>6?-.08:.105;const lock=add(tuft,hairMat,head,x,y,z,1,style==='Long'&&i>6?2.8:style==='Spiky'?1.3:.7,1);lock.rotation.z=style==='Side swept'?-.50:style==='Spiky'?-(i-3)*.13:0;lock.userData.hairStrand=true;hairMeshes.push(lock);}

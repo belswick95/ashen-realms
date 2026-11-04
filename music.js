@@ -1,5 +1,5 @@
-import {createNatureAudio} from './nature-audio.js?v=release-20261104-audit45';
-import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261104-audit45';
+import {createNatureAudio} from './nature-audio.js?v=release-20261104-motion46';
+import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261104-motion46';
 let singleton;
 // One audio engine spans sign-in and gameplay. Music and environment have
 // separate buses; natural ambience is never represented as a music track.

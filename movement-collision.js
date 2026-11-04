@@ -1,4 +1,5 @@
 // Client prediction mirrors the server's collision checks. Never changes speed.
+export const movementTime=elapsed=>Number.isFinite(elapsed)?Math.max(0,Math.min(.25,elapsed)):0;
 export function slideStep(from,to,canStep){
  if(canStep(from,to))return {...to};
  const x={...from,x:to.x},z={...from,z:to.z};
