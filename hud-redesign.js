@@ -1,4 +1,4 @@
-import {installFullscreen} from './fullscreen.js?v=release-20261104-chat33';
+import {installFullscreen} from './fullscreen.js?v=release-20261104-dismount34';
 export function installFantasyHUD(){
  let opened=null;const side=document.querySelector('#side');document.body.classList.add('fantasy-hud');const close=document.createElement('button');close.className='hud-panel-close';close.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';close.title='Collapse panel';close.setAttribute('aria-label','Collapse panel');side.append(close);const hide=()=>{opened=null;document.body.classList.remove('hud-panel-open','compact-panel-open');for(const b of side.querySelectorAll('[data-tab]'))b.setAttribute('aria-expanded','false')};close.onclick=hide;
  for(const b of side.querySelectorAll('[data-tab]')){const label=b.dataset.tab;b.title=label[0].toUpperCase()+label.slice(1);b.setAttribute('aria-label',b.title);b.setAttribute('aria-expanded','false');b.addEventListener('click',()=>{const was=opened===label;hide();if(!was){opened=label;document.body.classList.add('hud-panel-open');b.setAttribute('aria-expanded','true')}})}

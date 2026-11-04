@@ -1,4 +1,4 @@
-import {sampleRunCycle} from './run-cycle.js?v=release-20261104-chat33';
+import {sampleRunCycle} from './run-cycle.js?v=release-20261104-dismount34';
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
@@ -48,7 +48,8 @@ export function createHumanoidAnimator(rig){
    const y=down-lift-Math.tan(lean)*forward*rig.root.scale.z,d=Math.min(length-.00001,Math.hypot(forward,y));
    const bend=Math.acos(Math.max(-1,Math.min(1,(d*d-upper*upper-lower*lower)/(2*upper*lower))));
    const hip=Math.atan2(-forward,y)-Math.atan2(lower*Math.sin(bend),upper+lower*Math.cos(bend));
-   leg.rotation.x=hip*blend;knee.rotation.x=bend*blend;
+   // Locomotion owns the hip planes too: discard the outward riding pose.
+   leg.rotation.set(hip*blend,0,0);knee.rotation.x=bend*blend;
    if(ankle)ankle.rotation.x=-(hip+bend)*blend-lean+(swing?Math.sin(t*Math.PI)*.16*runBlend*blend:0);
 
   }
