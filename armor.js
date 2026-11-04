@@ -1,11 +1,11 @@
-import {loftGeometry} from './anatomy.js?v=release-20261103-gather26';
-import {surfaceTexture} from './surface-textures.js?v=release-20261103-gather26';
+import {loftGeometry} from './anatomy.js?v=release-20261104-male27';
+import {surfaceTexture} from './surface-textures.js?v=release-20261104-male27';
 // Original, closed low-poly plate harness: angular steel, articulated lames and
 // tapered limbs. Every piece follows the existing wrist/knee rig and loadout.
 export function buildPlateArmor(T,body,rig){
  const caches=buildPlateArmor.caches||(buildPlateArmor.caches=new WeakMap());let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
- const material=(name,color,metalness=.55,roughness=.64)=>{if(!cache.has(name)){const map=surfaceTexture(T,'metal',0xffffff);cache.set(name,new T.MeshStandardMaterial({color,metalness,roughness,flatShading:false,map,bumpMap:map,bumpScale:.002}))}cache.get(name).userData.eldervaleShared=true;return cache.get(name)};
- const steel=material('steel',0x607e87),edge=material('edges',0x91a7aa),dark=material('recesses',0x293b41),leather=material('leather',0x4b3529,0,.95),plume=material('crest',0x6d3450,0,.96);
+ const material=(name,color,metalness=.68,roughness=.48)=>{if(!cache.has(name)){const map=surfaceTexture(T,'metal',0xffffff);cache.set(name,new T.MeshStandardMaterial({color,metalness,roughness,flatShading:false,map,bumpMap:map,bumpScale:.002}))}cache.get(name).userData.eldervaleShared=true;return cache.get(name)};
+ const steel=material('steel',0x7b898f),edge=material('edges',0xb1babd),dark=material('recesses',0x293b41),leather=material('leather',0x4b3529,0,.95),plume=material('crest',0x6d3450,0,.96);
  const slots={helm:[],chest:[],legs:[],boots:[]};
  function add(g,m,parent,slot,x=0,y=0,z=0){const key=g.type+':'+JSON.stringify(g.parameters||Array.from(g.attributes.position.array));if(cache.has(key)){g.dispose();g=cache.get(key)}else cache.set(key,g);g.userData.eldervaleShared=true;const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;parent.add(o);slots[slot].push(o);return o}
  const shell=(parent,slot,rings,mat=steel,sides=8)=>add(loftGeometry(T,rings,sides),mat,parent,slot);
@@ -26,8 +26,8 @@ export function buildPlateArmor(T,body,rig){
  box(body,'chest',.10,.075,.04,0,1.13,.285,edge);
  for(const side of ['left','right']){
   const arm=rig[side+'Arm'],elbow=rig[side+'Elbow'];
-  shell(arm,'chest',[[-.33,.19,.18],[-.20,.255,.23],[-.03,.25,.225],[.075,.15,.15]],steel,6);
-  shell(arm,'chest',[[-.36,.18,.17],[-.28,.21,.195]],edge,6);
+  shell(arm,'chest',[[-.33,.19,.18],[-.20,.215,.195],[-.03,.22,.20],[.075,.15,.15]],steel,6);
+  shell(arm,'chest',[[-.36,.18,.17],[-.28,.19,.175]],edge,6);
   shell(arm,'chest',[[-.44,.12,.115],[-.32,.16,.15]],steel,6);
   shell(elbow,'chest',[[-.065,.13,.13],[.025,.16,.15],[.10,.12,.115]],edge,6);
   shell(elbow,'chest',[[-.30,.09,.085],[-.22,.12,.11],[-.07,.13,.125]],steel,6);
@@ -44,10 +44,10 @@ export function buildPlateArmor(T,body,rig){
   box(knee,'boots',.23,.025,.035,0,-.38,.28,edge);
  }
  for(const slot of ['chest','legs','boots'])for(const p of slots[slot]){
-  if(p.parent===body)p.position.y+=rig.upperOffset;
+  if(p.parent===body){p.position.y+=rig.upperOffset;if(rig.skinned){p.scale.x*=.82;p.scale.z*=.88;}}else if(rig.skinned&&[rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow].includes(p.parent)){const s=[rig.leftArm,rig.rightArm].includes(p.parent)?rig.armScale:rig.forearmScale;p.position.y*=s;p.scale.y*=s;p.scale.x*=.80;p.scale.z*=.85;}
   else if([rig.leftLeg,rig.rightLeg,rig.leftKnee,rig.rightKnee].includes(p.parent)){p.position.y*=rig.legScale;p.scale.y*=rig.legScale}
  }
  for(const [knee,ankle] of [[rig.leftKnee,rig.leftAnkle],[rig.rightKnee,rig.rightAnkle]])if(ankle){body.updateMatrixWorld(true);for(const part of slots.boots)if(part.parent===knee)ankle.attach(part)}
- const helmetRoot=new T.Group();body.add(helmetRoot);for(const p of slots.helm){p.position.y-=2.10;helmetRoot.add(p)}helmetRoot.position.y=rig.head.position.y;helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.x*=1.0;
+ const helmetRoot=new T.Group();body.add(helmetRoot);for(const p of slots.helm){p.position.y-=2.10;helmetRoot.add(p)}helmetRoot.position.copy(rig.head.position);if(rig.skinned){helmetRoot.position.y-=.18;helmetRoot.position.z+=.045;helmetRoot.scale.set(.58,.63,.78);}else{helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.z*=1.12;}
  Object.values(slots).flat().forEach(p=>p.visible=false);return slots;
 }

@@ -1,0 +1,15 @@
+# Male characters, warhorse and touch controls
+
+The shared human renderer now uses the **complete MakeHuman hm08 mesh with the authored adult male morph**, reduced official CC0 skin weights and a common equipment skeleton. It replaces the old primitive torso and limbs for the player, remote players, character creator and humanoid NPCs. The neutral base is not the finished model.
+
+Saved hairstyle, hair color, skin tone, face variant, beard and clothing colors remain authoritative. Fitted scalp geometry follows each face variant; cloth, small leather details and a travel pouch distinguish player adventurers without resetting customization. Armor uses the new proportions and masks covered body parts. Grips, blocking and two-handed poses use the same wrist attachments on all clients. Dialogue portraits clone their skeletons and use a mouth morph without moving the world NPC.
+
+The armored white horse uses authored Wildfire Games / 0 A.D. geometry, coat textures, mane, tail and baked gallop. The discarded procedural prototype is not included. Hoof sounds fire at the contact phases measured from that animation, attenuate with distance and respect environment audio controls.
+
+Item ID: `mount:armoredWhiteHorse`. It is equipable through a separate Mount slot at the top of Equipment. The owner can grant it or stock it through the existing admin controls. Mounted travel is **9.6 m/s, 3× walking**, with no run-energy drain and no stacking with sprint. Server checks enforce ownership, inventory capacity, equipped-item transfer rules and automatic dismount in castle grounds, buildings, combat and gathering. It stays equipped while inactive, then becomes usable again outside.
+
+Phones/tablets use a translucent camera-relative thumbstick on the left, a separate jump button on the right, and direct camera drag. Keyboard movement remains on computers. Chat opens by default, controls observe safe-area insets, and portrait gameplay is blocked after login. Layout checks cover 844×390 and 667×375 phones, 1180×820 iPad, 820×1180 portrait gating, and 1366×768 laptop.
+
+Validation: 40 Node test files passed; explicit male full-body geometry and saved appearance colors are covered. Browser checks cover full renderer/model/armor, touch cancellation, movement and jump, chat visibility, device bounds, overlap and authentication workflows. Rollback-only database integration tests verified ownership, equipment capacity, exact mounted/walking speed ratio, zero-energy riding, castle/building/gathering restrictions and the authenticated public RPC. The production mount migration was applied only after those checks passed; it uses guarded mount-specific edits with unchanged function identities and permissions.
+
+Artwork credits and applicable licenses are available at `/assets/ART-CREDITS.html`. MakeHuman graphics are CC0; the adapted horse artwork remains CC BY-SA 3.0. Sources: https://www.makehumancommunity.org/about/license.html and https://github.com/0ad/0ad/tree/master/binaries/data/mods/public/art . Touch design reference: https://developer.apple.com/design/human-interface-guidelines/game-controls .

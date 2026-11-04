@@ -59,7 +59,7 @@ test('two-handed IK keeps both wrists on the grip during attacks',()=>{
 test('hair styles use distinct low-poly silhouettes with reusable tapered geometry',()=>{
  const styles=['Side swept','Short crop','Spiky','Buzz cut','Long'];
  const rigs=styles.map(hair=>buildHumanoid(T,new T.Group(),{hair}));
- const strands=rig=>rig.hairMeshes.filter(mesh=>mesh.geometry.type==='ConeGeometry');
+ const strands=rig=>rig.hairMeshes.filter(mesh=>mesh.userData.hairStrand===true);
  assert.deepEqual(rigs.map(r=>strands(r).length),[7,7,7,0,17]);
  assert.equal(strands(rigs[0])[0].geometry,strands(rigs[4])[0].geometry);
  for(const rig of rigs){
@@ -68,13 +68,10 @@ test('hair styles use distinct low-poly silhouettes with reusable tapered geomet
  }
 });
 
-test('garment details stay attached to the body without affecting rig pivots',()=>{
- const rig=character();
- const details=[];rig.root.traverse(o=>{if(o.isMesh&&o.geometry.type==='CylinderGeometry'&&o.geometry.parameters.height===.46)details.push(o)});
- assert.equal(details.length,2,'both tunic seams should exist');
- for(const seam of details)assert.ok(Number.isFinite(seam.position.y));
- const animator=createHumanoidAnimator(rig);animator.update(.016,{speed:5,distance:.08});
- assert.ok(rig.leftArm.parent===rig.root&&rig.rightArm.parent===rig.root);
+test('complete authored body is skinned with normalized weights and stable equipment anchors',()=>{
+ const rig=character();assert.ok(rig.skinned&&rig.torso.isSkinnedMesh);assert.ok(Object.values(rig.meshes).every(m=>m.isSkinnedMesh));assert.ok(Object.values(rig.meshes).reduce((sum,m)=>sum+m.geometry.attributes.position.count,0)>12000);
+ for(const mesh of Object.values(rig.meshes)){const weights=mesh.geometry.attributes.skinWeight,indices=mesh.geometry.attributes.skinIndex;for(let i=0;i<weights.count;i++){assert.ok(Math.abs(weights.getX(i)+weights.getY(i)+weights.getZ(i)+weights.getW(i)-1)<1e-5);for(const value of [indices.getX(i),indices.getY(i),indices.getZ(i),indices.getW(i)])assert.ok(value<rig.skeleton.bones.length)}}
+ const animator=createHumanoidAnimator(rig);animator.update(.016,{speed:5,distance:.08});rig.root.updateMatrixWorld(true);assert.ok(rig.leftArm.parent===rig.root&&rig.rightArm.parent===rig.root);
 });
 
 test('damage reaction decays, idle breathing remains finite and the gameplay root stays grounded',()=>{

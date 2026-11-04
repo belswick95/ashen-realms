@@ -20,7 +20,7 @@ export function fabricMaterial(T,color,cache){
  if(typeof document!=='undefined'){
   let texture=cache.get('wovenFabricTexture');
   if(!texture){const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const ctx=canvas.getContext('2d');const pixels=ctx.createImageData(128,128);let seed=2419;
-   for(let y=0;y<128;y++)for(let x=0;x<128;x++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const weave=((x%4<2)===(y%4<2)?4:-4),shade=226+weave+(seed/4294967296-.5)*12,i=(y*128+x)*4;pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=shade;pixels.data[i+3]=255}
+   for(let y=0;y<128;y++)for(let x=0;x<128;x++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const weave=((x%4<2)===(y%4<2)?3:-3),fold=Math.sin(x/128*Math.PI*8+y*.013)*3+Math.sin(y/128*Math.PI*5)*2,shade=220+weave+fold+(seed/4294967296-.5)*9,i=(y*128+x)*4;pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=shade;pixels.data[i+3]=255}
    ctx.putImageData(pixels,0,0);texture=new T.CanvasTexture(canvas);texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(4,4);texture.colorSpace=T.SRGBColorSpace;cache.set('wovenFabricTexture',texture);
   }
   material.map=texture;material.bumpMap=texture;material.bumpScale=.004;

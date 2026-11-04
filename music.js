@@ -1,4 +1,4 @@
-import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261103-gather26';
+import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261104-male27';
 let singleton;
 // One audio engine spans sign-in and gameplay. Music and environment have
 // separate buses; natural ambience is never represented as a music track.
@@ -44,6 +44,15 @@ export function startMusic({scene='world'}={}){
  }
  function tick(){if(disposed)return;const overlay=document.querySelector('#auth-screen');if(mode==='login'&&overlay?.hidden&&window.eldervaleGetPlayerPosition)mode='world';if(mode==='login'){zone=null;transition(loginMusic)}else{let pos;try{pos=window.eldervaleGetPlayerPosition?.()}catch{}zone=musicRegion(pos,zone);transition(zone)}environment()}
  function setScene(next){mode=next;zone=null;tick();notify()}
+ function hoof({volume:gainValue=1,hard=false,front=false,pan=0}={}){
+  if(!enabled||!environmentEnabled||!ctx||ctx.state!=='running'||document.hidden||gainValue<=0)return;
+  const t=ctx.currentTime,gain=ctx.createGain(),filter=ctx.createBiquadFilter(),noise=ctx.createBufferSource(),panner=ctx.createStereoPanner();
+  // Short, filtered hoof-shell crack plus a low ground impact; no looping hiss.
+  noise.buffer=noiseBuffer;filter.type='bandpass';filter.frequency.value=hard?1550:690;filter.Q.value=hard?1.9:.7;
+  gain.gain.setValueAtTime(Math.min(1,gainValue)*(hard?.28:.18)*(front?.9:1),t);gain.gain.exponentialRampToValueAtTime(.0001,t+.065);panner.pan.value=Math.max(-1,Math.min(1,pan));
+  noise.connect(filter);filter.connect(gain);gain.connect(panner);panner.connect(environmentBus);noise.start(t,(front?.3:.8));noise.stop(t+.07);noise.onended=()=>{noise.disconnect();filter.disconnect();gain.disconnect();panner.disconnect()};
+  const impact=ctx.createOscillator(),body=ctx.createGain();impact.frequency.setValueAtTime(hard?155:105,t);impact.frequency.exponentialRampToValueAtTime(45,t+.075);body.gain.setValueAtTime(Math.min(1,gainValue)*.075,t);body.gain.exponentialRampToValueAtTime(.0001,t+.09);impact.connect(body);body.connect(environmentBus);impact.start(t);impact.stop(t+.10);impact.onended=()=>{impact.disconnect();body.disconnect()};
+ }
  function toggleMaster(){enabled=!enabled;storage.setItem('eldervale-audio-enabled',String(enabled));applyVolume();if(enabled)unlock();notify()}
  function toggleMusic(){musicEnabled=!musicEnabled;storage.setItem('eldervale-music-enabled',String(musicEnabled));applyVolume();if(musicEnabled&&enabled)unlock();notify()}
  function toggleEnvironment(){environmentEnabled=!environmentEnabled;storage.setItem('eldervale-environment-enabled',String(environmentEnabled));applyVolume();if(environmentEnabled&&enabled)unlock();notify()}
@@ -53,6 +62,8 @@ export function startMusic({scene='world'}={}){
  function onVisible(){if(document.hidden){decks.forEach(deck=>deck.pause());ctx?.suspend().catch(()=>{})}else if(enabled)unlock()}
  function onPageHide(event){if(event.persisted){ctx?.suspend().catch(()=>{})}else api.dispose()}
  const timer=setInterval(tick,1000);document.addEventListener('pointerdown',interaction,{capture:true});document.addEventListener('keydown',interaction,{capture:true});document.addEventListener('input',onInput);document.addEventListener('click',onClick);document.addEventListener('visibilitychange',onVisible);window.addEventListener('pagehide',onPageHide);
- const api={setScene,toggleMaster,toggleMusic,toggleEnvironment,unlock,getState:state,subscribe(listener){listeners.add(listener);listener(state());return ()=>listeners.delete(listener)},dispose(){disposed=true;clearInterval(timer);for(const timeout of fades.values())clearTimeout(timeout);for(const source of sources){try{source.stop()}catch{}}decks.forEach(deck=>{deck.pause();deck.removeAttribute('src');deck.load()});ctx?.close().catch(()=>{});document.removeEventListener('pointerdown',interaction,{capture:true});document.removeEventListener('keydown',interaction,{capture:true});document.removeEventListener('input',onInput);document.removeEventListener('click',onClick);document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('pagehide',onPageHide);listeners.clear();singleton=null}};
+ const api={hoof,setScene,toggleMaster,toggleMusic,toggleEnvironment,unlock,getState:state,subscribe(listener){listeners.add(listener);listener(state());return ()=>listeners.delete(listener)},dispose(){disposed=true;clearInterval(timer);for(const timeout of fades.values())clearTimeout(timeout);for(const source of sources){try{source.stop()}catch{}}decks.forEach(deck=>{deck.pause();deck.removeAttribute('src');deck.load()});ctx?.close().catch(()=>{});document.removeEventListener('pointerdown',interaction,{capture:true});document.removeEventListener('keydown',interaction,{capture:true});document.removeEventListener('input',onInput);document.removeEventListener('click',onClick);document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('pagehide',onPageHide);listeners.clear();singleton=null}};
  singleton=api;tick();notify();if(enabled)unlock();return api;
 }
+
+export function playHorseHoof(options){singleton?.hoof(options);}

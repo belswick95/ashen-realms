@@ -1,205 +1,53 @@
-import {loftGeometry,fabricMaterial} from './anatomy.js?v=release-20261103-gather26';
-// Eldervale's shared low-poly human rig. The same geometry powers players,
-// NPCs, remote adventurers and the live character-creation preview.
-// Rig pivots are preserved for existing movement, equipment and combat animations.
+import {fullHumanAsset as asset} from './full-human-asset.js?v=release-20261104-male27';
+import {fabricMaterial,loftGeometry} from './anatomy.js?v=release-20261104-male27';
+const caches=new WeakMap();
+// One complete authored human body, skinned to the equipment/animation skeleton.
+// The partitions are clothing/material boundaries of that body, not primitive limbs.
 export function buildHumanoid(T,root,look={}){
- const parse=(v,f)=>typeof v==='number'?v:/^#[0-9a-f]{6}$/i.test(v||'')?parseInt(v.slice(1),16):f;
- const skin=parse(look.skin,0xc9916b),shirt=parse(look.shirt,0x426e68),pants=parse(look.pants,0x353b3e),hairColor=parse(look.hairColor,0x392820);
- const caches=buildHumanoid.caches||(buildHumanoid.caches=new WeakMap());
  let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
- function mat(color,rough=.85){const k='mat'+color+':'+rough;if(!cache.has(k))cache.set(k,new T.MeshStandardMaterial({color,roughness:rough,flatShading:false}));cache.get(k).userData.eldervaleShared=true;return cache.get(k)}
- function geo(key,make){if(!cache.has(key))cache.set(key,make());cache.get(key).userData.eldervaleShared=true;return cache.get(key)}
- const faceMat=mat(skin,.72),cloth=fabricMaterial(T,shirt,cache),trousers=fabricMaterial(T,pants,cache),hairMat=mat(hairColor),boots=mat(0x272523),beltMat=mat(0x57362a);
- function mesh(g,m,parent,x,y,z,sx=1,sy=1,sz=1){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;if(parent===root&&y>1.07&&y<1.98)o.userData.tunic=true;parent.add(o);return o}
- if(typeof document!=='undefined'&&!faceMat.bumpMap){let pores=cache.get('skinPores');if(!pores){const c=document.createElement('canvas');c.width=c.height=64;const ctx=c.getContext('2d'),pixels=ctx.createImageData(64,64);let seed=93;for(let i=0;i<4096;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const v=190+(seed>>>26);pixels.data.set([v,v,v,255],i*4)}ctx.putImageData(pixels,0,0);pores=new T.CanvasTexture(c);pores.wrapS=pores.wrapT=T.RepeatWrapping;pores.userData.eldervaleShared=true;cache.set('skinPores',pores)}faceMat.bumpMap=pores;faceMat.bumpScale=.002;faceMat.needsUpdate=true;}
- const sphere=geo('humanSphere',()=>new T.SphereGeometry(1,12,8));
- const box=(w,h,d)=>geo('humanBox'+w+':'+h+':'+d,()=>new T.BoxGeometry(w,h,d));
- // Tailored torso: broad shoulders, natural taper to the waist, curved chest/back.
- const torsoShape=geo('humanTailoredTorso',()=>new T.LatheGeometry([
-  new T.Vector2(.255,0),new T.Vector2(.30,.09),new T.Vector2(.325,.25),
-  new T.Vector2(.355,.48),new T.Vector2(.395,.66),new T.Vector2(.36,.81),
-  new T.Vector2(.285,.88)
- ],24));
- const torso=mesh(torsoShape,cloth,root,0,1.08,0,1,1,.77);
- // Collar and belt avoid the separated "floating toy" silhouette.
- mesh(geo('humanCollar',()=>new T.CylinderGeometry(.14,.16,.045,12)),cloth,root,0,1.965,0,1,1,.80);
- mesh(geo('humanBelt',()=>new T.CylinderGeometry(.312,.295,.11,14)),beltMat,root,0,1.075,0,1,1,.82);
- mesh(box(.115,.10,.035),mat(0xb8a075,.6),root,0,1.075,.253);
- // Pelvis fills the gap between the torso and two distinct articulated legs.
- mesh(geo('humanTailoredHipsV2',()=>loftGeometry(T,[[-.16,.22,.18],[-.06,.31,.235],[.06,.305,.23],[.15,.27,.20]])),trousers,root,0,.985,0);
- // Subtle stitched tunic seams and a leather strap break up the uniform torso
- // without requiring large textures or additional draw-heavy assets.
- const seamMat=mat(0x263c39),threadMat=mat(0x8f8064),metalMat=mat(0xb8a075,.6);
- for(const side of [-1,1]){
-  const seam=mesh(geo('humanTunicSeamV1',()=>new T.CylinderGeometry(.008,.008,.46,5)),seamMat,root,side*.29,1.68,.155);
-  seam.rotation.z=side*.20;
-  for(let i=0;i<3;i++)mesh(box(.043,.012,.013),threadMat,root,side*(.265+i*.012),1.51+i*.12,.167);
+ const color=(v,f)=>typeof v==='number'?v:/^#[0-9a-f]{6}$/i.test(v||'')?parseInt(v.slice(1),16):f;
+ const mat=(name,c,roughness=.85)=>{const k=name+c;if(!cache.has(k)){const m=new T.MeshStandardMaterial({color:c,roughness});m.userData.eldervaleShared=true;cache.set(k,m)}return cache.get(k)};
+ const skin=mat('skin',color(look.skin,0xc9916b),.77),hairMat=mat('hair',color(look.hairColor,0x392820)),shirt=fabricMaterial(T,color(look.shirt,0x426e68),cache),pants=fabricMaterial(T,color(look.pants,0x353b3e),cache),boots=mat('boots',0x332b25,.9);
+ if(typeof document!=='undefined'){
+  if(!cache.has('hair-strand-map')){const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const c=canvas.getContext('2d');c.fillStyle='#d8d5cc';c.fillRect(0,0,128,128);let seed=47;for(let i=0;i<450;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const x=seed%128,y=(seed>>>8)%128;c.strokeStyle=i%3?'#ffffff28':'#34332d40';c.lineWidth=.4+(seed%5)*.2;c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x+3,y+12,x+1,y+28);c.stroke()}const map=new T.CanvasTexture(canvas);map.wrapS=map.wrapT=T.RepeatWrapping;map.repeat.set(3,3);map.colorSpace=T.SRGBColorSpace;map.userData.eldervaleShared=true;cache.set('hair-strand-map',map);}hairMat.map=cache.get('hair-strand-map');hairMat.bumpMap=hairMat.map;hairMat.bumpScale=.0015;
  }
- const strap=mesh(box(.075,.81,.035),beltMat,root,-.08,1.55,.285);
- strap.rotation.z=-.34;
- mesh(box(.083,.077,.040),metalMat,root,.07,1.22,.289);
- const neck=mesh(geo('humanNeckV2',()=>new T.CylinderGeometry(.098,.12,.13,8)),faceMat,root,0,2.01,0);
- const head=new T.Group();head.name='character-head';root.add(head);
- // Sculpted low-poly head with independently controlled jaw, cheekbone and cranium widths.
- // An elliptical ring mesh avoids the cylindrical/ball-headed appearance.
- const faceStyle=['Balanced','Angular','Broad'].includes(look.face)?look.face:'Balanced';
- const headShape=geo('humanHeadV5'+faceStyle,()=>{
-  const rings=[
-   [0,.095,.112,.018],[.025,.130,.132,.016],[.07,.180,.162,.010],
-   [.13,.205,.185,.006],[.20,.228,.208,.002],[.26,.246,.223,-.002],
-   [.315,.249,.228,-.007],[.365,.244,.229,-.007],[.40,.247,.238,-.010],
-   [.47,.245,.237,-.013],[.53,.224,.218,-.016],[.59,.170,.180,-.020],[.64,.080,.090,-.025]
-  ];
-  const positions=[],indices=[],sides=24;
-  for(const [y,rx,rz,off] of rings)for(let j=0;j<sides;j++){
-   const a=j/sides*Math.PI*2;
-   const front=Math.sin(a),x=Math.cos(a)*rx*(faceStyle==='Broad'?1.10:faceStyle==='Angular'&&y<.22?.88:1);
-   let z=(front>0?Math.pow(front,.68):front)*rz+off;
-   if(front>.4){
-    const eyeSocket=(Math.exp(-Math.pow((x-.108)/.055,2))+Math.exp(-Math.pow((x+.108)/.055,2)))*Math.exp(-Math.pow((y-.365)/.042,2));
-    const cheekbone=Math.exp(-Math.pow((Math.abs(x)-.16)/.065,2)-Math.pow((y-.27)/.055,2));
-    const mouthPlane=Math.exp(-Math.pow(x/.09,2)-Math.pow((y-.20)/.045,2));
-    z-=eyeSocket*.024;z+=cheekbone*.011+mouthPlane*.008;
-   }
-   positions.push(x,y,z);
+ function unpack(text,Type){const bytes=Uint8Array.from(atob(text),c=>c.charCodeAt(0));return new Type(bytes.buffer);}
+ const targets=asset.targets,bones={};for(const name of asset.bones){const b=new T.Bone();b.name=name==='head'?'character-head':'eldervale-'+name;bones[name]=b;}
+ root.add(bones.base,bones.head,bones.leftArm,bones.rightArm,bones.leftLeg,bones.rightLeg);
+ for(const side of ['left','right']){bones[side+'Arm'].add(bones[side+'Elbow']);bones[side+'Elbow'].add(bones[side+'Hand']);bones[side+'Leg'].add(bones[side+'Knee']);bones[side+'Knee'].add(bones[side+'Ankle']);}
+ for(const name of asset.bones){const b=bones[name];b.position.fromArray(targets[name]);if(b.parent!==root)b.position.sub(new T.Vector3().fromArray(targets[Object.keys(bones).find(k=>bones[k]===b.parent)]));}
+ root.scale.set(1,1,1);root.updateMatrixWorld(true);const skeleton=new T.Skeleton(asset.bones.map(n=>bones[n]));skeleton.calculateInverses();
+ function geometry(part,style='Balanced'){
+  const key='body:'+part+':'+style;if(cache.has(key))return cache.get(key);const data=asset.parts[part],g=new T.BufferGeometry(),positions=unpack(data.positions,Float32Array).slice();
+  const parent=part==='head'?bones.head:part.endsWith('Foot')?bones[part.replace('Foot','Ankle')]:root,pivot=parent===root?new T.Vector3():new T.Vector3().fromArray(targets[part==='head'?'head':part.replace('Foot','Ankle')]);
+  for(let i=0;i<positions.length;i+=3){positions[i]-=pivot.x;positions[i+1]-=pivot.y;positions[i+2]-=pivot.z;if(part==='head'){if(style==='Broad')positions[i]*=1.06;if(style==='Angular'&&positions[i+1]<0)positions[i]*=.97;}}
+  g.setAttribute('position',new T.BufferAttribute(positions,3));g.setAttribute('uv',new T.BufferAttribute(unpack(data.uv,Float32Array),2));g.setAttribute('skinIndex',new T.BufferAttribute(unpack(data.skinIndex,Uint16Array),4));g.setAttribute('skinWeight',new T.BufferAttribute(unpack(data.skinWeight,Float32Array),4));g.setIndex(new T.BufferAttribute(unpack(data.indices,Uint16Array),1));g.computeVertexNormals();
+  if(part==='head'){
+   const colors=[];for(let i=0;i<positions.length;i+=3){const x=positions[i],y=positions[i+1],z=positions[i+2],front=Math.max(0,Math.min(1,z/.13)),cheek=Math.exp(-Math.pow((Math.abs(x)-.078)/.055,2)-Math.pow((y+.015)/.05,2))*front,underEye=Math.exp(-Math.pow((Math.abs(x)-.05)/.026,2)-Math.pow((y-.032)/.018,2))*front,lip=Math.exp(-Math.pow(x/.047,4)-Math.pow((y+.040)/.012,2))*front,scar=Math.exp(-Math.pow((x+.058+(y-.10)*.30)/.0035,2)-Math.pow((y-.10)/.031,4))*front;colors.push(1-underEye*.10-scar*.12,1-cheek*.055-underEye*.12-lip*.16-scar*.15,1-cheek*.065-underEye*.12-lip*.17-scar*.14);}
+   g.setAttribute('color',new T.Float32BufferAttribute(colors,3));const mouth=positions.slice();for(let i=0;i<mouth.length;i+=3){const x=mouth[i],y=mouth[i+1],z=mouth[i+2],weight=Math.exp(-Math.pow(x/.07,4)-Math.pow((y+.085)/.055,2))*Math.max(0,Math.min(1,z/.13));mouth[i+1]-=.024*weight;}g.morphAttributes.position=[new T.BufferAttribute(mouth,3)];
   }
-  for(let k=0;k<rings.length-1;k++)for(let j=0;j<sides;j++){
-   const a=k*sides+j,b=k*sides+(j+1)%sides,d=(k+1)*sides+j,e=(k+1)*sides+(j+1)%sides;
-   indices.push(a,d,b,b,d,e);
-  }
-  const bottom=positions.length/3;positions.push(0,0,.018);const top=positions.length/3;positions.push(0,.665,-.025);
-  for(let j=0;j<sides;j++){indices.push(j,(j+1)%sides,bottom);const last=(rings.length-1)*sides;indices.push(last+j,top,last+(j+1)%sides)}
-  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();return g;
- });
- const face=mesh(headShape,faceMat,head,0,2.10,.015);
- // Inset almond eyes, narrow eyelids and tapered eyebrows follow the sculpted sockets.
- const eyeShape=geo('humanAlmondEye',()=>{const shape=new T.Shape();shape.moveTo(-.038,0);shape.quadraticCurveTo(-.004,.014,.038,0);shape.quadraticCurveTo(.004,-.010,-.038,0);return new T.ShapeGeometry(shape,8)});
- const browShape=geo('humanTaperedBrow',()=>{const s=new T.Shape();s.moveTo(-.052,-.006);s.lineTo(-.035,.007);s.lineTo(.020,.006);s.lineTo(.052,-.004);s.lineTo(.036,-.008);s.lineTo(-.035,-.004);s.closePath();return new T.ExtrudeGeometry(s,{depth:.004,bevelEnabled:false})});
- for(const side of [-1,1]){
-  const lid=mesh(eyeShape,mat(0x775443),head,side*.108,2.465,.233,1.10,1.20,1);lid.rotation.z=side*.045;
-  const sclera=mesh(eyeShape,mat(0xbeb8a6),head,side*.108,2.465,.237,.92,.76,1);sclera.rotation.z=side*.045;
-  mesh(geo('humanIris',()=>new T.CircleGeometry(.011,14)),mat(0x59634f),head,side*.108,2.465,.239,1,.94,1);
-  mesh(geo('humanPupil',()=>new T.CircleGeometry(.004,12)),mat(0x20251f),head,side*.108,2.465,.240);
-  mesh(geo('humanEyeGlint',()=>new T.CircleGeometry(.0017,6)),mat(0xd9d9c6),head,side*.108-.003,2.469,.241);
-  const brow=mesh(browShape,hairMat,head,side*.108,2.505,.234);brow.rotation.z=-side*.07;
+ g.computeBoundingSphere();g.userData.eldervaleShared=true;cache.set(key,g);return g;
  }
- const noseGeometry=geo('humanNasalBridge',()=>{
-  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute([-.028,2.485,.223,.028,2.485,.223,-.043,2.365,.229,.043,2.365,.229,0,2.405,.307,-.023,2.355,.264,.023,2.355,.264],3));
-  g.setIndex([0,2,4,0,4,1,1,4,3,2,5,4,3,4,6,5,6,4,2,3,6,2,6,5]);g.computeVertexNormals();return g;
- });
- mesh(noseGeometry,faceMat,head,0,0,0);
- const upperLip=mesh(sphere,mat(0x936f5c),head,0,2.300,.244,.064,.010,.009);upperLip.name='upper-lip';
- const lowerLip=mesh(sphere,faceMat,head,0,2.285,.242,.059,.009,.010);lowerLip.name='lower-lip';
- for(const side of [-1,1]){const ear=mesh(sphere,faceMat,head,side*.256,2.405,-.012,.035,.082,.047);ear.rotation.z=side*.13}
- // Close-fitted hairstyle volumes and swept strands are attached to the skull.
- const style=look.hair||'Side swept';
- const hairCap=mesh(geo('humanHairCapV3',()=>new T.SphereGeometry(1,20,10,0,Math.PI*2,0,Math.PI*.56)),hairMat,head,0,2.679,-.015,.244,style==='Buzz cut'?.075:.125,.220);
- // Tapered, overlapping locks replace rectangular hair blocks. Shared geometry
- // keeps the extra silhouette detail inexpensive for crowds and mobile devices.
- const lock=geo('humanTaperedHairLockV1',()=>new T.ConeGeometry(.045,.22,10,2));
- if(style==='Side swept'){
-  for(let i=0;i<7;i++){
-   const strand=mesh(lock,hairMat,head,-.19+i*.062,2.675-i*.006,.154-i*.004,1,1,.78);
-   strand.rotation.z=-.35-i*.055;strand.rotation.x=.18;
-  }
- }else if(style==='Short crop'){
-  for(let i=-3;i<=3;i++){
-   const strand=mesh(lock,hairMat,head,i*.058,2.695,.135,1,.43,.75);
-   strand.rotation.z=-.12;
-  }
- }else if(style==='Spiky'){
-  for(let i=-3;i<=3;i++){
-   const tuft=mesh(lock,hairMat,head,i*.065,2.745,-.015,1,.67,1);
-   tuft.rotation.z=-i*.14;
-  }
- }else if(style==='Long'){
-  for(const side of [-1,1]){
-   for(let i=0;i<5;i++){
-    const strand=mesh(lock,hairMat,head,side*(.17+i*.018),2.42,-.13+i*.045,1,2.35,.95);
-    strand.rotation.z=side*.10;
-   }
-  }
-  for(let i=-3;i<=3;i++)mesh(lock,hairMat,head,i*.058,2.45,-.22,1,2.25,1);
+ const faceSkin=mat('weathered-face',color(look.skin,0xc9916b),.79);faceSkin.vertexColors=true;
+ const meshes={};for(const part of Object.keys(asset.parts)){const parent=part==='head'?bones.head:part.endsWith('Foot')?bones[part.replace('Foot','Ankle')]:root;const m=new T.SkinnedMesh(geometry(part,look.face),part==='shirt'?shirt:part==='pants'?pants:part.endsWith('Foot')?boots:part==='head'?faceSkin:skin);m.name='authored-human-'+part;m.castShadow=m.receiveShadow=true;parent.add(m);root.updateMatrixWorld(true);m.bind(skeleton,m.matrixWorld.clone());m.frustumCulled=false;meshes[part]=m;}
+ // The authored head has eyelids and sockets. Small eyeballs fill the openings.
+ const eyes=[],head=bones.head,eyeWhite=mat('eye-white',0xd4d0c1,.45),iris=mat('iris',0x4e6256,.5),pupil=mat('pupil',0x101516,.35);
+ const add=(g,m,parent,x,y,z,sx=1,sy=1,sz=1)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=o.receiveShadow=true;parent.add(o);return o};
+ const geo=(key,make)=>{if(!cache.has(key)){const g=make();g.userData.eldervaleShared=true;cache.set(key,g)}return cache.get(key)};
+ const eyeOrigin=new T.Vector3().fromArray(asset.landmarks['l-eye']).sub(bones.head.position);
+ const sphere=geo('eyeSphere',()=>new T.SphereGeometry(1,12,8));for(const side of [-1,1]){eyes.push(add(sphere,eyeWhite,head,side*eyeOrigin.x,eyeOrigin.y,eyeOrigin.z,.023,.017,.022));add(geo('irisDisc',()=>new T.CircleGeometry(.009,16)),iris,head,side*eyeOrigin.x,eyeOrigin.y,eyeOrigin.z+.0225);add(geo('pupilDisc',()=>new T.CircleGeometry(.004,12)),pupil,head,side*eyeOrigin.x,eyeOrigin.y,eyeOrigin.z+.023);}
+ const style=look.hair||'Side swept',hairMeshes=[];
+ const capKey='authored-scalp:'+style+':'+(look.face||'Balanced');let cap=cache.get(capKey);if(!cap){const full=geometry('head',look.face).clone(),p=full.attributes.position,normal=full.attributes.normal,indices=[];for(let i=0;i<full.index.count;i+=3){const tri=[full.index.getX(i),full.index.getX(i+1),full.index.getX(i+2)];if(tri.every(j=>p.getY(j)>(p.getZ(j)>.08?.15:style==='Long'?-.10:.055)))indices.push(...tri);}full.setIndex(indices);for(let i=0;i<p.count;i++)p.setXYZ(i,p.getX(i)+normal.getX(i)*.005,p.getY(i)+normal.getY(i)*.005,p.getZ(i)+normal.getZ(i)*.005);full.morphAttributes={};full.deleteAttribute('color');full.deleteAttribute('skinIndex');full.deleteAttribute('skinWeight');full.userData.eldervaleShared=true;cap=full;cache.set(capKey,cap)}hairMeshes.push(add(cap,hairMat,head,0,0,0));
+ const tuft=geo('authoredHairLock',()=>loftGeometry(T,[[-.055,.002,.002],[-.02,.019,.009],[.025,.023,.012],[.055,.003,.003]],8));const count=style==='Long'?17:style==='Buzz cut'?0:7;for(let i=0;i<count;i++){const x=count===17?(i%7-3)*.039:(i-3)*.034,y=style==='Long'&&i>6?-.015:.223,z=style==='Long'&&i>6?-.08:.105;const lock=add(tuft,hairMat,head,x,y,z,1,style==='Long'&&i>6?2.8:style==='Spiky'?1.3:.7,1);lock.rotation.z=style==='Side swept'?-.50:style==='Spiky'?-(i-3)*.13:0;lock.userData.hairStrand=true;hairMeshes.push(lock);}
+ const beardStyle=look.beard||'Clean shaven';if(beardStyle==='Stubble'||beardStyle==='Short beard'){const key='sculpted-beard:'+beardStyle+':'+(look.face||'Balanced');let g=cache.get(key);if(!g){g=geometry('head',look.face).clone();const p=g.attributes.position,n=g.attributes.normal,indices=[];for(let i=0;i<g.index.count;i+=3){const tri=[g.index.getX(i),g.index.getX(i+1),g.index.getX(i+2)];if(tri.every(j=>p.getY(j)<-.025&&p.getY(j)>-.225&&p.getZ(j)>.055&&!(Math.abs(p.getX(j))<.048&&Math.abs(p.getY(j)+.04)<.018)))indices.push(...tri);}g.setIndex(indices);for(let i=0;i<p.count;i++)p.setXYZ(i,p.getX(i)+n.getX(i)*.003,p.getY(i)+n.getY(i)*.003,p.getZ(i)+n.getZ(i)*(beardStyle==='Short beard'?.009:.002));g.morphAttributes={};g.deleteAttribute('skinIndex');g.deleteAttribute('skinWeight');g.deleteAttribute('color');g.userData.eldervaleShared=true;cache.set(key,g);}hairMeshes.push(add(g,hairMat,head,0,0,0));}
+ // Tailored collar/belt conceal material boundaries and give clothes real thickness.
+ const leather=mat('leather',0x503925),buckle=mat('buckle',0xa8986d,.55),details=[];
+ details.push(add(geo('belt',()=>new T.CylinderGeometry(.285,.29,.075,24)),leather,root,0,1.53,.05,1,1,.76));details.push(add(geo('buckle',()=>new T.BoxGeometry(.09,.07,.025)),buckle,root,0,1.53,.275));
+ if(look.adventurer){
+ const strapShape=new T.Shape();strapShape.moveTo(-.19,2.12);strapShape.lineTo(-.12,2.14);strapShape.lineTo(.23,1.52);strapShape.lineTo(.16,1.50);strapShape.closePath();const strap=add(geo('adventurer-baldric',()=>new T.ExtrudeGeometry(strapShape,{depth:.022,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:.005,bevelThickness:.003})),leather,bones.base,0,0,.205);details.push(strap);
+ const clasp=add(geo('baldric-clasp',()=>new T.BoxGeometry(.073,.06,.025)),buckle,bones.base,-.12,2.02,.235);clasp.rotation.z=-.5;details.push(clasp);
+ const bagShape=new T.Shape();bagShape.moveTo(-.10,-.12);bagShape.quadraticCurveTo(0,-.18,.10,-.12);bagShape.lineTo(.105,.10);bagShape.quadraticCurveTo(0,.14,-.105,.10);bagShape.closePath();const pouch=add(geo('traveller-pouch',()=>new T.ExtrudeGeometry(bagShape,{depth:.075,bevelEnabled:true,bevelSegments:3,steps:1,bevelSize:.015,bevelThickness:.01})),leather,bones.base,-.255,1.48,.15);pouch.rotation.y=-.28;details.push(pouch);details.push(add(geo('pouch-clasp',()=>new T.BoxGeometry(.032,.05,.012)),buckle,bones.base,-.26,1.49,.245));
  }
- // Facial hair follows the jaw and leaves the mouth and nasal bridge visible.
- if(look.beard==='Stubble'||look.beard==='Short beard'){
-  const long=look.beard==='Short beard';
-  // A close jaw-following beard silhouette avoids the oversized spherical muzzle.
-  const beardGeo=geo('humanBeardJawV2',()=>new T.LatheGeometry([
-   new T.Vector2(.065,0),new T.Vector2(.110,.035),new T.Vector2(.152,.080),
-   new T.Vector2(.168,.125),new T.Vector2(.142,.174)
-  ],24));
-  const beard=mesh(beardGeo,hairMat,head,0,2.155,.065,1,long?1.1:.77,.91);
-  for(const side of [-1,1]){const sideburn=mesh(sphere,hairMat,head,side*.193,2.300,.07,.029,.125,.085);sideburn.rotation.z=side*.15}
-
- }
- // Reduce the oversized prototype head while keeping its neck attachment fixed.
- head.children.forEach(o=>{o.position.y-=2.10});
- head.position.y=2.32;head.scale.set(.64,.55,.65);
- // Dedicated attachment anchors prevent weapons and shields from floating or
- // swapping hands as shoulder and elbow joints animate.
- const leftArm=new T.Group(),rightArm=new T.Group(),leftLeg=new T.Group(),rightLeg=new T.Group();
- // Facing +Z, the anatomical right is -X when viewed from the front.
- // From the chase camera behind the character, the right-hand weapon appears on screen-left.
- // This matches the requested reference and avoids swapping hands by screen position.
- // Previously these anchors were swapped, making right-hand weapons appear left-handed.
- leftArm.position.set(.455,1.84,0);rightArm.position.set(-.455,1.84,0);
- leftLeg.position.set(-.165,.985,0);rightLeg.position.set(.165,.985,0);
- root.add(leftArm,rightArm,leftLeg,rightLeg);
- const leftElbow=new T.Group(),rightElbow=new T.Group(),leftKnee=new T.Group(),rightKnee=new T.Group();
- for(const [arm,side,elbow] of [[leftArm,1,leftElbow],[rightArm,-1,rightElbow]]){
-  mesh(geo('tailoredSleeveV2',()=>loftGeometry(T,[[-.445,.100,.095],[-.34,.117,.105],[-.20,.139,.122],[-.09,.151,.132],[-.015,.166,.142],[.055,.140,.12],[.105,.065,.065]])),cloth,arm,0,0,0);
-  elbow.position.set(side*.018,-.46,0);arm.add(elbow);
-  mesh(geo('humanElbowV3',()=>loftGeometry(T,[[-.075,.097,.09],[.025,.11,.10],[.08,.095,.085]],6)),faceMat,elbow,0,0,0);
-  mesh(geo('humanForearmV2',()=>loftGeometry(T,[[-.295,.068,.061],[-.22,.081,.072],[-.13,.105,.085],[-.055,.109,.093],[.015,.094,.089]])),faceMat,elbow,side*.006,0,0);
-  // A palm, four curled fingers and an opposed thumb replace the spherical fist.
-  mesh(geo('humanPalmV3',()=>loftGeometry(T,[[-.405,.055,.045],[-.35,.073,.058],[-.27,.060,.045]],6)),faceMat,elbow,side*.012,0,.025);
-  for(let finger=0;finger<4;finger++)mesh(box(.023,.065,.045),faceMat,elbow,side*.012+(finger-1.5)*.027,-.39,.04);
-  const thumb=mesh(box(.045,.09,.045),faceMat,elbow,-side*.061,-.325,.047);thumb.rotation.z=-side*.4;
- }
- for(const [leg,side,knee] of [[leftLeg,-1,leftKnee],[rightLeg,1,rightKnee]]){
-  mesh(geo('humanThighV2',()=>loftGeometry(T,[[-.49,.113,.116],[-.37,.137,.131],[-.20,.169,.154],[-.06,.179,.160],[.015,.155,.144]])),trousers,leg,side*.012,0,0);
-  knee.position.set(side*.016,-.49,0);leg.add(knee);
-  mesh(geo('humanKneeV3',()=>loftGeometry(T,[[-.09,.115,.12],[0,.135,.14],[.07,.12,.12]],6)),trousers,knee,0,0,0);
-  mesh(geo('humanCalfV2',()=>loftGeometry(T,[[-.36,.079,.083],[-.26,.093,.103,0,-.018],[-.15,.128,.123,0,-.017],[-.055,.123,.112],[.025,.113,.108]])),trousers,knee,side*.005,0,-.005);
-  mesh(geo('humanBootCuff',()=>new T.CylinderGeometry(.13,.13,.09,12)),beltMat,knee,side*.01,-.35,.005);
-  mesh(geo('humanLeatherBootV2',()=>loftGeometry(T,[[-.07,.126,.22,0,.10],[-.025,.138,.23,0,.10],[.035,.128,.205,0,.075],[.10,.096,.115,0,-.015]])),boots,knee,side*.01,-.42,.015);
-  mesh(box(.26,.04,.43),boots,knee,side*.01,-.465,.115);
- }
- // Attachment points follow the wrist joints, not the upper-arm pivots.
- const leftHand=new T.Group(),rightHand=new T.Group();
- // Mirror wrist anchors with the corrected anatomical arm labels.
- leftHand.position.set(.012,-.33,.015);rightHand.position.set(-.012,-.33,.015);
- leftElbow.add(leftHand);rightElbow.add(rightHand);
- // Adult silhouette: longer articulated legs, lifted pelvis/torso and a seven-head stature.
- const upperOffset=.295,legScale=1.3;
- for(const child of root.children)if(child!==head&&child!==leftLeg&&child!==rightLeg)child.position.y+=upperOffset;
- for(const [leg,knee] of [[leftLeg,leftKnee],[rightLeg,rightKnee]]){
-  leg.position.y+=upperOffset;
-  for(const child of leg.children){child.position.y*=legScale;if(child.isMesh)child.scale.y*=legScale}
-  for(const child of knee.children){child.position.y*=legScale;child.scale.y*=legScale}
- }
- // Ankle pivots let feet stay level during contact instead of tilting with the shins.
- const leftAnkle=new T.Group(),rightAnkle=new T.Group();
- for(const [knee,ankle] of [[leftKnee,leftAnkle],[rightKnee,rightAnkle]]){
-  ankle.position.set(0,-.42*legScale,0);knee.add(ankle);root.updateMatrixWorld(true);
-  for(const part of [...knee.children])if(part.isMesh&&part.position.y<-.39*legScale)ankle.attach(part);
- }
- root.scale.set(.78,1,.86);
- // Two-bone arm IK keeps both palms on a two-handed grip rather than near it.
- function solveArm(side,target,weaponUp=new T.Vector3(0,1,0),weaponForward=null){
-  const arm=side==='left'?leftArm:rightArm,elbow=side==='left'?leftElbow:rightElbow,hand=side==='left'?leftHand:rightHand;
-  const upper=elbow.position.clone(),lower=hand.position.clone(),l1=upper.length(),l2=lower.length(),toward=target.clone().sub(arm.position),distance=Math.min(l1+l2-.001,Math.max(.02,toward.length()));
-  const direction=toward.normalize(),pole=new T.Vector3(side==='left'?.7:-.7,-.1,-.4);pole.addScaledVector(direction,-pole.dot(direction)).normalize();
-  const along=(l1*l1-l2*l2+distance*distance)/(2*distance),bend=Math.sqrt(Math.max(0,l1*l1-along*along));
-  const elbowDelta=direction.clone().multiplyScalar(along).addScaledVector(pole,bend);
-  arm.quaternion.setFromUnitVectors(upper.clone().normalize(),elbowDelta.clone().normalize());
-  const lowerDirection=direction.clone().multiplyScalar(distance).sub(elbowDelta).applyQuaternion(arm.quaternion.clone().invert()).normalize();
-  elbow.quaternion.setFromUnitVectors(lower.clone().normalize(),lowerDirection);
-  const parentRotation=arm.quaternion.clone().multiply(elbow.quaternion);
-  if(weaponForward){const y=weaponUp.clone().normalize(),z=weaponForward.clone().addScaledVector(y,-weaponForward.dot(y)).normalize(),x=new T.Vector3().crossVectors(y,z).normalize(),orientation=new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z));hand.quaternion.copy(parentRotation.invert()).multiply(orientation)}
-  else hand.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),weaponUp.clone().applyQuaternion(parentRotation.invert()).normalize());
- }
- // Anatomical rig contracts used by armor and equipment.
- return {clothingMeshes:[...root.children.filter(o=>o.userData.tunic),...leftArm.children.filter(o=>o.material===cloth),...rightArm.children.filter(o=>o.material===cloth)],leftAnkle,rightAnkle,solveArm,upperOffset,legScale,root,body:root,leftArm,rightArm,leftLeg,rightLeg,leftElbow,rightElbow,leftKnee,rightKnee,leftHand,rightHand,torso,neck,face,head,hairMeshes:head.children.filter(o=>o.material===hairMat)};
+ function solveArm(side,target,weaponUp=new T.Vector3(0,1,0),weaponForward=null){const arm=bones[side+'Arm'],elbow=bones[side+'Elbow'],hand=bones[side+'Hand'],upper=elbow.position.clone(),lower=hand.position.clone(),l1=upper.length(),l2=lower.length(),toward=target.clone().sub(arm.position),distance=Math.min(l1+l2-.001,Math.max(.02,toward.length())),direction=toward.normalize(),pole=new T.Vector3(side==='left'?.7:-.7,-.1,-.4);pole.addScaledVector(direction,-pole.dot(direction)).normalize();const along=(l1*l1-l2*l2+distance*distance)/(2*distance),bend=Math.sqrt(Math.max(0,l1*l1-along*along)),elbowDelta=direction.clone().multiplyScalar(along).addScaledVector(pole,bend);arm.quaternion.setFromUnitVectors(upper.clone().normalize(),elbowDelta.clone().normalize());elbow.quaternion.setFromUnitVectors(lower.clone().normalize(),direction.clone().multiplyScalar(distance).sub(elbowDelta).applyQuaternion(arm.quaternion.clone().invert()).normalize());const parentRotation=arm.quaternion.clone().multiply(elbow.quaternion);if(weaponForward){const y=weaponUp.clone().normalize(),z=weaponForward.clone().addScaledVector(y,-weaponForward.dot(y)).normalize(),x=new T.Vector3().crossVectors(y,z).normalize(),orientation=new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z));hand.quaternion.copy(parentRotation.invert()).multiply(orientation)}else hand.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),weaponUp.clone().applyQuaternion(parentRotation.invert()).normalize());}
+ const rig={...bones,skinned:true,skeleton,meshes,clothingMeshes:[meshes.shirt,...details],hairMeshes,face:meshes.head,torso:meshes.shirt,neck:bones.base,chestBone:bones.base,head,root,body:root,upperOffset:.295,legScale:asset.lengths.leftLeg[0]/.49,lowerLegScale:asset.lengths.leftLeg[1]/.42,armScale:asset.lengths.leftArm[0]/.46,forearmScale:asset.lengths.leftArm[1]/.33,solveArm};return rig;
 }

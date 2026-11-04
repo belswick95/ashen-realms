@@ -54,7 +54,7 @@ export function createHumanoidAnimator(rig){
   // Visual pelvis compression keeps contact feet at their standing ground height.
   // Physics, saved positions and pathfinding roots are never translated.
   const walkRise=.014*(1-Math.cos(phase*2))*walkBlend*blend;const bob=(down-length+flight)*blend;rig.root.rotation.x=lean;
-  for(const child of rig.root.children){if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg;child.position.y=restY.get(child)+(upperBody?((baseDown-length)*(1-walkBlend)-.025*walkBlend)*blend+walkRise:bob)}
+  for(const child of rig.root.children){if(rig.skinned&&child.isSkinnedMesh)continue;if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg;child.position.y=restY.get(child)+(upperBody?((baseDown-length)*(1-walkBlend)-.025*walkBlend)*blend+walkRise:bob)}
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
   const armSwing=(.11*combatBlend+.32*walkBlend+.45*runBlend)*blend;
@@ -97,16 +97,16 @@ export function createHumanoidAnimator(rig){
   if(twoHanded&&rig.solveArm){
    const V=rig.root.position.constructor;
    if(attack>0){
-    const t=Math.max(0,Math.min(1,1-attack/.55)),swing=Math.sin(t*Math.PI),angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle)),target=new V(0,1.82+swing*.10,.46+swing*.06);
-    if(style==='stab'||style==='lunge'){direction.set(0,.25,1).normalize();target.set(0,1.55,.45+swing*(style==='lunge'?.7:.4))}rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
+    const t=Math.max(0,Math.min(1,1-attack/.55)),swing=Math.sin(t*Math.PI),angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle)),target=new V(0,1.82+swing*.10,rig.skinned?.36+swing*.04:.46+swing*.06);
+    if(style==='stab'||style==='lunge'){direction.set(0,.25,1).normalize();target.set(0,rig.skinned?1.95:1.55,(rig.skinned?.32:.45)+swing*(rig.skinned?(style==='lunge'?.18:.13):(style==='lunge'?.7:.4)))}rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
    }else{
     // Carry the greatsword upright along the right shoulder; the free arm walks naturally.
-    rig.solveArm('right',new V(-.68,1.54,.30),new V(-.20,1,-.04).normalize(),new V(0,0,1));
+    rig.solveArm('right',new V(rig.skinned?-.48:-.68,rig.skinned?1.75:1.54,.30),new V(-.20,1,-.04).normalize(),new V(0,0,1));
    }
   }
   if(block>0&&attack<=0){
    if(twoHanded&&rig.solveArm){const V=rig.root.position.constructor,direction=new V(-.65,.65,.30).normalize(),target=new V(-.12,1.88,.40);rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10),direction)}
-   else if(shield&&rig.solveArm){const V=rig.root.position.constructor;rig.solveArm('left',new V(.12,1.68,.62),new V(0,1,0),new V(0,0,1))}
+   else if(shield&&rig.solveArm){const V=rig.root.position.constructor;rig.solveArm('left',new V(.12,rig.skinned?1.94:1.68,rig.skinned?.45:.62),new V(0,1,0),new V(0,0,1))}
    else{rig.rightArm.rotation.x=-.85;rig.rightElbow.rotation.x=-.7;rig.rightHand.rotation.z=-.45}
   }
   if(rig.head){rig.head.rotation.x=-gait*.012*blend-impact*.06;rig.head.rotation.z=Math.sin(time*.7)*.008*(1-blend)}

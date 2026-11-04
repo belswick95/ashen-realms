@@ -34,14 +34,12 @@ test('town landmarks have different sizes and complete finite interior geometry'
 test('portrait animates a separate copy of the real speaker without cloning circular hit metadata or moving world lips',()=>{
  const npc=new T.Group(),rig=buildHumanoid(T,npc,{skin:'#67402f',hair:'Long'});
  const hit=new T.Mesh();hit.userData={kind:'npc',root:npc};npc.add(hit);
- const sourceLip=rig.head.getObjectByName('lower-lip'),base=sourceLip.position.y;
- const pose=createTalkingPose(T,npc),copyLip=pose.model.getObjectByName('lower-lip');
- assert.equal(pose.model.getObjectByName('character-head').children[0].material,rig.head.children[0].material);
- assert.equal(pose.model.children.length,npc.children.length-1);
- const positions=new Set();for(let i=0;i<30;i++){pose.update(i/12,true);positions.add(copyLip.position.y)}
- assert.ok(positions.size>8);assert.equal(sourceLip.position.y,base);
- pose.update(1,false);assert.equal(copyLip.position.y,base);
- pose.update(1,true,true);assert.equal(copyLip.position.y,base);assert.equal(pose.model.getObjectByName('character-head').rotation.y,0);
+ const sourceFace=rig.face,base=sourceFace.morphTargetInfluences[0];
+ const pose=createTalkingPose(T,npc),copyFace=pose.model.getObjectByName('authored-human-head');
+ assert.equal(copyFace.material,sourceFace.material);assert.notEqual(copyFace.skeleton,sourceFace.skeleton);assert.notEqual(copyFace.skeleton.bones[1],sourceFace.skeleton.bones[1]);assert.equal(pose.model.children.length,npc.children.length-1);
+ const positions=new Set();for(let i=0;i<30;i++){pose.update(i/12,true);positions.add(copyFace.morphTargetInfluences[0])}
+ assert.ok(positions.size>8);assert.equal(sourceFace.morphTargetInfluences[0],base);
+ pose.update(1,false);assert.equal(copyFace.morphTargetInfluences[0],base);pose.update(1,true,true);assert.equal(copyFace.morphTargetInfluences[0],base);assert.equal(pose.model.getObjectByName('character-head').rotation.y,0);
  pose.dispose();
 });
 
