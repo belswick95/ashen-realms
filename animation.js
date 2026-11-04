@@ -5,7 +5,7 @@ export function createHumanoidAnimator(rig){
  let phase=0,blend=0,time=0,impact=0;const restY=new WeakMap();let combatBlend=0,runBlend=0;
  return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false,weapon=null,block=0,locomotion=null,style=null}={}){
   if(!Number.isFinite(dt)||dt<=0)return;
-  dt=Math.min(dt,.1);time+=dt;
+  dt=Math.min(dt,.1);time+=dt;rig.tick?.(dt);
   distance=Number.isFinite(distance)?Math.max(0,distance):0;
   speed=Number.isFinite(speed)?Math.max(0,speed):0;
   // Smooth incoming damage into a short, recoverable full-body reaction.

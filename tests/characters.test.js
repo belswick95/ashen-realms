@@ -69,8 +69,8 @@ test('hair styles use distinct low-poly silhouettes with reusable tapered geomet
  }
 });
 
-test('low-poly body: rigid parts on bones, small vertex budget and stable equipment anchors',()=>{
- const rig=character();let vertices=0,skinned=0;rig.root.traverse(o=>{if(o.isSkinnedMesh)skinned++;if(o.isMesh)vertices+=o.geometry.attributes.position.count});assert.equal(skinned,0);assert.ok(vertices<4000,'low detail: '+vertices);
+test('stylised body: rigid parts on bones, modest vertex budget and stable equipment anchors',()=>{
+ const rig=character();let vertices=0,skinned=0;rig.root.traverse(o=>{if(o.isSkinnedMesh)skinned++;if(o.isMesh)vertices+=o.geometry.attributes.position.count});assert.equal(skinned,0);assert.ok(vertices<9000,'stays light enough for many NPCs: '+vertices);
  assert.equal(rig.meshes.head.parent,rig.head);assert.equal(rig.meshes.leftHand.parent,rig.leftHand);assert.equal(rig.meshes.rightHand.parent,rig.rightHand);
  for(const side of ['left','right'])for(const [part,bone] of [['UpperArm','Arm'],['Forearm','Elbow'],['Thigh','Leg'],['Shin','Knee'],['Foot','Ankle']])assert.equal(rig.parts[side+part].parent,rig[side+bone]);
  const animator=createHumanoidAnimator(rig);animator.update(.016,{speed:5,distance:.08});rig.root.updateMatrixWorld(true);assert.ok(rig.leftArm.parent===rig.root&&rig.rightArm.parent===rig.root);
@@ -91,4 +91,9 @@ test('damage reaction decays, idle breathing remains finite and the gameplay roo
  assert.ok(r.neck.scale.y>.99&&r.neck.scale.y<1.01);
  assert.equal(r.root.position.y,0);
  a.update(1/60,{hit:NaN});assert.ok(Number.isFinite(r.head.rotation.x));
+});
+test('eyes blink: lids close briefly and return to their relaxed rest angle',()=>{
+ const r=character(),a=createHumanoidAnimator(r),rest=r.eyelids[0].rotation.x;let closed=false;
+ for(let i=0;i<60*8;i++){a.update(1/60,{});if(r.eyelids[0].rotation.x>rest+.8)closed=true}
+ assert.ok(closed,'blinked within eight seconds');assert.equal(r.eyelids[0].rotation.x,r.eyelids[1].rotation.x);
 });
