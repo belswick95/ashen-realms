@@ -1,4 +1,4 @@
-# Shared character skinning candidate — not deployed
+# Shared character skinning release — deployment authorized
 
 ## Evidence and limits
 
@@ -20,6 +20,8 @@ Research: https://github.com/mrdoob/three.js/issues/13288 and https://github.com
 
 56 test files passed. Added regression checks confirm palette invariance near/far from the world origin during walk/jog/run, CPU/GPU matrix agreement, and independently bound portrait bones. Syntax checks pass. Actual local game browser fixture passes door/bank interactions without shader/runtime failures.
 
-Authenticated candidate test loaded changed modules only into the audit browser through route overrides; no production files were changed. Equipped standing and walking frames were inspected at the castle. Owner save, equipment and position restored under a session guard; temporary login files deleted. Software GPU capture is not native iPad hardware verification, so the candidate remains undeployed under the user's deployment constraint.
+Authenticated candidate test loaded changed modules only into the audit browser through route overrides; no production files were changed. Equipped standing and walking frames were inspected at the castle. Owner save, equipment and position restored under a session guard; temporary login files deleted. Software GPU capture is not native iPad hardware verification, the user subsequently authorized production deployment for live iPad testing.
 
 Artifacts: test-results/skinning-precision/frame-180.png (existing left, candidate right), frame-184.png; test-results/mesh-candidate/standing.png, walking-0.png, walking-1.png. Run `node scripts/character-skinning-smoke.cjs` for the controlled half-precision comparison; baseline code is pinned to commit 723b85a.
+
+Release: release-20261104-skin51. Deployment authorized by the user after reviewing the candidate findings. Native iPad confirmation remains a live-test limitation.
