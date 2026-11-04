@@ -1,3 +1,4 @@
+import {storyScale} from './building-stories.js?v=release-20261104-audit44';
 // Footprints are shared by grass exclusion, foundations, and the geometry audit.
 export const isBuilding=d=>['cottage','bank','inn','forge'].includes(d?.template);
 export function localPoint(d,x,z){const a=(d.yaw||0)*Math.PI/180,c=Math.cos(a),s=Math.sin(a),dx=x-d.x,dz=z-d.z;return [dx*c-dz*s,dx*s+dz*c]}
@@ -9,7 +10,7 @@ export function coversSurface(d,x,z,pad=0){
  return false;
 }
 export function onBridge(bridges,x,z,pad=.6){return bridges.some(b=>{const c=Math.cos(b.yaw),s=Math.sin(b.yaw),dx=x-b.x,dz=z-b.z;return Math.abs(dx*c-dz*s)<b.width/2+pad&&Math.abs(dx*s+dz*c)<b.length/2+pad})}
-export function buildingPlot(d){const scale=1.3*(d.scale||1);return {x:d.x,z:d.z,scaleX:scale,scaleZ:scale,rotation:(d.yaw||0)*Math.PI/180,floorHeight:.125*scale}}
+export function buildingPlot(d){const scale=1.3*(d.scale||1);return {x:d.x,z:d.z,scaleX:scale,scaleZ:scale,rotation:(d.yaw||0)*Math.PI/180,floorHeight:.125*(d.stories>1?storyScale(d):scale)}}
 function clip(poly,a,b){const side=p=>(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);const out=[];for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],u=side(p),v=side(q);if(u>=-1e-8)out.push(p);if((u<0&&v>0)||(u>0&&v<0)){const t=u/(u-v);out.push([p[0]+t*(q[0]-p[0]),p[1]+t*(q[1]-p[1])])}}return out}
 export function drapedGeometry(T,land,source,origin,offset){
  const pos=source.attributes.position,index=source.index,verts=[],uv=[],step=land.extent/land.segments,half=land.extent/2;

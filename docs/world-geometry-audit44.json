@@ -1,0 +1,33 @@
+{
+  "config": {
+    "seed": 241916600,
+    "enabled": true,
+    "version": 2
+  },
+  "bounds": [
+    -420,
+    -420,
+    420,
+    420
+  ],
+  "counts": {
+    "savedEntities": 508,
+    "buildings": 20,
+    "terrainVertices": 78961,
+    "terrainTriangles": 156800,
+    "terrainCells": 78400,
+    "roads": 5,
+    "savedPaving": 21,
+    "bridges": 6,
+    "lakes": 3,
+    "rivers": 2,
+    "waterSamples": 15635,
+    "roadSamples": 3936,
+    "bridgeSamples": 1650,
+    "pavedTriangles": 17358,
+    "trees": 2197,
+    "docks": 3
+  },
+  "issues": [],
+  "warnings": []
+}
