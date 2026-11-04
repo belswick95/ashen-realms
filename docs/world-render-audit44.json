@@ -1,0 +1,18 @@
+{
+  "bounds": [
+    -420,
+    -420,
+    420,
+    420
+  ],
+  "grid": [
+    7,
+    7
+  ],
+  "tileSize": 120,
+  "entities": 508,
+  "entitiesVisited": 508,
+  "errors": [],
+  "tilesRendered": 49,
+  "closeupsRendered": 34
+}
