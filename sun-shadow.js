@@ -6,3 +6,9 @@ export function stabilizeSun(T,sun,focus){
  for(const axis of [right,up]){const value=target.dot(axis);target.addScaledVector(axis,Math.round(value/texel)*texel-value)}
  sun.target.position.copy(target);sun.position.copy(target).add(direction);
 }
+
+export function shadowQuality(preset='high',compact=false){
+ if(preset==='low')return {size:512,radius:22,interval:150};
+ if(compact||preset==='medium')return {size:1024,radius:24,interval:67};
+ return preset==='ultra'?{size:2048,radius:38,interval:16}:{size:2048,radius:32,interval:33};
+}

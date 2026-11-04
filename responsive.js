@@ -2,7 +2,7 @@ export function deviceProfile({width,height,coarse=false,touch=false,memory=8}){
  const compact=width<=700||((coarse||touch)&&height<=700&&width>height),constrained=memory>0&&memory<=4;
  return {compact,rotateRequired:(coarse||touch)&&height>width,preset:compact?(constrained?'low':'medium'):'high',pixelCap:compact?1.5:2.5};
 }
-export const graphicsPresets={low:{scale:.65,distance:110,shadows:false},medium:{scale:.8,distance:210,shadows:false},high:{scale:1,distance:330,shadows:true},ultra:{scale:1.25,distance:440,shadows:true}};
+export const graphicsPresets={low:{scale:.65,distance:110,shadows:false},medium:{scale:.8,distance:210,shadows:true},high:{scale:1,distance:330,shadows:true},ultra:{scale:1.25,distance:440,shadows:true}};
 export function effectiveGraphics(settings,profile){const auto=settings.preset==='auto',preset=graphicsPresets[auto?profile.preset:settings.preset]||graphicsPresets.high;return {...settings,...(auto?preset:{}),pixelCap:auto?profile.pixelCap:2.5}}
 export function installOrientationGate(){
  const existing=document.querySelector('#rotate-phone');if(existing)return existing;

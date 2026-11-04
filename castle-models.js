@@ -1,4 +1,5 @@
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-dismount34';
+import {batchStaticMeshes} from './static-batch.js?v=release-20261104-flow35';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261104-flow35';
 export function castleObject(T,g,id,d={}){
  const stone=new T.MeshStandardMaterial({map:surfaceTexture(T,'masonry',0x92958b),roughness:.92}),trim=new T.MeshStandardMaterial({color:0xb6b5a5,roughness:.8}),wood=new T.MeshStandardMaterial({map:surfaceTexture(T,'wood',0x5e3c27),roughness:.85}),iron=new T.MeshStandardMaterial({color:0x323a3a,metalness:.65,roughness:.45});
  const box=(x,y,z,w,h,l,mat=stone,parent=g)=>{const m=new T.Mesh(scaleSurfaceUV(new T.BoxGeometry(w,h,l),w,h,l),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;parent.add(m);return m};
@@ -8,5 +9,6 @@ export function castleObject(T,g,id,d={}){
  if(id==='castle_gate'){const len=d.length||28;for(const side of [-1,1]){box(side*(len/4+2.25),4.7,0,(len-9)/2,9.4,3.6);const pivot=new T.Group();pivot.position.set(side*4.5,0,1.9);g.add(pivot);box(-side*2.22,3.8,0,4.44,7.6,.32,wood,pivot);for(const y of [1,3.8,6.6])box(-side*2.22,y,.19,4.35,.18,.12,iron,pivot);for(let i=0;i<5;i++)box(-side*(.45+i*.86),3.8,.2,.035,7.2,.025,iron,pivot);g.userData[side<0?'leftGate':'rightGate']=pivot;}box(0,8.5,0,9,1.8,3.6);box(0,9.5,0,len,.4,4,trim);crenels(g,len,10.1);for(const side of [-1,1]){const banner=box(side*8,6,1.85,1.8,3.2,.06,new T.MeshStandardMaterial({color:0x233e64}));box(side*8,6,1.9,.20,1.7,.05,trim);box(side*8,6.3,1.91,.85,.18,.05,trim)}}
  if(id==='altar'){box(0,.22,0,2.8,.44,1.8);box(0,.88,0,2,1.1,1.1,trim);box(0,1.5,0,2.7,.2,1.6);box(0,1.64,0,2,.06,1.2,new T.MeshStandardMaterial({color:0xe1d2a1}));for(const side of [-1,1]){box(side*.85,1.8,0,.10,.4,.1,wood);const flame=new T.Mesh(new T.SphereGeometry(.08,6,5),new T.MeshBasicMaterial({color:0xffd78c}));flame.position.set(side*.85,2.05,0);g.add(flame)}}
  if(id==='hearth'){box(0,.2,0,2,.4,1.5);box(0,1,-.6,2,1.6,.3);for(const side of [-1,1])box(side*.85,.75,0,.3,1.2,1.4);box(0,1.5,0,2,.25,1.5);for(let i=0;i<5;i++){const fire=new T.Mesh(new T.ConeGeometry(.13,.65,6),new T.MeshStandardMaterial({color:i%2?0xff9c37:0xf6ce70,emissive:0x9b3a12}));fire.position.set((i-2)*.22,.6,0);g.add(fire)}}
+ if(id.startsWith('castle_'))batchStaticMeshes(T,g);
  return g;
 }

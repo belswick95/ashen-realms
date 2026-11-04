@@ -30,3 +30,15 @@ export function pavedGeometry(T,land,d,baseY=0){
  for(let iz=lo(1);iz<=hi(1);iz++)for(let ix=lo(0);ix<=hi(0);ix++){const x=ix*step-half,z=iz*step-half;for(const triangle of [[[x,z],[x+step,z],[x,z+step]],[[x+step,z+step],[x,z+step],[x+step,z]]]){let p=polygon;for(let j=0;j<3&&p.length;j++)p=clip(p,triangle[j],triangle[(j+1)%3]);for(let j=1;j<p.length-1;j++)for(const q of [p[0],p[j+1],p[j]]){const [u,v]=localPoint(d,...q);verts.push(u/scale,(land.heightAt(...q)+offset-baseY)/scale,v/scale);uv.push(u/3,v/3)}}}
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(verts,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.computeVertexNormals();g.computeBoundingSphere();return g;
 }
+
+// The meadow tests thousands of candidate blades. Index footprint candidates
+// once per edit instead of copying/scanning the entire world for every blade.
+export function createSurfaceCoverIndex(rows,{cellSize=16,padding=2}={}){
+ const cells=new Map(),all=rows.filter(r=>!r.deleted).map(r=>r.data||r);
+ for(const d of all){const scale=d.scale||1,a=(d.yaw||0)*Math.PI/180,c=Math.abs(Math.cos(a)),s=Math.abs(Math.sin(a));let x,z;
+  if(isBuilding(d)){x=2.55*1.3*scale;z=2.4*1.3*scale}else if(d.template==='road'){x=(d.width||2.5)*scale/2;z=(d.length||10)*scale/2}else if(d.template==='plaza'||d.template?.startsWith('terrain_')){x=z=(d.template==='plaza'?8:d.radius||10)*scale}else continue;
+  const rx=x*c+z*s+padding,rz=x*s+z*c+padding;
+  for(let ix=Math.floor((d.x-rx)/cellSize);ix<=Math.floor((d.x+rx)/cellSize);ix++)for(let iz=Math.floor((d.z-rz)/cellSize);iz<=Math.floor((d.z+rz)/cellSize);iz++){const key=ix+':'+iz;let list=cells.get(key);if(!list)cells.set(key,list=[]);list.push(d)}
+ }
+ return {covers(x,z,pad=.65){return (pad>padding?all:cells.get(Math.floor(x/cellSize)+':'+Math.floor(z/cellSize))||[]).some(d=>coversSurface(d,x,z,pad))}};
+}

@@ -3,11 +3,11 @@ export function createCape(T,body,{color=0x71364a,rig=null}={}){
  const width=1.10,rows=12,cols=12,height=1.96;
  const positions=[],uvs=[],indices=[];
  for(let row=0;row<=rows;row++){
-  const t=row/rows,spread=.84+.33*Math.sin(t*Math.PI*.65);
+  const t=row/rows,spread=.70+.47*Math.sin(t*Math.PI*.65);
   for(let col=0;col<=cols;col++){
    const u=col/cols,x=(u-.5)*width*spread;
    // Drape outside the torso and platebody; flare away from the back as it falls.
-   positions.push(x,2.15-height*t,-.43-.20*t-.09*Math.sin(t*Math.PI));
+   positions.push(x,2.20-height*t,-.26-.38*t-.07*Math.sin(t*Math.PI)+.06*(Math.abs(x)/.385)**2*Math.exp(-t*18));
    uvs.push(u,1-t);
   }
  }
@@ -20,9 +20,10 @@ export function createCape(T,body,{color=0x71364a,rig=null}={}){
  const trim=new T.MeshStandardMaterial({color:0xd6b57c,metalness:.38,roughness:.52});
  const clasps=[];for(const side of [-1,1]){
   const clasp=new T.Mesh(new T.SphereGeometry(.07,12,8),trim);
-  clasp.position.set(side*.35,2.15,-.43);cloth.add(clasp);clasps.push(clasp);
+  clasp.position.set(side*.28,2.20,-.228);cloth.add(clasp);clasps.push(clasp);
  }
  let time=0;const inverse=new T.Matrix4(),anchor=new T.Matrix4(),v=new T.Vector3(),point=new T.Vector3();
+ const horseFromBody=new T.Matrix4(),bodyFromHorse=new T.Matrix4(),horsePoint=new T.Vector3();
  const jointPosition=joint=>body.worldToLocal(joint.getWorldPosition(new T.Vector3()));
  function clearance(x,y,z,capsules){
   // Back surface of posed leg capsules, including plate greaves. Cloth may move
@@ -30,11 +31,13 @@ export function createCape(T,body,{color=0x71364a,rig=null}={}){
   for(const [a,b,radius] of capsules){const dx=b.x-a.x,dy=b.y-a.y,d=dx*dx+dy*dy,t=d?Math.max(0,Math.min(1,((x-a.x)*dx+(y-a.y)*dy)/d)):0,cx=a.x+t*dx,cy=a.y+t*dy,r2=radius*radius-(x-cx)**2-(y-cy)**2;if(r2>0)z=Math.min(z,a.z+t*(b.z-a.z)-Math.sqrt(r2)-.045)}return z;
  }
 
- return {mesh:cloth,update(dt,speed=0,{mounted=false}={}){
+ return {mesh:cloth,update(dt,speed=0,{mounted=false,mountRoot=null}={}){
+  cloth.visible=true;
   time+=Math.min(.05,dt);const movement=Math.min(1,Math.max(0,speed));
   body.updateWorldMatrix(true,true);inverse.copy(body.matrixWorld).invert();anchor.identity();
   if(rig?.base)anchor.multiplyMatrices(inverse,rig.base.matrixWorld);
   const capsules=[];if(rig)for(const side of ['left','right']){const hip=jointPosition(rig[side+'Leg']),knee=jointPosition(rig[side+'Knee']),ankle=jointPosition(rig[side+'Ankle']);capsules.push([hip,knee,.23],[knee,ankle,.20]);}
+  const profile=mounted&&mountRoot?.userData.capeBackProfile;if(profile){mountRoot.updateWorldMatrix(true,false);horseFromBody.copy(mountRoot.matrixWorld).invert().multiply(body.matrixWorld);bodyFromHorse.copy(inverse).multiply(mountRoot.matrixWorld);}
   const attr=geometry.attributes.position;
   for(let r=0;r<=rows;r++){
    const t=r/rows,weight=t*t;
@@ -43,11 +46,13 @@ export function createCape(T,body,{color=0x71364a,rig=null}={}){
     const wave=Math.sin(time*(3.2+movement*4.8)-t*6.2+u*2.3);
     point.set(positions[base]+weight*Math.sin(time*2.4-t*3.5)*(.018+movement*.025),positions[base+1]+weight*.015*Math.sin(time*4-t*5+u),positions[base+2]-weight*(.045+movement*.13)+weight*wave*(.012+movement*.025)).applyMatrix4(anchor);
     point.z=clearance(point.x,point.y,point.z,capsules);
-    if(mounted&&t>.45)point.z=Math.min(point.z,-.55-(t-.45)*1.7);
+    if(mounted){const fold=Math.max(0,Math.min(1,(t-.35)/.65)),ease=fold*fold*(3-2*fold);point.y+=.90*ease;point.z-=.40*weight;
+     if(profile&&t>.30){horsePoint.copy(point).applyMatrix4(horseFromBody);const cell=Math.floor((horsePoint.z-profile.minZ)/profile.step);if(Math.abs(horsePoint.x)<.75&&cell>=0&&cell<profile.heights.length){const back=Math.max(profile.heights[Math.max(0,cell-1)],profile.heights[cell],profile.heights[Math.min(profile.heights.length-1,cell+1)]);if(back>0){horsePoint.y=Math.max(horsePoint.y,back+.045);point.copy(horsePoint.applyMatrix4(bodyFromHorse));}}}
+    }
     attr.setXYZ(i,point.x,point.y,point.z);
    }
   }
-  for(let i=0;i<clasps.length;i++){v.set((i?1:-1)*.35,2.15,-.43).applyMatrix4(anchor);clasps[i].position.copy(v)}
+  for(let i=0;i<clasps.length;i++){v.set((i?1:-1)*.28,2.20,-.228).applyMatrix4(anchor);clasps[i].position.copy(v)}
   attr.needsUpdate=true;geometry.computeVertexNormals();
  }};
 }

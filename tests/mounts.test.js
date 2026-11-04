@@ -17,3 +17,5 @@ test('dismount restores hip width and sideways angles without overwriting fresh 
   horse.update({active:true,rig,visual});horse.dispose();assert.equal(rig.leftLeg.position.x,rest[0]);assert.equal(rig.rightLeg.position.x,rest[1]);assert.equal(rig.leftLeg.rotation.z,0);assert.equal(rig.rightLeg.rotation.z,0);
  }
 });
+
+test('rider legs retain their anatomical left/right side instead of crossing the saddle',()=>{const parent=new T.Group(),visual=new T.Group();parent.add(visual);const rig=buildHumanoid(T,visual),horse=createHorseMount(T,parent),sides=[Math.sign(rig.leftLeg.position.x),Math.sign(rig.rightLeg.position.x)];horse.update({active:true,rig,visual});for(const [i,leg]of [rig.leftLeg,rig.rightLeg].entries()){assert.equal(Math.sign(leg.position.x),sides[i]);assert.equal(Math.sign(leg.rotation.z),sides[i]);}horse.update({active:false,rig,visual});horse.dispose();});

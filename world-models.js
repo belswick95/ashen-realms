@@ -1,11 +1,11 @@
-import {professionStationModel} from './profession-models.js?v=release-20261104-dismount34';
-import {oreResources} from './profession-data.js?v=release-20261104-dismount34';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261104-dismount34';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261104-dismount34';
-import {creatureMaterial} from './creature-material.js?v=release-20261104-dismount34';
-import {dragonModel} from './monster-dragon.js?v=release-20261104-dismount34';
-import {castleObject} from './castle-models.js?v=release-20261104-dismount34';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261104-dismount34';
+import {professionStationModel} from './profession-models.js?v=release-20261104-flow35';
+import {oreResources} from './profession-data.js?v=release-20261104-flow35';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261104-flow35';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261104-flow35';
+import {creatureMaterial} from './creature-material.js?v=release-20261104-flow35';
+import {dragonModel} from './monster-dragon.js?v=release-20261104-flow35';
+import {castleObject} from './castle-models.js?v=release-20261104-flow35';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261104-flow35';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);

@@ -1,6 +1,6 @@
-import {mountCatalog} from './mounts.js?v=release-20261104-dismount34';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-dismount34';
-import {buildHumanoid} from './humanoid.js?v=release-20261104-dismount34';import {buildPlateArmor} from './armor.js?v=release-20261104-dismount34';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261104-dismount34';import {makeShield,shieldCatalog} from './shields.js?v=release-20261104-dismount34';import {createCape} from './cape.js?v=release-20261104-dismount34';import {createHumanoidAnimator} from './animation.js?v=release-20261104-dismount34';import {safeAppearance} from './appearance.js?v=release-20261104-dismount34';
+import {mountCatalog} from './mounts.js?v=release-20261104-flow35';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-flow35';
+import {buildHumanoid} from './humanoid.js?v=release-20261104-flow35';import {buildPlateArmor} from './armor.js?v=release-20261104-flow35';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261104-flow35';import {makeShield,shieldCatalog} from './shields.js?v=release-20261104-flow35';import {createCape} from './cape.js?v=release-20261104-flow35';import {createHumanoidAnimator} from './animation.js?v=release-20261104-flow35';import {safeAppearance} from './appearance.js?v=release-20261104-flow35';
 export function publicCharacter(appearance={},equipment={}){
  if(!equipment||typeof equipment!=='object'||Array.isArray(equipment))equipment={};
  const armor={};for(const key of ['helm','chest','legs','boots','cape'])armor[key]=equipment.armor?.[key]===true;
@@ -14,5 +14,5 @@ export function buildCharacterDisplay(T,parent,appearance,loadout){
  if(data.loadout.weapon){const weapon=makeWeapon(T,data.loadout.weapon);attachWeapon(rig,weapon,data.loadout.weapon)}
  if(data.loadout.shield){const shield=makeShield(T,data.loadout.shield);attachShield(rig,shield)}
  const cape=data.loadout.armor.cape?createCape(T,visual,{color:0x81394b,rig}):null,animator=createHumanoidAnimator(rig);
- return {rig,visual,data,update(dt,motion){const pose=animator.update(dt,{...motion,weapon:data.loadout.weapon,twoHanded:data.loadout.weapon==='twohand',shield:!!data.loadout.shield,armed:!!data.loadout.weapon});cape?.update(dt,pose?.blend||0);return pose},dispose(){rig.skeleton?.dispose();const disposed=new Set();visual.traverse(o=>{for(const resource of [o.geometry,...(Array.isArray(o.material)?o.material:[o.material])])if(resource&&!resource.userData?.eldervaleShared&&!shared.has(resource)&&!disposed.has(resource)){resource.dispose();disposed.add(resource)}});visual.removeFromParent()}};
+ return {rig,visual,data,update(dt,motion){const pose=animator.update(dt,{...motion,weapon:data.loadout.weapon,twoHanded:data.loadout.weapon==='twohand',shield:!!data.loadout.shield,armed:!!data.loadout.weapon});if(!motion?.mounted)cape?.update(dt,pose?.blend||0);return pose},updateCape(dt,speed,options){cape?.update(dt,speed,options)},dispose(){rig.skeleton?.dispose();const disposed=new Set();visual.traverse(o=>{for(const resource of [o.geometry,...(Array.isArray(o.material)?o.material:[o.material])])if(resource&&!resource.userData?.eldervaleShared&&!shared.has(resource)&&!disposed.has(resource)){resource.dispose();disposed.add(resource)}});visual.removeFromParent()}};
 }

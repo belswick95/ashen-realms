@@ -1,5 +1,5 @@
-import {loftGeometry} from './anatomy.js?v=release-20261104-dismount34';
-import {surfaceTexture} from './surface-textures.js?v=release-20261104-dismount34';
+import {loftGeometry} from './anatomy.js?v=release-20261104-flow35';
+import {surfaceTexture} from './surface-textures.js?v=release-20261104-flow35';
 // Original, closed low-poly plate harness: angular steel, articulated lames and
 // tapered limbs. Every piece follows the existing wrist/knee rig and loadout.
 export function buildPlateArmor(T,body,rig){
@@ -45,9 +45,16 @@ export function buildPlateArmor(T,body,rig){
  }
  for(const slot of ['chest','legs','boots'])for(const p of slots[slot]){
   if(p.parent===body){p.position.y+=rig.upperOffset;if(rig.skinned){p.scale.x*=.82;p.scale.z*=.88;}}else if(rig.skinned&&[rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow].includes(p.parent)){const s=[rig.leftArm,rig.rightArm].includes(p.parent)?rig.armScale:rig.forearmScale;p.position.y*=s;p.scale.y*=s;p.scale.x*=.80;p.scale.z*=.85;}
-  else if([rig.leftLeg,rig.rightLeg,rig.leftKnee,rig.rightKnee].includes(p.parent)){p.position.y*=rig.legScale;p.scale.y*=rig.legScale}
+  else if([rig.leftLeg,rig.rightLeg,rig.leftKnee,rig.rightKnee].includes(p.parent)){const s=[rig.leftKnee,rig.rightKnee].includes(p.parent)?rig.lowerLegScale||rig.legScale:rig.legScale;p.position.y*=s;p.scale.y*=s}
  }
  for(const [knee,ankle] of [[rig.leftKnee,rig.leftAnkle],[rig.rightKnee,rig.rightAnkle]])if(ankle){body.updateMatrixWorld(true);for(const part of slots.boots)if(part.parent===knee)ankle.attach(part)}
+ // Fit the sabaton sole to the authored foot, not the old primitive rig's ankle.
+ if(rig.skinned)for(const side of ['left','right']){
+  body.updateMatrixWorld(true);const ankle=rig[side+'Ankle'],foot=rig.meshes[side+'Foot'],parts=slots.boots.filter(p=>p.parent===ankle),bounds=new T.Box3();
+  foot.geometry.computeBoundingBox();const sole=foot.geometry.boundingBox.clone().applyMatrix4(foot.matrixWorld).min.y;
+  for(const part of parts){part.geometry.computeBoundingBox();bounds.union(part.geometry.boundingBox.clone().applyMatrix4(part.matrixWorld));}
+  const shift=(sole-bounds.min.y)/ankle.getWorldScale(new T.Vector3()).y;for(const part of parts)part.position.y+=shift;
+ }
  const helmetRoot=new T.Group();body.add(helmetRoot);for(const p of slots.helm){p.position.y-=2.10;helmetRoot.add(p)}helmetRoot.position.copy(rig.head.position);if(rig.skinned){helmetRoot.position.y-=.18;helmetRoot.position.z+=.045;helmetRoot.scale.set(.58,.63,.78);}else{helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.z*=1.12;}
  Object.values(slots).flat().forEach(p=>p.visible=false);return slots;
 }
