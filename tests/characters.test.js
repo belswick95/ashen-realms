@@ -28,7 +28,7 @@ test('equipment stays attached to wrists while arms and elbows articulate',()=>{
  assert.ok(before.distanceTo(weapon.getWorldPosition(new T.Vector3()))>.1);
  assert.equal(weapon.parent,r.rightHand);assert.equal(shield.parent,r.leftHand);
  const slots=buildPlateArmor(T,r.root,r);
- r.root.updateMatrixWorld(true);const headBounds=new T.Box3().setFromObject(r.head),helmetBounds=new T.Box3();for(const part of slots.helm)helmetBounds.union(new T.Box3().setFromObject(part));const headWidth=headBounds.getSize(new T.Vector3()).x,helmetWidth=helmetBounds.getSize(new T.Vector3()).x;assert.ok(helmetWidth>headWidth);assert.ok(helmetWidth<headWidth*1.4);assert.ok(helmetBounds.max.z>headBounds.max.z);
+ r.root.updateMatrixWorld(true);const headBounds=new T.Box3().setFromObject(r.face),helmetBounds=new T.Box3();for(const part of slots.helm)helmetBounds.union(new T.Box3().setFromObject(part));const headWidth=headBounds.getSize(new T.Vector3()).x,helmetWidth=helmetBounds.getSize(new T.Vector3()).x;assert.ok(helmetWidth>headWidth);assert.ok(helmetWidth<headWidth*1.4);assert.ok(helmetBounds.max.z>headBounds.max.z);
  for(const pieces of Object.values(slots))for(const m of pieces)assert.equal(m.visible,false);
 });
 test('distance drives cadence consistently across frame rates',()=>{
