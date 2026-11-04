@@ -1,0 +1,19 @@
+import {professionStations} from './profession-data.js?v=release-20261104-professions29';
+export function professionStationModel(T,parent,id,d={}){
+ if(!professionStations[id])return null;const g=new T.Group();parent.add(g);const mat=(c,m=0)=>new T.MeshStandardMaterial({color:c,roughness:m?.45:.88,metalness:m}),stone=mat(0x848a89),wood=mat(0x79583d),metal=mat(0x6d7d85,.7),leaf=mat(0x718c4d);
+ const mesh=(geo,m,x,y,z)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;g.add(o);return o},box=(w,h,l,x,y,z,m)=>mesh(new T.BoxGeometry(w,h,l),m,x,y,z),cyl=(r,h,x,y,z,m)=>mesh(new T.CylinderGeometry(r,r,h,16),m,x,y,z);
+ if(id==='furnace'){box(2.3,.35,1.7,0,.18,0,stone);for(const x of [-.9,.9])box(.45,1.6,1.4,x,1,0,stone);box(2.3,.38,1.5,0,1.9,0,stone);box(1.2,1.15,.12,0,.9,.58,mat(0x202528));const ember=new T.MeshStandardMaterial({color:0xcf6b30,emissive:0xbf3f12,emissiveIntensity:1.4});box(1.4,.12,.7,0,.38,.2,ember);cyl(.35,1.7,0,2.9,-.25,stone);for(let i=0;i<5;i++)box(.045,.45,.7,-.5+i*.25,.55,.1,metal);const light=new T.PointLight(0xffb35d,1.5,7,2);light.position.set(0,.8,.8);g.add(light);}
+ else if(id==='anvil'){cyl(.48,.65,0,.33,0,wood);box(.65,.55,.45,0,.95,0,metal);box(1.7,.22,.65,0,1.28,0,metal);const horn=mesh(new T.ConeGeometry(.22,.65,12),metal,1,1.28,0);horn.rotation.z=-Math.PI/2;box(.9,.15,.65,0,.68,0,metal);}
+ else if(id==='farming_patch'||id.endsWith('_patch')||id==='berry_bush'){box(2.4,.12,1.6,0,.06,0,mat(0x574a37));for(let i=0;i<5;i++){box(.05,.035,1.45,-1+i*.5,.13,0,wood);if(id!=='farming_patch')for(const z of [-.4,.2,.6]){cyl(.035,.55,-.9+i*.45,.4,z,leaf);mesh(new T.ConeGeometry(.14,.35,6),leaf,-.9+i*.45,.6,z)}}if(id==='berry_bush'){mesh(new T.IcosahedronGeometry(.85,2),leaf,0,.9,0);for(let i=0;i<10;i++)mesh(new T.SphereGeometry(.075,8,6),mat(0xa9535e),Math.sin(i*2.4)*.65,.9+Math.cos(i*1.2)*.45,Math.cos(i*2.4)*.6);}}
+ else if(id==='rune_altar'){cyl(.85,.45,0,.22,0,stone);cyl(.60,.65,0,.75,0,stone);mesh(new T.OctahedronGeometry(.35),mat(0x82c1dc,.3),0,1.45,0);const ring=mesh(new T.TorusGeometry(.64,.025,6,32),metal,0,1.14,0);ring.rotation.x=Math.PI/2;}
+ else if(id==='spinning_wheel'){for(const x of [-.5,.5])box(.13,1,.8,x,.5,0,wood);mesh(new T.TorusGeometry(.6,.055,8,32),wood,0,1,0);for(let i=0;i<8;i++){const spoke=box(.04,1.2,.04,0,1,0,wood);spoke.rotation.z=i*Math.PI/4;}box(.25,.25,.7,.7,.85,0,wood);}
+ else if(id==='essence_rock'){mesh(new T.DodecahedronGeometry(.85,1),stone,0,.55,0);for(let i=0;i<6;i++)mesh(new T.ConeGeometry(.15,.65,5),mat(0xa7bdd8,.2),Math.sin(i)*.6,.9,Math.cos(i)*.6);}
+ else if(id==='tanning_rack'){for(const x of [-.7,.7])box(.12,1.9,.12,x,.95,0,wood);box(1.7,.12,.12,0,1.85,0,wood);box(1.2,1.3,.035,0,1,.03,mat(0xb59b72));}
+ else if(id==='agility_log'){const log=cyl(.23,3.8,0,.65,0,wood);log.rotation.x=Math.PI/2;for(const z of [-1.4,1.4])box(.7,.5,.45,0,.25,z,stone);}
+ else if(id==='hunting_ground'){box(1.3,.08,1.1,0,.04,0,mat(0x776d47));for(const x of [-.45,.45])for(const z of [-.35,.35])box(.06,.6,.06,x,.3,z,wood);box(1,.07,.8,0,.65,0,wood);for(let i=0;i<5;i++)box(.035,.55,.035,-.4+i*.2,.32,.38,wood);}
+ else if(id==='construction_site'&&d.built){box(2,.16,.65,0,.7,0,wood);for(const x of [-.7,.7])box(.15,.65,.5,x,.33,0,wood);box(2,.4,.1,0,1.05,-.27,wood);}
+ else if(id==='practice_chest'){box(1.15,.75,.85,0,.4,0,wood);for(const x of [-.4,.4])box(.08,.8,.9,x,.4,0,metal);box(.17,.19,.05,0,.45,.45,metal);}
+ else if(id==='mill'){box(1.2,.6,1.2,0,.3,0,stone);cyl(.6,.12,0,.65,0,stone);box(.1,.12,.9,0,.8,.3,wood);box(.45,.5,.45,0,1.05,0,wood);}
+ else {box(2.2,.18,1.5,0,1,0,wood);for(const x of [-.85,.85])for(const z of [-.5,.5])box(.14,1,.14,x,.5,z,wood);if(id==='thieving_stall')for(let i=0;i<5;i++)cyl(.12,.16,-.7+i*.35,1.2,0,mat(0xc6a16d));if(id==='construction_site')box(.8,.14,.6,0,1.2,0,wood);}
+ return g;
+}

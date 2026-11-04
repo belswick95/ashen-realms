@@ -10,8 +10,8 @@ export async function startRealm(db,user,session){
   window.eldervaleRealmBridge.snapshot(data,user.id);if(!first)for(const event of data.events||[])window.eldervaleRealmBridge.event(event.data,user.id);first=false;cursor=Math.max(cursor,Number(data.eventCursor)||0);return true;
  }
  function enqueue(command='sync',payload={}){const id=command==='sync'?null:crypto.randomUUID();pending++;const result=queue.then(()=>request(command,payload,id));queue=result.catch(()=>{}).finally(()=>pending--);return result;}
- let latestSteer=null,steerPending=false;async function sendSteer(){if(steerPending)return;steerPending=true;try{while(latestSteer){const input=latestSteer;latestSteer=null;await enqueue('steer',input)}}catch{}finally{steerPending=false}}
- const controller={movementPending:()=>steerPending||latestSteer!==null,steer:input=>{latestSteer=input;void sendSteer()},command:(c,p)=>enqueue(c,p).catch(e=>{window.eldervaleWorldBridge.notice(e.message);return false}),refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false)};window.eldervaleRealm=controller;
+ let commandError='';let latestSteer=null,steerPending=false;async function sendSteer(){if(steerPending)return;steerPending=true;try{while(latestSteer){const input=latestSteer;latestSteer=null;await enqueue('steer',input)}}catch{}finally{steerPending=false}}
+ const controller={movementPending:()=>steerPending||latestSteer!==null,steer:input=>{latestSteer=input;void sendSteer()},get lastError(){return commandError},command:(c,p)=>enqueue(c,p).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false}),refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false)};window.eldervaleRealm=controller;
  await enqueue();const timer=setInterval(()=>{if(!disposed&&!pending)void enqueue().catch(()=>{})},250);
  addEventListener('pagehide',()=>{disposed=true;clearInterval(timer)},{once:true});
  return controller;
