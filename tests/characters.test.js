@@ -41,7 +41,7 @@ test('stopping settles gait and ending combat resets attack channels',()=>{
  const r=character(),a=createHumanoidAnimator(r);a.update(.05,{distance:.25,speed:5,attack:.3});
  assert.notEqual(r.rightArm.rotation.z,0);
  for(let i=0;i<180;i++)a.update(1/60);
- assert.ok(Math.abs(r.leftLeg.rotation.x)<1e-10);assert.equal(r.rightArm.rotation.z,0);
+ assert.ok(Math.abs(r.leftLeg.rotation.x)<1e-10);assert.equal(r.rightArm.rotation.z,-r.armSplay,'arm returns to its relaxed rest angle');
  assert.equal(r.root.position.y,0);assert.ok(r.leftKnee.rotation.x>=0);
  a.update(NaN,{distance:Infinity});assert.ok(Number.isFinite(r.leftArm.rotation.x));
 });

@@ -1,15 +1,15 @@
 import {PROFILES,inflate,shell,GRIP} from './humanoid.js?v=release-20261104-lowpoly54';
-// Plate armor in Eldervale's chunky style: oversized domed pauldrons, a
-// sculpted breastplate, round knee cops and heavy sabatons. Every piece is an
+// Plate armor in Eldervale's chunky style: large draping pauldrons, a
+// sculpted one-piece breastplate with a flared hip skirt, matte steel. Every piece is an
 // inflated copy of the body part it covers, parented to that part's bone, so
 // it always fits and always follows the animation.
 // Returns {helm,chest,legs,boots}: arrays of meshes, all hidden.
 export function buildPlateArmor(T,body,rig){
  const caches=buildPlateArmor.caches||(buildPlateArmor.caches=new WeakMap());let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
- const material=(name,color,metalness=.35,roughness=.48)=>{if(!cache.has('mat:'+name)){const m=new T.MeshStandardMaterial({color,metalness,roughness});m.userData.eldervaleShared=true;cache.set('mat:'+name,m)}return cache.get('mat:'+name)};
- const steel=material('steel',0x8796a0),edge=material('edge',0xa9b6bd,.4,.4),dark=material('recess',0x15191c,.1,.8),leather=material('leather',0x5b4332,0,.85),strap=material('strap',0x3d2a1e,0,.85),crest=material('crest',0x9b2f2f,0,.85);
+ const material=(name,color,metalness=.12,roughness=.62)=>{if(!cache.has('mat:'+name)){const m=new T.MeshStandardMaterial({color,metalness,roughness});m.userData.eldervaleShared=true;cache.set('mat:'+name,m)}return cache.get('mat:'+name)};
+ const steel=material('steel',0x7d91a0),edge=material('edge',0x8fa2b0,.14,.58),dark=material('recess',0x15191c,.1,.8),leather=material('leather',0x5b4332,0,.85),strap=material('strap',0x3d2a1e,0,.85),crest=material('crest',0x9b2f2f,0,.85);
  const geo=(key,make)=>{if(!cache.has(key)){const g=make();g.userData.armorPiece=key.replace(/^loft:/,'');g.computeBoundingSphere();g.userData.eldervaleShared=true;cache.set(key,g)}return cache.get(key)};
- const loft=(key,rings,sides=14)=>geo('loft:'+key,()=>shell(T,rings,sides));
+ const loft=(key,rings,sides=14,ends)=>geo('loft:'+key,()=>shell(T,rings,sides,ends));
  const dome=(key,r,sx,sy,sz,cap=Math.PI/2)=>geo(key,()=>{const g=new T.SphereGeometry(r,18,10,0,Math.PI*2,0,cap);g.scale(sx,sy,sz);return g});
  const slots={helm:[],chest:[],legs:[],boots:[]};
  const add=(g,m,parent,slot,x=0,y=0,z=0)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=false;o.userData.armorSlot=slot;parent.add(o);slots[slot].push(o);return o};
@@ -26,20 +26,17 @@ export function buildPlateArmor(T,body,rig){
  const plume=add(geo('crest',()=>{const g=new T.CylinderGeometry(.12,.12,.04,16,1,false,-Math.PI/2,Math.PI);g.rotateZ(Math.PI/2);g.scale(1,.8,1);return g}),crest,helmet,'helm',0,.24,-.03);plume.rotation.x=-.12;
  add(loft('gorget',[[2.25,.16,.13,0,-.04],[2.32,.14,.12,0,-.035],[2.40,.105,.10,0,-.025]],16),steel,rig.base,'helm');
 
- // Chest: sculpted breastplate with a centre ridge, collar and flared fauld.
- add(loft('cuirass',[...inflate(PROFILES.torso.slice(0,6),1.08,.018),[.66,.27,.155,0,-.055],[.71,.17,.12,0,-.055]],18),steel,torso,'chest');
- add(loft('cuirass-collar',[[.66,.20,.14,0,-.05],[.72,.15,.115,0,-.05]],16),edge,torso,'chest');
- add(geo('breast-ridge',()=>{const g=new T.CapsuleGeometry(.014,.36,4,8);g.scale(1,1,.7);return g}),edge,torso,'chest',0,.32,.188);
- add(loft('plackart',[[-.07,.272,.182,0,-.05],[.05,.27,.18,0,-.048],[.10,.262,.172,0,-.048]],18),edge,torso,'chest');
- for(let i=0;i<2;i++)add(loft('fauld'+i,[[1.36-i*.09,.305+i*.022,.215+i*.014,0,-.055],[1.46-i*.09,.29+i*.022,.202+i*.014,0,-.055]],18),steel,rig.base,'chest');
- add(loft('war-belt',[[1.465,.30,.21,0,-.055],[1.535,.298,.208,0,-.055]],18),strap,rig.base,'chest');
+ // Chest: one-piece breastplate following the chest, and a flared hip skirt.
+ add(loft('cuirass',[...inflate(PROFILES.torso.slice(0,7),1.07,.016),[.69,.20,.13,0,-.055]],18),steel,torso,'chest');
+ add(loft('cuirass-collar',[[.66,.215,.145,0,-.05],[.73,.15,.115,0,-.05]],16),edge,torso,'chest');
+   add(loft('tasset',[[1.27,.33,.24,0,-.055],[1.38,.305,.218,0,-.055],[1.50,.27,.19,0,-.055],[1.58,.255,.178,0,-.055]],20),steel,rig.base,'chest');
+ add(loft('tasset-rim',[[1.265,.335,.245,0,-.055],[1.30,.33,.24,0,-.055]],20,{bottom:false,top:false}),edge,rig.base,'chest');
  for(const side of ['left','right']){
   const s=side==='left'?1:-1,arm=rig[side+'Arm'],elbow=rig[side+'Elbow'];
-  // Oversized domed pauldron with a rolled edge and a second lame below.
-  const shoulder=new T.Group();shoulder.rotation.z=s*.32;shoulder.position.set(s*.01,.0,0);arm.add(shoulder);
-  add(dome('pauldron',.17,1,.82,.95),steel,shoulder,'chest',0,-.04,0);
-  add(loft('pauldron-rim',[[-.07,.172,.162],[-.035,.174,.164]],18),edge,shoulder,'chest');
-  add(loft('pauldron-lame',[[-.15,.142,.138],[-.08,.158,.15]],16),steel,shoulder,'chest');
+  // Large pauldron that drapes down and outward over the upper arm.
+  const shoulder=new T.Group();shoulder.rotation.z=s*.42;shoulder.position.set(s*.02,.0,0);arm.add(shoulder);
+  add(loft('pauldron',[[-.20,.17,.16],[-.12,.192,.18],[-.02,.19,.178],[.06,.15,.142],[.11,.07,.07]],20,{bottom:false}),steel,shoulder,'chest');
+  add(loft('pauldron-rim',[[-.215,.176,.166],[-.19,.18,.17]],20,{bottom:false,top:false}),edge,shoulder,'chest');
   add(loft('rerebrace',inflate(PROFILES.upperArm.slice(2),1.14,.012),14),steel,arm,'chest');
   add(geo('couter',()=>{const g=new T.SphereGeometry(.098,14,10);g.scale(1,.92,1.04);g.translate(0,0,-.008);return g}),edge,elbow,'chest');
   add(loft('vambrace',inflate(PROFILES.forearm,1.2,.012),14),steel,elbow,'chest');
@@ -53,14 +50,14 @@ export function buildPlateArmor(T,body,rig){
  for(const side of ['left','right']){
   const leg=rig[side+'Leg'],knee=rig[side+'Knee'];
   add(loft('cuisse',inflate(PROFILES.thigh.slice(1),1.1,.014),14),steel,leg,'legs');
-  add(geo('poleyn',()=>{const g=new T.SphereGeometry(.13,16,12);g.scale(1,.82,.92);g.translate(0,.01,.03);return g}),edge,knee,'legs');
+  add(geo('poleyn',()=>{const g=new T.SphereGeometry(.108,16,12);g.scale(1,.78,.8);g.translate(0,.01,.05);return g}),edge,knee,'legs');
   add(loft('greave',inflate(PROFILES.shin.slice(0,5),1.14,.012),14),steel,knee,'legs');
  }
 
  // Boots: steel sabatons with a turned-down leather cuff at the ankle.
  for(const side of ['left','right']){
   const ankle=rig[side+'Ankle'];
-  add(loft('sabaton',PROFILES.foot.slice(0,5).map(([y,rx,rz,cx=0,cz=0])=>[y,rx*1.1+.01,rz*1.05+.012,cx,cz]),14),steel,ankle,'boots');
+  add(loft('sabaton',PROFILES.foot.slice(0,5).map(([y,rx,rz,cx=0,cz=0])=>[y,rx*1.1+.01,rz*1.05+.012,cx,cz]),14,{bottom:false}),steel,ankle,'boots');
   add(loft('boot-cuff',[[.03,.104,.108,0,.004],[.13,.112,.114,0,-.002],[.17,.104,.106,0,-.004]],14),leather,ankle,'boots');
  }
  for(const list of Object.values(slots))for(const o of list)o.visible=false;

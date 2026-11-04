@@ -14,7 +14,7 @@ export function actorModel(T,parent,d){
   const appearance={shirt:'#'+(d.color||0x714e49).toString(16).padStart(6,'0'),pants:'#4b4742',skin:d.species==='goblin'?'#74864b':d.species==='skeleton'?'#d7cfb9':'#c9916b',hair:d.species==='skeleton'?'Buzz cut':'Short crop'};
   const display=buildCharacterDisplay(T,parent,appearance,{weapon:d.weapon,armor:/guard/.test(d.role||'')?{chest:true,legs:true,boots:true}: {}});
   if(d.species==='skeleton'){
-   const rig=display.rig,bone=new T.MeshStandardMaterial({color:0xd7cfb9,roughness:.9});rig.torso.visible=false;for(const k of ['hips','belt'])if(rig.parts?.[k])rig.parts[k].visible=false;for(const m of rig.hairMeshes)m.visible=false;
+   const rig=display.rig,bone=new T.MeshStandardMaterial({color:0xd7cfb9,roughness:.9});rig.setCoverage({chest:true,legs:true});for(const m of rig.hairMeshes)m.visible=false;
    const rib=(p,x,y,z,w,h,depth)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,depth),bone);m.position.set(x,y,z);p.add(m)};
    rib(display.visual,0,1.78,0,.10,.70,.10);for(let i=0;i<5;i++)rib(display.visual,0,1.57+i*.10,.03,.52-i*.025,.055,.25);
    for(const [limb,length]of [[rig.leftArm,.44],[rig.rightArm,.44],[rig.leftElbow,.30],[rig.rightElbow,.30],[rig.leftLeg,.63],[rig.rightLeg,.63],[rig.leftKnee,.54],[rig.rightKnee,.54]]){for(const c of limb.children)if(c.isMesh)c.visible=false;rib(limb,0,-length/2,0,.075,length,.075)}

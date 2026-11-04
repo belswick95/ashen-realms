@@ -1,4 +1,5 @@
 import {sampleRunCycle} from './run-cycle.js?v=release-20261104-lowpoly54';
+const SWORDS=new Set(['longsword','scimitar','shortsword','dagger']);
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
@@ -58,7 +59,10 @@ export function createHumanoidAnimator(rig){
   const walkRise=.014*(1-Math.cos(phase*2))*walkBlend*blend;const bob=(down-length+flight)*blend;rig.root.rotation.x=lean;
   // Running armor and torso share pelvis compression; keep the relaxed walk profile.
   for(const child of rig.root.children){if(child.userData.attachedCape||child.userData.heldWorkProp||rig.skinned&&child.isSkinnedMesh)continue;if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg,legacyUpper=((baseDown-length)*combatBlend+(-.035+.004*Math.cos(phase*2))*runBlend-.025*walkBlend)*blend+walkRise;child.position.y=restY.get(child)+(upperBody?legacyUpper*(1-Math.min(1,runBlend/.65))+(bob+walkRise*runBlend)*Math.min(1,runBlend/.65):bob+walkRise*runBlend)}
+  const splay=rig.armSplay||0;
   for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
+  // Relaxed stance: upper arms angle outward from the body.
+  rig.leftArm.rotation.z=splay;rig.rightArm.rotation.z=-splay;
   rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
   const armSwing=(.11*combatBlend+.32*walkBlend+.45*runBlend)*blend;
   const armWave=Math.cos(phase);
@@ -76,24 +80,25 @@ export function createHumanoidAnimator(rig){
    }
   }
   if(rig.leftHand)rig.leftHand.rotation.y=-Math.PI/2*runWeight;if(rig.rightHand)rig.rightHand.rotation.y=Math.PI/2*runWeight;
-  // Armed idle: elbows forward, right hand presenting the blade diagonally ahead,
-  // left forearm carrying the shield ahead of the torso. Blend out during attack.
+  // Armed idle: forearm raised forward so the blade stands point-up in front of
+  // the body; left forearm carries the shield ahead of the torso.
   if(armed&&!twoHanded&&attack<=0){
    rig.rightArm.rotation.x=-.24-gait*(.035*combatBlend+.055*walkBlend+.12*runBlend)*blend;
    rig.rightArm.rotation.z=-.10;
-   rig.rightElbow.rotation.x=-.22;
+   // Swords stand point-up; axes and picks keep the forward ready hold.
+   rig.rightElbow.rotation.x=SWORDS.has(weapon)?-1.3:-.22;
    rig.rightHand?.rotation.set(0,0,0);
   }
-  // Outside combat, carry a one-handed sword low beside the body instead of
-  // freezing both arms in the fighting-ready pose while the legs move.
+  // Walking with a one-handed sword: arm swings gently, the blade stays point-up
+  // and slightly forward rather than hanging toward the ground.
   const travelCarry=walkBlend;
-  if(armed&&!twoHanded&&attack<=0&&block<=0&&['longsword','scimitar','shortsword','dagger'].includes(weapon)){
-   rig.rightArm.rotation.x=rig.rightArm.rotation.x*(1-travelCarry)+(.04-armWave*.10*blend)*travelCarry;
-   rig.rightElbow.rotation.x=rig.rightElbow.rotation.x*(1-travelCarry)-.10*travelCarry;
-   rig.rightHand.rotation.x=1.2*travelCarry;
+  if(armed&&!twoHanded&&attack<=0&&block<=0&&SWORDS.has(weapon)){
+   rig.rightArm.rotation.x=rig.rightArm.rotation.x*(1-travelCarry)+(.02-armWave*.08*blend)*travelCarry;
+   rig.rightElbow.rotation.x=rig.rightElbow.rotation.x*(1-travelCarry)-1.2*travelCarry;
+   rig.rightHand.rotation.x=0;
   }
   // Reset combat channels every frame so interrupted attacks cannot leave a pose stuck.
-  if(!armed||twoHanded||attack>0)rig.rightArm.rotation.z=0;
+  if(!armed||twoHanded||attack>0)rig.rightArm.rotation.z=-splay;
   if(attack>0&&!twoHanded){
    const t=Math.max(0,Math.min(1,1-attack/.55)),s=t*t*(3-2*t),pulse=Math.sin(t*Math.PI);
    if(style==='stab'||style==='lunge'||!style&&(weapon==='shortsword'||weapon==='dagger')){
@@ -112,8 +117,9 @@ export function createHumanoidAnimator(rig){
     const t=Math.max(0,Math.min(1,1-attack/.55)),swing=Math.sin(t*Math.PI),angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle)),target=new V(0,1.82+swing*.10,rig.skinned?.36+swing*.04:.46+swing*.06);
     if(style==='stab'||style==='lunge'){direction.set(0,.25,1).normalize();target.set(0,rig.skinned?1.95:1.55,(rig.skinned?.32:.45)+swing*(rig.skinned?(style==='lunge'?.18:.13):(style==='lunge'?.7:.4)))}rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
    }else{
-    // Carry the greatsword upright along the right shoulder; the free arm walks naturally.
-    rig.solveArm('right',new V(rig.skinned?-.48:-.68,rig.skinned?1.75:1.54,.30),new V(-.20,1,-.04).normalize(),new V(0,0,1));
+    // Rest the greatsword on the right shoulder: hand in front of the chest,
+    // blade angled up and back over the shoulder. The free arm walks naturally.
+    rig.solveArm('right',new V(-.28,2.0,.46),new V(-.05,.75,-.66).normalize(),new V(0,.66,.75));
    }
   }
   if(block>0&&attack<=0){
