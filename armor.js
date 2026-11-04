@@ -1,5 +1,5 @@
-import {loftGeometry} from './anatomy.js?v=release-20261104-stream48';
-import {surfaceTexture} from './surface-textures.js?v=release-20261104-stream48';
+import {loftGeometry} from './anatomy.js?v=release-20261104-input49';
+import {surfaceTexture} from './surface-textures.js?v=release-20261104-input49';
 // Original, closed low-poly plate harness: angular steel, articulated lames and
 // tapered limbs. Every piece follows the existing wrist/knee rig and loadout.
 export function buildPlateArmor(T,body,rig){

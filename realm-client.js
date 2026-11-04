@@ -1,18 +1,27 @@
-// One ordered stream of authenticated intents and server-confirmed snapshots.
+// Immediate numbered movement; queued actions and monotonic server snapshots.
 export async function startRealm(db,user,session){
- let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,roundtrip=0,clockReady=false;
+ let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
  const badge=document.createElement('output');badge.id='realm-connection';badge.setAttribute('role','status');badge.style.cssText='position:fixed;top:42px;left:50%;transform:translateX(-50%);z-index:250;background:#25271d;color:#f4d899;padding:7px 12px;border-radius:5px';badge.hidden=true;document.body.append(badge);
  async function request(command='sync',payload={},id=null){
   const started=Date.now();const {data,error}=await db.rpc('world_command',{session_id:session,command,payload,request_id:id,event_cursor:cursor});
   if(error){badge.hidden=false;badge.textContent='World connection: '+error.message;failures++;throw Error(error.message)}
   if(data.reset)return true;
+  const serverTime=Date.parse(data.time);if(serverTime<latestSnapshotTime)return true;latestSnapshotTime=serverTime;
   const finished=Date.now(),sample=finished-started;roundtrip=clockReady?roundtrip*.8+sample*.2:sample;const clockOffset=Date.parse(data.time)-(started+finished)/2;offset=clockReady?offset*.9+clockOffset*.1:clockOffset;clockReady=true;window.eldervaleServerTime=()=>Date.now()+offset;badge.hidden=true;failures=0;
-  window.eldervaleRealmBridge.snapshot(data,user.id);if(!first)for(const event of data.events||[])window.eldervaleRealmBridge.event(event.data,user.id);first=false;cursor=Math.max(cursor,Number(data.eventCursor)||0);return true;
+  window.eldervaleRealmBridge.snapshot(data,user.id);if(!first)for(const event of data.events||[])if(Number(event.id)>cursor)window.eldervaleRealmBridge.event(event.data,user.id);first=false;cursor=Math.max(cursor,Number(data.eventCursor)||0);return true;
  }
  function enqueue(command='sync',payload={}){const id=command==='sync'?null:crypto.randomUUID();pending++;const result=queue.then(()=>request(command,payload,id));queue=result.catch(()=>{}).finally(()=>pending--);return result;}
- let commandError='';let latestSteer=null,steerPending=false;async function sendSteer(){if(steerPending)return;steerPending=true;try{while(latestSteer){const input=latestSteer;latestSteer=null;try{await enqueue('steer',input)}catch{latestSteer??=input;break}}}finally{steerPending=false}}
- const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>steerPending||latestSteer!==null,steer:input=>{latestSteer=input;void sendSteer()},get lastError(){return commandError},command:(c,p)=>enqueue(c,p).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false}),refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false)};window.eldervaleRealm=controller;
- await enqueue();const timer=setInterval(()=>{if(disposed)return;if(latestSteer&&!steerPending)void sendSteer();else if(!pending)void enqueue().catch(()=>{})},250);
+ let commandError='',latestSteer=null,steerInFlight=0,issued=0,acknowledged=0;
+ async function sendSteer(){
+  if(!latestSteer||disposed)return;
+  if(steerInFlight>=2&&latestSteer.moving)return;
+  const input=latestSteer;latestSteer=null;steerInFlight++;let succeeded=false;
+  try{await request('steer',input,crypto.randomUUID());acknowledged=Math.max(acknowledged,input.sequence);succeeded=true}
+  catch{if(input.sequence===issued)latestSteer??=input}
+  finally{steerInFlight--;if(succeeded&&latestSteer)void sendSteer()}
+ }
+ const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued,steer:input=>{latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>enqueue(c,p).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false}),refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false)};window.eldervaleRealm=controller;
+ await enqueue();const timer=setInterval(()=>{if(disposed)return;if(latestSteer)void sendSteer();else if(!pending&&!steerInFlight)void enqueue().catch(()=>{})},250);
  addEventListener('pagehide',()=>{disposed=true;clearInterval(timer)},{once:true});
  return controller;
 }
