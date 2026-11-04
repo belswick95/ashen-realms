@@ -24,7 +24,7 @@ export function decorateTownBuilding(T,record,{box,material}){
  if(type==='bank'){
   // Tellering hall, two service windows, rear vault and deposit chests.
   for(const x of (record.stories>1?[-1.05]:[-1.05,1.05])){
-   b(1.35,.85,.42,0x6b4b31,x,.55,-.38);b(1.43,.12,.53,0xb19a65,x,1.03,-.38);
+   const stand=b(1.35,.85,.42,0x6b4b31,x,.55,-.38),top=b(1.43,.12,.53,0xb19a65,x,1.03,-.38);(record.bankStands??=[]).push(stand,top);
    for(const dx of [-.57,.57])b(.055,.8,.06,0xb49a55,x+dx,1.48,-.38,'stone');
    b(1.25,.07,.07,0xb49a55,x,1.87,-.38,'stone');
    for(let i=0;i<3;i++)b(.12,.05,.12,0xd5af51,x-.25+i*.2,1.13,-.35,'stone');

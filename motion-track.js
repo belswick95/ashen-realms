@@ -1,13 +1,22 @@
-import {slideStep} from './movement-collision.js?v=release-20261104-motion47';
+import {slideStep} from './movement-collision.js?v=release-20261104-stream48';
 // Timestamped presentation buffer: no position authority or damage is decided here.
 export function createMotionTrack({delay=350}={}){let frames=[],epoch=null,lastTime=-Infinity;return {push(time,pose,now=performance.now()){if(!Number.isFinite(time))return;if(epoch===null)epoch={server:time,local:now};const prev=frames.at(-1);if(prev&&Math.hypot(pose.x-prev.x,pose.z-prev.z)>12){frames=[];epoch={server:time,local:now};lastTime=-Infinity}if(prev&&time<=prev.time)return;frames.push({...pose,time});if(frames.length>32)frames.shift()},sample(now=performance.now()){if(!frames.length)return null;const t=Math.max(lastTime,epoch.server+now-epoch.local-delay);lastTime=t;while(frames.length>2&&frames[1].time<t)frames.shift();const a=frames[0],b=frames[1];if(!b||t<=a.time)return {...a};const f=Math.max(0,Math.min(1,(t-a.time)/(b.time-a.time)));const yaw=a.yaw+Math.atan2(Math.sin(b.yaw-a.yaw),Math.cos(b.yaw-a.yaw))*f;return {...b,x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f,yaw}},clear(){frames=[];epoch=null;lastTime=-Infinity}}}
 
 // The owning client predicts input immediately. Only reconcile the latest final
 // acknowledgement after its input queue drains; remote interpolation is delayed.
-export function reconcileLocalPose(position,target,dt,{active=false,pending=false}={}){
+export function reconcileLocalPose(position,target,dt,{active=false,pending=false,teleport=false}={}){
  if(active||pending||!target)return false;
- const error=Math.hypot(position.x-target.x,position.z-target.z),weight=error>12?1:1-Math.exp(-18*Math.max(0,Math.min(.1,dt)));
+ if(teleport){position.x=target.x;position.z=target.z;return true;}
+ const elapsed=Math.max(0,Math.min(.1,dt)),error=Math.hypot(position.x-target.x,position.z-target.z),weight=Math.min(1-Math.exp(-18*elapsed),(target.speed||6.4)*2*elapsed/Math.max(error,.000001));
  position.x+=(target.x-position.x)*weight;position.z+=(target.z-position.z)*weight;return true;
+}
+
+// A large render error can result from latency. Only a discontinuity between
+// confirmed server samples is evidence of an actual teleport/respawn.
+export function serverMotionJump(previous,next){
+ if(!previous)return true;
+ const seconds=Math.max(0,(next.at-previous.at)/1000),speed=Math.max(previous.speed||19.2,next.speed||19.2);
+ return Math.hypot(next.x-previous.x,next.z-previous.z)>Math.max(8,speed*seconds+3);
 }
 
 // Compare prediction with a server pose advanced to presentation time, rather
@@ -26,7 +35,6 @@ export function reconcileActivePose(position,target,input,dt,now,options){
  // path through collision tests every render frame.
  const p=projectMovement(target,now),dx=p.x-position.x,dz=p.z-position.z,error=Math.hypot(dx,dz);
  if(error<.2)return false;
- if(error>12&&Math.hypot(target.x-position.x,target.z-position.z)>12){position.x=target.x;position.z=target.z;return true;}
  const weight=Math.min(1-Math.exp(-4*dt),target.speed*Math.max(0,dt)*.25/error);
  const next={...position,x:position.x+dx*weight,z:position.z+dz*weight};
  if(options?.canStep&&!options.canStep(position,next))return false;
