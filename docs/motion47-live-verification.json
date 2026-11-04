@@ -1,0 +1,31 @@
+{
+  "release": "release-20261104-motion47",
+  "clientCommit": "ae84654",
+  "serverMigration": "player_motion_timing",
+  "testFilesPassed": 55,
+  "authenticatedProductionLogin": true,
+  "keyboardMovementCompleted": true,
+  "shortTapReachedServer": true,
+  "runtimeErrors": [],
+  "failedAssets": [],
+  "productionFiles": {
+    "checked": 120,
+    "mismatches": []
+  },
+  "npcPropVisibility": {
+    "held": true,
+    "armedHidden": true,
+    "attackHidden": true,
+    "blockHidden": true,
+    "resumed": true
+  },
+  "npcPosesChecked": [
+    "carry",
+    "read",
+    "smith",
+    "sweep",
+    "garden"
+  ],
+  "physicalDeviceTest": false,
+  "representativeFPSBenchmark": false
+}
