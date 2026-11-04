@@ -1,4 +1,4 @@
-import {sampleRunCycle} from './run-cycle.js?v=release-20261104-body38';
+import {sampleRunCycle} from './run-cycle.js?v=release-20261104-studio39';
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){

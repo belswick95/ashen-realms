@@ -1,12 +1,13 @@
-import {meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261104-body38';
-import {recipes} from './professions.js?v=release-20261104-body38';
-import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261104-body38';
-import {itemIcons} from './item-icons.js?v=release-20261104-body38';
-import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261104-body38';
-import {goods} from './economy.js?v=release-20261104-body38';
+import {worldPresets,presetEntity} from './world-presets.js?v=release-20261104-studio39';
+import {meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261104-studio39';
+import {recipes} from './professions.js?v=release-20261104-studio39';
+import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261104-studio39';
+import {itemIcons} from './item-icons.js?v=release-20261104-studio39';
+import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261104-studio39';
+import {goods} from './economy.js?v=release-20261104-studio39';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==null)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
 export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
- const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261104-body38';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261104-studio39';document.head.append(css);
  const button=el('button','♛ World studio',{id:'owner-studio-toggle',type:'button'}),panel=el('dialog',null,{id:'owner-studio'});document.body.append(button,panel);
  panel.innerHTML='<header><div><small>ELDERVALE · OWNER ACCESS</small><h2>World studio</h2><a href="/owner-guide.html" target="_blank" rel="noopener">Owner guide</a></div><button type="button" data-close aria-label="Close studio">×</button></header><nav aria-label="Owner tools"></nav><div class="studio-workspace"></div><footer role="status">Changes are saved to the server and audited.</footer>';
  const owner=snapshot.owner;let tab=owner?'Items':'Players',rows=new Map(),selected=null,placing=false,selecting=false,busy=false,overview=null,current=snapshot,formData=null;
@@ -24,7 +25,7 @@ export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
  addEventListener('keydown',e=>{if(e.key==='F8'){e.preventDefault();panel.open?panel.close():open()}if(e.key==='Escape'){placing=false;selecting=false;document.body.classList.remove('studio-placing');document.querySelector('#studio-placement')?.remove()}});
  function beginPlacement(select=false){placing=!select;selecting=select;panel.close();document.body.classList.add('studio-placing');document.querySelector('#studio-placement')?.remove();const prompt=el('div',select?'Click a saved entity to select it. Escape cancels.':'Click terrain to place the selected template. Escape cancels.',{id:'studio-placement'});document.body.append(prompt)}
  window.eldervaleBuilderClick=({point,entityId,button:mouseButton})=>{if(!placing&&!selecting)return false;if(mouseButton!==0)return true;if(selecting){if(!entityId){bridge.notice('Select an entity placed with World studio.');return true}if(entityId.startsWith('base:')){selected=entityId;tab='Actors';selecting=false;open()}else{selected=entityId;selecting=false;open()}}else if(point){placing=false;run(async()=>{const result=await invoke(selected?'update':'spawn',{...formData,x:Math.round(point.x*10)/10,z:Math.round(point.z*10)/10,...(selected?{id:selected}:{})});selected=result.id;open()})}else return true;document.body.classList.remove('studio-placing');document.querySelector('#studio-placement')?.remove();return true};
- function read(form){const d={};for(const n of form.elements)if(n.name)d[n.name]=n.type==='checkbox'?n.checked:n.type==='number'?Number(n.value):n.value;if(d.shopText!==undefined){d.shop={};for(const line of d.shopText.split('\n').filter(s=>s.trim())){const [id,buy,sell,stock]=line.split(',').map(s=>s.trim());if(!goods[id])throw Error('Unknown shop item: '+id);d.shop[id]={buy:Number(buy),sell:Number(sell),stock:Number(stock)}}delete d.shopText;}const result=validateEntity({...formData,...d});if(result.kind==='npc'&&!result.attackable)result.hostile=false;return result}
+ function read(form){const d={};for(const n of form.elements)if(n.name&&n.name!=='presetChoice')d[n.name]=n.type==='checkbox'?n.checked:n.type==='number'?Number(n.value):n.value;if(d.shopText!==undefined){d.shop={};for(const line of d.shopText.split('\n').filter(s=>s.trim())){const [id,buy,sell,stock]=line.split(',').map(s=>s.trim());if(!goods[id])throw Error('Unknown shop item: '+id);d.shop[id]={buy:Number(buy),sell:Number(sell),stock:Number(stock)}}delete d.shopText;}const result=validateEntity({...formData,...d});if(result.kind==='npc'&&!result.attackable)result.hostile=false;return result}
  function world(){
   workspace.append(el('a','Open the World Studio guide',{href:'/owner-guide.html',target:'_blank',rel:'noopener'}));workspace.append(el('p','Create permanent actors, scenery and item drops. Click placement saves immediately. Deleted entities can be restored.'));
   const columns=el('div',null,{class:'studio-columns'}),left=el('section'),right=el('section');columns.append(left,right);workspace.append(columns);
@@ -35,10 +36,17 @@ export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
   const existing=rows.get(selected);const starting=existing?.data||formData||entityDefaults('villager',Math.round(bridge.position().x+3),Math.round(bridge.position().z));formData={...starting};
   const form=el('form');right.append(form);form.onsubmit=e=>e.preventDefault();
   const choices=Object.entries(worldTemplates).map(([id,d])=>[id,d.kind.toUpperCase()+' · '+d.name]);for(const [id,g]of Object.entries(goods))choices.push(['item:'+id,'ITEM · '+g.name]);
+  const preset=field(form,'Quick setup','presetChoice','','text',[['','Choose a furnished building or NPC…'],...Object.entries(worldPresets).map(([id,p])=>[id,p.label])]);preset.onchange=()=>{if(!preset.value)return;const p=bridge.position();selected=null;formData=presetEntity(preset.value,Math.round(p.x+3),Math.round(p.z));draw()};
   const template=field(form,'Template','template',starting.template,'text',choices);
   template.onchange=()=>{selected=null;formData=template.value.startsWith('item:')?{...entityDefaults('crate'),kind:'item',template:template.value,name:goods[template.value.slice(5)].name,item:template.value.slice(5),amount:1}:entityDefaults(template.value);const p=bridge.position();formData.x=Math.round(p.x+3);formData.z=Math.round(p.z);draw()};
   field(form,'Name','name',starting.name);if(starting.template==='rock')field(form,'Ore type','resource',starting.resource||'ore','text',Object.entries(oreResources).map(([id,d])=>[id,d.name+' · Mining '+d.level]));if(starting.template==='construction_site'&&starting.built)btn('Reset this building site',async()=>{await invoke('reset_build',{id:selected});draw()},form);const grid=el('div',null,{class:'studio-grid'});form.append(grid);
   for(const [key,label,min,max,step] of [['x','World X',-4500,4500,.1],['z','World Z',-4500,4500,.1],['yaw','Heading °',-360,360,1],['scale','Scale',.25,5,.05]]){const n=field(grid,label,key,starting[key],'number');n.min=min;n.max=max;n.step=step}
+  const transformTools=el('div',null,{class:'studio-actions'});form.append(transformTools);
+  const setHeading=value=>{form.elements.yaw.value=((value%360)+360)%360;note('Heading adjusted. Save changes or place in the world to apply.');};
+  btn('↶ Turn left 45°',()=>setHeading(Number(form.elements.yaw.value)-45),transformTools);btn('↷ Turn right 45°',()=>setHeading(Number(form.elements.yaw.value)+45),transformTools);
+  for(const [label,heading]of [['North',180],['East',90],['South',0],['West',270]])btn('Face '+label,()=>setHeading(heading),transformTools);
+  const sizeTools=el('div',null,{class:'studio-actions'});form.append(sizeTools);for(const [label,size]of [['Small',.75],['Standard',1],['Large',1.5],['Grand',2.5]])btn(label+' size',()=>{form.elements.scale.value=size;note('Size adjusted. Save changes or place in the world to apply.');},sizeTools);
+  if(['cottage','bank','inn','forge'].includes(starting.template)){field(form,'Stone walls','stone',!!starting.stone,'checkbox');field(form,'Furnished interior','furnished',starting.furnished!==false,'checkbox');if(starting.template==='cottage')field(form,'Interior layout','room',starting.room||'home','text',[['home','Home'],['hall','Great hall'],['chapel','Chapel'],['armory','Armory']]);}
   if(['npc','monster'].includes(starting.kind)){
    for(const [key,label,min,max,step] of [['level','Level',1,999,1],['hp','Health',1,100000,1],['damage','Attack damage',0,10000,1],['attackSpeed','Seconds per turn',1.3,30,.1],['roam','Roam radius (m)',0,50,1],['respawn','Respawn seconds (0 = never)',0,86400,1]]){const n=field(grid,label,key,starting[key],'number');n.min=min;n.max=max;n.step=step}
    field(grid,'Attack style','attackType',starting.attackType,'text',attackTypes.map(a=>[a,a]));field(grid,'Can be attacked','attackable',starting.attackable,'checkbox');field(grid,'Aggressive to nearby players','hostile',starting.hostile,'checkbox');
