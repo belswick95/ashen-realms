@@ -1,11 +1,12 @@
-import {professionStationModel} from './profession-models.js?v=release-20261104-studio42';
-import {oreResources} from './profession-data.js?v=release-20261104-studio42';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261104-studio42';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261104-studio42';
-import {creatureMaterial} from './creature-material.js?v=release-20261104-studio42';
-import {dragonModel} from './monster-dragon.js?v=release-20261104-studio42';
-import {castleObject} from './castle-models.js?v=release-20261104-studio42';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261104-studio42';
+import {campObject} from './camp-models.js?v=release-20261104-forest43';
+import {professionStationModel} from './profession-models.js?v=release-20261104-forest43';
+import {oreResources} from './profession-data.js?v=release-20261104-forest43';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261104-forest43';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261104-forest43';
+import {creatureMaterial} from './creature-material.js?v=release-20261104-forest43';
+import {dragonModel} from './monster-dragon.js?v=release-20261104-forest43';
+import {castleObject} from './castle-models.js?v=release-20261104-forest43';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261104-forest43';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);
@@ -59,7 +60,7 @@ export function actorModel(T,parent,d){
   jaw.rotation.x=d.attackType==='bite'?a*.8:0;head.rotation.x=d.attackType==='bite'?-a*.3:0;wings.forEach((q,i)=>q.rotation.z=(i?1:-1)*(.2+Math.sin(tick*5)*.35));effect.visible=magical&&a>.25;effect.scale.setScalar(.7+a*.6);
  },dispose(){group.traverse(o=>{o.geometry?.dispose();if(o.material&&!materials.has(o.material.color?.getHex()))o.material.dispose()});for(const m of materials.values())m.dispose();group.removeFromParent()}};
 }
-export function objectModel(T,parent,id,d={}){
+export function objectModel(T,parent,id,d={}){const camp=campObject(T,parent,id,d);if(camp)return camp;
  const station=professionStationModel(T,parent,id,d);if(station)return station;
  const g=new T.Group();parent.add(g);const wood=0x745335,stone=0x92998e,metal=0x444b49;
  if(id.startsWith('castle_')||['altar','hearth'].includes(id)){castleObject(T,g,id,d);Object.assign(parent.userData,g.userData);return g;}

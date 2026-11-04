@@ -1,6 +1,7 @@
-import {generatedWorld,seedNoise,biomeWeights,biomeColor} from './procedural-world.js?v=release-20261104-studio42';
-import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261104-studio42';
-import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261104-studio42';
+import {approachSample} from './castle-approach.js?v=release-20261104-forest43';
+import {generatedWorld,seedNoise,biomeWeights,biomeColor} from './procedural-world.js?v=release-20261104-forest43';
+import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261104-forest43';
+import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261104-forest43';
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
 export function noise(x,z){const hash=(a,b)=>{const n=Math.sin(a*127.1+b*311.7)*43758.5453;return n-Math.floor(n)};const ix=Math.floor(x),iz=Math.floor(z),u=smooth(0,1,x-ix),v=smooth(0,1,z-iz);return (hash(ix,iz)*(1-u)+hash(ix+1,iz)*u)*(1-v)+(hash(ix,iz+1)*(1-u)+hash(ix+1,iz+1)*u)*v}
@@ -20,7 +21,7 @@ export function waterAt(x,z){
  }
  return amount;
 }
-export function createLandscape({segments=280,extent=840}={}){
+export function createLandscape({segments=280,extent=840,approach=true}={}){
  const bridges=[{x:castle.x,z:castle.z+59,yaw:0,width:9,length:20}];
  for(const line of roadLines)for(let i=1;i<line.length;i++)for(const river of worldRivers)for(let j=1;j<river.points.length;j++){
   const hit=segmentIntersection(line[i-1],line[i],river.points[j-1],river.points[j]);if(!hit||bridges.some(b=>Math.hypot(b.x-hit.x,b.z-hit.z)<8))continue;
@@ -47,6 +48,7 @@ export function createLandscape({segments=280,extent=840}={}){
    for(const lake of landscapeLakes){const d=Math.hypot((x-lake.x)/lake.rx,(z-lake.z)/lake.rz);h*=smooth(1,1.5,d)}
   }
   const castleDistance=Math.max(Math.abs(x-castle.x),Math.abs(z-castle.z));h*=smooth(66,85,castleDistance);if(inMoat(x,z))h=-1.5;
+  if(approach&&generatedWorld&&wet<=0){const a=approachSample(x,z);h+=(.25+a.along*.003+Math.sin(x*.11)*.12-h)*a.weight;}
   return h;
  }
  for(let iz=0;iz<count;iz++)for(let ix=0;ix<count;ix++)heights[iz*count+ix]=sculpt(ix*step-extent/2,iz*step-extent/2);

@@ -1,0 +1,11 @@
+# Exterior forest, camp, owner catalog and level-up notices
+
+Only the castle's exterior approach is graded. Tests compare the full castle/moat/bridge terrain region against the previous heightfield with zero difference. The saved castle entity fingerprint is checked before and after the camp seed. No castle buildings, interiors, armor, character or horse model logic changes.
+
+The shared world seed determines one permanent camp along the road from the castle to Birchford. The camp has tents, straw/wool bedding, a stone-ringed fire, a functional cooking tripod, seats, wagon, table, lights, firewood and five residents/services. Trees, fern dressing and rocks surround the clearing. A database dry run validates 60 points on the trail; the render fixture verifies the actual game scene and captures test-results/forest-trail-camp.png. New solid props use the same rectangle dimensions on client/server. Existing base trees inside the clearing are retired; the castle and its bridge are excluded.
+
+World Studio has 26 new supplies, ten NPC personas and twelve reusable prop templates. Item art is rendered from the canonical drop meshes. The old image files remain unchanged. The complete 131-item/116-note art and flattened-drop audit is in item-art-audit-forest43.json; naturally stackable items keep their normal form. The server automatically registers note variants for eligible items. The new model types are also allowed in the custom item editor.
+
+Skill notices compare authoritative XP snapshots, establish a silent login baseline, cap at level 100, suppress duplicates, wait for combat/dialogs to finish and queue combat-level congratulations after skill notices. Continue advances the queue. The original five-second fanfare is assets/audio/level-up.mp3; its score is scripts/build-level-jingle.py. Browser checks cover the sequence, combat deferral and phone-sized bounds. No RuneScape recording is used.
+
+Validation: syntax check and all 54 test files pass. Browser render and level-up flow checks pass. Database rollback checks cover camp persistence, exterior-only placement, catalog/note coverage, working cooking interaction, solid prop collision, custom mesh creation and owner authorization. Browser phone emulation is not physical iPhone testing.

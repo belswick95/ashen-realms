@@ -1,14 +1,14 @@
-import {questEditor} from './quests.js?v=release-20261104-studio42';
-import {worldPresets,presetEntity} from './world-presets.js?v=release-20261104-studio42';
-import {meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261104-studio42';
-import {recipes} from './professions.js?v=release-20261104-studio42';
-import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261104-studio42';
-import {itemIcons} from './item-icons.js?v=release-20261104-studio42';
-import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261104-studio42';
-import {goods} from './economy.js?v=release-20261104-studio42';
+import {questEditor} from './quests.js?v=release-20261104-forest43';
+import {worldPresets,presetEntity} from './world-presets.js?v=release-20261104-forest43';
+import {customItemModels,meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261104-forest43';
+import {recipes} from './professions.js?v=release-20261104-forest43';
+import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261104-forest43';
+import {itemIcons} from './item-icons.js?v=release-20261104-forest43';
+import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261104-forest43';
+import {goods} from './economy.js?v=release-20261104-forest43';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==null)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
 export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
- const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261104-studio42';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261104-forest43';document.head.append(css);
  const button=el('button','♛ World studio',{id:'owner-studio-toggle',type:'button'}),panel=el('dialog',null,{id:'owner-studio'});document.body.append(button,panel);
  panel.innerHTML='<header><div><small>ELDERVALE · OWNER ACCESS</small><h2>World studio</h2><a href="/owner-guide.html" target="_blank" rel="noopener">Owner guide</a></div><button type="button" data-close aria-label="Close studio">×</button></header><nav aria-label="Owner tools"></nav><div class="studio-workspace"></div><footer role="status">Changes are saved to the server and audited.</footer>';
  const owner=snapshot.owner;let tab=owner?'Items':'Players',rows=new Map(),selected=null,placing=false,selecting=false,busy=false,overview=null,current=snapshot,formData=null;
@@ -37,7 +37,7 @@ export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
   const existing=rows.get(selected);const starting=existing?.data||formData||entityDefaults('villager',Math.round(bridge.position().x+3),Math.round(bridge.position().z));formData={...starting};
   const form=el('form');right.append(form);form.onsubmit=e=>e.preventDefault();
   const choices=Object.entries(worldTemplates).map(([id,d])=>[id,d.kind.toUpperCase()+' · '+d.name]);for(const [id,g]of Object.entries(goods))choices.push(['item:'+id,'ITEM · '+g.name]);
-  const preset=field(form,'Quick setup','presetChoice','','text',[['','Choose a furnished building or NPC…'],...Object.entries(worldPresets).map(([id,p])=>[id,p.label])]);preset.onchange=()=>{if(!preset.value)return;const p=bridge.position();selected=null;formData=presetEntity(preset.value,Math.round(p.x+3),Math.round(p.z));draw()};
+  const preset=field(form,'Quick setup','presetChoice','','text',[['','Choose a building, NPC or camp prop…'],...Object.entries(worldPresets).map(([id,p])=>[id,p.label])]);preset.onchange=()=>{if(!preset.value)return;const p=bridge.position();selected=null;formData=presetEntity(preset.value,Math.round(p.x+3),Math.round(p.z));draw()};
   const template=field(form,'Template','template',starting.template,'text',choices);
   template.onchange=()=>{selected=null;formData=template.value.startsWith('item:')?{...entityDefaults('crate'),kind:'item',template:template.value,name:goods[template.value.slice(5)].name,item:template.value.slice(5),amount:1}:entityDefaults(template.value);const p=bridge.position();formData.x=Math.round(p.x+3);formData.z=Math.round(p.z);draw()};
   field(form,'Name','name',starting.name);if(starting.template==='rock')field(form,'Ore type','resource',starting.resource||'ore','text',Object.entries(oreResources).map(([id,d])=>[id,d.name+' · Mining '+d.level]));if(starting.template==='construction_site'&&starting.built)btn('Reset this building site',async()=>{await invoke('reset_build',{id:selected});draw()},form);const grid=el('div',null,{class:'studio-grid'});form.append(grid);
@@ -105,7 +105,7 @@ export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
  }
  function items(){itemLibrary();workspace.append(el('p','Create persistent trade goods or healing consumables. These can be granted, dropped, banked and stocked by merchants. New 3D equipment and scripted mechanics need development. Existing item IDs stay valid when renamed.'));
  const f=el('form');f.onsubmit=e=>e.preventDefault();workspace.append(f);const existing=Object.entries(goods).filter(([id,g])=>g.custom);const picker=field(f,'Edit an existing item','edit','','text',[['','New item'],...existing.map(([id,g])=>[id,g.name])]);
- field(f,'Unique item ID (custom_lowercase_name)','id','custom_royal_bread');field(f,'Display name','name','Royal bread');field(f,'Description','description','Freshly baked in Eldervale Castle.','textarea');field(f,'Appearance','icon','bread','text',Object.entries(itemIcons).map(([k,d])=>[k,d.label]));field(f,'World drop model','model','bread','text',['sack','ore','bar','logs','potion','vial','bread','fish','apple','herb','gem','ring','rune','plank','nails','arrows','hide','seeds','feather','bow','trap','mortar','leather','food','meat','berries'].map(k=>[k,k]));field(f,'Buy price','buy',12,'number');field(f,'Sell price','sell',4,'number');field(f,'Heals HP (0 = ordinary trade good)','heal',10,'number');field(f,'Stackable','stackable',false,'checkbox');
+ field(f,'Unique item ID (custom_lowercase_name)','id','custom_royal_bread');field(f,'Display name','name','Royal bread');field(f,'Description','description','Freshly baked in Eldervale Castle.','textarea');field(f,'Appearance','icon','bread','text',Object.entries(itemIcons).map(([k,d])=>[k,d.label]));field(f,'World drop model','model','bread','text',customItemModels.map(k=>[k,k]));field(f,'Buy price','buy',12,'number');field(f,'Sell price','sell',4,'number');field(f,'Heals HP (0 = ordinary trade good)','heal',10,'number');field(f,'Stackable','stackable',false,'checkbox');
  f.elements.icon.onchange=()=>{f.elements.model.value=modelForLegacyIcon(f.elements.icon.value)};
  const palette=el('div',null,{class:'studio-icon-palette'});f.append(palette);for(const [key,d]of Object.entries(itemIcons)){const b=btn(d.label,()=>{f.elements.icon.value=key;f.elements.model.value=modelForLegacyIcon(key)},palette);b.title=d.label;const icon=el('span');icon.innerHTML=meshItemIcon(key,{custom:true,model:modelForLegacyIcon(key),iconKey:key});b.prepend(icon);}
  picker.onchange=()=>{const g=goods[picker.value];if(!g)return;for(const k of ['name','description','buy','sell','heal'])f.elements[k].value=g[k]??'';f.elements.id.value=picker.value;f.elements.icon.value=g.iconKey;f.elements.model.value=g.model||'sack';f.elements.stackable.checked=!!g.stackable;};

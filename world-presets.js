@@ -1,4 +1,5 @@
-import {entityDefaults} from './world-templates.js?v=release-20261104-studio42';
+import {adventurePeople,campObjects} from './adventure-catalog.js?v=release-20261104-forest43';
+import {entityDefaults} from './world-templates.js?v=release-20261104-forest43';
 export const worldPresets={
  castle_keep:{label:'Castle keep · three stories, hall and bedrooms',template:'cottage',name:'Castle keep',room:'hall',upperRoom:'home',stories:3,stone:true,scale:3.5,roof:0x485d68},
  timber_home:{label:'Timber cottage · furnished home',template:'cottage',name:'Timber cottage',room:'home',stone:false,scale:1.2,roof:0x70503c},
@@ -14,4 +15,6 @@ export const worldPresets={
  banker:{label:'NPC · banker',template:'banker',name:'New banker',role:'banker',roam:0},
  guard:{label:'NPC · stationary guard',template:'guard',name:'Town guard',role:'guard',roam:0}
 };
-export function presetEntity(key,x,z){const preset=worldPresets[key];if(!preset)throw Error('Unknown preset');const {label,...data}=preset;return {...entityDefaults(data.template,x,z),...structuredClone(data),furnished:true};}
+for(const [id,d]of Object.entries(adventurePeople))worldPresets['persona_'+id]={label:'NPC · '+d.name,template:id,name:d.name};
+for(const [id,name]of Object.entries(campObjects))worldPresets['prop_'+id]={label:'Camp prop · '+name,template:id,name};
+export function presetEntity(key,x,z){const preset=worldPresets[key];if(!preset)throw Error('Unknown preset');const {label,...data}=preset;return structuredClone({...entityDefaults(data.template,x,z),...data,furnished:true});}

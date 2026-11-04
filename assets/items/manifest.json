@@ -15,7 +15,7 @@
       134,
       97
     ],
-    "sha256": "e2e62874ffb5c457e0a0ef13d87131f6c64525e757d49a4a8f1a0c371e258107"
+    "sha256": "6d1fccd02cb7da38270c56a2ee055ec701e9c38aa77c4537804e0ec62c6b8fb2"
   },
   {
     "key": "item-fishingNet",
@@ -51,7 +51,7 @@
       124,
       94
     ],
-    "sha256": "807e8e5235f609435a7ac91d5cd8ad11859eed0e4b5b2c5270fdc4f8fe56546a"
+    "sha256": "0491f59ea5263a8c94192b9017beeecc03d5df869a1aa562beda9b802345b5cd"
   },
   {
     "key": "item-rawFish",
@@ -69,7 +69,7 @@
       125,
       93
     ],
-    "sha256": "5cc591c360d76189772c51c2c4977567e80de0f481618904ddb40e18a224cc23"
+    "sha256": "c682d4151021bdc240fa9622321fc39fd9ab02bc9f1d5a5b29027dd4fbfbe0cb"
   },
   {
     "key": "item-wood",
@@ -87,7 +87,7 @@
       134,
       131
     ],
-    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+    "sha256": "e3ca0fb434a1bbd4c0afd8f856526d2da9114a0ee57abfb70429a5c34366cc2b"
   },
   {
     "key": "item-ore",
@@ -105,7 +105,7 @@
       118,
       107
     ],
-    "sha256": "306356cdfbf5c30625cd7e1a5c5c81f9334d0faaa4dbd7db2af3ee5ea99964b9"
+    "sha256": "09a68ff4c2b0040f98a32c8ac2f66385b838d563879227336012bae99b37f93b"
   },
   {
     "key": "item-matches",
@@ -159,7 +159,7 @@
       137,
       110
     ],
-    "sha256": "b7de5369892cb3ce5646134592a45bd1ed82c30f16b216d10414c496a1403fe9"
+    "sha256": "f34f14f8ab2afbe0a2332abce06045e93c4e0653ef133622bed0ab7c8a025c40"
   },
   {
     "key": "item-knife",
@@ -177,7 +177,7 @@
       137,
       94
     ],
-    "sha256": "6f2055c401f4ef27c3bf171c82e7e674e6068e0b983653dd2924075da83e0279"
+    "sha256": "764b4e3dddcc6451795492f141ef38604bb690d968fca69abf32494f0a8cc3bf"
   },
   {
     "key": "item-needle",
@@ -213,7 +213,7 @@
       137,
       97
     ],
-    "sha256": "46fa22662c9938a458719e8957e4ffa631ebfaca068a07467203a2539a6dcc64"
+    "sha256": "8fc1456d3dcb644363948701ffc130efc55f8bf1f63c50cc5c4fcea694651a86"
   },
   {
     "key": "item-saw",
@@ -249,7 +249,7 @@
       137,
       97
     ],
-    "sha256": "8a02f0344942d26476ac498370cde26fe182b72611e2e12977185b9d36c82470"
+    "sha256": "8b9b0faff374c7320aed1db95d275d01ff09a11f615aa73e42fb2fba62cd51c8"
   },
   {
     "key": "item-seedDibber",
@@ -267,7 +267,7 @@
       133,
       91
     ],
-    "sha256": "d6c36fd4377e87c4a97985afe3425eb6189ebc2ab1a5f1366e8bd56869a42299"
+    "sha256": "05c8b61f83cde3f8e970f3a5c4a7f74e2291b33e01473be8960dbacfa7dfe839"
   },
   {
     "key": "item-spade",
@@ -285,7 +285,7 @@
       137,
       98
     ],
-    "sha256": "d652b74b6a439c6724e087cfd2d40f9b04ba6b9d965d9bd01d3e1910ec116605"
+    "sha256": "b84aa46fddcf7aec72ead1b12d870d8177f8b95abad95fc234df8a8db0249e17"
   },
   {
     "key": "item-pestle",
@@ -357,7 +357,7 @@
       118,
       107
     ],
-    "sha256": "c0422d2ad7a34658f80296bb2070dd7c29d027302b373b76ac099aeb7e6af1c4"
+    "sha256": "ae0d932bef7209eea97853a03354533c4fea32177de4ff200e5b26a04220cec4"
   },
   {
     "key": "item-tinOre",
@@ -375,7 +375,7 @@
       118,
       107
     ],
-    "sha256": "b8693f737762e35c00dd13be70cfe94dc2316b6dc1471ab6bfefc273b2cb41aa"
+    "sha256": "b2af91efd4fc85e2598a29b4399f3659b992604d542d008c4c3c0df62b11c201"
   },
   {
     "key": "item-coal",
@@ -393,7 +393,7 @@
       118,
       107
     ],
-    "sha256": "3f15dc85203ce1a1a99b2144e9675c39bcacc7cc14d3329569930aadb5dff334"
+    "sha256": "92b321ae5b00bf9e9146e70cc4c1caca84316421b2ae7af343fad1a2bb5b22ff"
   },
   {
     "key": "item-silverOre",
@@ -411,7 +411,7 @@
       118,
       107
     ],
-    "sha256": "edbbf8f2a0625cbb70f9ec7f5ff2adb936bc1ef0ac2c38ac9c340671d9a79724"
+    "sha256": "97185345c54f811f8360b560b8a5fc3e62b80cbdc9172a2929dd3c0ccec0e36f"
   },
   {
     "key": "item-goldOre",
@@ -429,7 +429,7 @@
       118,
       107
     ],
-    "sha256": "6c3da88d9702af909a447ebe19ac8850f6f86f0aaa02743cbe9a270940587418"
+    "sha256": "6ff701f632fe1ae468e74d72ab0ceef8e11146f95ebfe550fd1ba7cdb04a7b91"
   },
   {
     "key": "item-mithrilOre",
@@ -447,7 +447,7 @@
       118,
       107
     ],
-    "sha256": "e307c39e7bfc8e83ece7337e527a5f95d6a9aa03f022ac2110ac03ebe291d5f3"
+    "sha256": "a15b75449b8f3fe82403e8b22ec2a0cfd5b5e0f48900a4f519b77ea5c063864f"
   },
   {
     "key": "item-adamantOre",
@@ -465,7 +465,7 @@
       118,
       107
     ],
-    "sha256": "325bb5837d1d37984fad9d4394afa7f54e4d85103699d6067a0bab0665500469"
+    "sha256": "0e21deb34afcaba5aab3536d28d0ba3f86434086a18798ae95095d50b35c0d80"
   },
   {
     "key": "item-runiteOre",
@@ -483,7 +483,7 @@
       118,
       107
     ],
-    "sha256": "cb315ba8acd94fad3928f3226c40ee57f1fec847702528ba32a028f5e911a496"
+    "sha256": "d2993db3125e3d38a943e6398615121d33792864b3107a0a663a850811a44127"
   },
   {
     "key": "item-bronzeBar",
@@ -645,7 +645,7 @@
       134,
       131
     ],
-    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+    "sha256": "e3ca0fb434a1bbd4c0afd8f856526d2da9114a0ee57abfb70429a5c34366cc2b"
   },
   {
     "key": "item-willowLogs",
@@ -663,7 +663,7 @@
       134,
       131
     ],
-    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+    "sha256": "e3ca0fb434a1bbd4c0afd8f856526d2da9114a0ee57abfb70429a5c34366cc2b"
   },
   {
     "key": "item-mapleLogs",
@@ -681,7 +681,7 @@
       134,
       131
     ],
-    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+    "sha256": "e3ca0fb434a1bbd4c0afd8f856526d2da9114a0ee57abfb70429a5c34366cc2b"
   },
   {
     "key": "item-yewLogs",
@@ -699,7 +699,7 @@
       134,
       131
     ],
-    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+    "sha256": "e3ca0fb434a1bbd4c0afd8f856526d2da9114a0ee57abfb70429a5c34366cc2b"
   },
   {
     "key": "item-ashes",
@@ -717,7 +717,7 @@
       118,
       107
     ],
-    "sha256": "2aa2c01c91690e061659239f9760a668d1563ae4b50df803b35a5451d0af0b05"
+    "sha256": "8c9bba4aac7ff15492fb470b57b48166d6c95fd5909048c721222a9d0d1c217c"
   },
   {
     "key": "item-plank",
@@ -879,7 +879,7 @@
       113,
       131
     ],
-    "sha256": "b00779a97ab30d135a74fe2e439c3ef879b8c71bd6e202c934cba526d9a6be8c"
+    "sha256": "cfc5752ba131e7514c399af08f0a99a59cc290e08e709ced1a81b961ac9f199c"
   },
   {
     "key": "item-bowString",
@@ -1005,7 +1005,7 @@
       134,
       88
     ],
-    "sha256": "614b1d67f77ee1a77353e165de9fa7a0f5d8572260234d5f1130704c64c5a869"
+    "sha256": "5ce5a52e67b0c3f06879fcff85d4742136cd373c7bc8660c9d6f38da79f30b98"
   },
   {
     "key": "item-shortbow",
@@ -1023,7 +1023,7 @@
       134,
       88
     ],
-    "sha256": "614b1d67f77ee1a77353e165de9fa7a0f5d8572260234d5f1130704c64c5a869"
+    "sha256": "5ce5a52e67b0c3f06879fcff85d4742136cd373c7bc8660c9d6f38da79f30b98"
   },
   {
     "key": "item-uncutGem",
@@ -1077,7 +1077,7 @@
       119,
       99
     ],
-    "sha256": "0f67b836954c095d2ed7b685513fce11adac126a6ad6e542bf58974e43887f20"
+    "sha256": "b830ae5429b1ac2af1d701e8f14a2f6c41f944cc81499720a95e56f42a8974c2"
   },
   {
     "key": "item-grimyHerb",
@@ -1095,7 +1095,7 @@
       113,
       131
     ],
-    "sha256": "b00779a97ab30d135a74fe2e439c3ef879b8c71bd6e202c934cba526d9a6be8c"
+    "sha256": "cfc5752ba131e7514c399af08f0a99a59cc290e08e709ced1a81b961ac9f199c"
   },
   {
     "key": "item-cleanHerb",
@@ -1113,7 +1113,7 @@
       113,
       131
     ],
-    "sha256": "b00779a97ab30d135a74fe2e439c3ef879b8c71bd6e202c934cba526d9a6be8c"
+    "sha256": "cfc5752ba131e7514c399af08f0a99a59cc290e08e709ced1a81b961ac9f199c"
   },
   {
     "key": "item-vial",
@@ -1131,7 +1131,7 @@
       107,
       118
     ],
-    "sha256": "be5271e0a3e536f824c1606b12da9993fb016a133d2ab66beae7fec980c38950"
+    "sha256": "ba90bacebcc15a6cf3f1a7fecc744f1f2fb2a60d57f155d835e547a706c689b4"
   },
   {
     "key": "item-vialWater",
@@ -1149,7 +1149,7 @@
       107,
       118
     ],
-    "sha256": "a25871b9337ac5672c76ddef751bdcdb8b7409dff1dca08292c7e36b35b4deec"
+    "sha256": "f9874fd2d3bbd0a02895ebf37b712eee4bbdd67c1b4be360da224a2451e2e116"
   },
   {
     "key": "item-unfinishedPotion",
@@ -1167,7 +1167,7 @@
       107,
       118
     ],
-    "sha256": "3414b9a51bf979ff7ecf0efe4818de87a60dbfe9a4186d9202c9bea9748cbe4e"
+    "sha256": "f54aa333e842c89844d429949b2f7ea87d794fa5b3a5c2e77a839c987dff66e0"
   },
   {
     "key": "item-berries",
@@ -1185,7 +1185,7 @@
       119,
       118
     ],
-    "sha256": "0acc7b12e0392cf6d0a11fe4acc724bf7ca36351cb581b4c1f0e07833c645311"
+    "sha256": "938ea47294b2bbf95f3ca1e3fdc0f22ede4662bc023e6f1cb1920d8c048d97df"
   },
   {
     "key": "item-healingPotion",
@@ -1203,7 +1203,7 @@
       107,
       118
     ],
-    "sha256": "c260ea70244f48db61fd1059d7f0979ac9b063b9c17e5e92e46bb4bccebc546f"
+    "sha256": "aec3806cb87aa2314c4b1d0e20467be3d2d61cac25c1db66942a1892b51e740a"
   },
   {
     "key": "item-herbSeeds",
@@ -1221,7 +1221,7 @@
       115,
       114
     ],
-    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+    "sha256": "ed48fd5ca9930239a5b25423b61ebb013b0c388eda9cfa5bcf4a4d93ab23f0b6"
   },
   {
     "key": "item-wheatSeeds",
@@ -1239,7 +1239,7 @@
       115,
       114
     ],
-    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+    "sha256": "ed48fd5ca9930239a5b25423b61ebb013b0c388eda9cfa5bcf4a4d93ab23f0b6"
   },
   {
     "key": "item-wheat",
@@ -1257,7 +1257,7 @@
       113,
       131
     ],
-    "sha256": "823d73b1ffefede5ef5cd99fad92b0a877c50ef2d81bad6f405ee60a0df57c4e"
+    "sha256": "24b3d9ef2592fc6a954c92500206151912674f435d97cdbee9d8cdea2f6dc71d"
   },
   {
     "key": "item-flour",
@@ -1275,7 +1275,7 @@
       115,
       114
     ],
-    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+    "sha256": "ed48fd5ca9930239a5b25423b61ebb013b0c388eda9cfa5bcf4a4d93ab23f0b6"
   },
   {
     "key": "item-water",
@@ -1293,7 +1293,7 @@
       107,
       118
     ],
-    "sha256": "be5271e0a3e536f824c1606b12da9993fb016a133d2ab66beae7fec980c38950"
+    "sha256": "ba90bacebcc15a6cf3f1a7fecc744f1f2fb2a60d57f155d835e547a706c689b4"
   },
   {
     "key": "item-dough",
@@ -1311,7 +1311,7 @@
       121,
       100
     ],
-    "sha256": "6297461cd2f9ed4ba55985813796f4d4a33f5edb760b2a71b2947a16d8d78255"
+    "sha256": "b562f20dffe8f36dd9680b4d72a2048958a3c9e831b39948909e9774bace4ff5"
   },
   {
     "key": "item-bread",
@@ -1329,7 +1329,7 @@
       121,
       101
     ],
-    "sha256": "a5c53fdc1b6b6722abb971b1a1590cd818570e168494ff9d59fd71832ce2327b"
+    "sha256": "928a0d43bcd7afdede7a41fd6542c5cf4bba0971adf8aa762d4b5e2251dc42c8"
   },
   {
     "key": "item-rawMeat",
@@ -1347,7 +1347,7 @@
       121,
       100
     ],
-    "sha256": "935848b2e62448db3f583666950e0b16614dacbb4713ab6f86aa1c4f7417256b"
+    "sha256": "60c265eda4dea6b0b17b588ae7a62121aab65537fe5e8cc283dbcb8a5702fbb8"
   },
   {
     "key": "item-cookedMeat",
@@ -1365,7 +1365,7 @@
       121,
       100
     ],
-    "sha256": "d61a77f20a7b180f612d0412199ed14369dbd607ba48da1355191780d4c028d5"
+    "sha256": "7cc2a8bfe85ee65092a59788c493ffc794e2de6a95feb0dde228743ac82ba6b9"
   },
   {
     "key": "item-cookedFish",
@@ -1383,7 +1383,7 @@
       125,
       93
     ],
-    "sha256": "3c459c7e657c7a50d9fdcdf9067dcf6bdb638c39d412126952c1b9cea06ea630"
+    "sha256": "74e61ca9c95e266f2c9f2e63b45b2e61a6caa7eb9fd34957581b9ae363e33c70"
   },
   {
     "key": "item-burntFood",
@@ -1401,7 +1401,7 @@
       121,
       101
     ],
-    "sha256": "7dda39da5c691152585867127f491f7ece15fd125bbdcb2a503bdafe592beb7b"
+    "sha256": "3a5d30da9149fdba899a6bc67749a30d99414e8795d5af876c181439794b8794"
   },
   {
     "key": "item-runeEssence",
@@ -1419,7 +1419,7 @@
       118,
       107
     ],
-    "sha256": "c8ea59538ecf5e481ff65144367c2693d7fdfb8499f266d0a062242b66dce901"
+    "sha256": "51b93e7369fbf1ade0e925f19c476c779ae5970743bccb074d5e9cf1cfdeb3e5"
   },
   {
     "key": "item-airRune",
@@ -1473,7 +1473,7 @@
       119,
       118
     ],
-    "sha256": "0acc7b12e0392cf6d0a11fe4acc724bf7ca36351cb581b4c1f0e07833c645311"
+    "sha256": "938ea47294b2bbf95f3ca1e3fdc0f22ede4662bc023e6f1cb1920d8c048d97df"
   },
   {
     "key": "item-fur",
@@ -1725,7 +1725,7 @@
       105,
       123
     ],
-    "sha256": "d4b309d8c6831e0954b0fb0a0be9af91f53fcad6b4701df43216be725b381ed4"
+    "sha256": "3cb9bdbda2c0f37bea8779eddad8e6557e87ebc805cb87c2086ebd8803fd9865"
   },
   {
     "key": "item-armor_chest",
@@ -1743,7 +1743,7 @@
       109,
       127
     ],
-    "sha256": "246d740429f3f920a8e675eaf69a1c8629c0cbbd238e07f0a4e379795bb78116"
+    "sha256": "85a45abcff4e24208616bb8185f72d6c30a9321012c9be6d2e4d9d7232faf9ba"
   },
   {
     "key": "item-armor_legs",
@@ -1761,7 +1761,7 @@
       102,
       130
     ],
-    "sha256": "3eb8ea6d0b2df51e00a9d80d80649a871787775cbe65d729e8a23e590ab17f7c"
+    "sha256": "cff61285b55cda4ed74d7cadf4dc6c46a44454b5ae46756ca43da3a85c73cc5f"
   },
   {
     "key": "item-armor_boots",
@@ -1779,7 +1779,7 @@
       127,
       116
     ],
-    "sha256": "3a094170a620790bea0d8e02a070f261ee70219a65d401a728939549792a1470"
+    "sha256": "ee9caaf2bb71f954f9ea0598ff186af05a0f5ef978f527209922a3f4def6b751"
   },
   {
     "key": "item-armor_cape",
@@ -1851,7 +1851,7 @@
       120,
       101
     ],
-    "sha256": "d7b9ab79a452a47ee4fc28204bb704d4950cb2957d50c94f91efe182c73305eb"
+    "sha256": "8810811f6f6c97da9c949a895b5827e2f776b8d211a8899aa2d34c6bb1e88a85"
   },
   {
     "key": "item-jewelry_prospectorsRing",
@@ -1869,7 +1869,7 @@
       119,
       99
     ],
-    "sha256": "6dd9b7ea64aea20a63f43e9d91284d1095d1c1dcd4bdad8816a5046a8a80d2e9"
+    "sha256": "df3421ec8bc2c857ca05b291b8a230b9984f330b70358f1a6ff50609a080d6a8"
   },
   {
     "key": "item-mount_armoredWhiteHorse",
@@ -1887,7 +1887,7 @@
       97,
       116
     ],
-    "sha256": "bc080660bfce031bb23ec8187c1ed3b8a8ad423d1ff510f0cb9ca31af21b9087"
+    "sha256": "76762396a70ce947c7adf3ed6b407f91d2e174e52443414c1b4265af1ee7c7d3"
   },
   {
     "key": "item-gold",
@@ -1923,7 +1923,7 @@
       115,
       114
     ],
-    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+    "sha256": "ed48fd5ca9930239a5b25423b61ebb013b0c388eda9cfa5bcf4a4d93ab23f0b6"
   },
   {
     "key": "model-ore",
@@ -1941,7 +1941,7 @@
       118,
       107
     ],
-    "sha256": "cbbaff2a7873a97bf178d31585761612efc00ba75c1c6d981d68bc8e22927105"
+    "sha256": "29a319a21428a8e2d4e40201512d828187e09c5bba36bdc600d0c1e35dbc940b"
   },
   {
     "key": "model-bar",
@@ -1977,7 +1977,7 @@
       134,
       131
     ],
-    "sha256": "f7c4295bbbcd0ed59599362ef1961627eb8042f99e1b2d022c8579eb89df1980"
+    "sha256": "e3ca0fb434a1bbd4c0afd8f856526d2da9114a0ee57abfb70429a5c34366cc2b"
   },
   {
     "key": "model-potion",
@@ -1995,7 +1995,7 @@
       107,
       118
     ],
-    "sha256": "7fe24bce37414f87ab4fa139b52c49347f7bb945604847c453b7e9aa4fc64d5c"
+    "sha256": "cfa437bf550ec5c2ec86f89e0a1db92cacfe2ffab7de1d8a8b35f9f8784bc945"
   },
   {
     "key": "model-vial",
@@ -2013,7 +2013,7 @@
       107,
       118
     ],
-    "sha256": "be5271e0a3e536f824c1606b12da9993fb016a133d2ab66beae7fec980c38950"
+    "sha256": "ba90bacebcc15a6cf3f1a7fecc744f1f2fb2a60d57f155d835e547a706c689b4"
   },
   {
     "key": "model-bread",
@@ -2031,7 +2031,7 @@
       121,
       101
     ],
-    "sha256": "a5c53fdc1b6b6722abb971b1a1590cd818570e168494ff9d59fd71832ce2327b"
+    "sha256": "928a0d43bcd7afdede7a41fd6542c5cf4bba0971adf8aa762d4b5e2251dc42c8"
   },
   {
     "key": "model-fish",
@@ -2049,7 +2049,7 @@
       125,
       93
     ],
-    "sha256": "5cc591c360d76189772c51c2c4977567e80de0f481618904ddb40e18a224cc23"
+    "sha256": "c682d4151021bdc240fa9622321fc39fd9ab02bc9f1d5a5b29027dd4fbfbe0cb"
   },
   {
     "key": "model-apple",
@@ -2067,7 +2067,7 @@
       110,
       116
     ],
-    "sha256": "1a30f86dac223735db84e02546af2e53c4f9dd8ca05e90638af17443e52782fe"
+    "sha256": "06dd6c3c288c8a58e7911e999c0dcc895ae721019593756f8a3deaecce868115"
   },
   {
     "key": "model-herb",
@@ -2085,7 +2085,7 @@
       113,
       131
     ],
-    "sha256": "b00779a97ab30d135a74fe2e439c3ef879b8c71bd6e202c934cba526d9a6be8c"
+    "sha256": "cfc5752ba131e7514c399af08f0a99a59cc290e08e709ced1a81b961ac9f199c"
   },
   {
     "key": "model-gem",
@@ -2121,7 +2121,7 @@
       119,
       99
     ],
-    "sha256": "6dd9b7ea64aea20a63f43e9d91284d1095d1c1dcd4bdad8816a5046a8a80d2e9"
+    "sha256": "df3421ec8bc2c857ca05b291b8a230b9984f330b70358f1a6ff50609a080d6a8"
   },
   {
     "key": "model-rune",
@@ -2229,7 +2229,7 @@
       115,
       114
     ],
-    "sha256": "750a1f9e58caf1e0f3670513c4755c13ab8a9a554316de4d3b13754371dc2ad8"
+    "sha256": "ed48fd5ca9930239a5b25423b61ebb013b0c388eda9cfa5bcf4a4d93ab23f0b6"
   },
   {
     "key": "model-feather",
@@ -2265,7 +2265,7 @@
       134,
       88
     ],
-    "sha256": "614b1d67f77ee1a77353e165de9fa7a0f5d8572260234d5f1130704c64c5a869"
+    "sha256": "5ce5a52e67b0c3f06879fcff85d4742136cd373c7bc8660c9d6f38da79f30b98"
   },
   {
     "key": "model-trap",
@@ -2337,7 +2337,7 @@
       121,
       101
     ],
-    "sha256": "a5c53fdc1b6b6722abb971b1a1590cd818570e168494ff9d59fd71832ce2327b"
+    "sha256": "928a0d43bcd7afdede7a41fd6542c5cf4bba0971adf8aa762d4b5e2251dc42c8"
   },
   {
     "key": "model-meat",
@@ -2355,7 +2355,7 @@
       121,
       100
     ],
-    "sha256": "935848b2e62448db3f583666950e0b16614dacbb4713ab6f86aa1c4f7417256b"
+    "sha256": "60c265eda4dea6b0b17b588ae7a62121aab65537fe5e8cc283dbcb8a5702fbb8"
   },
   {
     "key": "model-berries",
@@ -2373,7 +2373,7 @@
       119,
       118
     ],
-    "sha256": "0acc7b12e0392cf6d0a11fe4acc724bf7ca36351cb581b4c1f0e07833c645311"
+    "sha256": "938ea47294b2bbf95f3ca1e3fdc0f22ede4662bc023e6f1cb1920d8c048d97df"
   },
   {
     "key": "model-pear",
@@ -2391,7 +2391,7 @@
       99,
       122
     ],
-    "sha256": "35819cd256dfcc80da808c666290bc73daa023512fa202ac3bf9ab73668f5bfc"
+    "sha256": "aa650f9bf96a2a1a20f434bb257017e756b8183434f81ca3500e95c545edb91f"
   },
   {
     "key": "model-orange",
@@ -2409,7 +2409,7 @@
       110,
       116
     ],
-    "sha256": "0c4088481e1d091323d0f132119d4a294bb9274d9d8d9b97406116ddf4ff9b77"
+    "sha256": "7b8de21dbbe03d52e35c088cb5d923c0885458091bba7e402e6f966a0d01a5ee"
   },
   {
     "key": "model-pizza",
@@ -2445,7 +2445,7 @@
       119,
       110
     ],
-    "sha256": "dfc3c7ec9f943fc80faf6d666e0871cf8ab481b45a40474832667b9bd733587b"
+    "sha256": "7a3a51f2604c2a98bb5910072f4c7ee7dcf51564696429ac8fc9931fbc860a02"
   },
   {
     "key": "model-cake",
@@ -2481,7 +2481,7 @@
       125,
       93
     ],
-    "sha256": "c120b8943250b9e9cbb7ac50193ba4388dac4698e8b3cde6da7d44016a289385"
+    "sha256": "c823627ff28f5ddf9e76e1bdd28c30b4577c5a67b8acbb5966b1e3667af8c174"
   },
   {
     "key": "model-lobster",
@@ -2499,7 +2499,7 @@
       131,
       96
     ],
-    "sha256": "571588251b98128874f834a4f4e8d8c4a165c79571177ad7a0819910a8e779ec"
+    "sha256": "da1f62127caf6e14a0bdf02714b37304e3d811499086ab44de3f07e200849adf"
   },
   {
     "key": "model-shrimp",
@@ -2517,7 +2517,7 @@
       115,
       99
     ],
-    "sha256": "8e416e5fdae901d379f0e52f34b6a6ab7057044c577028fc48931c35ae44ca35"
+    "sha256": "8e62d57105ce06024102a2aa1b1d7eef32fcaf00eff73ed56023727288ba7dbb"
   },
   {
     "key": "model-chicken",
@@ -2535,7 +2535,7 @@
       121,
       111
     ],
-    "sha256": "f5e0c766daae806f77531a68df3fedc798ef33f62e1097df4a53933d79dd27aa"
+    "sha256": "3d0755949391ae9fd8fe696204ac68e91405acab5a46963870700821c9582b89"
   },
   {
     "key": "model-egg",
@@ -2553,7 +2553,7 @@
       105,
       118
     ],
-    "sha256": "a3f0fb7eb8c79c708d61bc73d3d2169d7d9047f2fa21d8b6a583163f656013f2"
+    "sha256": "b9663259f5c063c1be20a59b367fcc04be2064a9bb64cfdcfe86101561878f26"
   },
   {
     "key": "model-cheese",
@@ -2589,7 +2589,7 @@
       118,
       101
     ],
-    "sha256": "521352493a09f764471d13b14e876b9a2b2e82f443da7533fa63a5c79b919842"
+    "sha256": "8cd081953bd6dcb76241a5cae06041cb7950f5b01dc26bc4709d0ab3ecd2d9a0"
   },
   {
     "key": "model-carrot",
@@ -2607,7 +2607,7 @@
       120,
       105
     ],
-    "sha256": "d94d6dd923eecdb43ca49f232aa418c8bcff969796ad46afd1a0fd1baea69d6d"
+    "sha256": "1149515fd791243ef5bf1eb08c12d9be7bed138b62f373565cad5165e756216a"
   },
   {
     "key": "model-mushroom",
@@ -2625,7 +2625,7 @@
       118,
       108
     ],
-    "sha256": "2f87132959a000f9303bf5014811b97a495169f5743fe8803462f05b214167eb"
+    "sha256": "ad0444d8866476387c5376dbfeb201d469bd10f74a86fbf9238ed8c3d874c40d"
   },
   {
     "key": "model-potion-blue_potion",
@@ -2643,7 +2643,7 @@
       107,
       118
     ],
-    "sha256": "37a2b62265a2e6de1f53a8d070129aecf9022ef520e572d99b5e910f57ae44e0"
+    "sha256": "b0c11da601f8e0d55dffb8b3254be68b31d66289461980774b926432d7e63f6c"
   },
   {
     "key": "model-potion-green_potion",
@@ -2661,6 +2661,600 @@
       107,
       118
     ],
-    "sha256": "5064262bee600baec5f57f4498431faaf0fc3aca1286e63a2d5965c47dbadc0e"
+    "sha256": "9dd4ba0e9e0cdbcceb474796858c34e851a34ee3d208da3c5fcfe44066b3eea5"
+  },
+  {
+    "key": "item-apple",
+    "id": "apple",
+    "name": "Red apple",
+    "model": "apple",
+    "bounds": [
+      0.36000001430511475,
+      0.43000000745058065,
+      0.36000001430511475
+    ],
+    "pixelBounds": [
+      34,
+      23,
+      110,
+      116
+    ],
+    "sha256": "1a30f86dac223735db84e02546af2e53c4f9dd8ca05e90638af17443e52782fe"
+  },
+  {
+    "key": "item-pear",
+    "id": "pear",
+    "name": "Orchard pear",
+    "model": "pear",
+    "bounds": [
+      0.2880000114440918,
+      0.5870000085234641,
+      0.2880000114440918
+    ],
+    "pixelBounds": [
+      46,
+      17,
+      99,
+      122
+    ],
+    "sha256": "35819cd256dfcc80da808c666290bc73daa023512fa202ac3bf9ab73668f5bfc"
+  },
+  {
+    "key": "item-trailBerries",
+    "id": "trailBerries",
+    "name": "Forest berries",
+    "model": "berries",
+    "bounds": [
+      0.3495392896278037,
+      0.3200000005960465,
+      0.28882792647377153
+    ],
+    "pixelBounds": [
+      33,
+      30,
+      119,
+      118
+    ],
+    "sha256": "0acc7b12e0392cf6d0a11fe4acc724bf7ca36351cb581b4c1f0e07833c645311"
+  },
+  {
+    "key": "item-orange",
+    "id": "orange",
+    "name": "Sweet orange",
+    "model": "orange",
+    "bounds": [
+      0.36000001430511475,
+      0.43000000745058065,
+      0.36000001430511475
+    ],
+    "pixelBounds": [
+      34,
+      23,
+      110,
+      116
+    ],
+    "sha256": "0c4088481e1d091323d0f132119d4a294bb9274d9d8d9b97406116ddf4ff9b77"
+  },
+  {
+    "key": "item-carrot",
+    "id": "carrot",
+    "name": "Garden carrot",
+    "model": "carrot",
+    "bounds": [
+      0.20000000298023224,
+      0.20000000298023235,
+      0.7150000032782555
+    ],
+    "pixelBounds": [
+      27,
+      33,
+      120,
+      105
+    ],
+    "sha256": "d94d6dd923eecdb43ca49f232aa418c8bcff969796ad46afd1a0fd1baea69d6d"
+  },
+  {
+    "key": "item-mushroom",
+    "id": "mushroom",
+    "name": "Field mushroom",
+    "model": "mushroom",
+    "bounds": [
+      0.3799999952316284,
+      0.2890000015497207,
+      0.3799999952316284
+    ],
+    "pixelBounds": [
+      26,
+      32,
+      118,
+      108
+    ],
+    "sha256": "2f87132959a000f9303bf5014811b97a495169f5743fe8803462f05b214167eb"
+  },
+  {
+    "key": "item-egg",
+    "id": "egg",
+    "name": "Hen egg",
+    "model": "egg",
+    "bounds": [
+      0.24000000953674316,
+      0.36000001430511475,
+      0.24000000953674316
+    ],
+    "pixelBounds": [
+      39,
+      26,
+      105,
+      118
+    ],
+    "sha256": "a3f0fb7eb8c79c708d61bc73d3d2169d7d9047f2fa21d8b6a583163f656013f2"
+  },
+  {
+    "key": "item-cheese",
+    "id": "cheese",
+    "name": "Farmhouse cheese",
+    "model": "cheese",
+    "bounds": [
+      0.5,
+      0.07999999821186077,
+      0.5000000149011612
+    ],
+    "pixelBounds": [
+      7,
+      47,
+      98,
+      110
+    ],
+    "sha256": "f6a04a4fb89f73faf5ff0024fa804ad33202138c0fdc7e3e0e3a4a38369a9575"
+  },
+  {
+    "key": "item-lobster",
+    "id": "lobster",
+    "name": "Cooked lobster",
+    "model": "lobster",
+    "bounds": [
+      0.7599999932944774,
+      0.14399999678134917,
+      0.5979999959468842
+    ],
+    "pixelBounds": [
+      30,
+      42,
+      131,
+      96
+    ],
+    "sha256": "571588251b98128874f834a4f4e8d8c4a165c79571177ad7a0819910a8e779ec"
+  },
+  {
+    "key": "item-shrimp",
+    "id": "shrimp",
+    "name": "Cooked shrimp",
+    "model": "shrimp",
+    "bounds": [
+      0.31200016121870633,
+      0.09000000357627869,
+      0.4804437526816955
+    ],
+    "pixelBounds": [
+      14,
+      41,
+      115,
+      99
+    ],
+    "sha256": "8e416e5fdae901d379f0e52f34b6a6ab7057044c577028fc48931c35ae44ca35"
+  },
+  {
+    "key": "item-salmon",
+    "id": "salmon",
+    "name": "Cooked salmon",
+    "model": "salmon",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "d14dfdf3ea7c578bed3d5e4052133f897bf073e49bde14f2f9a3baffa601ccaf"
+  },
+  {
+    "key": "item-trailRations",
+    "id": "trailRations",
+    "name": "Traveler\u2019s rations",
+    "model": "food",
+    "bounds": [
+      0.5980000108480453,
+      0.26650000207126145,
+      0.39100000709295274
+    ],
+    "pixelBounds": [
+      23,
+      38,
+      121,
+      101
+    ],
+    "sha256": "a5c53fdc1b6b6722abb971b1a1590cd818570e168494ff9d59fd71832ce2327b"
+  },
+  {
+    "key": "item-roastChicken",
+    "id": "roastChicken",
+    "name": "Roast chicken",
+    "model": "chicken",
+    "bounds": [
+      0.6200000071525573,
+      0.2530000045895577,
+      0.5205000039190054
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      121,
+      111
+    ],
+    "sha256": "f5e0c766daae806f77531a68df3fedc798ef33f62e1097df4a53933d79dd27aa"
+  },
+  {
+    "key": "item-berryPie",
+    "id": "berryPie",
+    "name": "Berry pie",
+    "model": "pie",
+    "bounds": [
+      0.47999998927116394,
+      0.17999999959021806,
+      0.47999998927116394
+    ],
+    "pixelBounds": [
+      25,
+      43,
+      119,
+      110
+    ],
+    "sha256": "dfc3c7ec9f943fc80faf6d666e0871cf8ab481b45a40474832667b9bd733587b"
+  },
+  {
+    "key": "item-cheesePizza",
+    "id": "cheesePizza",
+    "name": "Cheese pizza",
+    "model": "pizza",
+    "bounds": [
+      0.5,
+      0.10899999961256986,
+      0.5000000149011612
+    ],
+    "pixelBounds": [
+      7,
+      49,
+      98,
+      112
+    ],
+    "sha256": "18b48dc64976eee1cb87055e95ddef746049da11884bc910b4aef5bcfca10cbc"
+  },
+  {
+    "key": "item-vegetableSoup",
+    "id": "vegetableSoup",
+    "name": "Vegetable soup",
+    "model": "soup",
+    "bounds": [
+      0.46000000834465027,
+      0.2650000045448542,
+      0.46000000834465027
+    ],
+    "pixelBounds": [
+      26,
+      34,
+      118,
+      101
+    ],
+    "sha256": "521352493a09f764471d13b14e876b9a2b2e82f443da7533fa63a5c79b919842"
+  },
+  {
+    "key": "item-linen",
+    "id": "linen",
+    "name": "Linen cloth",
+    "model": "cloth",
+    "bounds": [
+      0.5,
+      0.04500000178813935,
+      0.44999998807907104
+    ],
+    "pixelBounds": [
+      7,
+      38,
+      137,
+      106
+    ],
+    "sha256": "0ec0d909a1bd0a386b698df11d1d32ec3288b09b99e14f8ac2621bf6b91e9410"
+  },
+  {
+    "key": "item-woolBlanket",
+    "id": "woolBlanket",
+    "name": "Wool blanket",
+    "model": "cloth",
+    "bounds": [
+      0.5,
+      0.04500000178813935,
+      0.44999998807907104
+    ],
+    "pixelBounds": [
+      7,
+      38,
+      137,
+      106
+    ],
+    "sha256": "57f4b56a723af407da57963ed8a9821d7a7accef840893af78ea6f33c6fa5de9"
+  },
+  {
+    "key": "item-furPelt",
+    "id": "furPelt",
+    "name": "Brown fur pelt",
+    "model": "hide",
+    "bounds": [
+      0.5,
+      0.04500000178813935,
+      0.44999998807907104
+    ],
+    "pixelBounds": [
+      7,
+      38,
+      137,
+      106
+    ],
+    "sha256": "b6c65a1afdb77c9f5c58eed5061a5f9ef798056288d4c40cb97b049e5e51d74f"
+  },
+  {
+    "key": "item-rope",
+    "id": "rope",
+    "name": "Hemp rope",
+    "model": "rope",
+    "bounds": [
+      0.5360474723669211,
+      0.04643380938470373,
+      0.46799999475479126
+    ],
+    "pixelBounds": [
+      24,
+      47,
+      110,
+      94
+    ],
+    "sha256": "cfbc69dd096fd9b68b86d2cf2ad73d3a1b05378feff6a44392bd5cc053d08c86"
+  },
+  {
+    "key": "item-candle",
+    "id": "candle",
+    "name": "Beeswax candle",
+    "model": "candle",
+    "bounds": [
+      0.23999999463558197,
+      0.35250000055879355,
+      0.23999999463558197
+    ],
+    "pixelBounds": [
+      39,
+      28,
+      105,
+      131
+    ],
+    "sha256": "dde7d1c49003c445d231ba964a38d5fa26c8d4f6930a21d3974aa4365ed4c15e"
+  },
+  {
+    "key": "item-campLantern",
+    "id": "campLantern",
+    "name": "Travel lantern",
+    "model": "lantern",
+    "bounds": [
+      0.36000001430511475,
+      0.5625000036507845,
+      0.36000001430511475
+    ],
+    "pixelBounds": [
+      42,
+      28,
+      102,
+      129
+    ],
+    "sha256": "2706f6ca72f21cb8aeca50d3823c2db21a5dd4531aadc9796b4c47e0d61b889d"
+  },
+  {
+    "key": "item-bedroll",
+    "id": "bedroll",
+    "name": "Wool bedroll",
+    "model": "bedroll",
+    "bounds": [
+      0.479999989271164,
+      0.3179999887943268,
+      0.5690000003576279
+    ],
+    "pixelBounds": [
+      8,
+      27,
+      135,
+      123
+    ],
+    "sha256": "348855384fda7f888987dd067f56c5cc364ead21cac3f0ccf45a7955b3d0ed81"
+  },
+  {
+    "key": "item-travelJournal",
+    "id": "travelJournal",
+    "name": "Traveler\u2019s journal",
+    "model": "book",
+    "bounds": [
+      0.38999999716877937,
+      0.1299999973922968,
+      0.5
+    ],
+    "pixelBounds": [
+      7,
+      27,
+      136,
+      116
+    ],
+    "sha256": "83ff2c6019bed316827d56b32e76f3c71f597bec8a4cdd615974928f1d864f42"
+  },
+  {
+    "key": "item-sealedLetter",
+    "id": "sealedLetter",
+    "name": "Sealed letter",
+    "model": "scroll",
+    "bounds": [
+      0.4000000059604645,
+      0.08399999871850018,
+      0.5399999982118606
+    ],
+    "pixelBounds": [
+      7,
+      34,
+      137,
+      110
+    ],
+    "sha256": "aeb6b8d1fca321967db25f779a8820be68c5d4fb523e4642efc000ca568c7712"
+  },
+  {
+    "key": "item-woodenBucket",
+    "id": "woodenBucket",
+    "name": "Wooden bucket",
+    "model": "bucket",
+    "bounds": [
+      0.4099999964237213,
+      0.4199999982118606,
+      0.36399999260902405
+    ],
+    "pixelBounds": [
+      34,
+      32,
+      110,
+      124
+    ],
+    "sha256": "7ffb0874cb8b8fff75882067e89f0f2fe052af9a4793fc084c27f6dd4f66a684"
+  },
+  {
+    "key": "model-rope",
+    "id": "preview_rope",
+    "name": "rope",
+    "model": "rope",
+    "bounds": [
+      0.5360474723669211,
+      0.04643380938470373,
+      0.46799999475479126
+    ],
+    "pixelBounds": [
+      24,
+      47,
+      110,
+      94
+    ],
+    "sha256": "cfbc69dd096fd9b68b86d2cf2ad73d3a1b05378feff6a44392bd5cc053d08c86"
+  },
+  {
+    "key": "model-candle",
+    "id": "preview_candle",
+    "name": "candle",
+    "model": "candle",
+    "bounds": [
+      0.23999999463558197,
+      0.35250000055879355,
+      0.23999999463558197
+    ],
+    "pixelBounds": [
+      39,
+      28,
+      105,
+      131
+    ],
+    "sha256": "dde7d1c49003c445d231ba964a38d5fa26c8d4f6930a21d3974aa4365ed4c15e"
+  },
+  {
+    "key": "model-lantern",
+    "id": "preview_lantern",
+    "name": "lantern",
+    "model": "lantern",
+    "bounds": [
+      0.36000001430511475,
+      0.5625000036507845,
+      0.36000001430511475
+    ],
+    "pixelBounds": [
+      42,
+      28,
+      102,
+      129
+    ],
+    "sha256": "2706f6ca72f21cb8aeca50d3823c2db21a5dd4531aadc9796b4c47e0d61b889d"
+  },
+  {
+    "key": "model-bedroll",
+    "id": "preview_bedroll",
+    "name": "bedroll",
+    "model": "bedroll",
+    "bounds": [
+      0.479999989271164,
+      0.3179999887943268,
+      0.5690000003576279
+    ],
+    "pixelBounds": [
+      8,
+      27,
+      135,
+      123
+    ],
+    "sha256": "348855384fda7f888987dd067f56c5cc364ead21cac3f0ccf45a7955b3d0ed81"
+  },
+  {
+    "key": "model-book",
+    "id": "preview_book",
+    "name": "book",
+    "model": "book",
+    "bounds": [
+      0.38999999716877937,
+      0.1299999973922968,
+      0.5
+    ],
+    "pixelBounds": [
+      7,
+      27,
+      136,
+      116
+    ],
+    "sha256": "83ff2c6019bed316827d56b32e76f3c71f597bec8a4cdd615974928f1d864f42"
+  },
+  {
+    "key": "model-scroll",
+    "id": "preview_scroll",
+    "name": "scroll",
+    "model": "scroll",
+    "bounds": [
+      0.4000000059604645,
+      0.08399999871850018,
+      0.5399999982118606
+    ],
+    "pixelBounds": [
+      7,
+      34,
+      137,
+      110
+    ],
+    "sha256": "aeb6b8d1fca321967db25f779a8820be68c5d4fb523e4642efc000ca568c7712"
+  },
+  {
+    "key": "model-bucket",
+    "id": "preview_bucket",
+    "name": "bucket",
+    "model": "bucket",
+    "bounds": [
+      0.4099999964237213,
+      0.4199999982118606,
+      0.36399999260902405
+    ],
+    "pixelBounds": [
+      34,
+      32,
+      110,
+      124
+    ],
+    "sha256": "7ffb0874cb8b8fff75882067e89f0f2fe052af9a4793fc084c27f6dd4f66a684"
   }
 ]

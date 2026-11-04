@@ -1,0 +1,2479 @@
+{
+  "release": "forest43",
+  "physical": 131,
+  "notes": 116,
+  "naturallyStackable": 15,
+  "failures": [],
+  "items": [
+    {
+      "id": "apple",
+      "name": "Red apple",
+      "noted": false,
+      "image": "item-apple.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "pear",
+      "name": "Orchard pear",
+      "noted": false,
+      "image": "item-pear.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "trailBerries",
+      "name": "Forest berries",
+      "noted": false,
+      "image": "item-trailBerries.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "orange",
+      "name": "Sweet orange",
+      "noted": false,
+      "image": "item-orange.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "carrot",
+      "name": "Garden carrot",
+      "noted": false,
+      "image": "item-carrot.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "mushroom",
+      "name": "Field mushroom",
+      "noted": false,
+      "image": "item-mushroom.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "egg",
+      "name": "Hen egg",
+      "noted": false,
+      "image": "item-egg.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "cheese",
+      "name": "Farmhouse cheese",
+      "noted": false,
+      "image": "item-cheese.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "lobster",
+      "name": "Cooked lobster",
+      "noted": false,
+      "image": "item-lobster.webp",
+      "matchingImage": true,
+      "dropMeshes": 15,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "shrimp",
+      "name": "Cooked shrimp",
+      "noted": false,
+      "image": "item-shrimp.webp",
+      "matchingImage": true,
+      "dropMeshes": 8,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "salmon",
+      "name": "Cooked salmon",
+      "noted": false,
+      "image": "item-salmon.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "trailRations",
+      "name": "Traveler’s rations",
+      "noted": false,
+      "image": "item-trailRations.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "roastChicken",
+      "name": "Roast chicken",
+      "noted": false,
+      "image": "item-roastChicken.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "berryPie",
+      "name": "Berry pie",
+      "noted": false,
+      "image": "item-berryPie.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "cheesePizza",
+      "name": "Cheese pizza",
+      "noted": false,
+      "image": "item-cheesePizza.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "vegetableSoup",
+      "name": "Vegetable soup",
+      "noted": false,
+      "image": "item-vegetableSoup.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "linen",
+      "name": "Linen cloth",
+      "noted": false,
+      "image": "item-linen.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "woolBlanket",
+      "name": "Wool blanket",
+      "noted": false,
+      "image": "item-woolBlanket.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "furPelt",
+      "name": "Brown fur pelt",
+      "noted": false,
+      "image": "item-furPelt.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "rope",
+      "name": "Hemp rope",
+      "noted": false,
+      "image": "item-rope.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "candle",
+      "name": "Beeswax candle",
+      "noted": false,
+      "image": "item-candle.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "campLantern",
+      "name": "Travel lantern",
+      "noted": false,
+      "image": "item-campLantern.webp",
+      "matchingImage": true,
+      "dropMeshes": 8,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "bedroll",
+      "name": "Wool bedroll",
+      "noted": false,
+      "image": "item-bedroll.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "travelJournal",
+      "name": "Traveler’s journal",
+      "noted": false,
+      "image": "item-travelJournal.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "sealedLetter",
+      "name": "Sealed letter",
+      "noted": false,
+      "image": "item-sealedLetter.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "woodenBucket",
+      "name": "Wooden bucket",
+      "noted": false,
+      "image": "item-woodenBucket.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "fishingPole",
+      "name": "Fishing pole",
+      "noted": false,
+      "image": "item-fishingPole.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "fishingNet",
+      "name": "Fishing net",
+      "noted": false,
+      "image": "item-fishingNet.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "bait",
+      "name": "Fishing bait",
+      "noted": false,
+      "image": "item-bait.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "rawFish",
+      "name": "Raw river fish",
+      "noted": false,
+      "image": "item-rawFish.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "wood",
+      "name": "Logs",
+      "noted": false,
+      "image": "item-wood.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "ore",
+      "name": "Iron ore",
+      "noted": false,
+      "image": "item-ore.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "matches",
+      "name": "Matches",
+      "noted": false,
+      "image": "item-matches.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "tinderbox",
+      "name": "Tinderbox",
+      "noted": false,
+      "image": "item-tinderbox.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "hammer",
+      "name": "Smithing hammer",
+      "noted": false,
+      "image": "item-hammer.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "knife",
+      "name": "Crafting knife",
+      "noted": false,
+      "image": "item-knife.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "needle",
+      "name": "Needle",
+      "noted": false,
+      "image": "item-needle.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "chisel",
+      "name": "Chisel",
+      "noted": false,
+      "image": "item-chisel.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "saw",
+      "name": "Carpenter’s saw",
+      "noted": false,
+      "image": "item-saw.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "rake",
+      "name": "Rake",
+      "noted": false,
+      "image": "item-rake.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "seedDibber",
+      "name": "Seed dibber",
+      "noted": false,
+      "image": "item-seedDibber.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "spade",
+      "name": "Spade",
+      "noted": false,
+      "image": "item-spade.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "pestle",
+      "name": "Pestle and mortar",
+      "noted": false,
+      "image": "item-pestle.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "boxTrap",
+      "name": "Box trap",
+      "noted": false,
+      "image": "item-boxTrap.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "lockpick",
+      "name": "Lockpick",
+      "noted": false,
+      "image": "item-lockpick.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "copperOre",
+      "name": "Copper ore",
+      "noted": false,
+      "image": "item-copperOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "tinOre",
+      "name": "Tin ore",
+      "noted": false,
+      "image": "item-tinOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "coal",
+      "name": "Coal",
+      "noted": false,
+      "image": "item-coal.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "silverOre",
+      "name": "Silver ore",
+      "noted": false,
+      "image": "item-silverOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "goldOre",
+      "name": "Gold ore",
+      "noted": false,
+      "image": "item-goldOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "mithrilOre",
+      "name": "Mithril ore",
+      "noted": false,
+      "image": "item-mithrilOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "adamantOre",
+      "name": "Adamantite ore",
+      "noted": false,
+      "image": "item-adamantOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "runiteOre",
+      "name": "Runite ore",
+      "noted": false,
+      "image": "item-runiteOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "bronzeBar",
+      "name": "Bronze bar",
+      "noted": false,
+      "image": "item-bronzeBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "ironBar",
+      "name": "Iron bar",
+      "noted": false,
+      "image": "item-ironBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "steelBar",
+      "name": "Steel bar",
+      "noted": false,
+      "image": "item-steelBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "silverBar",
+      "name": "Silver bar",
+      "noted": false,
+      "image": "item-silverBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "goldBar",
+      "name": "Gold bar",
+      "noted": false,
+      "image": "item-goldBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "mithrilBar",
+      "name": "Mithril bar",
+      "noted": false,
+      "image": "item-mithrilBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "adamantBar",
+      "name": "Adamantite bar",
+      "noted": false,
+      "image": "item-adamantBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "runiteBar",
+      "name": "Runite bar",
+      "noted": false,
+      "image": "item-runiteBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "oakLogs",
+      "name": "Oak logs",
+      "noted": false,
+      "image": "item-oakLogs.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "willowLogs",
+      "name": "Willow logs",
+      "noted": false,
+      "image": "item-willowLogs.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "mapleLogs",
+      "name": "Maple logs",
+      "noted": false,
+      "image": "item-mapleLogs.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "yewLogs",
+      "name": "Yew logs",
+      "noted": false,
+      "image": "item-yewLogs.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "ashes",
+      "name": "Ashes",
+      "noted": false,
+      "image": "item-ashes.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "plank",
+      "name": "Timber plank",
+      "noted": false,
+      "image": "item-plank.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "oakPlank",
+      "name": "Oak plank",
+      "noted": false,
+      "image": "item-oakPlank.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "nails",
+      "name": "Bronze nails",
+      "noted": false,
+      "image": "item-nails.webp",
+      "matchingImage": true,
+      "dropMeshes": 8,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "steelNails",
+      "name": "Steel nails",
+      "noted": false,
+      "image": "item-steelNails.webp",
+      "matchingImage": true,
+      "dropMeshes": 8,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "thread",
+      "name": "Thread",
+      "noted": false,
+      "image": "item-thread.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "hide",
+      "name": "Animal hide",
+      "noted": false,
+      "image": "item-hide.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "leather",
+      "name": "Leather",
+      "noted": false,
+      "image": "item-leather.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "leatherGloves",
+      "name": "Leather work gloves",
+      "noted": false,
+      "image": "item-leatherGloves.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "flax",
+      "name": "Flax",
+      "noted": false,
+      "image": "item-flax.webp",
+      "matchingImage": true,
+      "dropMeshes": 10,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "bowString",
+      "name": "Bow string",
+      "noted": false,
+      "image": "item-bowString.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "arrowShafts",
+      "name": "Arrow shafts",
+      "noted": false,
+      "image": "item-arrowShafts.webp",
+      "matchingImage": true,
+      "dropMeshes": 8,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "feathers",
+      "name": "Feathers",
+      "noted": false,
+      "image": "item-feathers.webp",
+      "matchingImage": true,
+      "dropMeshes": 10,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "headlessArrows",
+      "name": "Headless arrows",
+      "noted": false,
+      "image": "item-headlessArrows.webp",
+      "matchingImage": true,
+      "dropMeshes": 8,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "arrowTips",
+      "name": "Iron arrowtips",
+      "noted": false,
+      "image": "item-arrowTips.webp",
+      "matchingImage": true,
+      "dropMeshes": 8,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "arrows",
+      "name": "Iron arrows",
+      "noted": false,
+      "image": "item-arrows.webp",
+      "matchingImage": true,
+      "dropMeshes": 8,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "unstrungBow",
+      "name": "Unstrung bow",
+      "noted": false,
+      "image": "item-unstrungBow.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "shortbow",
+      "name": "Handcrafted shortbow",
+      "noted": false,
+      "image": "item-shortbow.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "uncutGem",
+      "name": "Uncut sapphire",
+      "noted": false,
+      "image": "item-uncutGem.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "cutGem",
+      "name": "Cut sapphire",
+      "noted": false,
+      "image": "item-cutGem.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "silverRing",
+      "name": "Silver signet",
+      "noted": false,
+      "image": "item-silverRing.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "grimyHerb",
+      "name": "Grimy herb",
+      "noted": false,
+      "image": "item-grimyHerb.webp",
+      "matchingImage": true,
+      "dropMeshes": 10,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "cleanHerb",
+      "name": "Clean herb",
+      "noted": false,
+      "image": "item-cleanHerb.webp",
+      "matchingImage": true,
+      "dropMeshes": 10,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "vial",
+      "name": "Empty vial",
+      "noted": false,
+      "image": "item-vial.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "vialWater",
+      "name": "Vial of water",
+      "noted": false,
+      "image": "item-vialWater.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "unfinishedPotion",
+      "name": "Unfinished remedy",
+      "noted": false,
+      "image": "item-unfinishedPotion.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "berries",
+      "name": "Red berries",
+      "noted": false,
+      "image": "item-berries.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "healingPotion",
+      "name": "Healing draught",
+      "noted": false,
+      "image": "item-healingPotion.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "herbSeeds",
+      "name": "Herb seeds",
+      "noted": false,
+      "image": "item-herbSeeds.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "wheatSeeds",
+      "name": "Wheat seeds",
+      "noted": false,
+      "image": "item-wheatSeeds.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "wheat",
+      "name": "Wheat",
+      "noted": false,
+      "image": "item-wheat.webp",
+      "matchingImage": true,
+      "dropMeshes": 10,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "flour",
+      "name": "Flour",
+      "noted": false,
+      "image": "item-flour.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "water",
+      "name": "Water flask",
+      "noted": false,
+      "image": "item-water.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "dough",
+      "name": "Bread dough",
+      "noted": false,
+      "image": "item-dough.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "bread",
+      "name": "Fresh bread",
+      "noted": false,
+      "image": "item-bread.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "rawMeat",
+      "name": "Raw game meat",
+      "noted": false,
+      "image": "item-rawMeat.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "cookedMeat",
+      "name": "Roast game meat",
+      "noted": false,
+      "image": "item-cookedMeat.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "cookedFish",
+      "name": "Cooked river fish",
+      "noted": false,
+      "image": "item-cookedFish.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "burntFood",
+      "name": "Burnt food",
+      "noted": false,
+      "image": "item-burntFood.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "runeEssence",
+      "name": "Rune essence",
+      "noted": false,
+      "image": "item-runeEssence.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "airRune",
+      "name": "Air rune",
+      "noted": false,
+      "image": "item-airRune.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "fireRune",
+      "name": "Fire rune",
+      "noted": false,
+      "image": "item-fireRune.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "trapBait",
+      "name": "Hunter bait",
+      "noted": false,
+      "image": "item-trapBait.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "fur",
+      "name": "Soft fur",
+      "noted": false,
+      "image": "item-fur.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "steelBrace",
+      "name": "Steel reinforcement",
+      "noted": false,
+      "image": "item-steelBrace.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "mithrilFittings",
+      "name": "Mithril fittings",
+      "noted": false,
+      "image": "item-mithrilFittings.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "adamantFittings",
+      "name": "Adamantite fittings",
+      "noted": false,
+      "image": "item-adamantFittings.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "runiteFittings",
+      "name": "Runite fittings",
+      "noted": false,
+      "image": "item-runiteFittings.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "weapon:battleaxe",
+      "name": "Iron battleaxe",
+      "noted": false,
+      "image": "item-weapon_battleaxe.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "weapon:dagger",
+      "name": "Iron dagger",
+      "noted": false,
+      "image": "item-weapon_dagger.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "weapon:scimitar",
+      "name": "Iron scimitar",
+      "noted": false,
+      "image": "item-weapon_scimitar.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "weapon:longsword",
+      "name": "Iron longsword",
+      "noted": false,
+      "image": "item-weapon_longsword.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "weapon:twohand",
+      "name": "Iron 2h sword",
+      "noted": false,
+      "image": "item-weapon_twohand.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "weapon:shortsword",
+      "name": "Iron shortsword",
+      "noted": false,
+      "image": "item-weapon_shortsword.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "weapon:pickaxe",
+      "name": "Iron pickaxe",
+      "noted": false,
+      "image": "item-weapon_pickaxe.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "weapon:axe",
+      "name": "Iron axe",
+      "noted": false,
+      "image": "item-weapon_axe.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "armor:helm",
+      "name": "Iron full helm",
+      "noted": false,
+      "image": "item-armor_helm.webp",
+      "matchingImage": true,
+      "dropMeshes": 10,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "armor:chest",
+      "name": "Iron platebody",
+      "noted": false,
+      "image": "item-armor_chest.webp",
+      "matchingImage": true,
+      "dropMeshes": 21,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "armor:legs",
+      "name": "Iron platelegs",
+      "noted": false,
+      "image": "item-armor_legs.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "armor:boots",
+      "name": "Iron boots",
+      "noted": false,
+      "image": "item-armor_boots.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "armor:cape",
+      "name": "Crimson cape",
+      "noted": false,
+      "image": "item-armor_cape.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "shield:square",
+      "name": "Iron square shield",
+      "noted": false,
+      "image": "item-shield_square.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "shield:kite",
+      "name": "Iron kiteshield",
+      "noted": false,
+      "image": "item-shield_kite.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "jewelry:woodlandAmulet",
+      "name": "Woodland amulet",
+      "noted": false,
+      "image": "item-jewelry_woodlandAmulet.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "jewelry:prospectorsRing",
+      "name": "Prospector’s ring",
+      "noted": false,
+      "image": "item-jewelry_prospectorsRing.webp",
+      "matchingImage": true,
+      "dropMeshes": 1,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "mount:armoredWhiteHorse",
+      "name": "Armored white horse",
+      "noted": false,
+      "image": "item-mount_armoredWhiteHorse.webp",
+      "matchingImage": true,
+      "dropMeshes": 17,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:apple",
+      "name": "Red apple (noted)",
+      "noted": true,
+      "image": "item-apple.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:pear",
+      "name": "Orchard pear (noted)",
+      "noted": true,
+      "image": "item-pear.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:trailBerries",
+      "name": "Forest berries (noted)",
+      "noted": true,
+      "image": "item-trailBerries.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:orange",
+      "name": "Sweet orange (noted)",
+      "noted": true,
+      "image": "item-orange.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:carrot",
+      "name": "Garden carrot (noted)",
+      "noted": true,
+      "image": "item-carrot.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:mushroom",
+      "name": "Field mushroom (noted)",
+      "noted": true,
+      "image": "item-mushroom.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:egg",
+      "name": "Hen egg (noted)",
+      "noted": true,
+      "image": "item-egg.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:cheese",
+      "name": "Farmhouse cheese (noted)",
+      "noted": true,
+      "image": "item-cheese.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:lobster",
+      "name": "Cooked lobster (noted)",
+      "noted": true,
+      "image": "item-lobster.webp",
+      "matchingImage": true,
+      "dropMeshes": 16,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:shrimp",
+      "name": "Cooked shrimp (noted)",
+      "noted": true,
+      "image": "item-shrimp.webp",
+      "matchingImage": true,
+      "dropMeshes": 9,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:salmon",
+      "name": "Cooked salmon (noted)",
+      "noted": true,
+      "image": "item-salmon.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:trailRations",
+      "name": "Traveler’s rations (noted)",
+      "noted": true,
+      "image": "item-trailRations.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:roastChicken",
+      "name": "Roast chicken (noted)",
+      "noted": true,
+      "image": "item-roastChicken.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:berryPie",
+      "name": "Berry pie (noted)",
+      "noted": true,
+      "image": "item-berryPie.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:cheesePizza",
+      "name": "Cheese pizza (noted)",
+      "noted": true,
+      "image": "item-cheesePizza.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:vegetableSoup",
+      "name": "Vegetable soup (noted)",
+      "noted": true,
+      "image": "item-vegetableSoup.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:linen",
+      "name": "Linen cloth (noted)",
+      "noted": true,
+      "image": "item-linen.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:woolBlanket",
+      "name": "Wool blanket (noted)",
+      "noted": true,
+      "image": "item-woolBlanket.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:furPelt",
+      "name": "Brown fur pelt (noted)",
+      "noted": true,
+      "image": "item-furPelt.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:rope",
+      "name": "Hemp rope (noted)",
+      "noted": true,
+      "image": "item-rope.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:candle",
+      "name": "Beeswax candle (noted)",
+      "noted": true,
+      "image": "item-candle.webp",
+      "matchingImage": true,
+      "dropMeshes": 8,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:campLantern",
+      "name": "Travel lantern (noted)",
+      "noted": true,
+      "image": "item-campLantern.webp",
+      "matchingImage": true,
+      "dropMeshes": 9,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:bedroll",
+      "name": "Wool bedroll (noted)",
+      "noted": true,
+      "image": "item-bedroll.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:travelJournal",
+      "name": "Traveler’s journal (noted)",
+      "noted": true,
+      "image": "item-travelJournal.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:sealedLetter",
+      "name": "Sealed letter (noted)",
+      "noted": true,
+      "image": "item-sealedLetter.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:woodenBucket",
+      "name": "Wooden bucket (noted)",
+      "noted": true,
+      "image": "item-woodenBucket.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:fishingPole",
+      "name": "Fishing pole (noted)",
+      "noted": true,
+      "image": "item-fishingPole.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:fishingNet",
+      "name": "Fishing net (noted)",
+      "noted": true,
+      "image": "item-fishingNet.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:rawFish",
+      "name": "Raw river fish (noted)",
+      "noted": true,
+      "image": "item-rawFish.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:wood",
+      "name": "Logs (noted)",
+      "noted": true,
+      "image": "item-wood.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:ore",
+      "name": "Iron ore (noted)",
+      "noted": true,
+      "image": "item-ore.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:tinderbox",
+      "name": "Tinderbox (noted)",
+      "noted": true,
+      "image": "item-tinderbox.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:hammer",
+      "name": "Smithing hammer (noted)",
+      "noted": true,
+      "image": "item-hammer.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:knife",
+      "name": "Crafting knife (noted)",
+      "noted": true,
+      "image": "item-knife.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:needle",
+      "name": "Needle (noted)",
+      "noted": true,
+      "image": "item-needle.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:chisel",
+      "name": "Chisel (noted)",
+      "noted": true,
+      "image": "item-chisel.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:saw",
+      "name": "Carpenter’s saw (noted)",
+      "noted": true,
+      "image": "item-saw.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:rake",
+      "name": "Rake (noted)",
+      "noted": true,
+      "image": "item-rake.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:seedDibber",
+      "name": "Seed dibber (noted)",
+      "noted": true,
+      "image": "item-seedDibber.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:spade",
+      "name": "Spade (noted)",
+      "noted": true,
+      "image": "item-spade.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:pestle",
+      "name": "Pestle and mortar (noted)",
+      "noted": true,
+      "image": "item-pestle.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:boxTrap",
+      "name": "Box trap (noted)",
+      "noted": true,
+      "image": "item-boxTrap.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:lockpick",
+      "name": "Lockpick (noted)",
+      "noted": true,
+      "image": "item-lockpick.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:copperOre",
+      "name": "Copper ore (noted)",
+      "noted": true,
+      "image": "item-copperOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:tinOre",
+      "name": "Tin ore (noted)",
+      "noted": true,
+      "image": "item-tinOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:coal",
+      "name": "Coal (noted)",
+      "noted": true,
+      "image": "item-coal.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:silverOre",
+      "name": "Silver ore (noted)",
+      "noted": true,
+      "image": "item-silverOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:goldOre",
+      "name": "Gold ore (noted)",
+      "noted": true,
+      "image": "item-goldOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:mithrilOre",
+      "name": "Mithril ore (noted)",
+      "noted": true,
+      "image": "item-mithrilOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:adamantOre",
+      "name": "Adamantite ore (noted)",
+      "noted": true,
+      "image": "item-adamantOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:runiteOre",
+      "name": "Runite ore (noted)",
+      "noted": true,
+      "image": "item-runiteOre.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:bronzeBar",
+      "name": "Bronze bar (noted)",
+      "noted": true,
+      "image": "item-bronzeBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:ironBar",
+      "name": "Iron bar (noted)",
+      "noted": true,
+      "image": "item-ironBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:steelBar",
+      "name": "Steel bar (noted)",
+      "noted": true,
+      "image": "item-steelBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:silverBar",
+      "name": "Silver bar (noted)",
+      "noted": true,
+      "image": "item-silverBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:goldBar",
+      "name": "Gold bar (noted)",
+      "noted": true,
+      "image": "item-goldBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:mithrilBar",
+      "name": "Mithril bar (noted)",
+      "noted": true,
+      "image": "item-mithrilBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:adamantBar",
+      "name": "Adamantite bar (noted)",
+      "noted": true,
+      "image": "item-adamantBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:runiteBar",
+      "name": "Runite bar (noted)",
+      "noted": true,
+      "image": "item-runiteBar.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:oakLogs",
+      "name": "Oak logs (noted)",
+      "noted": true,
+      "image": "item-oakLogs.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:willowLogs",
+      "name": "Willow logs (noted)",
+      "noted": true,
+      "image": "item-willowLogs.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:mapleLogs",
+      "name": "Maple logs (noted)",
+      "noted": true,
+      "image": "item-mapleLogs.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:yewLogs",
+      "name": "Yew logs (noted)",
+      "noted": true,
+      "image": "item-yewLogs.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:ashes",
+      "name": "Ashes (noted)",
+      "noted": true,
+      "image": "item-ashes.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:plank",
+      "name": "Timber plank (noted)",
+      "noted": true,
+      "image": "item-plank.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:oakPlank",
+      "name": "Oak plank (noted)",
+      "noted": true,
+      "image": "item-oakPlank.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:hide",
+      "name": "Animal hide (noted)",
+      "noted": true,
+      "image": "item-hide.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:leather",
+      "name": "Leather (noted)",
+      "noted": true,
+      "image": "item-leather.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:leatherGloves",
+      "name": "Leather work gloves (noted)",
+      "noted": true,
+      "image": "item-leatherGloves.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:flax",
+      "name": "Flax (noted)",
+      "noted": true,
+      "image": "item-flax.webp",
+      "matchingImage": true,
+      "dropMeshes": 11,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:bowString",
+      "name": "Bow string (noted)",
+      "noted": true,
+      "image": "item-bowString.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:unstrungBow",
+      "name": "Unstrung bow (noted)",
+      "noted": true,
+      "image": "item-unstrungBow.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:shortbow",
+      "name": "Handcrafted shortbow (noted)",
+      "noted": true,
+      "image": "item-shortbow.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:uncutGem",
+      "name": "Uncut sapphire (noted)",
+      "noted": true,
+      "image": "item-uncutGem.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:cutGem",
+      "name": "Cut sapphire (noted)",
+      "noted": true,
+      "image": "item-cutGem.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:silverRing",
+      "name": "Silver signet (noted)",
+      "noted": true,
+      "image": "item-silverRing.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:grimyHerb",
+      "name": "Grimy herb (noted)",
+      "noted": true,
+      "image": "item-grimyHerb.webp",
+      "matchingImage": true,
+      "dropMeshes": 11,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:cleanHerb",
+      "name": "Clean herb (noted)",
+      "noted": true,
+      "image": "item-cleanHerb.webp",
+      "matchingImage": true,
+      "dropMeshes": 11,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:vial",
+      "name": "Empty vial (noted)",
+      "noted": true,
+      "image": "item-vial.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:vialWater",
+      "name": "Vial of water (noted)",
+      "noted": true,
+      "image": "item-vialWater.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:unfinishedPotion",
+      "name": "Unfinished remedy (noted)",
+      "noted": true,
+      "image": "item-unfinishedPotion.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:berries",
+      "name": "Red berries (noted)",
+      "noted": true,
+      "image": "item-berries.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:healingPotion",
+      "name": "Healing draught (noted)",
+      "noted": true,
+      "image": "item-healingPotion.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:wheat",
+      "name": "Wheat (noted)",
+      "noted": true,
+      "image": "item-wheat.webp",
+      "matchingImage": true,
+      "dropMeshes": 11,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:flour",
+      "name": "Flour (noted)",
+      "noted": true,
+      "image": "item-flour.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:water",
+      "name": "Water flask (noted)",
+      "noted": true,
+      "image": "item-water.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:dough",
+      "name": "Bread dough (noted)",
+      "noted": true,
+      "image": "item-dough.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:bread",
+      "name": "Fresh bread (noted)",
+      "noted": true,
+      "image": "item-bread.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:rawMeat",
+      "name": "Raw game meat (noted)",
+      "noted": true,
+      "image": "item-rawMeat.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:cookedMeat",
+      "name": "Roast game meat (noted)",
+      "noted": true,
+      "image": "item-cookedMeat.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:cookedFish",
+      "name": "Cooked river fish (noted)",
+      "noted": true,
+      "image": "item-cookedFish.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:burntFood",
+      "name": "Burnt food (noted)",
+      "noted": true,
+      "image": "item-burntFood.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:runeEssence",
+      "name": "Rune essence (noted)",
+      "noted": true,
+      "image": "item-runeEssence.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:fur",
+      "name": "Soft fur (noted)",
+      "noted": true,
+      "image": "item-fur.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:steelBrace",
+      "name": "Steel reinforcement (noted)",
+      "noted": true,
+      "image": "item-steelBrace.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:mithrilFittings",
+      "name": "Mithril fittings (noted)",
+      "noted": true,
+      "image": "item-mithrilFittings.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:adamantFittings",
+      "name": "Adamantite fittings (noted)",
+      "noted": true,
+      "image": "item-adamantFittings.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:runiteFittings",
+      "name": "Runite fittings (noted)",
+      "noted": true,
+      "image": "item-runiteFittings.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:weapon:battleaxe",
+      "name": "Iron battleaxe (noted)",
+      "noted": true,
+      "image": "item-weapon_battleaxe.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:weapon:dagger",
+      "name": "Iron dagger (noted)",
+      "noted": true,
+      "image": "item-weapon_dagger.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:weapon:scimitar",
+      "name": "Iron scimitar (noted)",
+      "noted": true,
+      "image": "item-weapon_scimitar.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:weapon:longsword",
+      "name": "Iron longsword (noted)",
+      "noted": true,
+      "image": "item-weapon_longsword.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:weapon:twohand",
+      "name": "Iron 2h sword (noted)",
+      "noted": true,
+      "image": "item-weapon_twohand.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:weapon:shortsword",
+      "name": "Iron shortsword (noted)",
+      "noted": true,
+      "image": "item-weapon_shortsword.webp",
+      "matchingImage": true,
+      "dropMeshes": 6,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:weapon:pickaxe",
+      "name": "Iron pickaxe (noted)",
+      "noted": true,
+      "image": "item-weapon_pickaxe.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:weapon:axe",
+      "name": "Iron axe (noted)",
+      "noted": true,
+      "image": "item-weapon_axe.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:armor:helm",
+      "name": "Iron full helm (noted)",
+      "noted": true,
+      "image": "item-armor_helm.webp",
+      "matchingImage": true,
+      "dropMeshes": 11,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:armor:chest",
+      "name": "Iron platebody (noted)",
+      "noted": true,
+      "image": "item-armor_chest.webp",
+      "matchingImage": true,
+      "dropMeshes": 22,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:armor:legs",
+      "name": "Iron platelegs (noted)",
+      "noted": true,
+      "image": "item-armor_legs.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:armor:boots",
+      "name": "Iron boots (noted)",
+      "noted": true,
+      "image": "item-armor_boots.webp",
+      "matchingImage": true,
+      "dropMeshes": 7,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:armor:cape",
+      "name": "Crimson cape (noted)",
+      "noted": true,
+      "image": "item-armor_cape.webp",
+      "matchingImage": true,
+      "dropMeshes": 4,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:shield:square",
+      "name": "Iron square shield (noted)",
+      "noted": true,
+      "image": "item-shield_square.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:shield:kite",
+      "name": "Iron kiteshield (noted)",
+      "noted": true,
+      "image": "item-shield_kite.webp",
+      "matchingImage": true,
+      "dropMeshes": 5,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:jewelry:woodlandAmulet",
+      "name": "Woodland amulet (noted)",
+      "noted": true,
+      "image": "item-jewelry_woodlandAmulet.webp",
+      "matchingImage": true,
+      "dropMeshes": 3,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:jewelry:prospectorsRing",
+      "name": "Prospector’s ring (noted)",
+      "noted": true,
+      "image": "item-jewelry_prospectorsRing.webp",
+      "matchingImage": true,
+      "dropMeshes": 2,
+      "grounded": true,
+      "flattened": true
+    },
+    {
+      "id": "note:mount:armoredWhiteHorse",
+      "name": "Armored white horse (noted)",
+      "noted": true,
+      "image": "item-mount_armoredWhiteHorse.webp",
+      "matchingImage": true,
+      "dropMeshes": 18,
+      "grounded": true,
+      "flattened": true
+    }
+  ]
+}

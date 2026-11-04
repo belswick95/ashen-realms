@@ -1,5 +1,5 @@
-import {fullHumanAsset as asset} from './full-human-asset.js?v=release-20261104-studio42';
-import {fabricMaterial,loftGeometry} from './anatomy.js?v=release-20261104-studio42';
+import {fullHumanAsset as asset} from './full-human-asset.js?v=release-20261104-forest43';
+import {fabricMaterial,loftGeometry} from './anatomy.js?v=release-20261104-forest43';
 const caches=new WeakMap();
 // One complete authored human body, skinned to the equipment/animation skeleton.
 // The partitions are clothing/material boundaries of that body, not primitive limbs.
