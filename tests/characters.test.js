@@ -60,20 +60,27 @@ test('hair styles use distinct low-poly silhouettes with reusable tapered geomet
  const styles=['Side swept','Short crop','Spiky','Buzz cut','Long'];
  const rigs=styles.map(hair=>buildHumanoid(T,new T.Group(),{hair}));
  const strands=rig=>rig.hairMeshes.filter(mesh=>mesh.userData.hairStrand===true);
- assert.deepEqual(rigs.map(r=>strands(r).length),[7,7,7,0,17]);
- assert.equal(strands(rigs[0])[0].geometry,strands(rigs[4])[0].geometry);
+ assert.deepEqual(rigs.map(r=>strands(r).length),[0,0,7,0,0]);
+ assert.equal(rigs[0].hairMeshes[0].geometry,rigs[1].hairMeshes[0].geometry,'same cap shape is cached');
+ assert.notEqual(rigs[0].hairMeshes[0].geometry,rigs[3].hairMeshes[0].geometry,'buzz cut is thinner');
  for(const rig of rigs){
   const headBounds=new T.Box3().setFromObject(rig.head);
   assert.ok(headBounds.min.y>1.9&&headBounds.max.y<3.0,'hair must stay attached to the head');
  }
 });
 
-test('complete authored body is skinned with normalized weights and stable equipment anchors',()=>{
- const rig=character();assert.ok(rig.skinned&&rig.torso.isSkinnedMesh);assert.ok(Object.entries(rig.meshes).every(([k,m])=>k==='head'||k.endsWith('Hand')?!m.isSkinnedMesh:m.isSkinnedMesh));assert.equal(rig.meshes.head.parent,rig.head);assert.equal(rig.meshes.leftHand.parent,rig.leftHand);assert.equal(rig.meshes.rightHand.parent,rig.rightHand);assert.ok(Object.values(rig.meshes).reduce((sum,m)=>sum+m.geometry.attributes.position.count,0)>12000);
- for(const mesh of Object.values(rig.meshes)){const weights=mesh.geometry.attributes.skinWeight,indices=mesh.geometry.attributes.skinIndex;for(let i=0;i<weights.count;i++){assert.ok(Math.abs(weights.getX(i)+weights.getY(i)+weights.getZ(i)+weights.getW(i)-1)<1e-5);for(const value of [indices.getX(i),indices.getY(i),indices.getZ(i),indices.getW(i)])assert.ok(value<rig.skeleton.bones.length)}}
+test('low-poly body: rigid parts on bones, small vertex budget and stable equipment anchors',()=>{
+ const rig=character();let vertices=0,skinned=0;rig.root.traverse(o=>{if(o.isSkinnedMesh)skinned++;if(o.isMesh)vertices+=o.geometry.attributes.position.count});assert.equal(skinned,0);assert.ok(vertices<4000,'low detail: '+vertices);
+ assert.equal(rig.meshes.head.parent,rig.head);assert.equal(rig.meshes.leftHand.parent,rig.leftHand);assert.equal(rig.meshes.rightHand.parent,rig.rightHand);
+ for(const side of ['left','right'])for(const [part,bone] of [['UpperArm','Arm'],['Forearm','Elbow'],['Thigh','Leg'],['Shin','Knee'],['Foot','Ankle']])assert.equal(rig.parts[side+part].parent,rig[side+bone]);
  const animator=createHumanoidAnimator(rig);animator.update(.016,{speed:5,distance:.08});rig.root.updateMatrixWorld(true);assert.ok(rig.leftArm.parent===rig.root&&rig.rightArm.parent===rig.root);
 });
-
+test('every armor piece is parented to a bone and is larger than the body part it covers',()=>{
+ const rig=character(),slots=buildPlateArmor(T,rig.root,rig);rig.root.updateMatrixWorld(true);
+ for(const list of Object.values(slots))for(const m of list){let o=m;while(o&&!o.isBone&&o!==rig.torso)o=o.parent;assert.ok(o,'armor follows a bone')}
+ const width=(o)=>new T.Box3().setFromObject(o).getSize(new T.Vector3());
+ for(const [part,armor] of [['leftForearm','vambrace'],['leftUpperArm','rerebrace'],['leftThigh','cuisse'],['leftShin','greave'],['shirt','cuirass'],['leftFoot','sabaton'],['face','helm']]){const piece=Object.values(slots).flat().find(m=>m.geometry.userData.armorPiece===armor&&(rig.parts[part].parent===rig.head||m.parent===rig.parts[part].parent));assert.ok(piece,armor);piece.visible=true;const a=width(piece),b=width(rig.parts[part]);assert.ok(a.x>b.x&&a.z>b.z,part)}
+});
 test('damage reaction decays, idle breathing remains finite and the gameplay root stays grounded',()=>{
  const r=character(),a=createHumanoidAnimator(r);
  const pose=a.update(1/60,{hit:1});

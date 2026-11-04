@@ -1,61 +1,62 @@
-import {loftGeometry} from './anatomy.js?v=release-20261104-hands53';
-import {surfaceTexture} from './surface-textures.js?v=release-20261104-hands53';
-// Original, closed low-poly plate harness: angular steel, articulated lames and
-// tapered limbs. Every piece follows the existing wrist/knee rig and loadout.
+import {PROFILES,inflate,shell} from './humanoid.js?v=release-20261104-lowpoly54';
+// Low-poly plate armor. Every piece is an inflated copy of the body part it
+// covers, parented to that part's bone, so it always fits and always follows
+// the animation. Returns {helm,chest,legs,boots}: arrays of meshes, all hidden.
 export function buildPlateArmor(T,body,rig){
  const caches=buildPlateArmor.caches||(buildPlateArmor.caches=new WeakMap());let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}
- const material=(name,color,metalness=.68,roughness=.48)=>{if(!cache.has(name)){const map=surfaceTexture(T,'metal',0xffffff);cache.set(name,new T.MeshStandardMaterial({color,metalness,roughness,flatShading:false,map,bumpMap:map,bumpScale:.002}))}cache.get(name).userData.eldervaleShared=true;return cache.get(name)};
- const steel=material('steel',0x7b898f),edge=material('edges',0xb1babd),dark=material('recesses',0x293b41),leather=material('leather',0x4b3529,0,.95),plume=material('crest',0x6d3450,0,.96);
+ const material=(name,color,metalness=.55,roughness=.42)=>{if(!cache.has('mat:'+name)){const m=new T.MeshStandardMaterial({color,metalness,roughness,flatShading:true});m.userData.eldervaleShared=true;cache.set('mat:'+name,m)}return cache.get('mat:'+name)};
+ const steel=material('steel',0x9aa5ab),trim=material('trim',0xc9ccc4,.6,.35),dark=material('recess',0x1d2427,.3,.7),leather=material('leather',0x4b3529,0,.92),crest=material('crest',0x8a2f3c,0,.9);
+ const geo=(key,make)=>{if(!cache.has(key)){const g=make();g.userData.armorPiece=key.replace(/^loft:/,'');g.computeBoundingSphere();g.userData.eldervaleShared=true;cache.set(key,g)}return cache.get(key)};
+ const loft=(key,rings,sides=8)=>geo('loft:'+key,()=>shell(T,rings,sides));
  const slots={helm:[],chest:[],legs:[],boots:[]};
- function add(g,m,parent,slot,x=0,y=0,z=0){const key=g.type+':'+JSON.stringify(g.parameters||Array.from(g.attributes.position.array));if(cache.has(key)){g.dispose();g=cache.get(key)}else cache.set(key,g);g.userData.eldervaleShared=true;const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=false;parent.add(o);slots[slot].push(o);return o}
- const shell=(parent,slot,rings,mat=steel,sides=8)=>add(loftGeometry(T,rings,sides),mat,parent,slot);
- const box=(parent,slot,w,h,d,x,y,z,mat=steel)=>add(new T.BoxGeometry(w,h,d),mat,parent,slot,x,y,z);
- // The helmet has a flat brow, a sloped crown and a closed jaw, with dark visor slots.
- shell(body,'helm',[[2.10,.20,.24],[2.18,.285,.29],[2.43,.325,.31],[2.60,.30,.285],[2.76,.21,.22],[2.82,.055,.09]],steel,8);
- box(body,'helm',.56,.11,.025,0,2.43,.298,dark);
- box(body,'helm',.59,.045,.035,0,2.505,.30,edge);
- for(const x of [-.22,-.11,0,.11,.22])box(body,'helm',.038,.145,.035,x,2.365,.327,steel);
- box(body,'helm',.07,.26,.045,0,2.31,.345,edge);
- const crest=shell(body,'helm',[[2.78,.04,.12],[2.97,.035,.16],[3.10,.025,.12]],plume,5);crest.position.z=-.055;
- // Closed breast/back shell, shaped over the ribs and narrowing at the waist.
- shell(body,'chest',[[1.10,.29,.235],[1.22,.33,.26],[1.52,.395,.31],[1.75,.435,.325],[1.91,.39,.27],[1.97,.22,.19]],steel,8);
- shell(body,'chest',[[1.91,.20,.18],[2.015,.19,.165]],dark,8);
- // Three overlapping fauld lames protect the hips without a giant rectangular skirt.
- for(let i=0;i<3;i++)shell(body,'chest',[[1.01-i*.07,.355+i*.016,.265+i*.007],[1.10-i*.07,.34+i*.016,.25+i*.007]],i===1?edge:steel,8);
- const belt=shell(body,'chest',[[1.10,.345,.265],[1.16,.345,.265]],leather,8);
- box(body,'chest',.10,.075,.04,0,1.13,.285,edge);
+ const add=(g,m,parent,slot,x=0,y=0,z=0)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=false;o.userData.armorSlot=slot;parent.add(o);slots[slot].push(o);return o};
+ const torso=rig.torso||rig.base;
+
+ // Helm: a closed great-helm around the head with a visor slit and a crest.
+ // It lives in its own group on the head bone so it follows every nod.
+ const helmet=new T.Group();helmet.name='armor-helm';rig.head.add(helmet);
+ add(loft('helm',[[-.24,.115,.12,0,.02],...inflate(PROFILES.head.slice(1,6),1.14,.012),[.25,.075,.08,0,-.008],[.29,.02,.02]],10),steel,helmet,'helm');
+ add(geo('visor',()=>new T.BoxGeometry(.24,.032,.03)),dark,helmet,'helm',0,.05,.178);
+ add(geo('visor-ridge',()=>new T.BoxGeometry(.036,.27,.04)),trim,helmet,'helm',0,-.04,.18);
+ add(geo('brow-band',()=>new T.BoxGeometry(.30,.03,.03)),trim,helmet,'helm',0,.10,.166);
+ for(const x of [-.06,-.03,.03,.06])add(geo('breath',()=>new T.BoxGeometry(.012,.05,.02)),dark,helmet,'helm',x,-.09,.17);
+ add(geo('crest',()=>{const g=new T.CylinderGeometry(.13,.13,.035,10,1,false,-Math.PI/2,Math.PI);g.rotateZ(Math.PI/2);g.scale(1,.75,1);return g}),crest,helmet,'helm',0,.215,-.01);
+ add(loft('gorget',inflate(PROFILES.neck,1.35,.02),8),steel,rig.base,'helm');
+
+ // Chest: breastplate on the torso pivot, layered shoulders and arm plates.
+ add(loft('cuirass',inflate(PROFILES.torso.slice(0,5),1.08,.014),10),steel,torso,'chest');
+ add(loft('cuirass-collar',[[.68,.21,.14,0,-.05],[.74,.14,.105,0,-.05]],10),trim,torso,'chest');
+ add(geo('breast-ridge',()=>new T.BoxGeometry(.03,.42,.03)),trim,torso,'chest',0,.36,.13);
+ for(let i=0;i<3;i++)add(loft('fauld'+i,[[1.33-i*.07,.26+i*.012,.175+i*.006,0,-.05],[1.42-i*.07,.255+i*.012,.17+i*.006,0,-.05]],10),i===0?trim:steel,rig.base,'chest');
+ add(loft('war-belt',[[1.52,.268,.182,0,-.05],[1.59,.268,.182,0,-.05]],10),leather,rig.base,'chest');
+ add(geo('buckle',()=>new T.BoxGeometry(.07,.06,.02)),trim,rig.base,'chest',0,1.555,.135);
  for(const side of ['left','right']){
-  const arm=rig[side+'Arm'],elbow=rig[side+'Elbow'];
-  shell(arm,'chest',[[-.33,.19,.18],[-.20,.215,.195],[-.03,.22,.20],[.075,.15,.15]],steel,6);
-  shell(arm,'chest',[[-.36,.18,.17],[-.28,.19,.175]],edge,6);
-  shell(arm,'chest',[[-.44,.12,.115],[-.32,.16,.15]],steel,6);
-  shell(elbow,'chest',[[-.065,.13,.13],[.025,.16,.15],[.10,.12,.115]],edge,6);
-  shell(elbow,'chest',[[-.30,.09,.085],[-.22,.12,.11],[-.07,.13,.125]],steel,6);
-  shell(elbow,'chest',[[-.34,.10,.09],[-.28,.11,.10]],edge,6);
-  shell(elbow,'chest',[[-.41,.072,.06],[-.34,.083,.07]],steel,6);
+  const s=side==='left'?1:-1,arm=rig[side+'Arm'],elbow=rig[side+'Elbow'];
+  // Pauldron: two overlapping domed lames over the shoulder ball.
+  const p1=add(loft('pauldron',[[.13,.03,.03],[.10,.10,.10],[.03,.135,.125],[-.06,.13,.12]],8),steel,arm,'chest');p1.rotation.z=s*.12;
+  const p2=add(loft('pauldron-lame',[[-.04,.128,.118],[-.12,.115,.108]],8),trim,arm,'chest');p2.rotation.z=s*.12;
+  add(loft('rerebrace',inflate(PROFILES.upperArm.slice(1),1.18,.008),8),steel,arm,'chest');
+  add(geo('couter',()=>{const g=new T.SphereGeometry(.082,8,6);g.scale(1,.9,1);return g}),trim,elbow,'chest');
+  add(loft('vambrace',inflate(PROFILES.forearm,1.25,.01),8),steel,elbow,'chest');
+  add(loft('cuff',[[-.36,.062,.058],[-.30,.07,.066]],8),trim,elbow,'chest');
  }
- for(const [leg,knee] of [[rig.leftLeg,rig.leftKnee],[rig.rightLeg,rig.rightKnee]]){
-  shell(leg,'legs',[[-.45,.14,.145],[-.25,.18,.18],[-.055,.20,.19],[.025,.175,.17]],steel,8);
-  shell(knee,'legs',[[-.10,.12,.13],[.005,.16,.18],[.08,.13,.145]],edge,6);
-  shell(knee,'legs',[[-.35,.10,.115],[-.23,.135,.15],[-.10,.15,.16]],steel,8);
-  // Pointed leather boots and overlapping metal sabatons, rather than round shoes.
-  shell(knee,'boots',[[-.46,.125,.20,0,.09],[-.40,.13,.225,0,.09],[-.34,.105,.16,0,.05],[-.29,.09,.095]],leather,6);
-  shell(knee,'boots',[[-.44,.12,.22,0,.115],[-.385,.12,.23,0,.10],[-.34,.10,.15,0,.055]],steel,6);
-  box(knee,'boots',.23,.025,.035,0,-.38,.28,edge);
+
+ // Legs: tassets, cuisses, knee cops and greaves.
+ add(loft('hip-plate',inflate(PROFILES.hips,1.07,.012),10),steel,rig.base,'legs');
+ for(const side of ['left','right']){
+  const leg=rig[side+'Leg'],knee=rig[side+'Knee'];
+  add(loft('cuisse',inflate(PROFILES.thigh.slice(1),1.14,.01),8),steel,leg,'legs');
+  add(geo('poleyn',()=>{const g=new T.SphereGeometry(.098,8,6);g.scale(1,.85,.95);g.translate(0,0,.012);return g}),trim,knee,'legs');
+  add(loft('greave',inflate(PROFILES.shin.slice(0,4),1.18,.01),8),steel,knee,'legs');
  }
- for(const slot of ['chest','legs','boots'])for(const p of slots[slot]){
-  if(p.parent===body){p.position.y+=rig.upperOffset;if(rig.skinned){p.scale.x*=.82;p.scale.z*=.88;}}else if(rig.skinned&&[rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow].includes(p.parent)){const s=[rig.leftArm,rig.rightArm].includes(p.parent)?rig.armScale:rig.forearmScale;p.position.y*=s;p.scale.y*=s;p.scale.x*=.80;p.scale.z*=.85;}
-  else if([rig.leftLeg,rig.rightLeg,rig.leftKnee,rig.rightKnee].includes(p.parent)){const s=[rig.leftKnee,rig.rightKnee].includes(p.parent)?rig.lowerLegScale||rig.legScale:rig.legScale;p.position.y*=s;p.scale.y*=s}
+
+ // Boots: sabatons over the shoe, sharing its flat sole height.
+ for(const side of ['left','right']){
+  const ankle=rig[side+'Ankle'];
+  add(loft('sabaton',PROFILES.foot.map(([y,rx,rz,cx=0,cz=0],i)=>[y,rx*1.14+.008,rz*1.06+.01,cx,cz+(i<2?.01:0)]),8),steel,ankle,'boots');
+  add(loft('sabaton-cuff',[[.03,.072,.07],[.10,.068,.064]],8),trim,ankle,'boots');
  }
- for(const [knee,ankle] of [[rig.leftKnee,rig.leftAnkle],[rig.rightKnee,rig.rightAnkle]])if(ankle){body.updateMatrixWorld(true);for(const part of slots.boots)if(part.parent===knee)ankle.attach(part)}
- // Fit the sabaton sole to the authored foot, not the old primitive rig's ankle.
- if(rig.skinned)for(const side of ['left','right']){
-  body.updateMatrixWorld(true);const ankle=rig[side+'Ankle'],foot=rig.meshes[side+'Foot'],parts=slots.boots.filter(p=>p.parent===ankle),bounds=new T.Box3();
-  foot.geometry.computeBoundingBox();const sole=foot.geometry.boundingBox.clone().applyMatrix4(foot.matrixWorld).min.y;
-  for(const part of parts){part.geometry.computeBoundingBox();bounds.union(part.geometry.boundingBox.clone().applyMatrix4(part.matrixWorld));}
-  const shift=(sole-bounds.min.y)/ankle.getWorldScale(new T.Vector3()).y;for(const part of parts)part.position.y+=shift;
- }
- const helmetRoot=new T.Group();body.add(helmetRoot);for(const p of slots.helm){p.position.y-=2.10;helmetRoot.add(p)}helmetRoot.position.copy(rig.head.position);if(rig.skinned){helmetRoot.position.y-=.18;helmetRoot.position.z+=.045;helmetRoot.scale.set(.58,.63,.78);}else{helmetRoot.scale.copy(rig.head.scale);helmetRoot.scale.z*=1.12;}
- body.updateMatrixWorld(true);rig.head.attach(helmetRoot);
- Object.values(slots).flat().forEach(p=>p.visible=false);return slots;
+ for(const list of Object.values(slots))for(const o of list)o.visible=false;
+ body.updateMatrixWorld?.(true);
+ return slots;
 }

@@ -1,4 +1,4 @@
-import {roadLines} from './geography.js?v=release-20261104-hands53';
+import {roadLines} from './geography.js?v=release-20261104-lowpoly54';
 // Only the exterior approach changes. The castle plateau, moat and bridge remain intact.
 const exit={x:-340,z:-235};
 let cachedRoads,cachedTrail;export function approachTrail(){if(cachedRoads===roadLines)return cachedTrail;cachedRoads=roadLines;const line=roadLines.find(points=>Math.hypot(points[0][0]-exit.x,points[0][1]-exit.z)<2||Math.hypot(points.at(-1)[0]-exit.x,points.at(-1)[1]-exit.z)<2);if(!line)return cachedTrail=[[exit.x,exit.z],[exit.x,-80]];return cachedTrail=Math.hypot(line[0][0]-exit.x,line[0][1]-exit.z)<2?line:[...line].reverse()}

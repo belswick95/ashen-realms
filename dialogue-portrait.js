@@ -1,4 +1,4 @@
-import {installLocalSkinning} from './local-skinning.js?v=release-20261104-hands53';
+import {installLocalSkinning} from './local-skinning.js?v=release-20261104-lowpoly54';
 // A separate pose of the actual NPC, using the world's existing WebGL context.
 // Never clone interaction userData: it points back to the live world root.
 export function cloneSpeaker(source,T){
@@ -13,9 +13,9 @@ export function createTalkingPose(T,source){
  const model=cloneSpeaker(source,T);model.position.set(0,0,0);model.rotation.set(0,-.12,0);
  model.traverse(node=>{if(node.isMesh){node.castShadow=false;node.receiveShadow=false}});
  const head=model.getObjectByName('character-head'),lip=model.getObjectByName('lower-lip');
- const base=lip?.position.y||0,face=model.getObjectByName('authored-human-head');
+ const base=lip?.position.y||0,face=model.getObjectByName('character-face');
  let mouth=null;
- if(head&&lip){mouth=new T.Mesh(new T.SphereGeometry(1,10,6),new T.MeshBasicMaterial({color:0x492c27}));mouth.position.set(0,base+.009,.243);mouth.scale.set(.047,.003,.007);head.add(mouth)}
+ if(head&&lip){mouth=new T.Mesh(new T.SphereGeometry(1,10,6),new T.MeshBasicMaterial({color:0x492c27}));mouth.position.set(0,base+.009,lip.position.z+.004);mouth.scale.set(.047,.003,.007);head.add(mouth)}
  return {model,update(time,speaking,reducedMotion=false){
   const syllable=speaking&&!reducedMotion?Math.max(0,Math.sin(time*17)*.6+Math.sin(time*29)*.4):0;
   if(lip)lip.position.y=base-syllable*.035;if(face?.morphTargetInfluences?.length)face.morphTargetInfluences[0]=syllable;
