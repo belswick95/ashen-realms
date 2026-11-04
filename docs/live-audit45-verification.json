@@ -1,0 +1,22 @@
+{
+  "release": "release-20261104-audit45",
+  "deployedClientCommit": "7742169",
+  "productionFiles": {
+    "checked": 120,
+    "mismatches": []
+  },
+  "authenticatedLogin": true,
+  "actualKeyboardMovement": true,
+  "touchEquipmentMenu": true,
+  "phone": {
+    "scrollX": 0,
+    "scrollY": 0,
+    "joystick": true
+  },
+  "tablet": {
+    "overflow": false
+  },
+  "runtimeErrors": [],
+  "failedAssets": [],
+  "deviceTesting": "Chromium desktop and touch emulation; not physical iOS Safari"
+}
