@@ -1,12 +1,16 @@
+import {installLocalSkinning} from './local-skinning.js?v=release-20261104-rig50';
 // A separate pose of the actual NPC, using the world's existing WebGL context.
 // Never clone interaction userData: it points back to the live world root.
-export function cloneSpeaker(source){
+export function cloneSpeaker(source,T){
  const copies=new Map();function clone(node){const copy=node.clone(false);copies.set(node,copy);for(const child of node.children)if(!child.userData.kind)copy.add(clone(child));return copy;}
- const root=clone(source);for(const [original,copy]of copies)if(original.isSkinnedMesh){copy.skeleton=new original.skeleton.constructor(original.skeleton.bones.map(b=>copies.get(b)),original.skeleton.boneInverses.map(m=>m.clone()));if(original.morphTargetInfluences)copy.morphTargetInfluences=original.morphTargetInfluences.slice();}return root;
+ const root=clone(source),skeletons=new Map();
+ for(const [original,copy]of copies)if(original.isSkinnedMesh){let sk=skeletons.get(original.skeleton);if(!sk){sk=new original.skeleton.constructor(original.skeleton.bones.map(b=>copies.get(b)),original.skeleton.boneInverses.map(m=>m.clone()));sk.userData={...original.skeleton.userData};skeletons.set(original.skeleton,sk)}copy.skeleton=sk;if(original.morphTargetInfluences)copy.morphTargetInfluences=original.morphTargetInfluences.slice();}
+ for(const sk of skeletons.values())if(sk.userData?.characterLocal){const meshes=[];root.traverse(o=>{if(o.isSkinnedMesh&&o.skeleton===sk)meshes.push(o)});installLocalSkinning(T,root,sk,meshes,{preserveInverses:true});}
+ return root;
 }
 
 export function createTalkingPose(T,source){
- const model=cloneSpeaker(source);model.position.set(0,0,0);model.rotation.set(0,-.12,0);
+ const model=cloneSpeaker(source,T);model.position.set(0,0,0);model.rotation.set(0,-.12,0);
  model.traverse(node=>{if(node.isMesh){node.castShadow=false;node.receiveShadow=false}});
  const head=model.getObjectByName('character-head'),lip=model.getObjectByName('lower-lip');
  const base=lip?.position.y||0,face=model.getObjectByName('authored-human-head');
