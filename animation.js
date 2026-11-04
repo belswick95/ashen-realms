@@ -1,4 +1,4 @@
-import {sampleRunCycle} from './run-cycle.js?v=release-20261104-anatomy52';
+import {sampleRunCycle} from './run-cycle.js?v=release-20261104-hands53';
 // One distance-driven locomotion controller for every human in Eldervale.
 // This module has no renderer or account dependencies and can be regression tested.
 export function createHumanoidAnimator(rig){
@@ -123,7 +123,14 @@ export function createHumanoidAnimator(rig){
   }
   if(rig.head){rig.head.rotation.y=0;rig.head.rotation.x=-gait*.012*blend-impact*.06;rig.head.rotation.z=Math.sin(time*.7)*.008*(1-blend)}
   if(rig.neck)rig.neck.scale.y=1+Math.sin(time*1.7)*.008*(1-blend);
-  for(const side of ['left','right']){const holding=rig[side+'Hand']?.children.some(o=>o.isGroup&&o.visible);rig.setHandGrip?.(side,holding?.95:.45+.3*blend);}
+  for(const side of ['left','right']){
+   const hand=rig[side+'Hand'],surface=rig.meshes?.[side+'Hand'],holding=hand?.children.some(o=>o.isGroup&&o.visible),inward=(side==='left'?-1:1)*Math.PI/2;
+   if(!holding&&attack<=0&&block<=0)hand?.rotation.set(0,inward,0);
+   // Bare palms face the thighs. Equipment keeps its established wrist frame;
+   // turn only the hand surface around its handle in that frame.
+   if(surface)surface.rotation.y=holding||attack>0||block>0?inward:0;
+   rig.setHandGrip?.(side,holding||attack>0?.95:.45+.1*blend);
+  }
   // Never translate the whole rig: grounded feet and gameplay root stay stable.
   if(rig.torso){
    rig.torso.scale.y=1+Math.sin(time*1.7)*.004*(1-blend);

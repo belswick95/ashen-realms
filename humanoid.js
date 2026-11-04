@@ -1,6 +1,6 @@
-import {installLocalSkinning} from './local-skinning.js?v=release-20261104-anatomy52';
-import {fullHumanAsset as asset} from './full-human-asset.js?v=release-20261104-anatomy52';
-import {fabricMaterial,loftGeometry} from './anatomy.js?v=release-20261104-anatomy52';
+import {installLocalSkinning} from './local-skinning.js?v=release-20261104-hands53';
+import {fullHumanAsset as asset} from './full-human-asset.js?v=release-20261104-hands53';
+import {fabricMaterial,loftGeometry} from './anatomy.js?v=release-20261104-hands53';
 const caches=new WeakMap();
 // One complete authored human body, skinned to the equipment/animation skeleton.
 // The partitions are clothing/material boundaries of that body, not primitive limbs.
