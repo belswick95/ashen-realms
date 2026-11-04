@@ -1,3 +1,4 @@
+export function movementKey(event){return (event.code&&event.code!=='Unidentified'?event.code:null)||({w:'KeyW',a:'KeyA',s:'KeyS',d:'KeyD',q:'KeyQ',e:'KeyE',ArrowUp:'ArrowUp',ArrowDown:'ArrowDown',ArrowLeft:'ArrowLeft',ArrowRight:'ArrowRight',' ':'Space',Shift:'ShiftLeft'}[String(event.key||'').length===1?event.key.toLowerCase():event.key]||'')}
 const clamp=v=>Math.max(-1,Math.min(1,v));
 export function movementInput(keys,yaw,cameraYaw,rightMouse,dt){
  const has=key=>keys.has(key),forward=Number(has('KeyW')||has('ArrowUp'))-Number(has('KeyS')||has('ArrowDown'));
@@ -14,8 +15,10 @@ export function installMMOControls({element,getYaw,getCameraYaw,isRightMouse,isB
  const editing=event=>event.target?.closest?.('input,textarea,select,[contenteditable=true],[role=dialog]');
  function stop(){touchId=null;touchX=touchY=0;document.querySelector('#movement-stick')?.style.setProperty('transform','translate(-50%,-50%)');keys.clear();if(active)emit({x:0,z:0,yaw,moving:false});active=false;}
  function clear(){stop();if(sprint)onSprint(false);sprint=false;}
- const down=e=>{if(editing(e)||isBlocked())return;if(valid.has(e.code)){e.preventDefault();if(keys.has(e.code))return;keys.add(e.code);if(!active){yaw=getYaw();active=true}emit(movementInput(keys,yaw,getCameraYaw(),isRightMouse(),0))}if(e.code==='Space'){e.preventDefault();if(!e.repeat)onJump()}if(e.code==='ShiftLeft'||e.code==='ShiftRight'){if(!sprint)onSprint(true);sprint=true}};
- const up=e=>{keys.delete(e.code);if(valid.has(e.code)&&active&&!keys.size)stop();if(e.code==='ShiftLeft'||e.code==='ShiftRight'){if(sprint)onSprint(false);sprint=false}};
+ if(element?.addEventListener){element.tabIndex=0;element.addEventListener('pointerdown',()=>element.focus?.({preventScroll:true}));}
+ document.addEventListener('focusin',e=>{if(editing(e))clear()});
+ const down=e=>{if(e.isComposing||e.metaKey||e.ctrlKey||e.altKey||editing(e)||isBlocked())return;const code=movementKey(e);if(valid.has(code)){e.preventDefault();if(keys.has(code))return;keys.add(code);if(!active){yaw=getYaw();active=true}emit(movementInput(keys,yaw,getCameraYaw(),isRightMouse(),0))}if(code==='Space'){e.preventDefault();if(!e.repeat)onJump()}if(code==='ShiftLeft'||code==='ShiftRight'){if(!sprint)onSprint(true);sprint=true}};
+ const up=e=>{const code=movementKey(e);keys.delete(code);if(valid.has(code)&&active&&!keys.size)stop();if(code==='ShiftLeft'||code==='ShiftRight'){if(sprint)onSprint(false);sprint=false}};
  const heartbeat=setInterval(()=>{if(!active)return;if(isBlocked()){clear();return}if(keys.size||touchId!==null)emit(touchId!==null?touchMovement(touchX,touchY,getCameraYaw()):movementInput(keys,yaw,getCameraYaw(),isRightMouse(),0))},200);addEventListener('pagehide',()=>clearInterval(heartbeat),{once:true});
  addEventListener('keydown',down);addEventListener('keyup',up);addEventListener('blur',clear);document.addEventListener('visibilitychange',()=>{if(document.hidden)clear()});
  // A camera-relative thumbstick permits simultaneous movement, camera drag and jump.

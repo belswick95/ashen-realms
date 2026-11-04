@@ -1,4 +1,4 @@
-import {goods,inventoryEntries,quantity,isWorn} from './economy.js?v=release-20261104-phone31';
+import {goods,inventoryEntries,quantity,isWorn} from './economy.js?v=release-20261104-screen32';
 const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e};
 export function createTradePanel(state){
  const panel=node('dialog');panel.id='player-trade';document.body.append(panel);let current=null,signature='',dismissed=null;

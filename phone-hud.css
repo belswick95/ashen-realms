@@ -54,3 +54,15 @@ body.fantasy-hud.phone-layout #health-hud .xp-track{height:4px!important;margin:
 body.fantasy-hud.phone-layout #health-hud #hud-health{line-height:9px!important;font-size:9px!important}
 body.fantasy-hud.phone-layout #social-friends{max-height:100%;overflow:auto}
 body.fantasy-hud.phone-layout #social-panel:has(#social-friends:not([hidden])) .social-tabs{display:flex!important;height:20px!important}
+body.fantasy-hud #fullscreen-toggle{display:grid;position:absolute;left:3px;top:135px;z-index:4;place-items:center;width:32px!important;height:32px!important;min-height:32px!important;margin:0!important;padding:5px!important;border-radius:7px!important}
+body.touch-controls.fantasy-hud #fullscreen-toggle{display:grid}
+body.fantasy-hud #fullscreen-toggle[hidden]{display:none!important}
+body.fantasy-hud.phone-layout #fullscreen-toggle{top:75px!important;left:3px!important}
+@media(max-height:550px){body.fantasy-hud:not(.phone-layout) #fullscreen-toggle{top:91px}}
+#fullscreen-help{width:min(460px,calc(100vw - 28px));max-height:calc(var(--visible-height,100dvh) - 24px);padding:20px;overflow:auto;color:#e8dfc7;background:#14232e;border:1px solid #9c8a62;border-radius:12px;font:14px/1.55 Arial}
+#fullscreen-help h2{margin:0;font:23px Georgia;color:#e5cc96}#fullscreen-help li{margin:8px 0}#fullscreen-help form{text-align:right}#fullscreen-help button{min-height:44px;padding:8px 20px}#fullscreen-help::backdrop{background:#030a12bb}
+body.game-active #world-canvas:focus{outline:none}
+body.touch-controls.fantasy-hud #social-panel.collapsed{width:96px!important;max-width:96px!important;height:40px!important;max-height:40px!important;padding:5px!important}
+body.touch-controls.fantasy-hud #social-panel.collapsed .social-content,body.touch-controls.fantasy-hud #social-panel.collapsed .social-head strong{display:none!important}
+body.touch-controls.fantasy-hud #social-panel.collapsed .social-head{width:100%!important;height:28px!important;padding:0!important}
+body.touch-controls.fantasy-hud #social-panel.collapsed #social-toggle{width:100%!important;height:28px!important;min-height:28px!important;font-size:12px!important;margin:0!important}
