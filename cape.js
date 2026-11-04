@@ -32,7 +32,7 @@ export function createCape(T,body,{color=0x71364a,rig=null}={}){
  }
 
  return {mesh:cloth,update(dt,speed=0,{mounted=false,mountRoot=null}={}){
-  cloth.visible=true;
+  if(!cloth.visible)return;
   time+=Math.min(.05,dt);const movement=Math.min(1,Math.max(0,speed));
   body.updateWorldMatrix(true,true);inverse.copy(body.matrixWorld).invert();anchor.identity();
   if(rig?.base)anchor.multiplyMatrices(inverse,rig.base.matrixWorld);

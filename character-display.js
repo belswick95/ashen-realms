@@ -1,6 +1,6 @@
-import {mountCatalog} from './mounts.js?v=release-20261104-input49';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-input49';
-import {buildHumanoid} from './humanoid.js?v=release-20261104-input49';import {buildPlateArmor} from './armor.js?v=release-20261104-input49';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261104-input49';import {makeShield,shieldCatalog} from './shields.js?v=release-20261104-input49';import {createCape} from './cape.js?v=release-20261104-input49';import {createHumanoidAnimator} from './animation.js?v=release-20261104-input49';import {safeAppearance} from './appearance.js?v=release-20261104-input49';
+import {mountCatalog} from './mounts.js?v=release-20261104-rig50';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-rig50';
+import {buildHumanoid} from './humanoid.js?v=release-20261104-rig50';import {buildPlateArmor} from './armor.js?v=release-20261104-rig50';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261104-rig50';import {makeShield,shieldCatalog} from './shields.js?v=release-20261104-rig50';import {createCape} from './cape.js?v=release-20261104-rig50';import {createHumanoidAnimator} from './animation.js?v=release-20261104-rig50';import {safeAppearance} from './appearance.js?v=release-20261104-rig50';
 export function publicCharacter(appearance={},equipment={}){
  if(!equipment||typeof equipment!=='object'||Array.isArray(equipment))equipment={};
  const armor={};for(const key of ['helm','chest','legs','boots','cape'])armor[key]=equipment.armor?.[key]===true;
@@ -11,7 +11,7 @@ export function buildCharacterDisplay(T,parent,appearance,loadout){
  const rig=buildHumanoid(T,visual,{...data.appearance,adventurer:true}),shared=new Set();visual.traverse(o=>{if(o.geometry)shared.add(o.geometry);if(o.material)shared.add(o.material)});
  for(const part of rig.faceMeshes||[])part.visible=!data.loadout.armor.helm;
  const armor=buildPlateArmor(T,visual,rig);for(const key of ['helm','chest','legs','boots'])for(const part of armor[key])part.visible=data.loadout.armor[key];
- if(rig.meshes){rig.meshes.pants.visible=!data.loadout.armor.legs;rig.meshes.leftFoot.visible=rig.meshes.rightFoot.visible=!data.loadout.armor.boots;}rig.torso.visible=!data.loadout.armor.chest;for(const part of rig.clothingMeshes)part.visible=!data.loadout.armor.chest;for(const hair of rig.hairMeshes)hair.visible=!data.loadout.armor.helm;
+ if(rig.meshes){rig.meshes.skin.visible=!data.loadout.armor.chest;rig.meshes.pants.visible=!data.loadout.armor.legs;rig.meshes.leftFoot.visible=rig.meshes.rightFoot.visible=!data.loadout.armor.boots;}rig.torso.visible=!data.loadout.armor.chest;for(const part of rig.clothingMeshes)part.visible=!data.loadout.armor.chest;for(const hair of rig.hairMeshes)hair.visible=!data.loadout.armor.helm;
  if(data.loadout.weapon){const weapon=makeWeapon(T,data.loadout.weapon);attachWeapon(rig,weapon,data.loadout.weapon)}
  if(data.loadout.shield){const shield=makeShield(T,data.loadout.shield);attachShield(rig,shield)}
  const cape=data.loadout.armor.cape?createCape(T,visual,{color:0x81394b,rig}):null,animator=createHumanoidAnimator(rig);

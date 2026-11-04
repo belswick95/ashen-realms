@@ -1,5 +1,5 @@
-import {fullHumanAsset as asset} from './full-human-asset.js?v=release-20261104-input49';
-import {fabricMaterial,loftGeometry} from './anatomy.js?v=release-20261104-input49';
+import {fullHumanAsset as asset} from './full-human-asset.js?v=release-20261104-rig50';
+import {fabricMaterial,loftGeometry} from './anatomy.js?v=release-20261104-rig50';
 const caches=new WeakMap();
 // One complete authored human body, skinned to the equipment/animation skeleton.
 // The partitions are clothing/material boundaries of that body, not primitive limbs.
@@ -29,10 +29,10 @@ export function buildHumanoid(T,root,look={}){
  g.computeBoundingSphere();g.userData.eldervaleShared=true;cache.set(key,g);return g;
  }
  const faceSkin=mat('weathered-face',color(look.skin,0xc9916b),.79);faceSkin.vertexColors=true;
- const meshes={};for(const part of Object.keys(asset.parts)){const parent=part==='head'?bones.head:part.endsWith('Foot')?bones[part.replace('Foot','Ankle')]:root;const m=new T.SkinnedMesh(geometry(part,look.face),part==='shirt'?shirt:part==='pants'?pants:part.endsWith('Foot')?boots:part==='head'?faceSkin:skin);m.name='authored-human-'+part;m.castShadow=m.receiveShadow=true;parent.add(m);root.updateMatrixWorld(true);m.bind(skeleton,m.matrixWorld.clone());m.frustumCulled=false;meshes[part]=m;}
+ const meshes={};for(const part of Object.keys(asset.parts)){const parent=part==='head'?bones.head:part.endsWith('Foot')?bones[part.replace('Foot','Ankle')]:root;const m=new T.SkinnedMesh(geometry(part,look.face),part==='shirt'?shirt:part==='pants'?pants:part.endsWith('Foot')?boots:part==='head'?faceSkin:skin);m.name='authored-human-'+part;m.castShadow=true;m.receiveShadow=false;parent.add(m);root.updateMatrixWorld(true);m.bind(skeleton,m.matrixWorld.clone());m.frustumCulled=false;meshes[part]=m;}
  // The authored head has eyelids and sockets. Small eyeballs fill the openings.
  const eyes=[],head=bones.head,eyeWhite=mat('eye-white',0xd4d0c1,.45),iris=mat('iris',0x4e6256,.5),pupil=mat('pupil',0x101516,.35);
- const add=(g,m,parent,x,y,z,sx=1,sy=1,sz=1)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=o.receiveShadow=true;parent.add(o);return o};
+ const add=(g,m,parent,x,y,z,sx=1,sy=1,sz=1)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=false;parent.add(o);return o};
  const geo=(key,make)=>{if(!cache.has(key)){const g=make();g.userData.eldervaleShared=true;cache.set(key,g)}return cache.get(key)};
  const eyeOrigin=new T.Vector3().fromArray(asset.landmarks['l-eye']).sub(bones.head.position);
  // Socket openings sit slightly outward from the asset's eye landmarks.
