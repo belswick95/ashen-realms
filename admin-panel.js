@@ -1,14 +1,14 @@
-import {questEditor} from './quests.js?v=release-20261104-motion46';
-import {worldPresets,presetEntity} from './world-presets.js?v=release-20261104-motion46';
-import {customItemModels,meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261104-motion46';
-import {recipes} from './professions.js?v=release-20261104-motion46';
-import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261104-motion46';
-import {itemIcons} from './item-icons.js?v=release-20261104-motion46';
-import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261104-motion46';
-import {goods} from './economy.js?v=release-20261104-motion46';
+import {questEditor} from './quests.js?v=release-20261104-motion47';
+import {worldPresets,presetEntity} from './world-presets.js?v=release-20261104-motion47';
+import {customItemModels,meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261104-motion47';
+import {recipes} from './professions.js?v=release-20261104-motion47';
+import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261104-motion47';
+import {itemIcons} from './item-icons.js?v=release-20261104-motion47';
+import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261104-motion47';
+import {goods} from './economy.js?v=release-20261104-motion47';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==null)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
 export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
- const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261104-motion46';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261104-motion47';document.head.append(css);
  const button=el('button','♛ World studio',{id:'owner-studio-toggle',type:'button'}),panel=el('dialog',null,{id:'owner-studio'});document.body.append(button,panel);
  panel.innerHTML='<header><div><small>ELDERVALE · OWNER ACCESS</small><h2>World studio</h2><a href="/owner-guide.html" target="_blank" rel="noopener">Owner guide</a></div><button type="button" data-close aria-label="Close studio">×</button></header><nav aria-label="Owner tools"></nav><div class="studio-workspace"></div><footer role="status">Changes are saved to the server and audited.</footer>';
  const owner=snapshot.owner;let tab=owner?'Items':'Players',rows=new Map(),selected=null,placing=false,selecting=false,busy=false,overview=null,current=snapshot,formData=null;
