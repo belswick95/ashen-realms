@@ -69,7 +69,7 @@ test('hair styles use distinct low-poly silhouettes with reusable tapered geomet
 });
 
 test('complete authored body is skinned with normalized weights and stable equipment anchors',()=>{
- const rig=character();assert.ok(rig.skinned&&rig.torso.isSkinnedMesh);assert.ok(Object.values(rig.meshes).every(m=>m.isSkinnedMesh));assert.ok(Object.values(rig.meshes).reduce((sum,m)=>sum+m.geometry.attributes.position.count,0)>12000);
+ const rig=character();assert.ok(rig.skinned&&rig.torso.isSkinnedMesh);assert.ok(Object.entries(rig.meshes).every(([k,m])=>k==='head'||k.endsWith('Hand')?!m.isSkinnedMesh:m.isSkinnedMesh));assert.equal(rig.meshes.head.parent,rig.head);assert.equal(rig.meshes.leftHand.parent,rig.leftHand);assert.equal(rig.meshes.rightHand.parent,rig.rightHand);assert.ok(Object.values(rig.meshes).reduce((sum,m)=>sum+m.geometry.attributes.position.count,0)>12000);
  for(const mesh of Object.values(rig.meshes)){const weights=mesh.geometry.attributes.skinWeight,indices=mesh.geometry.attributes.skinIndex;for(let i=0;i<weights.count;i++){assert.ok(Math.abs(weights.getX(i)+weights.getY(i)+weights.getZ(i)+weights.getW(i)-1)<1e-5);for(const value of [indices.getX(i),indices.getY(i),indices.getZ(i),indices.getW(i)])assert.ok(value<rig.skeleton.bones.length)}}
  const animator=createHumanoidAnimator(rig);animator.update(.016,{speed:5,distance:.08});rig.root.updateMatrixWorld(true);assert.ok(rig.leftArm.parent===rig.root&&rig.rightArm.parent===rig.root);
 });

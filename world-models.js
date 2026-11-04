@@ -1,12 +1,12 @@
-import {campObject} from './camp-models.js?v=release-20261104-skin51';
-import {professionStationModel} from './profession-models.js?v=release-20261104-skin51';
-import {oreResources} from './profession-data.js?v=release-20261104-skin51';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261104-skin51';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261104-skin51';
-import {creatureMaterial} from './creature-material.js?v=release-20261104-skin51';
-import {dragonModel} from './monster-dragon.js?v=release-20261104-skin51';
-import {castleObject} from './castle-models.js?v=release-20261104-skin51';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261104-skin51';
+import {campObject} from './camp-models.js?v=release-20261104-anatomy52';
+import {professionStationModel} from './profession-models.js?v=release-20261104-anatomy52';
+import {oreResources} from './profession-data.js?v=release-20261104-anatomy52';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261104-anatomy52';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261104-anatomy52';
+import {creatureMaterial} from './creature-material.js?v=release-20261104-anatomy52';
+import {dragonModel} from './monster-dragon.js?v=release-20261104-anatomy52';
+import {castleObject} from './castle-models.js?v=release-20261104-anatomy52';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261104-anatomy52';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);

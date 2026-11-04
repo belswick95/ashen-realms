@@ -1,0 +1,13 @@
+# Waist decoration, hand anatomy and scalp attachment
+
+The supplied 2.14-second iPad recording shows the decorative adventurer belt/pouch/strap protruding across the waist, palms/fingers distorted by the old baked grip, and scalp skin alternating through the hair. The prior skin51 release did not fully resolve scalp flashing on the actual iPad.
+
+Removed decorative belt, pouch and baldric from the base character. Rebuilt neutral hand/forearm source coordinates from the same CC0 MakeHuman male anatomy. Only hand/forearm parts of the bundled asset changed; original body targets and proportions match exactly. Added a separate fingertip grip morph, relaxed when unarmed and closed around held equipment, with a mounted reins pose. Hands retain their wrist attachment and move with that wrist; equipment remains on the same attachment groups.
+
+The head surface and hair now share the same rigid head bone, rather than the scalp being GPU-skinned and the hair being rigidly attached. Facial mouth morphs remain available for portraits. The head, hand and body geometry remains the existing authored human asset; no replacement armor, horse or weapon design is included. Hair style, color and face choices remain driven by saved appearance. Skin hidden by guards' chest armor is masked consistently with players.
+
+Regression checks cover head/hair vertex clearance during running and turning at castle coordinates, hand wrist seam preservation and equipment grip, sword carry, two-handed IK, shield blocking, axes, portraits, appearance choices and body weights. Browser rendering comparisons use the actual Three.js renderer; software rendering cannot certify native iPad behavior. Tests checking first wrist child were corrected to select equipment groups explicitly now that the hand surface is a child of the wrist.
+
+Research/source: official MakeHuman CC0 source at https://github.com/makehumancommunity/makehuman/tree/master/makehuman/data and existing license documentation. `scripts/build-male-human.py` records the neutral hand rest transform. No new server/schema behavior or account changes are required for this release.
+
+Final checks: all 57 test files and syntax checks passed. Actual game browser bank/door fixture passed with no shader/runtime errors. Front-view rendered movement frames inspected in test-results/anatomy-front/frame-50.png through frame-53.png. Right-hand transform now preserves outward winding (both palms have matching positive signed volume), with a regression check to prevent reflected, backface-culled fingers. No account login or save edits were needed in this follow-up. Release cache key: release-20261104-anatomy52.

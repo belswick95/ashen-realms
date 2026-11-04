@@ -8,3 +8,5 @@ Eldervale adaptation: complete body conversion, official CC0 skin-weight reducti
 
 The adult male phenotype uses the authored `caucasian-male-young.target` and `universal-male-young-averagemuscle-averageweight.target`, with official `default_weights.mhw` and `default.mhskel`. These graphical/rigging assets are explicitly CC0. The neutral base is not used as the finished character. Original morph author: Manuel Bastioni; copyright transferred to the MakeHuman Community in 2016.
 Rebuild: `python3 scripts/build-male-human.py --source <downloaded-source-directory>` (requires NumPy and SciPy).
+
+Anatomy52 restores neutral authored hand and forearm rest coordinates from the same CC0 source. The old permanently curled palm transform is removed. Fingers receive a separate local grip morph for held equipment; scalp and hands follow their corresponding bones directly, while the body/limbs remain skinned. Existing male body proportions, saved appearance choices, armor and weapon geometry are retained.

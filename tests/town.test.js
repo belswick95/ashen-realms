@@ -36,7 +36,7 @@ test('portrait animates a separate copy of the real speaker without cloning circ
  const hit=new T.Mesh();hit.userData={kind:'npc',root:npc};npc.add(hit);
  const sourceFace=rig.face,base=sourceFace.morphTargetInfluences[0];
  const pose=createTalkingPose(T,npc),copyFace=pose.model.getObjectByName('authored-human-head');
- assert.equal(copyFace.material,sourceFace.material);assert.notEqual(copyFace.skeleton,sourceFace.skeleton);assert.notEqual(copyFace.skeleton.bones[1],sourceFace.skeleton.bones[1]);assert.equal(pose.model.children.length,npc.children.length-1);
+ assert.equal(copyFace.material,sourceFace.material);const copyTorso=pose.model.getObjectByName('authored-human-shirt');assert.notEqual(copyTorso.skeleton,rig.torso.skeleton);assert.notEqual(copyTorso.skeleton.bones[1],rig.torso.skeleton.bones[1]);assert.notEqual(copyFace.morphTargetInfluences,sourceFace.morphTargetInfluences);assert.equal(pose.model.children.length,npc.children.length-1);
  const positions=new Set();for(let i=0;i<30;i++){pose.update(i/12,true);positions.add(copyFace.morphTargetInfluences[0])}
  assert.ok(positions.size>8);assert.equal(sourceFace.morphTargetInfluences[0],base);
  pose.update(1,false);assert.equal(copyFace.morphTargetInfluences[0],base);pose.update(1,true,true);assert.equal(copyFace.morphTargetInfluences[0],base);assert.equal(pose.model.getObjectByName('character-head').rotation.y,0);

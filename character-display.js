@@ -1,6 +1,6 @@
-import {mountCatalog} from './mounts.js?v=release-20261104-skin51';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-skin51';
-import {buildHumanoid} from './humanoid.js?v=release-20261104-skin51';import {buildPlateArmor} from './armor.js?v=release-20261104-skin51';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261104-skin51';import {makeShield,shieldCatalog} from './shields.js?v=release-20261104-skin51';import {createCape} from './cape.js?v=release-20261104-skin51';import {createHumanoidAnimator} from './animation.js?v=release-20261104-skin51';import {safeAppearance} from './appearance.js?v=release-20261104-skin51';
+import {mountCatalog} from './mounts.js?v=release-20261104-anatomy52';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261104-anatomy52';
+import {buildHumanoid} from './humanoid.js?v=release-20261104-anatomy52';import {buildPlateArmor} from './armor.js?v=release-20261104-anatomy52';import {makeWeapon,weaponCatalog} from './weapons.js?v=release-20261104-anatomy52';import {makeShield,shieldCatalog} from './shields.js?v=release-20261104-anatomy52';import {createCape} from './cape.js?v=release-20261104-anatomy52';import {createHumanoidAnimator} from './animation.js?v=release-20261104-anatomy52';import {safeAppearance} from './appearance.js?v=release-20261104-anatomy52';
 export function publicCharacter(appearance={},equipment={}){
  if(!equipment||typeof equipment!=='object'||Array.isArray(equipment))equipment={};
  const armor={};for(const key of ['helm','chest','legs','boots','cape'])armor[key]=equipment.armor?.[key]===true;

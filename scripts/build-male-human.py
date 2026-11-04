@@ -33,8 +33,8 @@ for side,prefix in [('l','left'),('r','right')]:
  # Put the complete authored palm and fingers into a neutral gripping pose.
  forward=joint(side+'-finger-3-1')-C;forward/=np.linalg.norm(forward);across=joint(side+'-finger-2-1')-joint(side+'-finger-5-1');across-=forward*np.dot(across,forward);across/=np.linalg.norm(across);normal=np.cross(across,-forward)
  def hand(p,C=C,target=targets[prefix+'Hand'],across=across,forward=forward,normal=normal,s=s):
-  d=p-C;row=np.dot(d,across)*S;length=np.dot(d,forward)*S;depth=np.dot(d,normal)*S;dist=max(0,length-.075);t=min(3.25,dist/.035);wrap=.035*(1-np.cos(t));offset=.035*max(0,min(1,length/.05));
-  return target+np.array([s*(depth+wrap-offset),row-.035,.075+.035*np.sin(t) if dist>0 else length])
+  d=p-C;row=np.dot(d,across)*S;length=np.dot(d,forward)*S;depth=np.dot(d,normal)*S
+  return target+np.array([s*row,-length,s*depth])
  transforms[prefix+'Hand']=hand
 skel=json.load(open(D/'default.mhskel'));weights=json.load(open(D/'default_weights.mhw'))['weights']
 def mapped(bone):
