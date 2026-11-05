@@ -1,7 +1,8 @@
 // Original Eldervale level-up jingles (composed for this game, not taken from any
 // other): a short fanfare per skill family, rendered live with WebAudio
 // instruments — brass, timpani, harp, glockenspiel, string pad — through a small
-// generated-hall reverb. Each lasts about 4–5 s.
+// generated-hall reverb. Each lasts about 4–5 s. 'death' is the somber ~5 s cue for
+// "Oh dear, you are dead!" (also original).
 export const SKILL_FAMILY={attackXP:'combat',strengthXP:'combat',defenceXP:'combat',hitpointsXP:'combat',rangedXP:'combat',magicXP:'combat',prayerXP:'combat',
  woodXP:'gathering',woodcuttingXP:'gathering',miningXP:'gathering',fishingXP:'gathering',farmingXP:'gathering',hunterXP:'gathering',thievingXP:'gathering',agilityXP:'gathering',
  cookingXP:'artisan',firemakingXP:'artisan',smithingXP:'artisan',craftingXP:'artisan',fletchingXP:'artisan',herbloreXP:'artisan',runecraftingXP:'artisan',constructionXP:'artisan'};
@@ -14,6 +15,12 @@ export function composeJingle(kind='gathering'){
   for(const [t,m,d] of [[0,62,.22],[.24,69,.22],[.48,74,.5],[1.02,78,.16],[1.2,79,.16],[1.38,81,.62],[2.08,78,.24],[2.34,81,.24],[2.6,86,1.7]])notes.push(n(t,m,d,'brass',.85));
   chord(2.6,[62,66,69],1.8,'brass',.45);chord(0,[50],.5,'timpani',.9);notes.push(n(.48,50,.4,'timpani',.6),n(1.38,45,.5,'timpani',.75),n(2.42,45,.12,'timpani',.5),n(2.5,45,.12,'timpani',.6),n(2.6,50,1.6,'timpani',1));
   notes.push(n(2.6,0,1.9,'cymbal',.35));
+ }else if(kind==='death'){ // D minor, somber (original): a slow falling sigh over a low pad, a darker iv chord, the bare tonic.
+  chord(0,[50,57,62,65],2.1,'pad',.5);notes.push(n(0,38,.9,'timpani',.55));
+  for(const [t,m,d] of [[.1,69,.55],[.72,70,.28],[1.02,69,.3],[1.36,65,.42],[1.84,64,.3],[2.18,62,.9]])notes.push(n(t,m,d,'brass',.42));
+  chord(2.2,[43,55,58,62],1.3,'pad',.45);[67,62,58,55].forEach((m,i)=>notes.push(n(2.25+i*.2,m,.9,'harp',.5)));
+  for(let i=0;i<6;i++)notes.push(n(2.9+i*.07,38,.1,'timpani',.25+i*.04));
+  chord(3.35,[38,50,57,62],1.45,'pad',.55);notes.push(n(3.35,50,1.4,'brass',.35),n(3.35,38,1.3,'timpani',.6),n(3.35,74,1.1,'glock',.28),n(3.7,69,.9,'harp',.35),n(4.0,62,.8,'harp',.3));
  }else if(kind==='artisan'){ // F major, warm: harp arpeggio, glock sparkle, strings swell to a sus4→3 cadence.
   [65,69,72,77,81,84].forEach((m,i)=>notes.push(n(i*.17,m,.9,'harp',.7)));
   for(const [t,m] of [[1.1,84],[1.32,81],[1.54,82],[1.76,77]])notes.push(n(t,m,.5,'glock',.55));

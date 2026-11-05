@@ -11,6 +11,9 @@ import {createRunStyle,runStyleWeight} from './run-style.js?v=release-20261105-i
 // how fast the planted ball of the foot moves backward (measured from the
 // clips, Quaternius metres × scale).
 export const STRIDE={Walk_Loop:1.03*CHARACTER_SCALE,Jog_Fwd_Loop:6.27*CHARACTER_SCALE,Sprint_Loop:9.5*CHARACTER_SCALE};
+// Death pose timing (s): kneel clip is down by 0.7 s; Death01 joins where its hips are at
+// kneeling height (0.8 s) and plays a little slower so the collapse reads.
+export const DEATH_KNEEL=1.1,KNEEL_HOLD=.7,DEATH_JOIN=.8,DEATH_FALL_SPEED=.6;
 const FADE=.18,FIGHT_HOLD=6,COMBAT_HOLD=3,WALK_LIMIT=3.8;
 // Town and profession activities → looping clips.
 // A clip name ending in '@loop' repeats a normally one-shot clip (chopping, mining).
@@ -22,7 +25,7 @@ const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_S
 
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
- const actions=new Map(),weights=new Map();let current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
+ const actions=new Map(),weights=new Map();let deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
  const warp=createStrideWarp(rig),runStyle=createRunStyle(rig);let stride=1;
  const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0;
  const holding=socket=>!!socket&&socket.children.some(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);
@@ -45,16 +48,20 @@ export function createHumanoidAnimator(rig){
   if(air&&!airborne)startOneShot('Jump_Start',.3);else if(!air&&airborne)startOneShot('Jump_Land',.35);airborne=!!air;
   // Base loop for the current state.
   let base;const work=ACTIVITY[activity||rig.activity];
-  if(dead)base='Death01';
+  // Death: drop to the knees with the head bowed (Fixing_Kneeling, held), then collapse (Death01
+  // joined mid-fall). About 2.7 s in all; the pose holds until `dead` clears.
+  if(dead){if(deadAt<0)deadAt=time;oneShot=null}else deadAt=-1;
+  if(dead)base=clips.Fixing_Kneeling&&time-deadAt<DEATH_KNEEL?'Fixing_Kneeling':'Death01';
   else if(mounted)base=clips.Driving_Loop?'Driving_Loop':'Sitting_Idle_Loop';
   else if(airborne)base='Jump_Loop';
   else if(moving){const gait=locomotion==='run'?'Sprint_Loop':locomotion==='jog'?'Jog_Fwd_Loop':(locomotion==='walk'||locomotion==='combat')&&speed<=WALK_LIMIT?'Walk_Loop':speed>6.5?'Sprint_Loop':speed>2.6?'Jog_Fwd_Loop':'Walk_Loop';base=gait;}
   // Relaxed by default; the fighting stance is for an explicit combat stance or
   // a few seconds after armed melee attacks and blocks.
   else base=work||(block>0||!ranged&&time<fightUntil?'Sword_Idle':'Idle_Loop');
-  if(base!==current){current=base;action(base).reset?.()}
+  if(base!==current){current=base;const a=action(base);a.reset?.();if(dead&&base==='Death01'&&clips.Fixing_Kneeling)a.time=DEATH_JOIN}
   const loop=action(base);if(STRIDE[base]){const play=gaitPlayback(base,speed,{stride:STRIDE[base],duration:loop.getClip().duration,scale:CHARACTER_SCALE});loop.timeScale=play.timeScale;stride=play.amplitude}else{loop.timeScale=1;stride=1}
   if(work&&base===work&&rig.activityPhase!=null){loop.time=rig.activityPhase*loop.getClip().duration;loop.timeScale=0}
+  if(dead&&base==='Fixing_Kneeling')loop.timeScale=loop.time>=KNEEL_HOLD?0:1;else if(dead&&base==='Death01')loop.timeScale=DEATH_FALL_SPEED;
   // Cross-fade: the active one-shot (if any) takes over, then hands back.
   if(oneShot){oneShotLeft-=dt;if(oneShotLeft<=0&&!(oneShot==='Death01'))oneShot=null}
   const target=oneShot||base,k=1-Math.exp(-dt/FADE*3);

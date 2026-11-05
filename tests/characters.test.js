@@ -92,8 +92,10 @@ test('held items ride the hand sockets at world size and follow the clip',()=>{
 
 test('the animator picks gait clips from speed or requested locomotion and never moves the root',()=>{
  const cases=[[{},'Idle_Loop'],[{distance:1.5/60,speed:1.5},'Walk_Loop'],[{distance:5/60,speed:5},'Jog_Fwd_Loop'],[{distance:9/60,speed:9},'Sprint_Loop'],
-  [{distance:3/60,speed:3,locomotion:'walk'},'Walk_Loop'],[{distance:3/60,speed:3,locomotion:'run'},'Sprint_Loop'],[{armed:true},'Idle_Loop'],[{armed:true,combat:true},'Sword_Idle'],[{combat:true},'Sword_Idle'],[{block:.5},'Sword_Idle'],[{mounted:true,distance:.1,speed:6},'Driving_Loop'],[{activity:'smith'},'Fixing_Kneeling'],[{dead:true},'Death01']];
+  [{distance:3/60,speed:3,locomotion:'walk'},'Walk_Loop'],[{distance:3/60,speed:3,locomotion:'run'},'Sprint_Loop'],[{armed:true},'Idle_Loop'],[{armed:true,combat:true},'Sword_Idle'],[{combat:true},'Sword_Idle'],[{block:.5},'Sword_Idle'],[{mounted:true,distance:.1,speed:6},'Driving_Loop'],[{activity:'smith'},'Fixing_Kneeling'],[{dead:true},'Fixing_Kneeling']];
  for(const [opts,clip] of cases){const r=character(),{pose}=run(r,40,opts);assert.equal(pose.gait,clip,JSON.stringify(opts));assert.deepEqual(r.root.position.toArray(),[0,0,0]);assert.equal(r.root.rotation.x,0)}
+ // Death: down on the knees first (head bowed), then the collapse; the root never moves.
+ {const r=character();assert.equal(run(r,100,{dead:true}).pose.gait,'Death01');assert.deepEqual(r.root.position.toArray(),[0,0,0]);assert.equal(run(r,140,i=>i<100?{dead:true}:{}).pose.gait,'Idle_Loop')}
 });
 
 test('running leans the head ahead of the hips toward +Z',()=>{
