@@ -435,7 +435,7 @@ async function setWalkDestination(point,{flag=true}={}){
  const generation=++navigationGeneration;routeController?.abort();const controller=new AbortController();routeController=controller;routePending=true;
  navigationAfterDoor=null;walkQueue=[];if(action?.kind!=='creature')combatTurns.cancel();
  const target=routeTo(point),stops=[target,...walkQueue],requestAction=action,showFlag=flag&&!requestAction;walkQueue=[];dest=null;mapDestination=point.clone();if(showFlag)plantWalkFlag(point);else hideWalkFlag();
- const ticket=areaLoading.begin('Finding a clear route…',{cancel:()=>{controller.abort();navigationGeneration++;routePending=false;mapDestination=null;hideWalkFlag();void window.eldervaleRealm?.command('stop')}});
+ const ticket=areaLoading.begin('Finding a clear route…',{delay:900,cancel:()=>{controller.abort();navigationGeneration++;routePending=false;mapDestination=null;hideWalkFlag();void window.eldervaleRealm?.command('stop')}});
  let pausePromise=null;const pauseTimer=setTimeout(()=>{if(generation===navigationGeneration&&window.eldervaleAuthority&&!realmInCombat)pausePromise=window.eldervaleRealm?.command('stop')},120);
  try{
   await window.eldervaleRegionStreamer?.idle();

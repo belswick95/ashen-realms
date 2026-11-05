@@ -246,3 +246,6 @@ body.fantasy-hud #side>.tabs>button[data-tab]{flex:1 1 0!important;min-width:0!i
 body.game-active,body.game-active canvas,body.game-active #game-ui{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 body.game-active canvas{outline:none}
 body.game-active input,body.game-active textarea,body.game-active [contenteditable=true],body.game-active [contenteditable=""]{-webkit-user-select:text;user-select:text}
+/* The world-map button beside the minimap stays visible in every layout (compact/phone layouts used to hide it). */
+body.fantasy-hud #map-widget .map-head,body.fantasy-hud.compact-layout #map-widget .map-head{display:flex!important;visibility:visible!important}
+body.fantasy-hud #map-widget #map-toggle{display:grid!important}
