@@ -16,12 +16,14 @@ export function installCursorStates(){
 }
 
 // Interactable world objects are the meshes in `targets` (NPCs, monsters, trees, rocks, fishing spots, doors, banks…).
-export function installWorldHoverCursor({element,camera,targets,raycaster,isBlocked=()=>false}){
+// The hand cursor marks things with a real left-click action; examine-only
+// things show the normal arrow and scenery is looked through.
+export function installWorldHoverCursor({element,camera,targets,raycaster,isBlocked=()=>false,passThrough=()=>false,actionable=()=>true}){
  const pointer={x:0,y:0};let queued=false,last=null;
  const visible=o=>{while(o){if(!o.visible)return false;o=o.parent}return true};
  function test(){queued=false;if(!last||isBlocked()||last.buttons){element.classList.remove('cursor-interact');return}
   const rect=element.getBoundingClientRect();pointer.x=(last.clientX-rect.left)/rect.width*2-1;pointer.y=-(last.clientY-rect.top)/rect.height*2+1;
-  raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(targets.filter(visible),false).length>0;element.classList.toggle('cursor-interact',hit)}
+  raycaster.setFromCamera(pointer,camera);const first=raycaster.intersectObjects(targets.filter(visible),false).find(h=>!passThrough(h.object)),hit=!!first&&actionable(first.object);element.classList.toggle('cursor-interact',hit)}
  element.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||!finePointer())return;last={clientX:e.clientX,clientY:e.clientY,buttons:e.buttons};if(!queued){queued=true;requestAnimationFrame(test)}});
  element.addEventListener('pointerleave',()=>{last=null;element.classList.remove('cursor-interact')});
  return {test};

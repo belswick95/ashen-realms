@@ -249,3 +249,8 @@ body.game-active input,body.game-active textarea,body.game-active [contenteditab
 /* The world-map button beside the minimap stays visible in every layout (compact/phone layouts used to hide it). */
 body.fantasy-hud #map-widget .map-head,body.fantasy-hud.compact-layout #map-widget .map-head{display:flex!important;visibility:visible!important}
 body.fantasy-hud #map-widget #map-toggle{display:grid!important}
+/* NPC conversation choices (bankers and merchants offer their service here). */
+#dialog-next[hidden],#dialog-choices[hidden]{display:none!important}
+#dialog-choices{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+#dialog-choices button{text-align:left;min-height:38px;padding:7px 12px;border-radius:7px;border:1px solid #9c8452;background:linear-gradient(#2f3e38,#17221e);color:#f2dfb0;font:14px Georgia,serif;cursor:pointer}
+#dialog-choices button:hover,#dialog-choices button:focus-visible{border-color:#f1d087;color:#fff3cf;outline:none}
