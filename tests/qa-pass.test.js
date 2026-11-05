@@ -69,3 +69,14 @@ test('menus: actors beat scenery under the cursor, and Walk here sits before Exa
  assert.deepEqual(withWalkHere([['Walk here'],['Cancel']],walk).map(c=>c[0]),['Walk here','Cancel']);
  assert.deepEqual(withWalkHere([['Net'],['Cancel']],null).map(c=>c[0]),['Net','Cancel']);
 });
+
+test('a walker standing in a pen gateway (nearest grid point inside the fence) still finds the way in',()=>{
+ // Pen fence along x=-277 except a gap for z in (126.45,128.05); the walker stands at the gap edge.
+ const blocked=(x,z)=>Math.abs(x+277)<.32&&!(z>126.45&&z<128.05);
+ const canTravel=(a,b)=>{const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.1)||1;for(let i=0;i<=n;i++){const t=i/n;if(blocked(a.x+(b.x-a.x)*t,a.z+(b.z-a.z)*t))return false}return true};
+ const run=g=>{let n;do{n=g.next()}while(!n.done);return n.value};
+ const start={x:-276.567,z:126.268},goal={x:-279.997,z:127.721};
+ const path=run(searchRoute({start,goal,canTravel}));
+ assert.ok(path.length>0,'found a route');assert.ok(Math.hypot(path.at(-1).x-goal.x,path.at(-1).z-goal.z)<1e-6);
+ let prev=start;for(const p of path){assert.ok(canTravel(prev,p),'segment clear');prev=p}
+});

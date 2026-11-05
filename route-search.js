@@ -15,16 +15,21 @@ export function* searchRoute({start,goal,canTravel,heightAt=()=>0,maxNodes=30000
  if(yield* clear(start,goal))return [point(goal.x,goal.z)];
  const margin=32,originX=Math.max(-extent,Math.min(start.x,goal.x)-margin),originZ=Math.max(-extent,Math.min(start.z,goal.z)-margin),cols=Math.ceil((Math.min(extent,Math.max(start.x,goal.x)+margin)-originX)/cell)+1,rows=Math.ceil((Math.min(extent,Math.max(start.z,goal.z)+margin)-originZ)/cell)+1;
  const coord=p=>[Math.max(0,Math.min(cols-1,Math.round((p.x-originX)/cell))),Math.max(0,Math.min(rows-1,Math.round((p.z-originZ)/cell)))],key=(x,z)=>z*cols+x,world=(x,z)=>point(originX+x*cell,originZ+z*cell);
- const [sx,sz]=coord(start),[gx,gz]=coord(goal),startId=key(sx,sz),goalId=key(gx,gz),nodes=new Map(),open=new MinHeap(),closed=new Set(),edgeCache=new Map();let best=startId,bestH=Infinity,count=0;
- const add=(x,z,g,prev)=>{const id=key(x,z),n={id,x,z,g,prev,f:g+greed*octile(x-gx,z-gz)};nodes.set(id,n);open.push(n)};add(sx,sz,0,null);
+ const [sx,sz]=coord(start),[gx,gz]=coord(goal),startId=-1,goalId=key(gx,gz),nodes=new Map(),open=new MinHeap(),closed=new Set(),edgeCache=new Map();let best=startId,bestH=Math.hypot((start.x-originX)/cell-gx,(start.z-originZ)/cell-gz),count=0;
+ const add=(x,z,g,prev)=>{const id=key(x,z),n={id,x,z,g,prev,f:g+greed*octile(x-gx,z-gz)};nodes.set(id,n);open.push(n)};
+ // Seed from every grid corner around the walker that it can step to directly:
+ // the nearest grid point alone may sit inside a fence or wall the walker is
+ // standing beside (a pen gateway), which made the whole search fail.
+ {const fx=(start.x-originX)/cell,fz=(start.z-originZ)/cell;let seeded=false;for(const cx of new Set([Math.floor(fx),Math.ceil(fx)]))for(const cz of new Set([Math.floor(fz),Math.ceil(fz)])){if(cx<0||cz<0||cx>=cols||cz>=rows||nodes.has(key(cx,cz)))continue;const w=world(cx,cz),d=Math.hypot(w.x-start.x,w.z-start.z);if(d<1e-9||canTravel(start,w)){add(cx,cz,d,null);seeded=true}}if(!seeded)add(sx,sz,0,null)}
  // Each grid edge is tested once whichever way it is crossed (numeric keys, no strings).
  const span=cols*rows,pass=(ax,az,bx,bz)=>{const a=key(ax,az),b=key(bx,bz),k=a<b?a*span+b:b*span+a;let v=edgeCache.get(k);if(v===undefined){v=a<b?canTravel(world(ax,az),world(bx,bz)):canTravel(world(bx,bz),world(ax,az));edgeCache.set(k,v)}return v};
  while(open.length&&count++<maxNodes){const n=open.pop();if(closed.has(n.id)||nodes.get(n.id)!==n)continue;closed.add(n.id);const h=Math.hypot(n.x-gx,n.z-gz);if(h<bestH){bestH=h;best=n.id}if(n.id===goalId)break;
   for(const [dx,dz]of directions){const x=n.x+dx,z=n.z+dz,id=key(x,z);if(x<0||z<0||x>=cols||z>=rows||closed.has(id))continue;if(!pass(n.x,n.z,x,z)||dx&&dz&&(!pass(n.x,n.z,n.x+dx,n.z)||!pass(n.x,n.z,n.x,n.z+dz)))continue;const g=n.g+Math.hypot(dx,dz),old=nodes.get(id);if(!old||g<old.g)add(x,z,g,n.id)}
   if(count%8===0)yield {phase:'route',visited:count};
  }
- if(best!==goalId&&coarseWalk&&Math.hypot(world(nodes.get(best).x,nodes.get(best).z).x-goal.x,world(nodes.get(best).x,nodes.get(best).z).z-goal.z)>2){
-  const reached=world(nodes.get(best).x,nodes.get(best).z),coarse=yield* coarseRoute({start,goal,walk:coarseWalk,cell:coarseCell,extent,maxNodes:coarseNodes,greed,already:Math.hypot(reached.x-goal.x,reached.z-goal.z)});
+ const reached=best===startId?start:world(nodes.get(best).x,nodes.get(best).z);
+ if(best!==goalId&&coarseWalk&&Math.hypot(reached.x-goal.x,reached.z-goal.z)>2){
+  const coarse=yield* coarseRoute({start,goal,walk:coarseWalk,cell:coarseCell,extent,maxNodes:coarseNodes,greed,already:Math.hypot(reached.x-goal.x,reached.z-goal.z)});
   if(coarse){const smooth=[];let anchor=start;for(let i=0;i<coarse.length;){let far=i;for(let j=Math.min(coarse.length-1,i+24);j>i;j--){if(yield* clear(anchor,coarse[j])){far=j;break}}smooth.push(point(coarse[far].x,coarse[far].z));anchor=coarse[far];i=far+1;yield {phase:'route'}}return smooth}
  }
  // A blocked or unreachable goal walks to the closest reachable cell instead
