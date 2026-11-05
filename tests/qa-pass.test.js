@@ -18,6 +18,13 @@ test('a slow renderer keeps pace with the server walker instead of trailing furt
  assert.ok(server-p.x<speed*1.5,'lag '+(server-p.x));
 });
 
+test('a new walk starts at walking pace: no surge chasing the first (latency-ahead) snapshot',()=>{
+ // The first snapshot after a click shows the server walker 0.45 s along its path.
+ const speed=2.6,p={x:0,z:0},dt=1/60;let server=speed*.45,fastest=0;
+ for(let f=0;f<240;f++){server+=speed*dt;const before=p.x;reconcileLocalPose(p,{x:server,z:0,speed,moving:true},dt);fastest=Math.max(fastest,(p.x-before)/dt)}
+ assert.ok(fastest<=speed*1.16,'peak '+fastest.toFixed(2)+' m/s vs '+speed);assert.ok(server-p.x<.5,'catches up within 4 s');
+});
+
 test('dialogue rows split on real and literal backslash-n',()=>{
  assert.deepEqual(dialogueLines('Welcome!\\nTools, gear.'),['Welcome!','Tools, gear.']);
  assert.deepEqual(dialogueLines('a\nb\r\n\nc'),['a','b','c']);assert.deepEqual(dialogueLines(null),[]);

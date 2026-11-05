@@ -10,7 +10,12 @@ export function reconcileLocalPose(position,target,dt,{active=false,pending=fals
  // Smoothing uses the frame time capped at 1 s: a slow or briefly stalled
  // renderer (a few frames per second) still keeps pace with the server walker
  // instead of trailing further behind every frame.
- const elapsed=Math.max(0,Math.min(1,dt)),error=Math.hypot(position.x-target.x,position.z-target.z),weight=Math.min(1-Math.exp(-18*elapsed),(target.speed||6.4)*2*elapsed/Math.max(error,.000001));
+ const elapsed=Math.max(0,Math.min(1,dt)),error=Math.hypot(position.x-target.x,position.z-target.z),speed=target.speed||6.4;
+ // Catch up at most 15% faster than the walker's real pace. The first server
+ // snapshot of a new walk is already some latency ahead of the click; chasing
+ // it at double speed made every click start with a one-second surge. Only a
+ // gross error (over ~1.5 s of travel behind) may close at double speed.
+ const rate=error>speed*1.5+1.5?speed*2:speed*1.15,weight=Math.min(1-Math.exp(-18*elapsed),rate*elapsed/Math.max(error,.000001));
  position.x+=(target.x-position.x)*weight;position.z+=(target.z-position.z)*weight;return true;
 }
 
