@@ -3,7 +3,11 @@ const obstacleSizes={...campObstacleSizes,furnace:[1.2,.8],anvil:[.8,.8],workben
 export const fixedObstacles=[{template:'fountain',x:1,z:-1},{template:'market',x:-10,z:6},{template:'market',x:10,z:5},{template:'well',x:-68,z:37}];
 // Same frame as the server's can_step: yaw is radians when the record carries
 // scaleX (seeded world) and degrees otherwise; fences stretch by scaleX/scaleZ.
-export function obstacleFrame(d){const scale=d.scale||1,fence=d.template==='fence';return {angle:(d.yaw||0)*('scaleX' in d?1:Math.PI/180),sx:fence?d.scaleX||scale:scale,sz:fence?d.scaleZ||scale:scale}}
+// An entity row without scaleX is synced to the server's realm_objects with
+// scaleX = scaleZ = 1.3 × scale (the shared building factor), and the server's
+// can_step stretches fences by it: mirror that, or client routes squeeze through
+// pen gateways the server walker refuses (e.g. Birchford's hen pen).
+export function obstacleFrame(d){const scale=d.scale||1,fence=d.template==='fence',synced=1.3*scale;return {angle:(d.yaw||0)*('scaleX' in d?1:Math.PI/180),sx:fence?d.scaleX||synced:scale,sz:fence?d.scaleZ||synced:scale}}
 export function obstacleBlocks(d,x,z){const size=obstacleSizes[d.template];if(!size)return false;const {angle,sx,sz}=obstacleFrame(d),scale=d.scale||1,dx=x-d.x,dz=z-d.z,tx=(dx*Math.cos(angle)-dz*Math.sin(angle))/sx,tz=(dx*Math.sin(angle)+dz*Math.cos(angle))/sz;return ['fountain','well','tree','pine','rock'].includes(d.template)?Math.hypot(tx,tz)<size[0]+.2:Math.abs(tx)<size[0]+.2&&Math.abs(tz)<size[1]+.2;}
 // Forests contain thousands of harvest targets. A point query only needs nearby buckets.
 export function createObstacleIndex(records,cellSize=16){

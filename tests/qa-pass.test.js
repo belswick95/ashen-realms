@@ -70,6 +70,16 @@ test('menus: actors beat scenery under the cursor, and Walk here sits before Exa
  assert.deepEqual(withWalkHere([['Net'],['Cancel']],null).map(c=>c[0]),['Net','Cancel']);
 });
 
+test('client fence collision matches the server realm_objects stretch for entity rows without scaleX',async()=>{
+ const {obstacleBlocks}=await import('../navigation-obstacles.js');
+ // Birchford hen pen east side: entity rows carry yaw in degrees and no scaleX;
+ // the server stores scaleX 1.3 and refuses (-276.72,126.52) as inside the fence.
+ const fence={template:'fence',x:-277,z:125.4,yaw:-90,scale:1};
+ assert.equal(obstacleBlocks(fence,-276.72,126.52),true);
+ assert.equal(obstacleBlocks(fence,-277,127.25),false,'the gateway centre stays open');
+ assert.equal(obstacleBlocks({...fence,yaw:-Math.PI/2,scaleX:1.3,scaleZ:1.3},-276.72,126.52),true,'same as an explicit server frame');
+});
+
 test('a walker standing in a pen gateway (nearest grid point inside the fence) still finds the way in',()=>{
  // Pen fence along x=-277 except a gap for z in (126.45,128.05); the walker stands at the gap edge.
  const blocked=(x,z)=>Math.abs(x+277)<.32&&!(z>126.45&&z<128.05);
