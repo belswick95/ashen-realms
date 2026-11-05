@@ -31,8 +31,8 @@ test('camera keys: Left/A swing the view like dragging the world left; Up raises
  const screenX=(yaw,p)=>{const cx=Math.sin(yaw)*10,cz=Math.cos(yaw)*10,fx=-Math.sin(yaw),fz=-Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw),dx=p.x-cx,dz=p.z-cz,depth=dx*fx+dz*fz;return (dx*rx+dz*rz)/depth};
  const ahead={x:0,z:-6},y0=.4;
  for(const code of ['ArrowLeft','KeyA']){const yaw=y0+cameraKeyAxes(new Set([code])).yaw*CAMERA_TURN_RATE*.1;assert.ok(screenX(yaw,ahead)<screenX(y0,ahead),code+': the scene slides left')}
- // Dragging the mouse left (dx<0) uses yaw += dx·0.005: the same direction as Left.
- assert.ok(screenX(y0+(-40)*.005,ahead)<screenX(y0,ahead));
+ // Mouse drag is the opposite of the keys (owner preference): dragging the mouse left (dx<0) uses yaw -= dx·0.005.
+ assert.ok(screenX(y0-(-40)*.005,ahead)>screenX(y0,ahead));
  for(const code of ['ArrowRight','KeyD'])assert.equal(cameraKeyAxes(new Set([code])).yaw,1);
  assert.equal(cameraKeyAxes(new Set(['ArrowUp'])).pitch,1);assert.equal(cameraKeyAxes(new Set(['KeyS'])).pitch,-1);
 });
