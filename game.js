@@ -673,7 +673,7 @@ window.eldervaleAmbientState=()=>{const p=player.position,sources=soundSources()
 const mobileLayout=matchMedia('(max-width:700px)');
 function compactMobileChat(){if(!mobileLayout.matches||document.body.classList.contains('fantasy-hud'))return;document.querySelector('#social-panel')?.classList.add('collapsed');const toggle=document.querySelector('#social-toggle');if(toggle)toggle.textContent='Show Chat'}
 mobileLayout.addEventListener('change',compactMobileChat);compactMobileChat();
-const bubbleLayer=document.createElement('div');bubbleLayer.id='overhead-chat-layer';bubbleLayer.style.cssText='position:fixed;inset:0;z-index:45;pointer-events:none;overflow:hidden';document.body.append(bubbleLayer);
+const bubbleLayer=document.createElement('div');bubbleLayer.id='overhead-chat-layer';bubbleLayer.style.cssText='position:fixed;inset:0;z-index:11;pointer-events:none;overflow:hidden';document.body.append(bubbleLayer);
 window.eldervaleGetPlayerPosition=()=>({x:Math.round(player.position.x*10)/10,z:Math.round(player.position.z*10)/10,yaw:player.rotation.y,mounted,combatLevel:combatLevel(state),...publicCharacter(appearance,{armor:state.equipped,weapon:state.equippedWeapon,shield:state.equippedShield,mount:state.equippedMount})});
 window.eldervaleUpdatePlayers=entries=>{
  if(!Array.isArray(entries))return;
@@ -1015,7 +1015,9 @@ function creature(name,x,z,hostile=false,config={}){
 for(let i=0;i<(generatedWorld?0:24);i++){const a=i*2.399,r=22+i*11;creature(i%5===0?'Wolf':i%3===0?'Boar':'Deer',Math.sin(a)*r,Math.cos(a)*r,i%5===0)}
 // Consolidate screen furniture before creating the shared portrait/status panel.
 const audioSettings=document.querySelector('[data-settings-panel="audio"]');
-const oldAudioVolume=document.querySelector('#settings-music-volume').closest('label');oldAudioVolume.style.display='none';
+// The music player below has its own on/off and volume: drop the older duplicate slider and its
+// unwired "Mute music" button (a theme rule forces labels to flex, so hide them with `hidden` + important).
+for(const old of [document.querySelector('#settings-music-volume')?.closest('label'),document.querySelector('#settings-music-toggle')])if(old){old.hidden=true;old.style.setProperty('display','none','important')}
 audioSettings.querySelector('p')?.remove();audioSettings.append(document.querySelector('#music-controls'));
 const environmentControls=document.createElement('div');environmentControls.id='environment-controls';environmentControls.innerHTML='<h4>Area sounds</h4><button id="environment-toggle" type="button" aria-pressed="true">Area sounds on</button><label for="environment-volume">Birds, wind, water & town life</label><input id="environment-volume" type="range" min="0" max="100" value="70" aria-label="Area sounds volume"><h4>Sound effects</h4><button id="sfx-toggle" type="button" aria-pressed="true">Sound effects on</button><label for="sfx-volume">Actions, combat, horses & level-ups</label><input id="sfx-volume" type="range" min="0" max="100" value="80" aria-label="Sound effects volume"><small>Music, sound effects and area sounds have separate volumes.</small><a href="/credits.html" target="_blank" rel="noopener">Music & sound credits</a>';audioSettings.append(environmentControls);
 const gameplaySettings=document.querySelector('[data-settings-panel="gameplay"]');gameplaySettings.append(document.querySelector('#stats'),document.querySelector('#reset'));
