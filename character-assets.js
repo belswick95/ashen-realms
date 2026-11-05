@@ -40,9 +40,12 @@ export function clipsFor(sex){
 // Textures load in the browser only; Node checks still get valid materials.
 function texture(name,{color=false}={}){
  const T=store.T;if(typeof document==='undefined'||!store.manifest.textures[name])return null;
- if(!store.textures.has(name)){const t=new T.TextureLoader().load(new URL(store.manifest.textures[name],BASE).href);t.flipY=false;if(color)t.colorSpace=T.SRGBColorSpace;t.userData.eldervaleShared=true;store.textures.set(name,t)}
+ if(!store.textures.has(name)){store.loading=(store.loading||0)+1;const settle=()=>{if(--store.loading===0)for(const fn of (store.textureWaiters||[]).splice(0))fn()};const t=new T.TextureLoader().load(new URL(store.manifest.textures[name],BASE).href,settle,undefined,settle);t.flipY=false;if(color)t.colorSpace=T.SRGBColorSpace;t.userData.eldervaleShared=true;store.textures.set(name,t)}
  return store.textures.get(name);
 }
+// Resolves once every character texture requested so far has loaded (or failed),
+// for one-off renders such as the HUD portrait.
+export function texturesSettled(){return store.loading?new Promise(r=>(store.textureWaiters||(store.textureWaiters=[])).push(r)):Promise.resolve()}
 export function material(key,make){if(!store.materials.has(key)){const m=make();m.userData.eldervaleShared=true;store.materials.set(key,m)}return store.materials.get(key)}
 // Outfit material: one per outfit colour, shared by every wearer.
 export function outfitMaterial(outfit,variant=1){

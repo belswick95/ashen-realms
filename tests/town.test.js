@@ -40,6 +40,8 @@ test('portrait animates a separate copy of the real speaker without cloning circ
  const copies=[];pose.model.traverse(o=>{if(o.isSkinnedMesh)copies.push(o)});assert.equal(copies.length,rig.allMeshes.length);
  for(const m of copies){assert.notEqual(m.skeleton,rig.face.skeleton);for(const b of m.skeleton.bones){let o=b;while(o.parent)o=o.parent;assert.equal(o,pose.model,'copy is bound to its own bones')}}
  assert.equal(copies.find(m=>m.name===rig.face.name).material,rig.face.material,'materials are shared');
+ // The copy skins at the same size and place as the speaker (no double character scale).
+ npc.updateMatrixWorld(true);pose.model.updateMatrixWorld(true);const box=(m,root)=>{m.computeBoundingBox();return m.boundingBox.clone().applyMatrix4(root.matrixWorld.clone().invert().multiply(m.matrixWorld))},a=box(rig.face,npc),b=box(copies.find(m=>m.name===rig.face.name),pose.model);assert.ok(a.min.distanceTo(b.min)<1e-4&&a.max.distanceTo(b.max)<1e-4,'portrait face matches the speaker');
  const angles=new Set();for(let i=0;i<30;i++){pose.update(i/12,true);angles.add(copyHead.quaternion.angleTo(rest).toFixed(4))}
  assert.ok(angles.size>8,'head nods while talking');assert.ok(sourceHead.quaternion.equals(rest),'world speaker untouched');
  pose.update(1,true,true);assert.ok(copyHead.quaternion.angleTo(rest)<1e-6,'reduced motion holds still');

@@ -5,7 +5,9 @@ export function cloneSpeaker(source,T){
  const copies=new Map();function clone(node){const copy=node.clone(false);copies.set(node,copy);for(const child of node.children)if(!child.userData.kind)copy.add(clone(child));return copy;}
  const root=clone(source),skeletons=new Map();
  for(const [original,copy]of copies)if(original.isSkinnedMesh){let sk=skeletons.get(original.skeleton);if(!sk){sk=new original.skeleton.constructor(original.skeleton.bones.map(b=>copies.get(b)),original.skeleton.boneInverses.map(m=>m.clone()));sk.userData={...original.skeleton.userData};skeletons.set(original.skeleton,sk)}copy.skeleton=sk;if(original.morphTargetInfluences)copy.morphTargetInfluences=original.morphTargetInfluences.slice();}
- for(const sk of skeletons.values())if(sk.userData?.characterLocal){const meshes=[];root.traverse(o=>{if(o.isSkinnedMesh&&o.skeleton===sk)meshes.push(o)});installLocalSkinning(T,root,sk,meshes,{preserveInverses:true});}
+ // Bone palettes are relative to the meshes' own parent (the scaled character model),
+ // exactly as humanoid.js installs them, not to the cloned outer group.
+ for(const sk of skeletons.values())if(sk.userData?.characterLocal){const meshes=[];root.traverse(o=>{if(o.isSkinnedMesh&&o.skeleton===sk)meshes.push(o)});if(meshes.length)installLocalSkinning(T,meshes[0].parent,sk,meshes,{preserveInverses:true});}
  return root;
 }
 
@@ -34,7 +36,7 @@ export function createDialoguePortrait(T,renderer,canvas){
  const camera=new T.OrthographicCamera(-.36,.36,.36,-.36,.1,10);camera.position.set(.12,2.66,3);camera.lookAt(0,2.66,0);
  const image=ctx.createImageData(size,size);let pose=null,time=0,until=0,lastFrame=-Infinity;
  function close(){if(pose){scene.remove(pose.model);pose.dispose();pose=null}ctx.clearRect(0,0,size,size);canvas.removeAttribute('data-speaker')}
- return {open(source,name){close();pose=createTalkingPose(T,source);scene.add(pose.model);canvas.setAttribute('aria-label',name+' talking');canvas.dataset.speaker=name;time=0;lastFrame=-Infinity},
+ return {open(source,name){close();pose=createTalkingPose(T,source);scene.add(pose.model);pose.model.updateMatrixWorld(true);const head=pose.model.getObjectByName('Head'),focus=head?head.getWorldPosition(new T.Vector3()).add(new T.Vector3(0,.13,0)):new T.Vector3(0,2.66,0);camera.position.set(focus.x+.12,focus.y,focus.z+3);camera.lookAt(focus);canvas.setAttribute('aria-label',name+' talking');canvas.dataset.speaker=name;time=0;lastFrame=-Infinity},
   speak(text){until=time+Math.max(1.4,Math.min(12,text.length/21))},close,
   update(dt,reducedMotion=false){if(!pose)return;time+=dt;if(time-lastFrame<1/12)return;lastFrame=time;pose.update(time,time<until,reducedMotion);
    const previous=renderer.getRenderTarget(),xr=renderer.xr.enabled;renderer.xr.enabled=false;
