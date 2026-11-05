@@ -19,8 +19,16 @@ export function surfaceTexture(T,kind,color){
    for(let i=0;i<28;i++){const px=x+4+rnd()*25,y=rnd()*256;c.strokeStyle=paint((rnd()-.5)*.18);c.lineWidth=.4+rnd()*.9;c.beginPath();c.moveTo(px,y-70);c.bezierCurveTo(px-3,y-12,px+4,y+17,px,y+85);c.stroke()}
    const y=rnd()*220+18;c.strokeStyle=paint(-.14);for(let r=2;r<7;r+=2){c.beginPath();c.ellipse(x+16,y,r,r*2.8,0,0,Math.PI*2);c.stroke()}
   }
+ }else if(kind==='cobble'){
+  // Rounded setts in jittered rows over dark grout, wrapped at the edges.
+  c.fillStyle=paint(-.16);c.fillRect(0,0,256,256);
+  for(let row=0;row<10;row++)for(let col=0;col<10;col++){const x=col*25.6+(row%2)*12.8+(rnd()-.5)*5,y=row*25.6+(rnd()-.5)*5,rx=11.5+rnd()*2,ry=10.5+rnd()*2.5,a=(rnd()-.5)*.6,shade=(rnd()-.5)*.12-.02;
+   for(const ox of [-256,0,256])for(const oy of [-256,0,256]){c.fillStyle=paint(shade-.06);c.beginPath();c.ellipse(x+ox+1,y+oy+1.5,rx,ry,a,0,7);c.fill();c.fillStyle=paint(shade);c.beginPath();c.ellipse(x+ox,y+oy,rx-1,ry-1.2,a,0,7);c.fill();c.fillStyle=paint(shade+.05);c.beginPath();c.ellipse(x+ox-2.5,y+oy-2.5,rx*.5,ry*.4,a,0,7);c.fill()}}
  }else if(kind==='plaster'){
-  for(let i=0;i<45;i++){c.fillStyle=paint((rnd()-.5)*.055);c.beginPath();c.ellipse(rnd()*256,rnd()*256,4+rnd()*22,3+rnd()*14,rnd()*6,0,7);c.fill()}
+  for(let i=0;i<90;i++){c.fillStyle=paint((rnd()-.5)*.07);c.beginPath();c.ellipse(rnd()*256,rnd()*256,4+rnd()*26,3+rnd()*16,rnd()*6,0,7);c.fill()}
+  // Trowel strokes and the odd patch where the plaster has worn to stone.
+  for(let i=0;i<40;i++){c.strokeStyle=paint((rnd()-.5)*.05);c.lineWidth=2+rnd()*4;c.beginPath();const x=rnd()*256,y=rnd()*256;c.arc(x,y,10+rnd()*20,rnd()*6,rnd()*6+1);c.stroke()}
+  for(let i=0;i<2;i++){const x=20+rnd()*200,y=20+rnd()*200;for(let j=0;j<5;j++){c.fillStyle=paint(-.12-rnd()*.06);c.fillRect(x+(j%3)*13,y+Math.floor(j/3)*8,11,6)}}
   for(let i=0;i<8;i++){let x=rnd()*256,y=rnd()*256;c.strokeStyle=paint(-.06);c.lineWidth=.6;c.beginPath();c.moveTo(x,y);for(let j=0;j<4;j++){x+=(rnd()-.5)*14;y+=rnd()*10;c.lineTo(x,y)}c.stroke()}
  }else if(kind==='cloth'){
   for(let i=0;i<256;i+=3){c.fillStyle=paint(i%2?.035:-.035);c.fillRect(i,0,1,256);c.fillRect(0,i,256,1)}
