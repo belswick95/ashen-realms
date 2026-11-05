@@ -62,13 +62,17 @@ export function actorModel(T,parent,d){
   jaw.rotation.x=d.attackType==='bite'?a*.8:0;head.rotation.x=d.attackType==='bite'?-a*.3:0;wings.forEach((q,i)=>q.rotation.z=(i?1:-1)*(.2+Math.sin(tick*5)*.35));effect.visible=magical&&a>.25;effect.scale.setScalar(.7+a*.6);
  },dispose(){group.traverse(o=>{o.geometry?.dispose();if(o.material&&!materials.has(o.material.color?.getHex()))o.material.dispose()});for(const m of materials.values())m.dispose();group.removeFromParent()}};
 }
+// One shared material per colour for the simple props below, so the same prop
+// in many places merges into one draw call per town cell (static-batch.js).
+const plainMaterials=new WeakMap();
+function plainMaterial(T,color){let cache=plainMaterials.get(T);if(!cache)plainMaterials.set(T,cache=new Map());let m=cache.get(color);if(!m){m=new T.MeshStandardMaterial({color,roughness:.9});m.userData.eldervaleShared=true;cache.set(color,m)}return m}
 export function objectModel(T,parent,id,d={}){const camp=campObject(T,parent,id,d);if(camp)return camp;const farm=farmObjectModel(T,parent,id);if(farm)return farm;
  const station=professionStationModel(T,parent,id,d);if(station)return station;
  const prop=townProp(T,parent,id,d);if(prop)return prop;const training=tutorialObjectModel(T,parent,id,d);if(training)return training;
  const g=new T.Group();parent.add(g);const wood=0x745335,stone=0x92998e,metal=0x444b49;
  if(id.startsWith('castle_')||['altar','hearth'].includes(id)){castleObject(T,g,id,d);Object.assign(parent.userData,g.userData);return g;}
- const box=(x,y,z,w,h,l,c)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,l),new T.MeshStandardMaterial({color:c,roughness:.9}));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m};
- const cyl=(x,y,z,r,h,c,r2=r)=>{const m=new T.Mesh(new T.CylinderGeometry(r2,r,h,12),new T.MeshStandardMaterial({color:c,roughness:.9}));m.position.set(x,y,z);g.add(m);return m};
+ const box=(x,y,z,w,h,l,c)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,l),plainMaterial(T,c));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m};
+ const cyl=(x,y,z,r,h,c,r2=r)=>{const m=new T.Mesh(new T.CylinderGeometry(r2,r,h,12),plainMaterial(T,c));m.position.set(x,y,z);g.add(m);return m};
  if(id==='fountain'){cyl(0,.35,0,1.9,.7,stone);cyl(0,.72,0,1.65,.04,0x659bb7);cyl(0,1.5,0,.24,1.8,stone);cyl(0,2.3,0,.65,.25,stone);const streams=[],water=new T.MeshStandardMaterial({color:0x6b9da9,roughness:.22,metalness:.08,transparent:true,opacity:.65});for(let i=0;i<8;i++){const a=i*Math.PI/4,curve=new T.QuadraticBezierCurve3(new T.Vector3(Math.cos(a)*.52,2.36,Math.sin(a)*.52),new T.Vector3(Math.cos(a)*1.3,2.6,Math.sin(a)*1.3),new T.Vector3(Math.cos(a)*1.45,.76,Math.sin(a)*1.45));const stream=new T.Mesh(new T.TubeGeometry(curve,16,.016,5,false),water);g.add(stream);const drop=new T.Mesh(new T.SphereGeometry(.026,6,5),water);drop.scale.set(.7,1.8,.7);g.add(drop);streams.push({curve,drop,phase:i/8})}dressFountain(T,g);parent.userData.animateWater=time=>{for(const s of streams)s.drop.position.copy(s.curve.getPoint((time*.65+s.phase)%1))};}else if(id==='fishing_spot'){fishingRipple(T,parent);}else if(['tree','pine'].includes(id)){const canopy=new T.Group();g.add(canopy);const timber=creatureMaterial(T,0x75583e,'hide');buildNaturalForest(T,canopy,[{x:0,z:0}],{wood:timber,heightAt:()=>0,seed:(Math.floor((d.x||0)*137)^Math.floor((d.z||0)*317)^2419)>>>0,species:id==='pine'?'pine':'oak'});const stump=new T.Mesh(new T.CylinderGeometry(.29,.36,.26,10),timber);stump.position.y=.13;stump.visible=false;g.add(stump);parent.userData.harvestCanopy=canopy;parent.userData.harvestStump=stump;}
 
  else if(id==='rock'){

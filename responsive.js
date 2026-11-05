@@ -1,8 +1,10 @@
 // Tablets (iPad included, which reports a desktop user agent) keep the full
 // HUD but render like a mid-range device: a retina iPad canvas at full pixel
 // ratio with high shadows cannot hold 60 fps.
-export function deviceProfile({width,height,coarse=false,touch=false,memory=8,tablet=false}){
+// Phones (graphics-quality.js isPhone) start on low with a 1.25 pixel cap.
+export function deviceProfile({width,height,coarse=false,touch=false,memory=8,tablet=false,phone=false}){
  const compact=width<=700||((coarse||touch)&&height<=700&&width>height),constrained=memory>0&&memory<=4;
+ if(phone)return {compact,tablet:false,phone:true,rotateRequired:(coarse||touch)&&height>width,preset:'low',pixelCap:1.25};
  return {compact,tablet:!compact&&!!tablet,rotateRequired:(coarse||touch)&&height>width,preset:compact?(constrained?'low':'medium'):tablet?(constrained?'low':'medium'):'high',pixelCap:compact||tablet?1.5:2};
 }
 export const graphicsPresets={low:{scale:.65,distance:110,shadows:false},medium:{scale:.8,distance:210,shadows:true},high:{scale:1,distance:330,shadows:true},ultra:{scale:1.25,distance:440,shadows:true}};

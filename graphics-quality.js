@@ -48,7 +48,8 @@ export const CULL_MAX_RADIUS=12;
 export const HIDDEN_LAYER=31;
 export function createDistanceCuller({radiusOf,exclude=()=>false,interval=250,measureBudget=250}={}){
  const radii=new WeakMap(),hidden=new WeakSet();let next=0,stats={checked:0,hidden:0};
- function setLayer(root,hide){root.traverse(o=>{if(hide)o.layers.set(HIDDEN_LAYER);else o.layers.set(0)})}
+ // Meshes merged into a cell batch (static-batch.js) keep their own layer.
+ function setLayer(root,hide){root.traverse(o=>{if(o.userData?.cellBatched)return;if(hide)o.layers.set(HIDDEN_LAYER);else o.layers.set(0)})}
  return {
   get stats(){return stats},
   isHidden:o=>hidden.has(o),
@@ -70,4 +71,41 @@ export function createDistanceCuller({radiusOf,exclude=()=>false,interval=250,me
    stats={checked,hidden:count};return true;
   }
  };
+}
+
+// Phones: a small touch screen (a landscape phone is at most ~500 CSS px tall)
+// driving a 3x canvas on a phone-class GPU. They start on the low tier with a
+// tighter pixel-ratio cap; the frame governor still adapts from there.
+export function isPhone({ua='',maxTouchPoints=0,coarse=false,touch=false,width=0,height=0}={}){
+ if(/iPhone|iPod/.test(ua)||/Android/.test(ua)&&/Mobile/.test(ua))return true;
+ if(/iPad/.test(ua)||!(touch||coarse||maxTouchPoints>0)||/Windows|CrOS|Linux x86/.test(ua))return false;
+ return Math.min(width||Infinity,height||Infinity)<=500;
+}
+
+// Character level of detail by camera distance (metres) and quality tier:
+// animate every frame up close, `halfRate` updates a second further out,
+// 10 a second beyond that (the animator's own step limit is 0.1 s), and past
+// `draw` the character is neither drawn, shadowed nor animated. Characters cast
+// shadows only within `shadow` metres: about the sun's shadow-map radius for
+// the tier (sun-shadow.js), so the cut-off sits where shadows fade anyway.
+export const CHARACTER_LOD={
+ low:{full:10,half:20,draw:40,halfRate:15,shadow:0},
+ medium:{full:16,half:32,draw:58,halfRate:20,shadow:22},
+ high:{full:26,half:48,draw:80,halfRate:30,shadow:32},
+ ultra:{full:40,half:64,draw:95,halfRate:30,shadow:38}
+};
+export function characterLod(distance,preset='high',{focus=false}={}){
+ const t=CHARACTER_LOD[preset]||CHARACTER_LOD.high,shadow=focus||distance<=t.shadow;
+ if(focus||distance<=t.full)return {draw:true,interval:0,level:0,shadow};
+ if(!(distance<=t.draw))return {draw:false,interval:Infinity,level:3,shadow:false};
+ return distance<=t.half?{draw:true,interval:1/t.halfRate,level:1,shadow}:{draw:true,interval:.1,level:2,shadow};
+}
+// Frame time to advance a throttled animation this frame (0 = skip it).
+// `state.lodClock` carries the time since its last update; `phase` (0..1)
+// staggers actors so their throttled updates land on different frames.
+export function lodStep(state,dt,interval,phase=0){
+ if(!(interval>0)){const step=dt+(state.lodClock||0);state.lodClock=0;return step}
+ if(state.lodClock===undefined)state.lodClock=(((phase%1)+1)%1)*interval;
+ state.lodClock+=dt;if(state.lodClock<interval*.999)return 0;
+ const step=state.lodClock;state.lodClock=0;return step;
 }
