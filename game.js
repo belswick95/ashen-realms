@@ -58,6 +58,7 @@ import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261104-
 import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261104-lowpoly54';
 import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261104-lowpoly54';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+import {preloadCharacters} from './character-assets.js?v=release-20261104-lowpoly54';
 import {buildHumanoid} from './humanoid.js?v=release-20261104-lowpoly54';
 import {createHumanoidAnimator} from './animation.js?v=release-20261104-lowpoly54';
 import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261104-lowpoly54';
@@ -65,11 +66,13 @@ import {buildForest} from './forest.js?v=release-20261104-lowpoly54';
 import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261104-lowpoly54';
 import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261104-lowpoly54';
 const landscape=createLandscape();
-import {buildPlateArmor} from './armor.js?v=release-20261104-lowpoly54';
+import {npcAppearance} from './npc-looks.js?v=release-20261104-lowpoly54';
 import {createCape} from './cape.js?v=release-20261104-lowpoly54';
 import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261104-lowpoly54';
 import {shieldCatalog,makeShield} from './shields.js?v=release-20261104-lowpoly54';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
+// Character models, outfits and animations must be ready before anyone is built.
+await preloadCharacters(T);
 const scene=new T.Scene();scene.background=new T.Color(0x9dbbc2);scene.fog=new T.Fog(0x9dbbc2,105,255);
 const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,450),renderer=new T.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);bindGameViewport(renderer.domElement,(width,height)=>{camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false)});
 const skyLight=new T.HemisphereLight(0xcfe4ff,0x5a4d33,2);scene.add(skyLight);const sun=new T.DirectionalLight(0xffe9b6,2.3);sun.position.set(12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);scene.add(sun.target);renderer.shadowMap.type=T.PCFSoftShadowMap;
@@ -550,13 +553,13 @@ for(let i=0;i<15;i++){const a=i*2.4,r=2.5+i*.42;const rubble=sphere(.24+(i%3)*.1
 mapProps.push({x:132,z:26,color:'#b6b49c'});
 }
 const merchant=new T.Group();merchant.position.set(-3,0,7);scene.add(merchant);if(generatedWorld)merchant.visible=false;
-const trader=buildHumanoid(T,merchant,{skin:0xd8a57e,shirt:0x704c77,pants:0x514638,hairColor:0x30231f,hair:'Long'});
-// The shopkeeper uses the same skeleton as other NPCs, with a distinct apron and belt.
-box(.54,.69,.045,0x9a7953,0,1.735,.225,merchant,'wood');box(.78,.12,.47,0x4b3428,0,1.305,0,merchant,'wood');
+const trader=buildHumanoid(T,merchant,{sex:'male',skin:'#d9a67e',hairColor:'#211b18',hair:'Long',beard:'Short beard'});
+// The shopkeeper dresses as a well-off trader.
+trader.setCoverage(npcAppearance({role:'noble merchant'},1).equipped);
 const mh=new T.Mesh(new T.SphereGeometry(.43,8,6),new T.MeshBasicMaterial({visible:false}));mh.position.set(0,1.45,0);merchant.add(mh);mh.userData={kind:'merchant',x:-3,z:7};targets.push(mh);
 if(!generatedWorld)box(2.5,.25,1,0x805832,-3,1,9,scene,'wood');
 const player=new T.Group();scene.add(player);const body=new T.Group();player.add(body);
-const avatar=buildHumanoid(T,body,{adventurer:true,skin:appearance.skin,shirt:appearance.shirt,pants:appearance.pants,hairColor:appearance.hairColor,hair:appearance.hair,face:appearance.face,beard:appearance.beard});
+const avatar=buildHumanoid(T,body,{adventurer:true,sex:appearance.sex,skin:appearance.skin,hairColor:appearance.hairColor,hair:appearance.hair,beard:appearance.beard,shirtVariant:appearance.shirtVariant,pantsVariant:appearance.pantsVariant});
 const playerAnimator=createHumanoidAnimator(avatar);
 let mounted=false;
 function hoofSound({root,front,index}){const distance=root.position.distanceTo(player.position);if(distance>28)return;const dx=root.position.x-player.position.x,dz=root.position.z-player.position.z;playHorseHoof({front,volume:Math.max(0,1-distance/28)*.8,pan:(dx*Math.cos(yaw)-dz*Math.sin(yaw))/18,hard:onBridge(landscape.bridges,root.position.x,root.position.z)||distanceToRoad(root.position.x,root.position.z)<3||inCastle(root.position.x,root.position.z)});}
@@ -617,9 +620,8 @@ if(state.starterChestClaimed&&!saved.starterShieldsGranted){
  state.starterShieldsGranted=true;
  localStorage.setItem('eldervale-save',JSON.stringify({...saved,shieldsOwned:state.shieldsOwned,starterShieldsGranted:true}));
 }
-const pieces=buildPlateArmor(T,body,avatar);
 const cape=createCape(T,body,{color:0x81394b,rig:avatar});
-function refreshArmor(){avatar.setCoverage(state.equipped);for(const k of armorKeys){if(k==='cape'){cape.mesh.visible=!!state.equipped.cape;continue}for(const m of pieces[k])m.visible=!!state.equipped[k]}}
+function refreshArmor(){avatar.setCoverage(state.equipped);cape.mesh.visible=!!state.equipped.cape}
 refreshArmor();
 const weaponMeshes=new Map();
 for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);attachWeapon(avatar,model,key);model.visible=false;weaponMeshes.set(key,model)}
@@ -850,30 +852,24 @@ const npcs=[];
 function spawnNPC(profile,index){profile.realmId||='base:npc:'+profile.name;
  profile.attackType||=/mage|healer/.test(profile.role)?'magic':/smith/.test(profile.role)?'hammer':/guard/.test(profile.role)?'slash':'punch';profile.level??=5;profile.hp??=45;profile.damage??=4;profile.attackSpeed??=2.4;
  const root=new T.Group();root.position.set(profile.x,0,profile.z);scene.add(root);
- const palettes=[0xc9916b,0xe0b48e,0x966247,0x67402f,0xb98362];
- const hairs=[0x39271f,0x6d4831,0xa17a4b,0x241e1d];
- const model=buildHumanoid(T,root,{skin:palettes[index%palettes.length],shirt:profile.color,pants:0x474442,hairColor:hairs[index%hairs.length],face:['Balanced','Angular','Broad'][index%3],beard:index%4===0?'Short beard':index%4===1?'Stubble':undefined,hair:['Short crop','Side swept','Buzz cut','Long'][index%4]});
- if(/guard|warden|sentinel|soldier/i.test(profile.role+' '+profile.name)){
-  const plates=buildPlateArmor(T,root,model);for(const slot of ['chest','legs','boots'])for(const part of plates[slot])part.visible=true;model.setCoverage({chest:true,legs:true,boots:true});
-  if(profile.whiteArmor)for(const slot of ['chest','legs','boots'])for(const part of plates[slot]){part.material=part.material.clone();part.material.userData.eldervaleShared=false;part.material.color.setHex(0xdfe6e6);part.material.metalness=.55;part.material.roughness=.44;}
+ const dress=npcAppearance(profile,index),model=buildHumanoid(T,root,dress.look);model.setCoverage(dress.equipped);
+ if(dress.armed){
   const weapon=makeWeapon(T,'longsword');attachWeapon(model,weapon,'longsword');profile.weapon='longsword';root.userData.armed=true;
  }
  const activity=profile.activity||({smith:'smith',banker:'read',herbalist:'garden',merchant:'trade',innkeeper:'trade',steward:'read'}[profile.role]);
  profile.activity=activity;
  let workProp=null;
- if(activity==='carry'||activity==='read'){
+ if((activity==='carry'||activity==='read')&&!model.clipDriven){
   const layout=townPropLayout(activity);workProp=new T.Group();workProp.userData.heldWorkProp=true;root.add(workProp);workProp.position.set(0,layout.y,layout.z);
   box(layout.width,layout.height,layout.depth,activity==='carry'?0x795737:0xb7a781,0,0,0,workProp,activity==='carry'?'wood':'cloth');
   if(activity==='carry')for(const x of [-.20,.20])box(.035,.36,.30,0x4f3e2e,x,0,0,workProp,'wood');
  }else if(['smith','sweep','garden'].includes(activity)){
-  workProp=new T.Group();model.rightHand.add(workProp);workProp.rotation.x=activity==='smith'?1.3:.18;
+  workProp=new T.Group();model.rightHand.add(workProp);
   box(.045,activity==='smith'?.40:1.15,.045,0x705537,0,activity==='smith'?.06:-.12,0,workProp,'wood');
   box(activity==='smith'?.27:.32,activity==='sweep'?.16:.10,.12,activity==='sweep'?0xa99a66:0x66777c,0,activity==='smith'?.23:-.67,0,workProp,activity==='sweep'?'cloth':'stone');
  }
 
  // Clothing accents give each NPC a recognizable silhouette without changing the animation rig.
- if(!root.userData.armed&&index%3===0){box(.62,.11,.44,0x5e422d,0,1.365,0,root,'wood');box(.24,.16,.07,0xc5a46b,0,1.365,.245,root)}
- if(!root.userData.armed&&index%3===1){box(.52,.62,.045,0xb3a17b,0,1.775,.223,root,'cloth');box(.54,.12,.45,0x6b4c33,0,1.385,0,root,'wood')}
  const hit=new T.Mesh(new T.CylinderGeometry(.68,.68,2.7,14),new T.MeshBasicMaterial({visible:false}));
  hit.position.set(0,1.38,0);root.add(hit);hit.userData={kind:'npc',profile,root};targets.push(hit);
  const npc={realmId:profile.realmId,profile,root,rig:model,workProp,animator:createHumanoidAnimator(model),leftArm:model.leftArm,rightArm:model.rightArm,leftLeg:model.leftLeg,rightLeg:model.rightLeg,leftElbow:model.leftElbow,rightElbow:model.rightElbow,leftKnee:model.leftKnee,rightKnee:model.rightKnee,home:new T.Vector3(profile.x,0,profile.z),goal:new T.Vector3(profile.x,0,profile.z),wait:2+index,phase:index,walkPhase:0,walkBlend:0,stuck:0,pace:.48+(index%4)*.075,path:[],pathGoal:null,patrolIndex:0};npcs.push(npc);npc.hit=hit;return npc
@@ -1333,7 +1329,9 @@ townAnimations.push(()=>{if(performance.now()<nextLampUpdate)return;nextLampUpda
 
 if(!generatedWorld){const fishingMarker=new T.Group();fishingMarker.position.set(-70,landscape.walkHeight(-70,80),80);scene.add(fishingMarker);objectModel(T,fishingMarker,'fishing_spot');const fishingHit=new T.Mesh(new T.CylinderGeometry(.8,.8,1.6,10),new T.MeshBasicMaterial({visible:false}));fishingHit.position.y=.8;fishingMarker.add(fishingHit);fishingHit.userData={kind:'fishing',x:-70,z:80,realmId:'base:fishing:moonmere'};targets.push(fishingHit);realmObjectTargets.set('base:fishing:moonmere',fishingHit);}
 
-function groundFeet(rig,visual,contacts=null){visual.updateWorldMatrix(true,true);let lift=0;const ankles=contacts&&(contacts.left||contacts.right)?[contacts.left?rig.leftAnkle:null,contacts.right?rig.rightAnkle:null]:[rig.leftAnkle,rig.rightAnkle];const feet=[];for(const ankle of ankles)ankle?.traverse(m=>{if(m.isMesh)feet.push(m)});for(const side of ['left','right'])if((!contacts||contacts[side])&&rig.meshes?.[side+'Foot'])feet.push(rig.meshes[side+'Foot']);for(const m of feet){if(!m.visible||m.material?.visible===false)continue;if(m.isSkinnedMesh)m.computeBoundingBox();else if(!m.geometry.boundingBox)m.geometry.computeBoundingBox();const box=(m.isSkinnedMesh?m.boundingBox:m.geometry.boundingBox).clone().applyMatrix4(m.matrixWorld);const x=(box.min.x+box.max.x)/2,z=(box.min.z+box.max.z)/2;lift=Math.max(lift,landscape.walkHeight(x,z)+.012-box.min.y)}visual.position.y+=Math.min(.3,Math.max(0,lift));}
+function groundFeet(rig,visual,contacts=null){visual.updateWorldMatrix(true,true);let lift=0;
+ if(rig.clipDriven){const p=new T.Vector3();for(const side of ['left','right']){if(contacts&&!contacts[side])continue;rig[side+'Ankle'].getWorldPosition(p);lift=Math.max(lift,landscape.walkHeight(p.x,p.z)+rig.footHeight-p.y)}visual.position.y+=Math.min(.3,Math.max(0,lift));return}
+const ankles=contacts&&(contacts.left||contacts.right)?[contacts.left?rig.leftAnkle:null,contacts.right?rig.rightAnkle:null]:[rig.leftAnkle,rig.rightAnkle];const feet=[];for(const ankle of ankles)ankle?.traverse(m=>{if(m.isMesh)feet.push(m)});for(const side of ['left','right'])if((!contacts||contacts[side])&&rig.meshes?.[side+'Foot'])feet.push(rig.meshes[side+'Foot']);for(const m of feet){if(!m.visible||m.material?.visible===false)continue;if(m.isSkinnedMesh)m.computeBoundingBox();else if(!m.geometry.boundingBox)m.geometry.computeBoundingBox();const box=(m.isSkinnedMesh?m.boundingBox:m.geometry.boundingBox).clone().applyMatrix4(m.matrixWorld);const x=(box.min.x+box.max.x)/2,z=(box.min.z+box.max.z)/2;lift=Math.max(lift,landscape.walkHeight(x,z)+.012-box.min.y)}visual.position.y+=Math.min(.3,Math.max(0,lift));}
 
 window.eldervaleGetWaterSoundProximity=()=>Math.max(0,...scene.children.filter(o=>o.userData.waterSource).map(o=>Math.max(0,1-Math.hypot(player.position.x-o.position.x,player.position.z-o.position.z)/9)));
 

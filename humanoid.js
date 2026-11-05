@@ -54,13 +54,20 @@ export function buildHumanoid(T,root,look={}){
  function setOutfit(equipped={}){worn=wornOutfit(equipped,look);for(const slot of OUTFIT_SLOTS)worn[slot]?setSlot(slot,worn[slot]):remove(slot);refreshHair();return {...worn}}
  setOutfit({});
 
- // Sockets for held items. Weapons keep their established convention (blade
- // +Y, shield face +Z); each socket turns its hand bone into that frame.
- const socket=(boneName,name)=>{const s=new T.Object3D();s.name=name;bones[boneName].add(s);return s};
- const rightHand=socket('hand_r','right-hand-socket'),leftHand=socket('hand_l','left-hand-socket');
+ // Sockets for held items. Items keep their established convention: blade or
+ // handle along +Y, shield face along +Z. In the hand bone, fingers run along
+ // +Y and the knuckle line (the handle through a closed fist) along +Z, thumb
+ // side forward; the palm faces -X on the right hand and +X on the left. The
+ // socket sits in the fist, blade out of the thumb side, face toward the back
+ // of the hand, and undoes the body scale so items keep their world size.
+ const socket=(side,name)=>{const s=new T.Object3D();s.name=name;const back=side==='r'?1:-1;
+  s.matrix.makeBasis(new T.Vector3(0,back,0),new T.Vector3(0,0,1),new T.Vector3(back,0,0));s.matrix.decompose(s.position,s.quaternion,s.scale);
+  s.position.set(-back*.022,.082,0);s.scale.setScalar(1/CHARACTER_SCALE);bones['hand_'+side].add(s);return s};
+ const rightHand=socket('r','right-hand-socket'),leftHand=socket('l','left-hand-socket');
  // Anchor riding the upper back at the body origin (capes pin to it).
  const base=new T.Object3D();base.name='upper-back-anchor';root.add(base);root.updateMatrixWorld(true);bones.spine_03.attach(base);
- const rig={T,root,body:root,model,bones,sex,head:bones.Head,base,neck:bones.neck_01,chestBone:bones.spine_03,torso:bones.spine_02,
+ root.updateMatrixWorld(true);const footHeight=bones.foot_l.getWorldPosition(new T.Vector3()).y-root.getWorldPosition(new T.Vector3()).y;
+ const rig={T,root,body:root,model,bones,sex,footHeight,head:bones.Head,base,neck:bones.neck_01,chestBone:bones.spine_03,torso:bones.spine_02,
   leftArm:bones.upperarm_l,rightArm:bones.upperarm_r,leftElbow:bones.lowerarm_l,rightElbow:bones.lowerarm_r,leftHand,rightHand,
   leftLeg:bones.thigh_l,rightLeg:bones.thigh_r,leftKnee:bones.calf_l,rightKnee:bones.calf_r,leftAnkle:bones.foot_l,rightAnkle:bones.foot_r,
   skinned:true,clipDriven:true,meshes:{},parts:slotMeshes,allMeshes:meshes,face:faceMeshes.find(m=>/SuperHero/i.test(m.name))||faceMeshes[0],faceMeshes,hairMeshes:[...hairMeshes,...beardMeshes],clothingMeshes:[],

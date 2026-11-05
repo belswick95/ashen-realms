@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.js",
+    "test": "node --test --import ./tests/helpers/preload.js tests/*.test.js",
     "check": "node scripts/check-syntax.js",
     "test:browser": "node scripts/third-person-smoke.cjs",
     "test:auth": "node scripts/auth-smoke.cjs",

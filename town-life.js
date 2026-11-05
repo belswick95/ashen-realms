@@ -23,6 +23,7 @@ export function townPropLayout(kind){return kind==='carry'?{width:.52,height:.34
 const activityStates=new WeakMap();
 export function animateTownActivity(rig,kind,time,moving=false){
  if(!kind)return;
+ if(rig.clipDriven){rig.setActivity(moving?null:kind);return}
  let state=activityStates.get(rig);if(!state){state={time,weight:0,before:[]};activityStates.set(rig,state)}const dt=Math.max(0,Math.min(.1,time-state.time));state.time=time;state.weight+=((moving?0:1)-state.weight)*(1-Math.exp(-7*dt));
  const joints=[rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow,rig.leftHand,rig.rightHand,rig.head,rig.torso],before=joints.map((j,i)=>{state.before[i]??=j.quaternion.clone();return state.before[i].copy(j.quaternion)});
  const beat=Math.sin(time*(kind==='smith'?4.8:1.8));

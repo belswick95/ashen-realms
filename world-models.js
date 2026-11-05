@@ -11,14 +11,11 @@ import {buildCharacterDisplay} from './character-display.js?v=release-20261104-l
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);
  if(['human','goblin','skeleton'].includes(d.species)||d.kind==='npc'){
-  const appearance={shirt:'#'+(d.color||0x714e49).toString(16).padStart(6,'0'),pants:'#4b4742',skin:d.species==='goblin'?'#74864b':d.species==='skeleton'?'#d7cfb9':'#c9916b',hair:d.species==='skeleton'?'Buzz cut':'Short crop'};
-  const display=buildCharacterDisplay(T,parent,appearance,{weapon:d.weapon,armor:/guard/.test(d.role||'')?{chest:true,legs:true,boots:true}: {}});
-  if(d.species==='skeleton'){
-   const rig=display.rig,bone=new T.MeshStandardMaterial({color:0xd7cfb9,roughness:.9});rig.setCoverage({chest:true,legs:true});for(const m of rig.hairMeshes)m.visible=false;
-   const rib=(p,x,y,z,w,h,depth)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,depth),bone);m.position.set(x,y,z);p.add(m)};
-   rib(display.visual,0,1.78,0,.10,.70,.10);for(let i=0;i<5;i++)rib(display.visual,0,1.57+i*.10,.03,.52-i*.025,.055,.25);
-   for(const [limb,length]of [[rig.leftArm,.44],[rig.rightArm,.44],[rig.leftElbow,.30],[rig.rightElbow,.30],[rig.leftLeg,.63],[rig.rightLeg,.63],[rig.leftKnee,.54],[rig.rightKnee,.54]]){for(const c of limb.children)if(c.isMesh)c.visible=false;rib(limb,0,-length/2,0,.075,length,.075)}
-  }
+  // Monsters reuse the human body with their own skin, hair and clothing.
+  const species=d.species,set=(o,v,pieces)=>Object.fromEntries(pieces.map(p=>[o+p+v,true]));
+  const appearance=species==='goblin'?{sex:'male',skin:'#74864b',hair:'Bald',beard:'Clean shaven',hairColor:'#211b18'}:species==='skeleton'?{sex:'male',skin:'#d7cfb9',hair:'Bald',beard:'Clean shaven',hairColor:'#c0b5a3'}:{sex:'male',skin:'#c9916b',hair:'Short parted',hairColor:'#5b3c28'};
+  const armor=/guard/.test(d.role||'')?{helm:true,chest:true,legs:true,boots:true,knightGauntlets1:true}:species==='goblin'?set('ranger',2,['Tunic','Trousers','Bracers']):species==='skeleton'?{...set('peasant',2,['Shirt','Trousers']),knightArmet3:true}:{};
+  const display=buildCharacterDisplay(T,parent,appearance,{weapon:d.weapon,armor},{trusted:true});
   const effect=serviceAttackEffect(T,display.rig,d.attackType);
   return {update(dt,m){display.update(dt,{...m,locomotion:m.attack>0?'combat':'walk'});effect.update(m.attack||0)},dispose:()=>display.dispose()};
  }

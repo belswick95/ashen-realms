@@ -1,6 +1,6 @@
 import {installOrientationGate} from './responsive.js?v=release-20261104-lowpoly54';
 installOrientationGate();
-import {SKINS,HAIRS,SHIRTS,PANTS,HAIRSTYLES,FACES,BEARDS,safeAppearance} from './appearance.js?v=release-20261104-lowpoly54';
+import {SEXES,SKINS,HAIRS,HAIRSTYLES,BEARDS,CLOTHING_VARIANTS,CLOTHING_LABELS,safeAppearance} from './appearance.js?v=release-20261104-lowpoly54';
 import {toPlayerRow,fromPlayerRow} from './player-save.js?v=release-20261104-lowpoly54';
 import {createSaveCoordinator} from './cloud-save.js?v=release-20261104-lowpoly54';
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm';
@@ -26,24 +26,23 @@ async function customize(initial){const {createCharacterPreview}=await import('.
  document.body.append(screen);
  const preview=createCharacterPreview(screen.querySelector('#avatar-preview'),a);
  const opts=screen.querySelector('#creator-options');
- for(const [key,label,colors] of [['skin','Skin tone',SKINS],['hairColor','Hair color',HAIRS],['shirt','Shirt color',SHIRTS],['pants','Pants color',PANTS]]){
-  const row=document.createElement('div');row.className='creator-row';const heading=document.createElement('label');heading.textContent=label;row.append(heading);
-  const swatches=document.createElement('div');swatches.className='creator-swatches';
-  for(const color of colors){const btn=document.createElement('button');btn.type='button';btn.className='creator-swatch';btn.style.background=color;btn.setAttribute('aria-label',label+' '+color);btn.onclick=()=>{a[key]=color;refresh()};swatches.append(btn)}row.append(swatches);opts.append(row);
- }
- const hairRow=document.createElement('div');hairRow.className='creator-row';hairRow.innerHTML='<label for="creator-hair">Hairstyle</label>';const select=document.createElement('select');select.id='creator-hair';for(const h of HAIRSTYLES){const o=document.createElement('option');o.value=o.textContent=h;select.append(o)}select.value=a.hair;select.onchange=()=>{a.hair=select.value;refresh()};hairRow.append(select);opts.prepend(hairRow);
- for(const [key,label,values] of [['face','Face shape',FACES],['beard','Facial hair',BEARDS]]){
-  const row=document.createElement('div');row.className='creator-row';const caption=document.createElement('label');caption.htmlFor='creator-'+key;caption.textContent=label;const input=document.createElement('select');input.id='creator-'+key;
-  for(const value of values){const option=document.createElement('option');option.value=option.textContent=value;input.append(option)}input.value=a[key];input.onchange=()=>{a[key]=input.value;refresh()};row.append(caption,input);opts.append(row);
- }
+ // Small builders for the creator rows: swatch rows and labelled choices.
+ const row=(label,id)=>{const r=document.createElement('div');r.className='creator-row';const l=document.createElement('label');l.textContent=label;if(id)l.htmlFor=id;r.append(l);opts.append(r);return r};
+ const swatchRow=(key,label,values,colorOf=v=>v,name=v=>v)=>{const r=row(label),sw=document.createElement('div');sw.className='creator-swatches';for(const value of values){const b=document.createElement('button');b.type='button';b.className='creator-swatch';b.dataset.key=key;b.dataset.value=String(value);b.style.background=colorOf(value);b.setAttribute('aria-label',label+' '+name(value));b.title=name(value);b.onclick=()=>{a[key]=value;refresh()};sw.append(b)}r.append(sw);return r};
+ const selectRow=(key,label,values,name=v=>v)=>{const r=row(label,'creator-'+key),input=document.createElement('select');input.id='creator-'+key;for(const v of values){const o=document.createElement('option');o.value=v;o.textContent=name(v);input.append(o)}input.value=a[key];input.onchange=()=>{a[key]=input.value;refresh()};r.append(input);return {row:r,input}};
+ const body=selectRow('sex','Body',SEXES,v=>v==='female'?'Female':'Male');
+ swatchRow('skin','Skin tone',SKINS);
+ swatchRow('hairColor','Hair color',HAIRS);
+ const hair=selectRow('hair','Hairstyle',HAIRSTYLES);
+ const beard=selectRow('beard','Facial hair',BEARDS);
+ const dye={1:'#7a5a3c',2:'#3b3b3e',3:'#40617f'};
+ swatchRow('shirtVariant','Shirt color',CLOTHING_VARIANTS,v=>dye[v],v=>CLOTHING_LABELS[v]);
+ swatchRow('pantsVariant','Pants color',CLOTHING_VARIANTS,v=>dye[v],v=>CLOTHING_LABELS[v]);
  function refresh(){
+  Object.assign(a,safeAppearance(a));body.input.value=a.sex;hair.input.value=a.hair;beard.input.value=a.beard;
+  beard.row.hidden=a.sex==='female';
   preview.update(a);
-  screen.querySelectorAll('.creator-swatch').forEach(btn=>{
-   const row=btn.closest('.creator-row'),label=row.querySelector('label')?.textContent;
-   const key={'Skin tone':'skin','Hair color':'hairColor','Shirt color':'shirt','Pants color':'pants'}[label];
-   const sample=document.createElement('span');sample.style.color=a[key];
-   btn.classList.toggle('chosen',btn.style.backgroundColor===sample.style.color);
-  });
+  screen.querySelectorAll('.creator-swatch').forEach(b=>b.classList.toggle('chosen',String(a[b.dataset.key])===b.dataset.value));
  }
  refresh();
  screen.querySelector('#creator-finish').onclick=()=>{preview.dispose();screen.remove();resolve({...a})};
