@@ -51,7 +51,15 @@ function texture(name,{color=false}={}){
 // Resolves once every character texture requested so far has loaded (or failed),
 // for one-off renders such as the HUD portrait.
 export function texturesSettled(){return store.loading?new Promise(r=>(store.textureWaiters||(store.textureWaiters=[])).push(r)):Promise.resolve()}
-export function material(key,make){if(!store.materials.has(key)){const m=make();m.userData.eldervaleShared=true;store.materials.set(key,m)}return store.materials.get(key)}
+// Soft rim light on every character material so people read against grass and
+// cobbles; a few ALU ops on character pixels only. Tuned by setCharacterRim().
+const rim={rimColor:{value:null},rimStrength:{value:.1}};
+function rimLight(m){const T=store.T;if(!T||!m.isMeshStandardMaterial)return;rim.rimColor.value??=new T.Color(0xfff1dc);const before=m.onBeforeCompile;
+ m.onBeforeCompile=(shader,r)=>{before?.call(m,shader,r);Object.assign(shader.uniforms,rim);shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 rimColor;uniform float rimStrength;').replace('#include <opaque_fragment>','{float rimF=1.0-saturate(dot(normal,normalize(vViewPosition)));outgoingLight+=rimColor*rimF*rimF*rimF*rimStrength;}\n#include <opaque_fragment>')};
+ m.customProgramCacheKey=()=>'eldervale-rim'}
+// Day: faint warm sky rim. Night: a stronger cool moon rim keeps silhouettes legible.
+export function setCharacterRim(daylight){const T=store.T;if(!T)return;const d=Math.max(0,Math.min(1,daylight));rim.rimColor.value??=new T.Color();rim.rimColor.value.set(0x9db4e6).lerp(new T.Color(0xfff1dc),d);rim.rimStrength.value=.2-.1*d}
+export function material(key,make){if(!store.materials.has(key)){const m=make();m.userData.eldervaleShared=true;rimLight(m);store.materials.set(key,m)}return store.materials.get(key)}
 // Outfit material: one per outfit colour, shared by every wearer.
 export function outfitMaterial(outfit,variant=1){
  const T=store.T,o=outfit.toLowerCase();
