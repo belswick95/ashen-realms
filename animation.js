@@ -1,4 +1,4 @@
-import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261105-characters55';
+import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261105-weapons56';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip, cross-fades, and scales playback to the real travel

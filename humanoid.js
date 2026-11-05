@@ -1,7 +1,7 @@
-import {installLocalSkinning} from './local-skinning.js?v=release-20261105-characters55';
-import {characterStore as store,CHARACTER_SCALE,ensurePart,outfitMaterial,skinMaterial,hairMaterial,eyeMaterial} from './character-assets.js?v=release-20261105-characters55';
-import {outfitItems,wornOutfit,OUTFIT_SLOTS} from './outfits.js?v=release-20261105-characters55';
-import {BEARDS,SKINS,HAIRS} from './appearance.js?v=release-20261105-characters55';
+import {installLocalSkinning} from './local-skinning.js?v=release-20261105-weapons56';
+import {characterStore as store,CHARACTER_SCALE,ensurePart,outfitMaterial,skinMaterial,hairMaterial,eyeMaterial} from './character-assets.js?v=release-20261105-weapons56';
+import {outfitItems,wornOutfit,OUTFIT_SLOTS} from './outfits.js?v=release-20261105-weapons56';
+import {BEARDS,SKINS,HAIRS} from './appearance.js?v=release-20261105-weapons56';
 // Skinned Quaternius characters (CC0) for the player, remote players and NPCs.
 // Every body region is an artist-made outfit part on one shared skeleton;
 // clips from the Universal Animation Library drive the bones (animation.js).

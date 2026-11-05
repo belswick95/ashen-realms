@@ -6,4 +6,4 @@ Free hands now hang with palms toward their thighs during idle, walk and run. Th
 
 Rendered before/after resting poses inspected in test-results/hand-rest53/frame-50.png (previous left, revised right). Regression checks verify both palm normals point inward throughout idle, walking and running. Sword carry, two-handed IK, shield blocking and mount checks pass. This is software-rendered verification, not a native iPad frame-rate claim.
 
-Final verification: all 57 test files passed, syntax checks passed, and rendered empty-hand and held-item comparisons were inspected. Held-item comparison: test-results/hand-grip53/frame-50.png. Release cache key: release-20261105-characters55. No server data or account state changes.
+Final verification: all 57 test files passed, syntax checks passed, and rendered empty-hand and held-item comparisons were inspected. Held-item comparison: test-results/hand-grip53/frame-50.png. Release cache key: release-20261105-weapons56. No server data or account state changes.

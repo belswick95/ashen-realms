@@ -1,4 +1,4 @@
-import {isRanged} from './weapons.js?v=release-20261105-characters55';
+import {isRanged} from './weapons.js?v=release-20261105-weapons56';
 // Held items use +Y for the blade/handle and +Z for a shield face, with the
 // grip at the model origin (scripts/build-weapons.mjs). The hand sockets
 // (humanoid.js) sit in the closed fist in that frame, so items attach at the
