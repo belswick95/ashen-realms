@@ -12,5 +12,5 @@ export function createCombatTurns({interval,onWindup,onImpact,onEnd=()=>{}}){
   else{side=side==='player'?'enemy':'player';phase='ready';remaining=0}
  }};
 }
-export {WALK_SPEED} from './click-walk.js?v=release-20261105-tutorial76';
-export {RUN_SPEED as SPRINT_SPEED} from './click-walk.js?v=release-20261105-tutorial76';
+export {WALK_SPEED} from './click-walk.js?v=release-20261105-perf77';
+export {RUN_SPEED as SPRINT_SPEED} from './click-walk.js?v=release-20261105-perf77';

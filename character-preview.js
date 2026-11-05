@@ -1,8 +1,8 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261105-tutorial76';
-import {preloadCharacters} from './character-assets.js?v=release-20261105-tutorial76';
-import {createHumanoidAnimator} from './animation.js?v=release-20261105-tutorial76';
-import {previewFraming,previewFrame} from './preview-framing.js?v=release-20261105-tutorial76';
+import {buildHumanoid} from './humanoid.js?v=release-20261105-perf77';
+import {preloadCharacters} from './character-assets.js?v=release-20261105-perf77';
+import {createHumanoidAnimator} from './animation.js?v=release-20261105-perf77';
+import {previewFraming,previewFrame} from './preview-framing.js?v=release-20261105-perf77';
 
 // Uses the same meshes as the player and NPCs, not a separate illustration.
 export function createCharacterPreview(host,initial){

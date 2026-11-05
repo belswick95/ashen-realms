@@ -7,7 +7,7 @@ const server=http.createServer((req,res)=>{try{const name=new URL(req.url,'http:
 const page=`<!doctype html><body style="margin:0;background:#223"><div id="health-hud"></div><canvas id="c" width="1600" height="900"></canvas>
 <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
 <script type="module">
-import * as T from "three";const V="?v=release-20261105-tutorial76";
+import * as T from "three";const V="?v=release-20261105-perf77";
 const {preloadCharacters,ensurePart}=await import("/character-assets.js"+V);await preloadCharacters(T);
 const {buildCharacterDisplay}=await import("/character-display.js"+V);const {outfitItems}=await import("/outfits.js"+V);const {createHorseMount}=await import("/horse-mount.js"+V);const {createPlayerHUD}=await import("/player-hud.js"+V);
 const renderer=new T.WebGLRenderer({canvas:document.querySelector("#c"),antialias:true,preserveDrawingBuffer:true});renderer.outputColorSpace=T.SRGBColorSpace;

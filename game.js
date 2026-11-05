@@ -1,92 +1,98 @@
-import {campClearing} from './camp-blueprint.js?v=release-20261105-tutorial76';
-import {createLevelUpPanel} from './level-up.js?v=release-20261105-tutorial76';
-import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261105-tutorial76';
-import {createQuestJournal} from './quests.js?v=release-20261105-tutorial76';
-import {createTutorial} from './tutorial.js?v=release-20261105-tutorial76';
-import {panelStateKey} from './panel-state.js?v=release-20261105-tutorial76';
-import {obstructionDistance,collectCameraOccluders} from './camera-obstruction.js?v=release-20261105-tutorial76';
-import {slideStep,locomotionDistance,movementTime} from './movement-collision.js?v=release-20261105-tutorial76';
-import {createWildlife} from './wildlife.js?v=release-20261105-tutorial76';
-import {createProfessionVisuals} from './profession-visuals.js?v=release-20261105-tutorial76';
-import {makeDroppedItemModel} from './item-models.js?v=release-20261105-tutorial76';
-import {createProfessionPanel} from './professions.js?v=release-20261105-tutorial76';
-import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261105-tutorial76';
-import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261105-tutorial76';
-import {createHorseMount} from './horse-mount.js?v=release-20261105-tutorial76';
-import {playHorseHoof,playLevelUpJingle,soundEffects,duckMusic} from './music.js?v=release-20261105-tutorial76';
-import {createLevelFireworks} from './level-fireworks.js?v=release-20261105-tutorial76';
-import {jingleFor} from './level-up.js?v=release-20261105-tutorial76';
-import {townMusic,waterProximity} from './audio-regions.js?v=release-20261105-tutorial76';
-import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261105-tutorial76';
-import {createGroundDressing} from './environment-detail.js?v=release-20261105-tutorial76';
-import {createWaterSystem} from './water-rendering.js?v=release-20261105-tutorial76';
-import {fishingDock} from './waterfront.js?v=release-20261105-tutorial76';
-import {createSurfaceCoverIndex,isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261105-tutorial76';
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261105-tutorial76';
-import {installWorldHoverCursor} from './cursors.js?v=release-20261105-tutorial76';
-import {installMMOControls,jumpHeight,isAirborne,CAMERA_TURN_RATE,CAMERA_PITCH_RATE} from './mmorpg-controls.js?v=release-20261105-tutorial76';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261105-tutorial76';
-import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261105-tutorial76';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261105-tutorial76';
-import {runFrameWork,nextTask,createLoadingPanel} from './frame-work.js?v=release-20261105-tutorial76';
-import {createRegionStreamer} from './region-streamer.js?v=release-20261105-tutorial76';
-import {searchRoute} from './route-search.js?v=release-20261105-tutorial76';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261105-tutorial76';
-import {actorMenuLabel} from './context-label.js?v=release-20261105-tutorial76';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261105-tutorial76';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261105-tutorial76';
-import {createGroundDrops} from './ground-drops.js?v=release-20261105-tutorial76';
-import {createCombatHealth} from './combat-health.js?v=release-20261105-tutorial76';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261105-tutorial76';
-import {castle,inCastle} from './castle-layout.js?v=release-20261105-tutorial76';
-import {createMotionTrack,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose} from './motion-track.js?v=release-20261105-tutorial76';
-import {lightingAt} from './world-lighting.js?v=release-20261105-tutorial76';
-import {sculptPatches} from './terrain-patches.js?v=release-20261105-tutorial76';
-import {fromPlayerRow} from './player-save.js?v=release-20261105-tutorial76';
-import {combatLevel,skillLevel,crossedSwords,xpProgress,hitpointsLevel} from './combat-level.js?v=release-20261105-tutorial76';
-import {EAT_DELAY,EAT_ANIMATION,isFood,fishingMethods} from './food.js?v=release-20261105-tutorial76';
-import {createXpDrops} from './xp-drops.js?v=release-20261105-tutorial76';
-import {worldTemplates} from './world-templates.js?v=release-20261105-tutorial76';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261105-tutorial76';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261105-tutorial76';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261105-tutorial76';
-import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261105-tutorial76';
-import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261105-tutorial76';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon} from './world-map.js?v=release-20261105-tutorial76';
+import {campClearing} from './camp-blueprint.js?v=release-20261105-perf77';
+import {createLevelUpPanel} from './level-up.js?v=release-20261105-perf77';
+import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261105-perf77';
+import {createQuestJournal} from './quests.js?v=release-20261105-perf77';
+import {createTutorial} from './tutorial.js?v=release-20261105-perf77';
+import {panelStateKey} from './panel-state.js?v=release-20261105-perf77';
+import {obstructionDistance,collectCameraOccluders} from './camera-obstruction.js?v=release-20261105-perf77';
+import {slideStep,locomotionDistance,movementTime} from './movement-collision.js?v=release-20261105-perf77';
+import {createWildlife} from './wildlife.js?v=release-20261105-perf77';
+import {createProfessionVisuals} from './profession-visuals.js?v=release-20261105-perf77';
+import {makeDroppedItemModel} from './item-models.js?v=release-20261105-perf77';
+import {createProfessionPanel} from './professions.js?v=release-20261105-perf77';
+import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261105-perf77';
+import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261105-perf77';
+import {createHorseMount} from './horse-mount.js?v=release-20261105-perf77';
+import {playHorseHoof,playLevelUpJingle,soundEffects,duckMusic} from './music.js?v=release-20261105-perf77';
+import {createLevelFireworks} from './level-fireworks.js?v=release-20261105-perf77';
+import {jingleFor} from './level-up.js?v=release-20261105-perf77';
+import {townMusic,waterProximity} from './audio-regions.js?v=release-20261105-perf77';
+import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261105-perf77';
+import {createGroundDressing} from './environment-detail.js?v=release-20261105-perf77';
+import {createWaterSystem} from './water-rendering.js?v=release-20261105-perf77';
+import {fishingDock} from './waterfront.js?v=release-20261105-perf77';
+import {createSurfaceCoverIndex,isBuilding as isWalkInBuilding,buildingPlot as walkInPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261105-perf77';
+import {isFoundationStructure,structurePlot,propBase} from './foundation.js?v=release-20261105-perf77';
+import {batchStaticMeshes} from './static-batch.js?v=release-20261105-perf77';
+// Walk-in buildings and freestanding structures (farm huts, stalls, wells...)
+// both get a levelled terrain pad; only buildings register a walkable floor.
+const isBuilding=d=>isWalkInBuilding(d)||isFoundationStructure(d),buildingPlot=d=>isWalkInBuilding(d)?walkInPlot(d):structurePlot(d);
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261105-perf77';
+import {installWorldHoverCursor} from './cursors.js?v=release-20261105-perf77';
+import {installMMOControls,jumpHeight,isAirborne,CAMERA_TURN_RATE,CAMERA_PITCH_RATE} from './mmorpg-controls.js?v=release-20261105-perf77';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261105-perf77';
+import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261105-perf77';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261105-perf77';
+import {runFrameWork,nextTask,createLoadingPanel} from './frame-work.js?v=release-20261105-perf77';
+import {createRegionStreamer} from './region-streamer.js?v=release-20261105-perf77';
+import {searchRoute} from './route-search.js?v=release-20261105-perf77';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261105-perf77';
+import {actorMenuLabel} from './context-label.js?v=release-20261105-perf77';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261105-perf77';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261105-perf77';
+import {createGroundDrops} from './ground-drops.js?v=release-20261105-perf77';
+import {createCombatHealth} from './combat-health.js?v=release-20261105-perf77';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261105-perf77';
+import {castle,inCastle} from './castle-layout.js?v=release-20261105-perf77';
+import {createMotionTrack,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose} from './motion-track.js?v=release-20261105-perf77';
+import {lightingAt} from './world-lighting.js?v=release-20261105-perf77';
+import {sculptPatches} from './terrain-patches.js?v=release-20261105-perf77';
+import {fromPlayerRow} from './player-save.js?v=release-20261105-perf77';
+import {combatLevel,skillLevel,crossedSwords,xpProgress,hitpointsLevel} from './combat-level.js?v=release-20261105-perf77';
+import {EAT_DELAY,EAT_ANIMATION,isFood,fishingMethods} from './food.js?v=release-20261105-perf77';
+import {createXpDrops} from './xp-drops.js?v=release-20261105-perf77';
+import {worldTemplates} from './world-templates.js?v=release-20261105-perf77';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261105-perf77';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261105-perf77';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261105-perf77';
+import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261105-perf77';
+import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261105-perf77';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon} from './world-map.js?v=release-20261105-perf77';
 const ARMOR_SLOTS=[...OUTFIT_SLOTS,'cape'];
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261105-tutorial76';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261105-tutorial76';
-import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity} from './economy.js?v=release-20261105-tutorial76';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261105-tutorial76';
-import {mapPoint} from './minimap.js?v=release-20261105-tutorial76';
-import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261105-tutorial76';
-import {heldOpen,heldOpenExamine} from './business-doors.js?v=release-20261105-tutorial76';
-import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus,actorsFirst,withWalkHere} from './click-walk.js?v=release-20261105-tutorial76';
-import {townResidents,animateTownActivity,createWorkKit,carriesWeapon} from './town-life.js?v=release-20261105-tutorial76';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261105-tutorial76';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261105-tutorial76';
-import {createPlayerHUD} from './player-hud.js?v=release-20261105-tutorial76';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261105-tutorial76';
-import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261105-tutorial76';
-import {stabilizeSun,shadowQuality} from './sun-shadow.js?v=release-20261105-tutorial76';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261105-tutorial76';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261105-tutorial76';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261105-tutorial76';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261105-perf77';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261105-perf77';
+import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity} from './economy.js?v=release-20261105-perf77';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261105-perf77';
+import {mapPoint} from './minimap.js?v=release-20261105-perf77';
+import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261105-perf77';
+import {heldOpen,heldOpenExamine} from './business-doors.js?v=release-20261105-perf77';
+import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus,actorsFirst,withWalkHere} from './click-walk.js?v=release-20261105-perf77';
+import {townResidents,animateTownActivity,createWorkKit,carriesWeapon} from './town-life.js?v=release-20261105-perf77';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261105-perf77';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261105-perf77';
+import {createPlayerHUD} from './player-hud.js?v=release-20261105-perf77';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261105-perf77';
+import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261105-perf77';
+import {stabilizeSun,shadowQuality} from './sun-shadow.js?v=release-20261105-perf77';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261105-perf77';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261105-perf77';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261105-perf77';
+import {isTablet,lowerTier,createFrameGovernor,createDistanceCuller} from './graphics-quality.js?v=release-20261105-perf77';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {preloadCharacters} from './character-assets.js?v=release-20261105-tutorial76';
-import {buildHumanoid} from './humanoid.js?v=release-20261105-tutorial76';
-import {arrangeEquipmentDoll,loadStance,saveStance,stanceToggle} from './equipment-doll.js?v=release-20261105-tutorial76';
-import {createHumanoidAnimator} from './animation.js?v=release-20261105-tutorial76';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261105-tutorial76';
-import {buildForest} from './forest.js?v=release-20261105-tutorial76';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261105-tutorial76';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261105-tutorial76';
+import {preloadCharacters} from './character-assets.js?v=release-20261105-perf77';
+import {buildHumanoid} from './humanoid.js?v=release-20261105-perf77';
+import {arrangeEquipmentDoll,loadStance,saveStance,stanceToggle} from './equipment-doll.js?v=release-20261105-perf77';
+import {createHumanoidAnimator} from './animation.js?v=release-20261105-perf77';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261105-perf77';
+import {buildForest} from './forest.js?v=release-20261105-perf77';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261105-perf77';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261105-perf77';
 const landscape=createLandscape();
-import {npcAppearance} from './npc-looks.js?v=release-20261105-tutorial76';
-import {createCape} from './cape.js?v=release-20261105-tutorial76';
-import {weaponCatalog,makeWeapon,iconForWeapon,isTwoHanded,isRanged,isMagic,usesArrows} from './weapons.js?v=release-20261105-tutorial76';
-import {createArrows} from './arrows.js?v=release-20261105-tutorial76';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261105-tutorial76';
-import {createDeathFlow,renderKeptOnDeath} from './death.js?v=release-20261105-tutorial76';
+import {npcAppearance} from './npc-looks.js?v=release-20261105-perf77';
+import {createCape} from './cape.js?v=release-20261105-perf77';
+import {weaponCatalog,makeWeapon,iconForWeapon,isTwoHanded,isRanged,isMagic,usesArrows} from './weapons.js?v=release-20261105-perf77';
+import {createArrows} from './arrows.js?v=release-20261105-perf77';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261105-perf77';
+import {createDeathFlow,renderKeptOnDeath} from './death.js?v=release-20261105-perf77';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 // RuneScape-style death: input lock and death pose, jingle, kept-items note, death pile on the maps (death.js).
 const deathFlow=createDeathFlow({say:text=>say(text),jingle:kind=>playLevelUpJingle(kind),now:()=>window.eldervaleServerTime?.()||Date.now(),goods});
@@ -190,6 +196,13 @@ function rock(x,z){
  m.userData={kind:'rock',x,z};targets.push(m)
 }
 let currentInterior={floor:0,building:null};const playerFloorMap={};function floorOffset(floor,x,z){if(!floor)return 0;for(const row of persistentRows.values())if(!row.deleted&&['cottage','bank','inn','forge'].includes(row.data.template)&&validStoryPosition(row.data,x,z,floor))return storyOffset(row.data,floor);return 0}const houseInteriors=[];const mapProps=[];
+// A town building is ~25-40 separate boxes (walls, beams, floor, furniture),
+// i.e. 25-40 draw calls in the camera pass and again in the shadow pass. Merge
+// the plain static ones per material; anything gameplay holds a reference to
+// (doors, click targets, roofs hidden indoors, bank stands, story floors) or
+// that has its own state (userData, transparency, render hooks) stays separate.
+function batchHouse(h){const keep=new Set();for(const v of Object.values(h)){if(v?.isMesh)keep.add(v);else if(Array.isArray(v))for(const m of v)if(m?.isMesh)keep.add(m)}const targetSet=new Set(targets),walkSet=new Set(walkSurfaces);
+ batchStaticMeshes(T,h.group,{deep:false,keep:m=>keep.has(m)||targetSet.has(m)||walkSet.has(m)||Object.keys(m.userData).length>0||m.material.visible===false||m.material.transparent||m.onBeforeRender!==T.Mesh.prototype.onBeforeRender})}
 function house(x,z,c,scale=1.65,rotation=0,options={}){
  const sx=scale*(options.width||1),sz=scale*(options.depth||1);
  // One coherent material style per building, from its role and a stable seed.
@@ -206,12 +219,14 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  // exposed lip keeps grass and the nearly coplanar floor underside from
  // competing in the depth buffer as the camera moves. Keep the floor top
  // at .125 so doorway clearance and the existing walk-in room stay aligned.
- box(4.18,.7,3.94,0x777568,0,-.25,0,group,'stone');
+ // The plinth runs well below grade (top stays at .1): on a plot that a later
+ // terrain edit re-slopes, it reads as a stone foundation instead of a gap.
+ box(4.18,2.6,3.94,0x777568,0,-1.2,0,group,'stone');
  // A gravel apron separates vegetation from the foundation, with no timber
  // end faces coplanar with the exterior walls.
  const apron=new T.Shape();apron.moveTo(-2.42,-2.22);apron.lineTo(2.42,-2.22);apron.lineTo(2.42,2.22);apron.lineTo(-2.42,2.22);apron.closePath();
  const inner=new T.Path();inner.moveTo(-2.02,-1.93);inner.lineTo(-2.02,1.93);inner.lineTo(2.02,1.93);inner.lineTo(2.02,-1.93);inner.closePath();apron.holes.push(inner);
- const apronGeometry=new T.ShapeGeometry(apron);apronGeometry.rotateX(-Math.PI/2);const apronMesh=new T.Mesh(apronGeometry,material(0xa39c83,'dirt'));apronMesh.position.y=.014;apronMesh.receiveShadow=true;group.add(apronMesh);
+ const apronGeometry=new T.ShapeGeometry(apron);apronGeometry.rotateX(-Math.PI/2);const apronMesh=new T.Mesh(apronGeometry,material(0xa39c83,'dirt'));apronMesh.position.y=.03;apronMesh.receiveShadow=true;group.add(apronMesh);
 
  box(3.76,.085,3.56,0x81684c,0,.0825,0,group,style.stone?'masonry':'floor');
  // Walls meet at edges. Overlapping box caps used to compete in the depth
@@ -528,7 +543,7 @@ async function useStairs(direction){if(!nearbyStairs||stairsBusy)return;stairsBu
 for(const [label,direction]of [['↑ Upstairs',1],['↓ Downstairs',-1]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.direction=direction;b.onclick=()=>void useStairs(direction);stairActions.append(b)}
 addEventListener('keydown',e=>{if(e.code==='KeyE'&&nearbyStairs&&!e.repeat&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();void useStairs(e.shiftKey?-1:1)}});
 function updateHouseRoofs(){
- nearbyStairs=null;for(const row of persistentRows.values()){const d=row.data;if(row.deleted||!(d.stories>1)||!['cottage','bank','inn','forge'].includes(d.template))continue;const anchor=stairPosition(d);if(Math.hypot(player.position.x-anchor.x,player.position.z-anchor.z)<Math.max(1.3,.65*1.3*d.scale)&&(!currentInterior.floor||currentInterior.building===row.id)){nearbyStairs={id:row.id,data:d};break}}stairActions.style.display=nearbyStairs?'flex':'none';if(nearbyStairs)for(const b of stairActions.children)b.hidden=Number(b.dataset.direction)>0?currentInterior.floor>=nearbyStairs.data.stories-1:currentInterior.floor===0;
+ nearbyStairs=null;for(const row of persistentRows.values()){const d=row.data;if(row.deleted||!(d.stories>1)||!['cottage','bank','inn','forge'].includes(d.template))continue;const anchor=stairPosition(d);if(Math.hypot(player.position.x-anchor.x,player.position.z-anchor.z)<Math.max(1.3,.65*1.3*d.scale)&&(!currentInterior.floor||currentInterior.building===row.id)){nearbyStairs={id:row.id,data:d};break}}{const display=nearbyStairs?'flex':'none';if(stairActions.style.display!==display)stairActions.style.display=display}if(nearbyStairs)for(const b of stairActions.children)b.hidden=Number(b.dataset.direction)>0?currentInterior.floor>=nearbyStairs.data.stories-1:currentInterior.floor===0;
  for(const house of houseInteriors){
   const local=house.group.worldToLocal(player.position.clone());
   const inside=Math.abs(local.x)<1.93&&Math.abs(local.z)<1.84;
@@ -697,10 +712,23 @@ window.eldervaleShowChatBubble=(id,name,message)=>{
  const node=document.createElement('div');node.style.cssText='position:fixed;max-width:230px;padding:7px 10px;border:1px solid #d1b878;border-radius:12px;background:#f5e8c9;color:#29251d;box-shadow:0 3px 12px #0009;text-align:center;font:12px Arial;overflow-wrap:anywhere;pointer-events:none';
  node.className='overhead-chat-bubble';node.textContent=String(message).slice(0,240);bubbleLayer.append(node);chatBubbles.set(id,{node,expires:performance.now()+6500});
 };
+// Name tags and chat bubbles follow players every frame. Writing left/top and
+// then reading offsetWidth forced a synchronous layout per player per frame;
+// sizes are now measured once per text and positions use a compositor-only
+// transform, written only when the rounded pixel position changes.
+const overlaySizes=new WeakMap(),overlayProjected=new T.Vector3();
+function placeOverlay(node,world,lift,visible,above){
+ const display=visible?'block':'none';if(node.style.display!==display)node.style.display=display;if(!visible)return;
+ let size=overlaySizes.get(node);if(!size||size.text!==node.textContent){if(!node.dataset.overlay){node.dataset.overlay='1';if(!node.style.position)node.style.position='absolute';node.style.left='0px';node.style.top='0px';node.style.willChange='transform'}size={text:node.textContent,w:node.offsetWidth,h:node.offsetHeight};overlaySizes.set(node,size)}
+ overlayProjected.set(world.x,world.y+lift,world.z).project(camera);
+ const x=Math.round((overlayProjected.x+1)*innerWidth/2-size.w/2),y=Math.round((1-overlayProjected.y)*innerHeight/2-(above?size.h:0)),key=x+','+y;
+ if(node.dataset.at!==key){node.dataset.at=key;node.style.transform='translate3d('+x+'px,'+y+'px,0)'}
+}
+function overlayVisible(world,lift){overlayProjected.set(world.x,world.y+lift,world.z).project(camera);return overlayProjected.z<1&&overlayProjected.z>-1&&world.distanceTo(player.position)<75}
 function updateOverheadChat(){
- const selfId=window.eldervaleUserId;const projected=new T.Vector3();
- for(const [id,other] of remotePlayers){projected.set(other.root.position.x,other.root.position.y+3.05,other.root.position.z).project(camera);const visible=projected.z<1&&projected.z>-1&&other.root.position.distanceTo(player.position)<75;other.tag.style.display=visible?'block':'none';if(visible){other.tag.style.left=((projected.x+1)*innerWidth/2-other.tag.offsetWidth/2)+'px';other.tag.style.top=((1-projected.y)*innerHeight/2)+'px'}}
- for(const [id,bubble] of chatBubbles){if(performance.now()>bubble.expires){bubble.node.remove();chatBubbles.delete(id);continue}const other=id===selfId?player:remotePlayers.get(id)?.root;if(!other){bubble.node.style.display='none';continue}projected.set(other.position.x,other.position.y+3.65,other.position.z).project(camera);const visible=projected.z<1&&projected.z>-1&&other.position.distanceTo(player.position)<75;bubble.node.style.display=visible?'block':'none';if(visible){bubble.node.style.left=((projected.x+1)*innerWidth/2-bubble.node.offsetWidth/2)+'px';bubble.node.style.top=((1-projected.y)*innerHeight/2-bubble.node.offsetHeight)+'px'}}
+ const selfId=window.eldervaleUserId;
+ for(const [id,other] of remotePlayers)placeOverlay(other.tag,other.root.position,3.05,overlayVisible(other.root.position,3.05),false);
+ for(const [id,bubble] of chatBubbles){if(performance.now()>bubble.expires){bubble.node.remove();chatBubbles.delete(id);continue}const other=id===selfId?player:remotePlayers.get(id)?.root;if(!other){if(bubble.node.style.display!=='none')bubble.node.style.display='none';continue}placeOverlay(bubble.node,other.position,3.65,overlayVisible(other.position,3.65),true)}
 }
 const saved=JSON.parse(localStorage.getItem('eldervale-save')||localStorage.getItem('ashen-realms-save')||'{}');
 const combat={hp:typeof saved.hp==='number'?Math.max(1,Math.min(100,saved.hp)):100,maxHp:100,xp:saved.combatXP||0,kills:saved.kills||0,attackTimer:0,respawnTimer:0,attackAnim:0,hitAnim:0,blockAnim:0,stanceTimer:0};
@@ -1026,7 +1054,7 @@ const gameplaySettings=document.querySelector('[data-settings-panel="gameplay"]'
 document.querySelector('#character-panel').hidden=true;
 const brand=document.createElement('strong');brand.className='minimap-brand';brand.textContent='ELDERVALE';document.querySelector('#map-widget').prepend(brand);
 document.querySelector('.social-head strong').textContent='Chat & Game';
-const coordinateHUD=document.createElement('output');coordinateHUD.id='coordinate-hud';coordinateHUD.setAttribute('aria-label','Player world coordinates');coordinateHUD.style.cssText='position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:90;background:#111c19e8;color:#f4d79a;border:1px solid #b6985e;border-radius:6px;padding:8px 14px;font:600 13px Arial,sans-serif;pointer-events:none;white-space:nowrap;display:none';document.body.append(coordinateHUD);if(localStorage.getItem('eldervale-show-coordinates')==='true')document.body.classList.add('show-coordinates');let lastCoordinateUpdate=0;function updateCoordinateHUD(){const active=document.body.classList.contains('show-coordinates');coordinateHUD.style.display=active?'block':'none';if(!active)return;const now=performance.now();if(now-lastCoordinateUpdate<120)return;lastCoordinateUpdate=now;coordinateHUD.textContent='X: '+player.position.x.toFixed(1)+'  |  Y: '+player.position.z.toFixed(1)+'  |  Height: '+player.position.y.toFixed(1)}
+const coordinateHUD=document.createElement('output');coordinateHUD.id='coordinate-hud';coordinateHUD.setAttribute('aria-label','Player world coordinates');coordinateHUD.style.cssText='position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:90;background:#111c19e8;color:#f4d79a;border:1px solid #b6985e;border-radius:6px;padding:8px 14px;font:600 13px Arial,sans-serif;pointer-events:none;white-space:nowrap;display:none';document.body.append(coordinateHUD);if(localStorage.getItem('eldervale-show-coordinates')==='true')document.body.classList.add('show-coordinates');let lastCoordinateUpdate=0;function updateCoordinateHUD(){const active=document.body.classList.contains('show-coordinates'),display=active?'block':'none';if(coordinateHUD.style.display!==display)coordinateHUD.style.display=display;if(!active)return;const now=performance.now();if(now-lastCoordinateUpdate<120)return;lastCoordinateUpdate=now;coordinateHUD.textContent='X: '+player.position.x.toFixed(1)+'  |  Y: '+player.position.z.toFixed(1)+'  |  Height: '+player.position.y.toFixed(1)}
 renderFeed();const playerHUD=createPlayerHUD(T,renderer,body);addEventListener('pagehide',()=>playerHUD.dispose(),{once:true});
 const healthBar=document.querySelector('#health-fill'),combatNotice=document.querySelector('#combat-notice');
 function combatMessage(msg){combatNotice.textContent=msg;combatNotice.hidden=false;clearTimeout(combatMessage.timer);combatMessage.timer=setTimeout(()=>combatNotice.hidden=true,1800)}
@@ -1091,10 +1119,18 @@ const settingKey='eldervale-client-settings';
 let shadowRefresh=67,nextShadowRefresh=0;
 let clientSettings={preset:'auto',scale:1,distance:330,shadows:true,fps:false,reducedMotion:false};
 try{clientSettings={...clientSettings,...JSON.parse(localStorage.getItem(settingKey)||'{}')}}catch{}
+// Automatic quality: the device picks the starting tier (tablets such as the
+// iPad start on medium), then measured frame time scales the render
+// resolution and, if that is not enough, drops a tier for this session.
+// Choosing any explicit preset in Settings turns the automatic steps off.
+let autoTierDrop=0,graphicsPixelBase=1;const frameGovernor=createFrameGovernor({min:.65});
+function currentDeviceProfile(){const coarse=matchMedia('(any-pointer:coarse)').matches,touch=navigator.maxTouchPoints>0,profile=deviceProfile({width:innerWidth,height:innerHeight,coarse,touch,memory:navigator.deviceMemory||8,tablet:isTablet({ua:navigator.userAgent,maxTouchPoints:navigator.maxTouchPoints,coarse,touch})});for(let i=0;i<autoTierDrop;i++)profile.preset=lowerTier(profile.preset);return profile}
+function applyResolution(){const dynamic=clientSettings.preset==='auto'?frameGovernor.scale:1;const ratio=Math.max(.5,graphicsPixelBase*dynamic);if(Math.abs(renderer.getPixelRatio()-ratio)>.01)renderer.setPixelRatio(ratio)}
+function governFrame(elapsed){if(clientSettings.preset!=='auto'||document.hidden)return;const change=frameGovernor.sample(elapsed*1000,performance.now());if(change==='scale')applyResolution();else if(change==='tier'&&autoTierDrop<2){autoTierDrop++;applyGraphics()}}
 function applyGraphics(){
- const profile=deviceProfile({width:innerWidth,height:innerHeight,coarse:matchMedia('(any-pointer:coarse)').matches,touch:navigator.maxTouchPoints>0,memory:navigator.deviceMemory||8});
+ const profile=currentDeviceProfile();
  const resolved=effectiveGraphics(clientSettings,profile),scale=Number(resolved.scale)||1;
- renderer.setPixelRatio(Math.min(devicePixelRatio*scale,resolved.pixelCap));
+ graphicsPixelBase=Math.min(devicePixelRatio*scale,resolved.pixelCap);applyResolution();
  renderer.shadowMap.enabled=Boolean(resolved.shadows);sun.castShadow=Boolean(resolved.shadows);
  const preset=clientSettings.preset==='auto'?profile.preset:clientSettings.preset;waterSystem.setQuality(preset==='custom'?(scale<=.65?'low':scale<1?'medium':'high'):preset,profile.compact);
  const shadow=shadowQuality(preset,profile.compact);shadowRefresh=shadow.interval;nextShadowRefresh=0;Object.assign(sun.shadow.camera,{left:-shadow.radius,right:shadow.radius,top:shadow.radius,bottom:-shadow.radius});sun.shadow.camera.updateProjectionMatrix();sun.shadow.needsUpdate=true;if(sun.shadow.mapSize.x!==shadow.size){sun.shadow.mapSize.set(shadow.size,shadow.size);sun.shadow.map?.dispose();sun.shadow.map=null;}
@@ -1106,8 +1142,8 @@ function applyGraphics(){
  document.body.classList.toggle('reduce-motion',Boolean(clientSettings.reducedMotion));
 }
 function storeGraphics(){if(clientSettings.preset==='auto')clientSettings.preset='custom';localStorage.setItem(settingKey,JSON.stringify(clientSettings));applyGraphics()}
-document.querySelector('#graphics-preset').addEventListener('change',e=>{clientSettings.preset=e.target.value;if(e.target.value==='auto'){localStorage.setItem(settingKey,JSON.stringify(clientSettings));applyGraphics();return}const p={low:[.65,110,false],medium:[.8,210,false],high:[1,330,true],ultra:[1.25,440,true]}[e.target.value];[clientSettings.scale,clientSettings.distance,clientSettings.shadows]=p;storeGraphics()});
-for(const [id,key,parse] of [['render-scale','scale',Number],['view-distance','distance',Number],['shadows-setting','shadows',Boolean],['fps-setting','fps',Boolean],['reduce-motion','reducedMotion',Boolean]])document.getElementById(id).addEventListener('change',e=>{if(clientSettings.preset==='auto')clientSettings={...effectiveGraphics(clientSettings,deviceProfile({width:innerWidth,height:innerHeight,coarse:matchMedia('(any-pointer:coarse)').matches,touch:navigator.maxTouchPoints>0,memory:navigator.deviceMemory||8})),preset:'custom'};clientSettings[key]=e.target.type==='checkbox'?e.target.checked:parse(e.target.value);storeGraphics()});
+document.querySelector('#graphics-preset').addEventListener('change',e=>{clientSettings.preset=e.target.value;autoTierDrop=0;frameGovernor.reset();if(e.target.value==='auto'){localStorage.setItem(settingKey,JSON.stringify(clientSettings));applyGraphics();return}const p={low:[.65,110,false],medium:[.8,210,false],high:[1,330,true],ultra:[1.25,440,true]}[e.target.value];[clientSettings.scale,clientSettings.distance,clientSettings.shadows]=p;storeGraphics()});
+for(const [id,key,parse] of [['render-scale','scale',Number],['view-distance','distance',Number],['shadows-setting','shadows',Boolean],['fps-setting','fps',Boolean],['reduce-motion','reducedMotion',Boolean]])document.getElementById(id).addEventListener('change',e=>{if(clientSettings.preset==='auto')clientSettings={...effectiveGraphics(clientSettings,currentDeviceProfile()),preset:'custom'};clientSettings[key]=e.target.type==='checkbox'?e.target.checked:parse(e.target.value);storeGraphics()});
 document.querySelectorAll('[data-settings-page]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-settings-page]').forEach(t=>t.classList.toggle('active',t===b));document.querySelectorAll('[data-settings-panel]').forEach(p=>p.hidden=p.dataset.settingsPanel!==b.dataset.settingsPage)}));
 document.querySelector('#settings-music-volume').addEventListener('input',e=>{const slider=document.querySelector('#music-volume');if(slider){slider.value=e.target.value;slider.dispatchEvent(new Event('input',{bubbles:true}))}});
 document.querySelector('#open-friends').addEventListener('click',()=>{responsiveLayout.collapse();const panel=document.querySelector('#social-panel');panel.hidden=false;panel.classList.remove('collapsed');document.querySelector('[data-social-tab="friends"]')?.click()});
@@ -1143,9 +1179,9 @@ function drawSkills(){
 }
 let lastPanelKey=null,stylePending=null,stancePreference=loadStance();
 function draw(){
- inventoryGold.hidden=activeTab!=='inventory';inventoryGold.textContent='🪙 '+state.gold.toLocaleString()+' gold';
+ if(inventoryGold.hidden!==(activeTab!=='inventory'))inventoryGold.hidden=activeTab!=='inventory';{const gold='🪙 '+state.gold.toLocaleString()+' gold';if(inventoryGold.textContent!==gold)inventoryGold.textContent=gold}
  playerHUD.update({combatLevel:combatLevel(state),hp:combat.hp,maxHp:combat.maxHp,xp:Object.keys(state).filter(k=>/^[a-z]+XP$/.test(k)).reduce((t,k)=>t+(Number(state[k])||0),0),kills:combat.kills,gold:state.gold,helmet:armorKeys.find(k=>state.equipped[k]&&armorCatalog[k].equipSlot==='helm')||null,weapon:weaponCatalog[state.equippedWeapon]});
- stats.innerHTML='<p><strong>Health: '+Math.ceil(combat.hp)+' / '+combat.maxHp+'</strong><br>Combat: '+level(combat.xp)+' ('+combat.xp+' XP)<br>Defeated: '+combat.kills+'<br>Gold: '+state.gold+'<br>Woodcutting: '+level(state.woodXP)+' ('+state.woodXP+' XP)<br>Mining: '+level(state.miningXP)+' ('+state.miningXP+' XP)</p>';
+ {const html='<p><strong>Health: '+Math.ceil(combat.hp)+' / '+combat.maxHp+'</strong><br>Combat: '+level(combat.xp)+' ('+combat.xp+' XP)<br>Defeated: '+combat.kills+'<br>Gold: '+state.gold+'<br>Woodcutting: '+level(state.woodXP)+' ('+state.woodXP+' XP)<br>Mining: '+level(state.miningXP)+' ('+state.miningXP+' XP)</p>';if(stats.dataset.html!==html){stats.dataset.html=html;stats.innerHTML=html}};
  const panelKey=panelStateKey(state,activeTab,attackStyle,goods);if(panelKey===lastPanelKey)return;lastPanelKey=panelKey;
  inventory.innerHTML='';for(const child of [...equipment.children])if(!child.classList.contains('mount-slot'))child.remove();
  const mountSlot=equipment.querySelector('.mount-slot')||document.createElement('button');mountSlot.type='button';mountSlot.className='equip-slot mount-slot';mountSlot.setAttribute('aria-label',state.equippedMount?'Dismount '+mountCatalog[state.equippedMount].name:'Mount: Empty');const mountSignature=JSON.stringify([state.equippedMount,state.mountsOwned]);if(mountSlot.dataset.signature!==mountSignature){mountSlot.dataset.signature=mountSignature;mountSlot.innerHTML='<span class="item-icon">'+mountCatalog.armoredWhiteHorse.icon+'</span><span class="mount-slot-text"><strong>'+(state.equippedMount?'Dismount':'Mount')+'</strong><span>'+(mountCatalog[state.equippedMount]?.name||'Choose a mount')+'</span><small>'+(state.equippedMount?'Gallop · no energy drain':'Separate from your armor')+'</small></span>';mountSlot.title=state.equippedMount?'Tap to dismount. Mounts also dismount automatically inside buildings and castles.':'Tap to equip a mount.';mountSlot.onclick=e=>{if(state.equippedMount){equipMount(state.equippedMount);return}if(state.mountsOwned.length===1){equipMount(state.mountsOwned[0]);return}const choices=state.mountsOwned.map(k=>[(state.equippedMount===k?'Unequip ':'Equip ')+mountCatalog[k].name,()=>equipMount(k)]);if(choices.length)showMenu(e.clientX,e.clientY,choices);else say('Mounts can be granted or stocked by the owner in World Studio.')};}if(!mountSlot.isConnected)equipment.prepend(mountSlot);
@@ -1296,7 +1332,15 @@ const clock=new T.Clock();let lastAutosave=performance.now();
 // reconciliation that click-to-walk relies on (it runs before frameStart is captured).
 // Jumps over 3 units are teleports/corrections, not steps.
 let lastGaitPosition=null;function gaitTravel(position){const last=lastGaitPosition;lastGaitPosition=position.clone();if(!last)return 0;const moved=Math.hypot(position.x-last.x,position.z-last.z);return moved>3?0:moved}
-function frame(){requestAnimationFrame(frame);if(!document.querySelector('#auth-screen').hidden||window.eldervaleWorldLoading===true)return;updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.1),movementDt=movementTime(elapsed);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}if(window.eldervaleAuthority&&realmPoseJump&&realmPlayerPose){reconcileLocalPose(player.position,realmPlayerPose,dt,{teleport:true});player.rotation.y=realmPlayerPose.yaw;cameraFocus=null;cameraObstructionDistance=null;realmPoseJump=false;}const manual=mmoControls.update(movementDt,performance.now());const cameraKeys=mmoControls.cameraAxes();if(cameraKeys.yaw||cameraKeys.pitch){yaw+=cameraKeys.yaw*CAMERA_TURN_RATE*dt;pitch=T.MathUtils.clamp(pitch+cameraKeys.pitch*CAMERA_PITCH_RATE*dt,-.10,1.15);lastCameraDrag=performance.now()}const presentedPose=window.eldervaleAuthority&&realmPlayerPose?{...realmPlayerPose,...projectPathPose(realmPlayerPose,window.eldervaleServerTime?.()||Date.now())}:null;if(window.eldervaleAuthority&&reconcileLocalPose(player.position,presentedPose,elapsed,{active:!!manual,pending:!!window.eldervaleRealm?.movementPending()})&&!realmInCombat)player.rotation.y=presentedPose.moving||!realmPlayerPose.moving?presentedPose.yaw:player.rotation.y;const frameStart=player.position.clone();
+// Small scenery, props and characters past the fog start are skipped by the
+// main and shadow passes (see graphics-quality.js); large terrain, water, sky
+// and instanced forests are never touched.
+const cullBox=new T.Box3(),cullSphere=new T.Sphere();
+// Trims (sills, eyes, hinges, lantern caps...) under 30 cm cast shadows a few
+// texels wide but each costs a shadow-map draw call; drop them from the pass.
+const casterScale=new T.Vector3();function pruneTinyCasters(root){root.updateMatrixWorld(true);root.traverse(m=>{if(!m.isMesh||!m.castShadow||!m.geometry)return;const g=m.geometry;if(!g.boundingSphere)g.computeBoundingSphere();m.getWorldScale(casterScale);if(g.boundingSphere.radius*Math.max(casterScale.x,casterScale.y,casterScale.z)<.3)m.castShadow=false})}
+const distanceCuller=createDistanceCuller({radiusOf:o=>{pruneTinyCasters(o);cullBox.setFromObject(o);if(cullBox.isEmpty())return Infinity;cullBox.getBoundingSphere(cullSphere);return {radius:cullSphere.radius,center:cullSphere.center}},exclude:o=>o===player||o===ground||o.isLight||o.isCamera||o.isInstancedMesh||!o.visible||o.userData.environmentSky||o.userData.waterSurface});
+function frame(){requestAnimationFrame(frame);if(!document.querySelector('#auth-screen').hidden||window.eldervaleWorldLoading===true)return;updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();governFrame(elapsed);if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.1),movementDt=movementTime(elapsed);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}if(window.eldervaleAuthority&&realmPoseJump&&realmPlayerPose){reconcileLocalPose(player.position,realmPlayerPose,dt,{teleport:true});player.rotation.y=realmPlayerPose.yaw;cameraFocus=null;cameraObstructionDistance=null;realmPoseJump=false;}const manual=mmoControls.update(movementDt,performance.now());const cameraKeys=mmoControls.cameraAxes();if(cameraKeys.yaw||cameraKeys.pitch){yaw+=cameraKeys.yaw*CAMERA_TURN_RATE*dt;pitch=T.MathUtils.clamp(pitch+cameraKeys.pitch*CAMERA_PITCH_RATE*dt,-.10,1.15);lastCameraDrag=performance.now()}const presentedPose=window.eldervaleAuthority&&realmPlayerPose?{...realmPlayerPose,...projectPathPose(realmPlayerPose,window.eldervaleServerTime?.()||Date.now())}:null;if(window.eldervaleAuthority&&reconcileLocalPose(player.position,presentedPose,elapsed,{active:!!manual,pending:!!window.eldervaleRealm?.movementPending()})&&!realmInCombat)player.rotation.y=presentedPose.moving||!realmPlayerPose.moving?presentedPose.yaw:player.rotation.y;const frameStart=player.position.clone();
 if(manual){player.rotation.y=manual.yaw;if(!window.eldervaleAuthority||performance.now()-lastMovementAck<1500){const step=new T.Vector3(player.position.x+manual.x*mountSpeed(mounted,running)*movementDt,player.position.y,player.position.z+manual.z*mountSpeed(mounted,running)*movementDt);const resolved=slideStep(player.position,step,(a,b)=>!walkAllowed(a,b).blocked);player.position.set(resolved.x,resolved.y,resolved.z);if(window.eldervaleAuthority)reconcileActivePose(player.position,realmPlayerPose,manual,movementDt,(window.eldervaleServerTime?.()||Date.now())+(window.eldervaleRealm?.predictionLead?.()||0),{canStep:(a,b)=>!walkAllowed(a,b).blocked});}}
 if(!window.eldervaleAuthority&&action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<weaponStats(state.equippedWeapon).reach){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
 if(!window.eldervaleAuthority&&dest){const delta=dest.clone().sub(player.position);delta.y=0;const distance=delta.length();if(distance>(action?.kind==='creature'?weaponStats(state.equippedWeapon).reach*.88:action?2.1:.2)){delta.normalize();const proposed=player.position.clone().addScaledVector(delta,Math.min(mountSpeed(mounted,running)*dt,distance));
@@ -1371,7 +1415,7 @@ for(const [id,other] of remotePlayers){
  other.attackAnim=Math.max(0,(other.attackAnim||0)-dt);other.blockAnim=Math.max(0,(other.blockAnim||0)-dt);other.eatAnim=Math.max(0,(other.eatAnim||0)-dt);const otherPose=other.animator.update(dt,{dead:other.hp===0||deathFlow.remoteDying(id),eat:other.eatAnim,food:goods[other.eatItem],mounted:other.mounted,locomotion:other.running?'jog':other.attackAnim>0||other.blockAnim>0?'combat':'walk',style:other.attackStyle,attack:other.attackAnim,block:other.blockAnim,distance:other.mounted?0:gaitDistance,speed:other.mounted?0:gaitDistance/Math.max(dt,.001),airborne:!other.mounted&&isAirborne(other.jumpAt,window.eldervaleServerTime?.()||Date.now())});if(otherPose?.released&&other.arrowTarget){launch(other.animator.rig,other.animator.data.loadout.weapon,other.arrowTarget);other.arrowTarget=null}other.animator.visual.position.y=0;if(!other.mounted)groundFeet(other.animator.rig,other.animator.visual);other.horse.update({active:other.mounted,distance:gaitDistance,rig:other.animator.rig,visual:other.animator.visual,groundHeight:landscape.walkHeight});if(other.mounted)other.animator.updateCape?.(dt,distance>.001?1:0,{mounted:true,mountRoot:other.horse.root});
 }
 levelFireworks.update(dt);gatheringVisuals.update(window.eldervaleServerTime?.()||Date.now());professionVisuals.update(window.eldervaleServerTime?.()||Date.now());cape.update(dt,pose?.blend||0,{mounted,mountRoot:playerHorse.root});for(const [id,until]of depletedTrees)if(Date.parse(until)<=(window.eldervaleServerTime?.()||Date.now()))setTreeDepleted(id,false);
-updateHouseRoofs();if(!cameraFocus){cameraFocus=player.position.clone();yaw=player.rotation.y+Math.PI;}if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;stabilizeSun(T,sun,focus);if(renderer.shadowMap.enabled&&performance.now()>=nextShadowRefresh){sun.shadow.needsUpdate=true;nextShadowRefresh=performance.now()+shadowRefresh;}camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+(mounted?2.45:1.75)+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position,.35);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;const eye=new T.Vector3(focus.x,focus.y+1.5,focus.z),cameraVector=camera.position.clone().sub(eye),cameraDistance=cameraVector.length();cameraWallRay.set(eye,cameraVector.normalize());cameraWallRay.far=cameraDistance;const wallRoots=[];for(const root of cameraWorldOccluders)if(Math.hypot(root.position.x-player.position.x,root.position.z-player.position.z)<45)wallRoots.push(root);for(const h of houseInteriors)if(h.group.position.distanceToSquared(player.position)<1600)wallRoots.push(h.group);const walls=collectCameraOccluders(wallRoots);const obstruction=cameraWallRay.intersectObjects(walls,false)[0];cameraObstructionDistance=obstructionDistance(cameraObstructionDistance,obstruction?obstruction.distance-.3:cameraDistance,cameraDistance,dt);camera.position.copy(eye).addScaledVector(cameraVector,cameraObstructionDistance);camera.lookAt(focus.x,focus.y+(mounted?2.05:1.35),focus.z);window.eldervaleTutorial?.frame(camera);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const root of waterAnimationRoots)root.userData.animateWater(performance.now()*.001);for(const animateTown of townAnimations)animateTown(performance.now()*.001);for(const entry of worldInstances.values()){if(entry.house)continue;const d=entry.actor?.serverPose?.data||entry.actor?.profile||entry.actor?.config;const floor=d?.floor||entry.root.userData.storyFloor||0;entry.root.visible=floor===currentInterior.floor&&(!entry.actor||entry.root.position.distanceToSquared(player.position)<85*85)&&!entry.actor?.deleted&&entry.actor?.alive!==false&&!(entry.actor?.serverPose?.hp<=0);if(floor>0&&!entry.actor)entry.root.position.y=landscape.walkHeight(entry.root.position.x,entry.root.position.z)+floorOffset(floor,entry.root.position.x,entry.root.position.z);}for(const [id,other]of remotePlayers)other.root.visible=(playerFloorMap[id]||0)===currentInterior.floor;naturalSky.update(camera,performance.now(),skyHour,skyDaylight,sun.userData.direction);meadow.update(player.position,performance.now());wildlife.update(player.position,window.eldervaleServerTime?.()||Date.now(),skyDaylight);if(Math.floor(performance.now()/500)!==window._forestFrame){window._forestFrame=Math.floor(performance.now()/500);updateNaturalForest(forestBatches,player.position);groundDressing.update(player.position);}waterSystem.update(camera,performance.now(),skyDaylight,clientSettings.reducedMotion);renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false)}}
+updateHouseRoofs();if(!cameraFocus){cameraFocus=player.position.clone();yaw=player.rotation.y+Math.PI;}if(cameraFocus.distanceToSquared(player.position)>100)cameraFocus.copy(player.position);else cameraFocus.lerp(player.position,1-Math.exp(-10*elapsed));const focus=cameraFocus;stabilizeSun(T,sun,focus);if(renderer.shadowMap.enabled&&performance.now()>=nextShadowRefresh){sun.shadow.needsUpdate=true;nextShadowRefresh=performance.now()+shadowRefresh;}camera.position.set(focus.x+Math.sin(yaw)*zoom*Math.cos(pitch),focus.y+(mounted?2.45:1.75)+zoom*Math.sin(pitch),focus.z+Math.cos(yaw)*zoom*Math.cos(pitch));const neededLift=terrainCameraClearance(landscape.heightAt,focus,camera.position,.35);terrainCameraLift=Math.max(neededLift,Math.max(0,terrainCameraLift||0)*Math.exp(-6*elapsed));camera.position.y+=terrainCameraLift;const eye=new T.Vector3(focus.x,focus.y+1.5,focus.z),cameraVector=camera.position.clone().sub(eye),cameraDistance=cameraVector.length();cameraWallRay.set(eye,cameraVector.normalize());cameraWallRay.far=cameraDistance;const wallRoots=[];for(const root of cameraWorldOccluders)if(Math.hypot(root.position.x-player.position.x,root.position.z-player.position.z)<45)wallRoots.push(root);for(const h of houseInteriors)if(h.group.position.distanceToSquared(player.position)<1600)wallRoots.push(h.group);const walls=collectCameraOccluders(wallRoots);const obstruction=cameraWallRay.intersectObjects(walls,false)[0];cameraObstructionDistance=obstructionDistance(cameraObstructionDistance,obstruction?obstruction.distance-.3:cameraDistance,cameraDistance,dt);camera.position.copy(eye).addScaledVector(cameraVector,cameraObstructionDistance);camera.lookAt(focus.x,focus.y+(mounted?2.05:1.35),focus.z);window.eldervaleTutorial?.frame(camera);if(performance.now()-lastAutosave>=4000){lastAutosave=performance.now();save()}for(const root of waterAnimationRoots)root.userData.animateWater(performance.now()*.001);for(const animateTown of townAnimations)animateTown(performance.now()*.001);for(const entry of worldInstances.values()){if(entry.house)continue;const d=entry.actor?.serverPose?.data||entry.actor?.profile||entry.actor?.config;const floor=d?.floor||entry.root.userData.storyFloor||0;entry.root.visible=floor===currentInterior.floor&&(!entry.actor||entry.root.position.distanceToSquared(player.position)<85*85)&&!entry.actor?.deleted&&entry.actor?.alive!==false&&!(entry.actor?.serverPose?.hp<=0);if(floor>0&&!entry.actor)entry.root.position.y=landscape.walkHeight(entry.root.position.x,entry.root.position.z)+floorOffset(floor,entry.root.position.x,entry.root.position.z);}for(const [id,other]of remotePlayers)other.root.visible=(playerFloorMap[id]||0)===currentInterior.floor;naturalSky.update(camera,performance.now(),skyHour,skyDaylight,sun.userData.direction);meadow.update(player.position,performance.now());wildlife.update(player.position,window.eldervaleServerTime?.()||Date.now(),skyDaylight);if(Math.floor(performance.now()/500)!==window._forestFrame){window._forestFrame=Math.floor(performance.now()/500);updateNaturalForest(forestBatches,player.position);groundDressing.update(player.position);}waterSystem.update(camera,performance.now(),skyDaylight,clientSettings.reducedMotion);distanceCuller.update(scene.children,camera.position,{fogNear:scene.fog.near,far:camera.far},performance.now());renderer.render(scene,camera);hitNumbers.update(elapsed);groundDrops.expire(window.eldervaleServerTime?.()||Date.now());const bars=[];if(realmInCombat)bars.push({id:'self',root:player,hp:combat.hp,maxHp:combat.maxHp});for(const a of [...npcs,...creatures])if(a.serverPose?.target||npcDuelIds?.has(a.realmId)||npcDuelIds?.has(a.profile?.worldEntityId)){bars.push({id:a.realmId||a.profile?.worldEntityId,root:a.root,hp:a.serverPose?.hp??a.hp,maxHp:a.serverPose?.data?.hp||a.maxHp||45,height:a.config?.species==='dragon'?3.8*(a.config.scale||1):3});}for(const [id,a]of remotePlayers)if(combatPlayerIds?.has(id))bars.push({id,root:a.root,hp:a.hp,maxHp:a.maxHp});combatHealth.update(bars);if(pendingPickup&&Math.hypot(player.position.x-pendingPickup.x,player.position.z-pendingPickup.z)<2.6){const id=pendingPickup.id;pendingPickup=null;void window.eldervaleRealm?.command('pickup_drop',{id});}dialoguePortrait.update(dt,clientSettings.reducedMotion);updateOverheadChat();if(Math.floor(performance.now()/250)!==window._mapFrame){window._mapFrame=Math.floor(performance.now()/250);drawMap(mapCtx,mapCanvas,false)}}
 drapeRoads();draw();say('Welcome to Eldervale!');frame();
 
 // World editor rendering bridge. Authority and durable writes live in Postgres RPCs.
@@ -1390,8 +1434,8 @@ window.eldervaleWorldBridge={
    const radius=d.roam||0,profile={...config,worldEntityId:row.id,x:d.x,z:d.z,name:d.name||base.name,color:config.color||0x8d7259,lines:dialogueLines(d.dialogue||base.dialogue),behavior:radius||d.route?'patrol':'stationary',patrol:d.route?.length>1?d.route.map(s=>[s.x,s.z]):[[d.x-radius,d.z],[d.x,d.z+radius],[d.x+radius,d.z],[d.x,d.z-radius]]};actor=spawnNPC(profile,npcs.length);actor.attackEffect=serviceAttackEffect(T,actor.rig,config.attackType);root=actor.root;
    if(config.weapon&&!root.userData.armed&&carriesWeapon(config)){attachWeapon(actor.rig,makeWeapon(T,config.weapon),config.weapon);root.userData.armed=true}
   }else if(['cottage','bank','inn','forge'].includes(d.template)){
-   h=house(d.x,d.z,d.wallColor||0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stories:d.stories||1,furnished:d.furnished!==false,stone:!!d.stone,roof:d.roof,biome:d.biome});h.realmId=row.id;h.storyData=d;h.stories=addBuildingStories(T,h,d,{box,decorate:decorateTownBuilding,material});h.stories.floors.slice(1).forEach(room=>room.traverse(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&o.geometry.parameters.height===.085){o.userData.storyFloor=room.position.y/3;walkSurfaces.push(o)}}));root=h.group;landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
-  }else{root=new T.Group();scene.add(root);root.position.set(d.x,landscape.walkHeight(d.x,d.z)+floorOffset(d.floor,d.x,d.z),d.z);
+   h=house(d.x,d.z,d.wallColor||0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stories:d.stories||1,furnished:d.furnished!==false,stone:!!d.stone,roof:d.roof,biome:d.biome});h.realmId=row.id;h.storyData=d;h.stories=addBuildingStories(T,h,d,{box,decorate:decorateTownBuilding,material});h.stories.floors.slice(1).forEach(room=>room.traverse(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&o.geometry.parameters.height===.085){o.userData.storyFloor=room.position.y/3;walkSurfaces.push(o)}}));root=h.group;batchHouse(h);landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
+  }else{root=new T.Group();scene.add(root);root.position.set(d.x,landscape.walkHeight(d.x,d.z)+floorOffset(d.floor,d.x,d.z),d.z);{const base=propBase(landscape.heightAt,d);if(base!==null&&Math.abs(landscape.walkHeight(d.x,d.z)-landscape.heightAt(d.x,d.z))<.01)root.position.y=base}
    if(d.kind==='item'){const item=goods[d.item];if(!item){root.removeFromParent();continue}root.add(makeDroppedItemModel(T,d.item));root.position.y+=.025}
    else if(d.template==='plaza'){const mesh=new T.Mesh(new T.CircleGeometry(8,48),material(0xa39d8b,'cobble'));mesh.rotation.x=-Math.PI/2;mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);for(let i=0;i<geometry.attributes.uv.count;i++)geometry.attributes.uv.setXY(i,geometry.attributes.position.getX(i)/3,geometry.attributes.position.getZ(i)/3);const mesh=new T.Mesh(geometry,material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template,{...d,groundHeight:landscape.heightAt});if(d.template==='fishing_spot')root.position.y=d.waterHeight??.06;
    const hit=new T.Mesh(new T.BoxGeometry(d.template==='castle_gate'?9:1.3,d.template==='castle_gate'?7:2,1.3),new T.MeshBasicMaterial({visible:false}));hit.position.y=d.template==='castle_gate'?3.5:1;root.add(hit);hit.userData={kind:professionStations[d.template]||['hearth','campfire','cooking_tripod','well','fountain'].includes(d.template)?'profession':d.kind==='item'?'worldItem':d.template==='fishing_spot'?'fishing':d.template==='castle_gate'?'castleGate':d.template==='altar'?'altar':d.template==='hearth'?'hearth':d.template==='market'?'merchant':d.template==='tree'||d.template==='pine'?'tree':d.template==='rock'?'rock':'worldObject',x:d.x,z:d.z,station:['hearth','campfire','cooking_tripod'].includes(d.template)?'cooking':['well','fountain'].includes(d.template)?'water':d.template,resource:d.resource};targets.push(hit);
@@ -1465,7 +1509,7 @@ function rebuildTerrain(){
  for(const o of scene.children)if(anchorHeights.has(o)&&!o.userData.surface)o.position.y=landscape.heightAt(o.position.x,o.position.z)+anchorHeights.get(o);
  for(const batch of [...forestBatches,tufts]){const values=instanceBase.get(batch);for(let i=0;i<batch.count;i++){const {matrix,ground:height}=values[i],m=matrix.clone();m.elements[13]+=landscape.heightAt(m.elements[12],m.elements[14])-height;batch.setMatrixAt(i,m)}batch.instanceMatrix.needsUpdate=true;if(batch.userData.treeOriginal)batch.userData.treeOriginal.set(batch.instanceMatrix.array);batch.computeBoundingSphere()}
  for(const id of depletedTrees.keys())if(id.startsWith('base:tree:'))setForestTreeVisible(T,forestBatches,id,false);
- for(const [id,entry] of worldInstances){if(entry.house&&foundationRows.has(id)){const p=buildingPlot(foundationRows.get(id).data);entry.root.position.y=landscape.heightAt(p.x,p.z);landscape.registerFloor(id,p)}if(entry.root.userData.surface)conformSurface(entry.root);}
+ for(const [id,entry] of worldInstances){if(entry.house&&foundationRows.has(id)){const p=walkInPlot(foundationRows.get(id).data);entry.root.position.y=landscape.heightAt(p.x,p.z);landscape.registerFloor(id,p)}if(entry.root.userData.surface)conformSurface(entry.root);}
 }
 const applyTerrainRender=window.eldervaleWorldBridge.apply;window.eldervaleWorldBridge.apply=async rows=>{let changed=false;for(const row of rows){if(row.data.template?.startsWith('terrain_')||terrainRows.has(row.id)){terrainRows.set(row.id,row);changed=true}if(isBuilding(row.data)||foundationRows.has(row.id)){if(isBuilding(row.data)&&!row.deleted)foundationRows.set(row.id,row);else foundationRows.delete(row.id);changed=true}if(['road','plaza'].includes(row.data.template)||row.data.template?.startsWith('terrain_')||surfaceRows.has(row.id)){if(!row.deleted&&(['road','plaza'].includes(row.data.template)||row.data.template?.startsWith('terrain_')))surfaceRows.set(row.id,row);else surfaceRows.delete(row.id);changed=true}}if(changed){surfaceCoverIndex=null;const ticket=areaLoading.begin('Updating the landscape…');try{await runFrameWork((function*(){yield;rebuildTerrain();})());}finally{ticket.end();}}await applyTerrainRender(rows);};
 const lanternPool=Array.from({length:4},()=>{const light=new T.PointLight(0xffce8a,0,24,1.5);scene.add(light);return light});let nextLampUpdate=0;
