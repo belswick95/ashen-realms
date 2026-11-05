@@ -1,0 +1,150 @@
+/* Phone & tablet fit: tap targets >= 40px, safe-area (notch/home bar) insets,
+   panels that fit short landscape screens, and no accidental zoom/selection.
+   Loaded last; touch-only rules are scoped to body.touch-controls (phones and
+   tablets) and layout rules to body.phone-layout / short screens. */
+
+/* ---- No accidental page zoom, scroll, pull-to-refresh or long-press selection ---- */
+html.game-viewport,html.game-viewport body{overscroll-behavior:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body.touch-controls button,body.touch-controls [role=button],body.touch-controls .slot,body.touch-controls summary,body.touch-controls a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body.touch-controls #side,body.touch-controls #service-panel,body.touch-controls #map-panel,body.touch-controls #player-trade,body.touch-controls #contextmenu,body.touch-controls .bank-context-menu,body.touch-controls #dialog,body.touch-controls .tutorial-dialogue,body.touch-controls #level-up-panel,body.touch-controls #trade-request,body.touch-controls #social-panel .social-head{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body.touch-controls img,body.touch-controls svg{-webkit-touch-callout:none;-webkit-user-drag:none}
+/* iOS zooms into any focused field under 16px. */
+body.touch-controls input:not([type=range]):not([type=checkbox]):not([type=radio]),body.touch-controls select,body.touch-controls textarea{font-size:16px!important}
+
+/* ---- Tap targets (touch devices, phones and tablets) ---- */
+body.touch-controls .hud-panel-close{min-width:44px!important;min-height:40px!important}
+body.touch-controls #social-toggle{min-height:40px!important}
+body.touch-controls.fantasy-hud #social-panel.collapsed{height:50px!important;max-height:50px!important}
+body.touch-controls.fantasy-hud #social-panel.collapsed .social-head,body.touch-controls.fantasy-hud #social-panel.collapsed #social-toggle{height:40px!important;min-height:40px!important}
+body.touch-controls #map-toggle{min-width:40px!important;min-height:40px!important}
+body.touch-controls #open-friends,body.touch-controls #settings-logout{min-height:44px}
+body.touch-controls .settings-nav button{min-height:40px}
+body.touch-controls #settings-tab select,body.touch-controls #settings-tab button{min-height:40px}
+body.touch-controls #settings-tab input[type=checkbox]{width:24px;height:24px}
+body.touch-controls #settings-tab input[type=range]{min-height:32px}
+body.touch-controls #equipment button{min-height:40px}
+body.touch-controls #equipment summary{min-height:40px;display:flex;align-items:center}
+body.touch-controls #contextmenu button,body.touch-controls .bank-context-menu button{min-height:44px}
+body.touch-controls #level-up-panel .level-up-continue{min-height:40px}
+body.touch-controls .tutorial-continue,body.touch-controls .tutorial-choices button{min-height:42px}
+body.touch-controls #trade-request button{min-height:40px}
+body.touch-controls #player-trade button,body.touch-controls .drop-quantity button{min-height:44px}
+body.touch-controls #player-trade input,body.touch-controls .drop-quantity input{min-height:44px;box-sizing:border-box}
+body.touch-controls #service-panel #service-close{min-width:44px;min-height:44px}
+body.touch-controls #service-panel .service-actions button,body.touch-controls #service-panel .service-bank-settings button{min-height:40px;min-width:44px}
+body.touch-controls #map-panel #map-close{min-height:40px;min-width:64px}
+body.touch-controls #map-panel .wm-tools button{width:42px!important;height:42px!important}
+body.touch-controls .tutorial-skip{min-height:44px;min-width:64px}
+body.touch-controls #world-chat-form button{min-height:36px}
+/* Royal bank: every control reachable by thumb. */
+body.touch-controls #service-panel.bank-mode #service-close{width:44px!important;height:44px!important}
+body.touch-controls #service-panel.bank-mode .bank-tabs button,body.touch-controls #service-panel.bank-mode .bank-quantity button,body.touch-controls #service-panel.bank-mode .bank-form button,body.touch-controls #service-panel.bank-mode .bank-action-bar button{min-height:40px!important;min-width:44px}
+body.touch-controls #service-panel.bank-mode .bank-search{min-height:40px;box-sizing:border-box}
+body.touch-controls #service-panel.bank-mode .bank-sort select,body.touch-controls #service-panel.bank-mode .bank-custom-quantity{min-height:40px}
+body.touch-controls #service-panel.bank-mode .bank-slot{min-width:40px!important;min-height:40px!important}
+
+/* ---- Phone HUD (landscape phones) ---- */
+body.fantasy-hud.phone-layout #side{width:min(316px,48vw)!important;max-width:48vw!important}
+body.fantasy-hud.phone-layout #side>.tabs button{min-width:40px!important}
+body.fantasy-hud.phone-layout #map-widget{height:152px!important}
+body.fantasy-hud.phone-layout #map-widget #map-toggle{width:40px!important;height:40px!important;min-height:40px!important}
+body.fantasy-hud.phone-layout #map-widget .map-head{width:40px!important;height:40px!important;top:66px!important;right:0!important}
+body.fantasy-hud.phone-layout #map-controls{height:40px!important}
+body.fantasy-hud.phone-layout #map-controls>button{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important}
+body.fantasy-hud.phone-layout #map-controls #run-toggle{width:auto!important;min-width:40px!important;flex:1!important;height:40px!important}
+/* The panel-open phone panel keeps clear of the home bar. */
+body.fantasy-hud.phone-layout.hud-panel-open #side{max-height:calc(var(--visible-height,100dvh) - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important}
+body.fantasy-hud.phone-layout #inventory .slot{min-height:40px}
+
+/* ---- Safe-area insets for centred overlays (landscape notch is left/right) ---- */
+#dialog:not([hidden]){max-width:calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+#player-trade,.drop-quantity{max-width:min(760px,calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right)));max-height:calc(var(--visible-height,100dvh) - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+#service-panel{max-width:calc(100vw - 16px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+#service-panel.bank-mode{width:min(1080px,calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right)))!important;max-height:calc(var(--visible-height,100dvh) - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important}
+#map-panel{padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important}
+#map-panel .map-card{width:min(1180px,100%)!important;height:min(880px,100%)!important}
+.tutorial-dialogue{max-width:calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+.tutorial-skip{right:max(16px,calc(env(safe-area-inset-right) + 8px))!important}
+#level-up-panel{max-width:calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+#trade-request{max-width:calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+#contextmenu,.bank-context-menu{max-width:calc(100vw - 16px)}
+#rotate-phone{padding:max(30px,env(safe-area-inset-top)) max(30px,env(safe-area-inset-right)) max(30px,env(safe-area-inset-bottom)) max(30px,env(safe-area-inset-left))}
+
+/* ---- Short landscape screens (phones): compact the big panels ---- */
+@media(max-height:500px){
+ /* Merchant: drop the long help line, keep both lists scrolling. */
+ #service-panel:not(.bank-mode){padding:8px 12px!important;max-height:calc(var(--visible-height,100dvh) - 12px)!important;display:flex;flex-direction:column}
+ #service-panel:not(.bank-mode)[open]{display:flex}
+ #service-panel:not(.bank-mode) .service-help{display:none}
+ #service-panel:not(.bank-mode) .service-head h2{font-size:18px;margin:0}
+ #service-panel:not(.bank-mode) .service-wallet{margin:4px 0;padding:4px 8px}
+ #service-panel:not(.bank-mode) .service-columns{flex:1;min-height:0;gap:10px}
+ #service-panel:not(.bank-mode) .service-columns h3{margin:2px 0 4px;font-size:14px}
+ #service-panel:not(.bank-mode) .service-items{max-height:calc(var(--visible-height,100dvh) - 150px);min-height:0}
+ /* Bank: search and categories share a row; quantity, note mode and actions share one footer row. */
+ #service-panel.bank-mode{--bank-cell:44px!important;gap:4px!important;padding:6px 10px!important}
+ #service-panel.bank-mode .service-head{grid-template-columns:28px 1fr 44px!important}
+ #service-panel.bank-mode .royal-bank{display:grid!important;grid-template-columns:minmax(150px,34%) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;gap:4px 8px!important}
+ #service-panel.bank-mode .bank-toolbar{grid-column:1;grid-row:1}
+ #service-panel.bank-mode .bank-tabs{grid-column:2;grid-row:1;border-bottom:0;align-items:center}
+ #service-panel.bank-mode .bank-sort{display:none}
+ #service-panel.bank-mode .bank-body{grid-column:1/-1;grid-row:2;grid-template-columns:minmax(0,1fr) min(42%,236px)!important}
+ #service-panel.bank-mode .bank-inspect{grid-column:1/-1;grid-row:3;min-height:0}
+ #service-panel.bank-mode .bank-inspect small{display:none}
+ #service-panel.bank-mode .bank-footer{grid-column:1/-1;grid-row:4;flex-direction:row!important;align-items:center;gap:6px!important;flex-wrap:nowrap}
+ #service-panel.bank-mode .bank-controls{flex:1 1 auto;flex-wrap:nowrap;justify-content:flex-start!important;gap:6px!important;min-width:0}
+ #service-panel.bank-mode .bank-form>span,#service-panel.bank-mode .bank-quantity>span{display:none}
+ #service-panel.bank-mode .bank-form{margin-left:0!important}
+ #service-panel.bank-mode .bank-action-bar{flex:0 0 auto;border-top:0;padding-top:0;flex-wrap:nowrap;gap:6px}
+ #service-panel.bank-mode .bank-status{display:none}
+ #service-panel.bank-mode .bank-action-bar [data-bank-deposit-stack]{font-size:0!important}
+ #service-panel.bank-mode .bank-action-bar [data-bank-deposit-stack]::after{content:"Deposit";font-size:11px}
+ #service-panel.bank-mode .bank-section-title{padding:0 2px 3px}
+ #service-panel.bank-mode .bank-inventory-grid{grid-auto-rows:var(--bank-cell);grid-template-columns:repeat(auto-fill,minmax(var(--bank-cell),1fr))!important}
+ #service-panel.bank-mode .bank-storage-grid{grid-auto-rows:var(--bank-cell)}
+ #service-panel.bank-mode .bank-inventory-grid .bank-slot,#service-panel.bank-mode .bank-storage-grid .bank-slot{aspect-ratio:auto;height:var(--bank-cell)}
+ /* Trade window. */
+ #player-trade{padding:10px 14px!important}
+ #player-trade h2{margin:0 0 4px;font-size:18px}
+ #player-trade>p{margin:4px 0;font-size:12px}
+ #player-trade .trade-columns{gap:8px}
+ #player-trade form{max-height:none!important}
+ /* NPC and tutorial dialogue: compact, never under the HUD. */
+ .tutorial-dialogue{min-height:0!important;padding:8px 14px 6px!important;font-size:14px}
+ .tutorial-dialogue h4{margin-bottom:2px}
+ .tutorial-dialogue p{margin:0 0 4px}
+ .tutorial-letterbox .bar{height:9vh}
+ .tutorial-skip{bottom:calc(9vh + 8px)!important}
+ #level-up-panel{bottom:max(64px,calc(env(safe-area-inset-bottom) + 58px))!important;padding:8px 12px}
+ #level-up-panel .level-up-icon{flex-basis:44px;height:44px;font-size:30px}
+ #level-up-panel .level-up-body{margin:2px 0}
+}
+/* Castle-training objective card sits between the vitals card and the minimap on phones. */
+body.phone-layout .tutorial-hud{left:calc(var(--phone-left,8px) + 186px)!important;right:calc(var(--phone-right,8px) + 138px)!important;width:auto!important;max-width:420px;margin:0 auto;transform:none!important;top:var(--phone-top,8px)!important;padding:5px 10px 6px!important;font-size:12px}
+body.phone-layout .tutorial-hud strong{font-size:13px;margin-top:1px}
+body.phone-layout .tutorial-hud-way{font-size:11px}
+/* While a tutorial line is up on a phone, the jump button and tabs step aside. */
+body.phone-layout:has(.tutorial-dialogue:not([hidden])) #touch-jump,body.phone-layout:has(.tutorial-dialogue:not([hidden])) #movement-pad{visibility:hidden!important}
+
+/* ---- Login on short landscape phones: the whole card fits without clipping the wordmark ---- */
+@media(max-height:500px) and (orientation:landscape){
+ #auth-screen{padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important}
+ #auth-screen .login-shell{grid-template-columns:minmax(0,1fr) minmax(300px,380px)!important;column-gap:20px!important}
+ #auth-screen .login-wordmark{font-size:clamp(24px,4.6vw,44px)!important;letter-spacing:.08em!important;padding-left:.08em!important;white-space:nowrap}
+ #auth-screen .auth-card{padding:12px 18px 0!important}
+ #auth-screen .auth-card .login-kicker{display:none}
+ #auth-screen .auth-card h1{font-size:22px!important;margin:0 0 4px!important}
+ #auth-screen .auth-card-top p{display:none}
+ #auth-screen .login-field{margin-bottom:6px!important}
+ #auth-screen .login-field label{margin-bottom:2px!important}
+ #auth-screen .auth-card input{min-height:42px!important;padding-top:6px!important;padding-bottom:6px!important}
+ #auth-screen .login-card-foot{display:none}
+}
+body:not(.game-active) #auth-screen .login-tabs button,#auth-screen #auth-mode{min-height:44px}
+#auth-screen #login-sound-toggle{min-height:40px}
+#auth-screen .login-audio a{display:inline-block;padding:12px 4px}
+@media(pointer:coarse){#auth-screen .auth-card input{min-height:44px}#auth-screen #auth-password-toggle{min-width:44px;min-height:44px}}
+
+/* ---- Area loading panel respects insets and stays small on phones ---- */
+#area-loading{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#area-loading button{min-height:44px}

@@ -1,10 +1,14 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261105-capital78';
 export async function startRealm(db,user,session){
  let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
  const badge=document.createElement('output');badge.id='realm-connection';badge.setAttribute('role','status');badge.style.cssText='position:fixed;top:42px;left:50%;transform:translateX(-50%);z-index:250;background:#25271d;color:#f4d899;padding:7px 12px;border-radius:5px';badge.hidden=true;document.body.append(badge);
  async function request(command='sync',payload={},id=null){
-  const started=Date.now();const {data,error}=await db.rpc('world_command',{session_id:session,command,payload,request_id:id,event_cursor:cursor});
-  if(error){badge.hidden=false;badge.textContent='World connection: '+error.message;failures++;throw Error(error.message)}
+  // A request that hangs (dropped connection) or fails shows "Reconnecting…" until one succeeds.
+  const started=Date.now(),slow=loading.begin('Reconnecting…',{key:'realm-slow',delay:4000,kind:'reconnect'});let data,error;
+  try{({data,error}=await db.rpc('world_command',{session_id:session,command,payload,request_id:id,event_cursor:cursor}))}catch(e){error=e}finally{slow.end()}
+  if(error){badge.hidden=false;badge.textContent='World connection: '+error.message;failures++;loading.begin('Reconnecting…',{key:'realm-reconnect',kind:'reconnect',timeout:15000});throw Error(error.message)}
+  loading.end('realm-reconnect');
   if(data.reset)return true;
   const serverTime=Date.parse(data.time);if(serverTime<latestSnapshotTime)return true;latestSnapshotTime=serverTime;
   const finished=Date.now(),sample=finished-started;roundtrip=clockReady?roundtrip*.8+sample*.2:sample;const clockOffset=Date.parse(data.time)-(started+finished)/2;offset=clockReady?offset*.9+clockOffset*.1:clockOffset;clockReady=true;window.eldervaleServerTime=()=>Date.now()+offset;badge.hidden=true;failures=0;
@@ -20,7 +24,7 @@ export async function startRealm(db,user,session){
   catch{if(input.sequence===issued)latestSteer??=input}
   finally{steerInFlight--;if(succeeded&&latestSteer)void sendSteer()}
  }
- const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();return enqueue(c,p).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
+ const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
   // Cosmetic commands (level-up fireworks) fail silently: no chat notice.
   quietCommand:(c,p)=>enqueue(c,p).then(r=>r??true).catch(()=>false)};window.eldervaleRealm=controller;
  await enqueue();const timer=setInterval(()=>{if(disposed)return;if(latestSteer)void sendSteer();else if(!pending&&!steerInFlight)void enqueue().catch(()=>{})},250);

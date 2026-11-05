@@ -1,0 +1,28 @@
+/* Loading chip (loading-indicator.js): small, non-blocking, top centre below the notch. */
+#loading-chip{position:fixed;z-index:1300;top:calc(max(8px,env(safe-area-inset-top)) + 4px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:calc(100vw - 32px);padding:6px 13px 6px 9px;border:1px solid #c3a66a;border-radius:999px;background:#11221ff0;box-shadow:0 4px 16px #0008;color:#f0dfb8;font:600 13px/1.2 Arial,sans-serif;white-space:nowrap;pointer-events:none;user-select:none;-webkit-user-select:none}
+#loading-chip[hidden]{display:none}
+#loading-chip .loading-chip-label{overflow:hidden;text-overflow:ellipsis}
+#loading-chip[data-kind=reconnect]{border-color:#e0a86a;color:#ffe2b8;background:#2a1d12f2}
+.loading-chip-spinner{flex:none;width:14px;height:14px;box-sizing:border-box;border:2px solid #4d5b48;border-top-color:#edcf91;border-radius:50%;animation:loading-chip-spin .9s linear infinite}
+@keyframes loading-chip-spin{to{transform:rotate(360deg)}}
+/* Stay clear of the castle-training objective card, which also sits top centre. */
+body:has(.tutorial-hud:not([hidden])) #loading-chip{top:calc(max(8px,env(safe-area-inset-top)) + 96px)}
+body.phone-layout #loading-chip{font-size:12px;padding:5px 11px 5px 8px}
+
+/* Full-screen boot progress while the world is not ready yet. */
+#world-boot{position:fixed;inset:0;z-index:1250;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));background:radial-gradient(ellipse at 50% 60%,#2a2116 0,#0b1013 70%);color:#e9dfc4;text-align:center;touch-action:none;user-select:none;-webkit-user-select:none}
+#world-boot[hidden]{display:none}
+#world-boot section{display:grid;justify-items:center;gap:12px;width:min(360px,100%)}
+#world-boot .world-boot-crest{font:700 clamp(22px,5vw,34px) Georgia,serif;letter-spacing:.3em;color:#e9bd75;text-shadow:0 0 22px #e8974655}
+#world-boot .loading-chip-spinner{width:22px;height:22px}
+#world-boot .world-boot-label{font:18px Georgia,serif;color:#f0d79e}
+#world-boot .world-boot-track{position:relative;width:100%;height:8px;overflow:hidden;border:1px solid #8a7653;border-radius:5px;background:#1d221c}
+#world-boot .world-boot-fill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#9c723b,#edcf91);transition:width .35s ease-out}
+/* A slow shimmer keeps the bar visibly alive while one step takes a while. */
+#world-boot .world-boot-track::after{content:"";position:absolute;inset:0;width:30%;background:linear-gradient(90deg,transparent,#fff3,transparent);animation:world-boot-shimmer 1.6s ease-in-out infinite}
+#world-boot .world-boot-detail{min-height:1.2em;font:12px Arial,sans-serif;color:#bdb39a}
+@keyframes world-boot-shimmer{from{transform:translateX(-100%)}to{transform:translateX(340%)}}
+
+@media(prefers-reduced-motion:reduce){.loading-chip-spinner{animation:none;border-color:#edcf91;border-top-color:#edcf91}#world-boot .world-boot-track::after{animation:none;display:none}#world-boot .world-boot-fill{transition:none}}
+body.reduce-motion .loading-chip-spinner{animation:none;border-color:#edcf91}
+body.reduce-motion #world-boot .world-boot-track::after{display:none}
