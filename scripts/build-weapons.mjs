@@ -43,8 +43,8 @@ const MEDIEVAL={
  goldenBow:['Bow_Golden','bow',1.6,'center'],
  bloodthornBow:['Bow_Evil','bow',1.65,'center'],
  arrow:['Arrow','arrow',.95,'center'],
- kite:['Shield_Heater_2','shield',1.3,'center'],
- square:['Shield_Heater','shield',1.15,'center'],
+ kite:['Shield_Heater','shield',1.3,'center'],
+ square:['Shield_Heater_2','shield',1.15,'center'],
  roundShield:['Shield_Round','shield',1.0,'center'],
  quarteredShield:['Shield_Round_2','shield',1.0,'center'],
  celticShield:['Shield_Celtic_Golden','shield',1.45,'center']

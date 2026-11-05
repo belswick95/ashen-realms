@@ -1566,186 +1566,6 @@
     "sha256": "449fe690e65cd5ed06b8943204a523d9e5c6db77d677254ef6f8408a537f7bad"
   },
   {
-    "key": "item-weapon_battleaxe",
-    "id": "weapon:battleaxe",
-    "name": "Iron battleaxe",
-    "model": "weapon",
-    "bounds": [
-      0.35385399189765765,
-      0.8485375579892894,
-      0.760470199584961
-    ],
-    "pixelBounds": [
-      50,
-      20,
-      106,
-      115
-    ],
-    "sha256": "fb972963e1f1d7575f16dc678ae3c08272ca201bd266189a62e3313ed3cdbc52"
-  },
-  {
-    "key": "item-weapon_dagger",
-    "id": "weapon:dagger",
-    "name": "Iron dagger",
-    "model": "weapon",
-    "bounds": [
-      0.28485691210150543,
-      0.6958899736945955,
-      0.10399999618530274
-    ],
-    "pixelBounds": [
-      46,
-      23,
-      97,
-      127
-    ],
-    "sha256": "ad3da4e19cc1d2170caf777131a7470b174d867b1b867bbdbe210e918a86dc30"
-  },
-  {
-    "key": "item-weapon_scimitar",
-    "id": "weapon:scimitar",
-    "name": "Iron scimitar",
-    "model": "weapon",
-    "bounds": [
-      0.6825425217743156,
-      1.1986110069889748,
-      0.10399999618530274
-    ],
-    "pixelBounds": [
-      40,
-      33,
-      98,
-      121
-    ],
-    "sha256": "435f9606ee9c4f706b6a0660ae62c2f941598b560e7701818c61c42a1592368c"
-  },
-  {
-    "key": "item-weapon_longsword",
-    "id": "weapon:longsword",
-    "name": "Iron longsword",
-    "model": "weapon",
-    "bounds": [
-      0.45618569259320574,
-      1.2317942350421744,
-      0.10399999618530274
-    ],
-    "pixelBounds": [
-      49,
-      21,
-      88,
-      127
-    ],
-    "sha256": "e8ba1856a6e3241d1ff846df04ba9860884706fbbdac80e1d6bcebe5713ca898"
-  },
-  {
-    "key": "item-weapon_twohand",
-    "id": "weapon:twohand",
-    "name": "Iron 2h sword",
-    "model": "weapon",
-    "bounds": [
-      0.6799717927766918,
-      1.9379409731037949,
-      0.10399999618530274
-    ],
-    "pixelBounds": [
-      51,
-      20,
-      87,
-      126
-    ],
-    "sha256": "53def99cb64972c8e780d1a7982c155b0f584d4b763f817cb6cc7074af2e7b5f"
-  },
-  {
-    "key": "item-weapon_shortsword",
-    "id": "weapon:shortsword",
-    "name": "Iron shortsword",
-    "model": "weapon",
-    "bounds": [
-      0.3589652388387863,
-      0.8935202497686432,
-      0.10399999618530274
-    ],
-    "pixelBounds": [
-      47,
-      23,
-      90,
-      126
-    ],
-    "sha256": "d09aa92eeca055fac25d85872471c56d42992214b048d5ea92f37a636aa0394f"
-  },
-  {
-    "key": "item-weapon_pickaxe",
-    "id": "weapon:pickaxe",
-    "name": "Iron pickaxe",
-    "model": "weapon",
-    "bounds": [
-      0.3447265974272431,
-      0.8266067043040332,
-      0.8612200260162354
-    ],
-    "pixelBounds": [
-      51,
-      26,
-      110,
-      114
-    ],
-    "sha256": "cd819bbce48c1fbb5732aa8cd8952e47d207ff8fbaeaef9690c70c163d64a9a5"
-  },
-  {
-    "key": "item-weapon_axe",
-    "id": "weapon:axe",
-    "name": "Iron axe",
-    "model": "weapon",
-    "bounds": [
-      0.3092012243420657,
-      0.9152697708721323,
-      0.403611820936203
-    ],
-    "pixelBounds": [
-      61,
-      15,
-      101,
-      116
-    ],
-    "sha256": "f1c9ef0d5fdfdb42d19ba3147125fc56f5510fb2288fff827c27fb7e885b23a5"
-  },
-  {
-    "key": "item-shield_square",
-    "id": "shield:square",
-    "name": "Iron square shield",
-    "model": "shield",
-    "bounds": [
-      0.7614000022411346,
-      0.9493999910354614,
-      0.3269319995909929
-    ],
-    "pixelBounds": [
-      33,
-      14,
-      108,
-      132
-    ],
-    "sha256": "d9477e7cb191c87d93df46f651be6e889a8578c4648b98eb13f38a22ac633696"
-  },
-  {
-    "key": "item-shield_kite",
-    "id": "shield:kite",
-    "name": "Iron kiteshield",
-    "model": "shield",
-    "bounds": [
-      0.8560505139827728,
-      1.3445339918136594,
-      0.3269319995909929
-    ],
-    "pixelBounds": [
-      39,
-      13,
-      103,
-      124
-    ],
-    "sha256": "08d3e824884fa140c12b59482555bd8de1cd62f26ca31a25c4611d2c42a72da0"
-  },
-  {
     "key": "item-jewelry_woodlandAmulet",
     "id": "jewelry:woodlandAmulet",
     "name": "Woodland amulet",
@@ -3183,7 +3003,7 @@
       110,
       113
     ],
-    "sha256": "598134fa1a821a3077510b549c4cf76a10b283ae6a554d7241365d4dae7ae825"
+    "sha256": "4e440bd9fa6f85bcf39bcb29f3411f56a8441950de8e1c241a525f31513d80a0"
   },
   {
     "key": "item-armor_knightArmet2",
@@ -3201,7 +3021,7 @@
       110,
       113
     ],
-    "sha256": "be4eb7bca832e832643d41321651953857d58d41953cd5e1fa2355926e23dc89"
+    "sha256": "bfe8166f85cf141f4323ef7fa00feee8231f282839678539bdc4e6bcedeeb869"
   },
   {
     "key": "item-armor_knightArmet3",
@@ -3219,7 +3039,7 @@
       110,
       113
     ],
-    "sha256": "5d1907d8bb6c0f867561ed94a46fef0c8f0f70052429a0fde0ba27dcc6fbcbac"
+    "sha256": "dd8e27f0f418b324d469b2be04e3c6003472c1e5c4b995540eef362a06e25c46"
   },
   {
     "key": "item-armor_knightHornedHelm1",
@@ -3237,7 +3057,7 @@
       105,
       126
     ],
-    "sha256": "4bf1fdc17360f0e38d0d79c5060e08997d050019b13fd642ef7c1ad6d7fcf33b"
+    "sha256": "42fbc766f49c9aef8cc7188ebacf00d98a586a98db3f276f7aad7ec27a16007d"
   },
   {
     "key": "item-armor_knightHornedHelm2",
@@ -3255,7 +3075,7 @@
       105,
       126
     ],
-    "sha256": "72496eedf2d4264ce3a13301b5422725f0c9df3698464f3cef22de688b2a5cbb"
+    "sha256": "92675a92c8e77d672b096becf32f8f2149a48d67eca39f1d914e0d55d08dac9c"
   },
   {
     "key": "item-armor_knightHornedHelm3",
@@ -3273,7 +3093,7 @@
       105,
       126
     ],
-    "sha256": "03dc72975495b29b554b4d54e2b757fdff8bfbb564c60c701d62ff63cb38c692"
+    "sha256": "ce7728ff1d5bf27bd67b13fbcac9390989bffb33c2a03147b90f7de0c2156c07"
   },
   {
     "key": "item-armor_chest",
@@ -3291,7 +3111,7 @@
       107,
       124
     ],
-    "sha256": "b9f3b9c9fbd7d81c4e1965ab9a1910d1ae62d0797bc7215035359341228695c4"
+    "sha256": "69371b8d8d8d6eb73963aa1a774d378d6526e79a5c2c992d0b36722e364d9c88"
   },
   {
     "key": "item-armor_knightBreastplate2",
@@ -3309,7 +3129,7 @@
       107,
       124
     ],
-    "sha256": "80641aa85b68b79799509519b9afe8c661ef134363a0193226727ec34a014e6e"
+    "sha256": "b9ac12492fe52272bc46c2834e658f3a884541096a267f2fea43399079705e0b"
   },
   {
     "key": "item-armor_knightBreastplate3",
@@ -3327,7 +3147,7 @@
       107,
       124
     ],
-    "sha256": "6da87ca432ff9bc544f05a8b9652790454a6e0d758b985a9aa1ba417e38d0b63"
+    "sha256": "a86fa841275d7b665edd883ec86952661ecebb2421d0054443ae80e4093b28fc"
   },
   {
     "key": "item-armor_knightGambeson1",
@@ -3345,7 +3165,7 @@
       106,
       131
     ],
-    "sha256": "3f08e833386015bb4fce7c824b3213d8e999a2dbcfda41062c57091681ab3e48"
+    "sha256": "6896c3d587aad652366c32f22430e15d049b79fe079550547c86f0cc2800f9b2"
   },
   {
     "key": "item-armor_knightGambeson2",
@@ -3363,7 +3183,7 @@
       106,
       131
     ],
-    "sha256": "e38b26376ccfddc1986306481c54362524b33fda0e4549e139e5572663913cfa"
+    "sha256": "74d35fc582c453b4bcbe619e1f3eca5c40c057a3de4b681d94608e4785cbfd70"
   },
   {
     "key": "item-armor_knightGambeson3",
@@ -3381,7 +3201,7 @@
       106,
       131
     ],
-    "sha256": "7c07bd6871cb8e04287a686cd54784dd5ea6fa27738a46a37e0761171e394c99"
+    "sha256": "f3b1b56a59b09d28c61b6280d55bc8fedc5502bf544bbf607d4e5146c096ee84"
   },
   {
     "key": "item-armor_knightGauntlets1",
@@ -3399,7 +3219,7 @@
       133,
       97
     ],
-    "sha256": "5ca846eafde62210bdc30641de8d9f66f0ea9210727de917dbc8949e1b20dba6"
+    "sha256": "c6d46f7c4880b545a1b815f74450fb48a5ab563d37d59f027c2bcc5c3dcbbaca"
   },
   {
     "key": "item-armor_knightGauntlets2",
@@ -3417,7 +3237,7 @@
       133,
       97
     ],
-    "sha256": "1a951d88e25d304046368e8f337710457240bb155e0fec53d51ac9251fc3b35e"
+    "sha256": "196b87f1351472302ac31a9fd86c5edfccebe794009997954d8014545096ded2"
   },
   {
     "key": "item-armor_knightGauntlets3",
@@ -3435,7 +3255,7 @@
       133,
       97
     ],
-    "sha256": "55f4742a5f47e44aaef2e4d888b9c5e3ee249ed40d3eb4ef2074de6309c39589"
+    "sha256": "889a1be4428df85598dce97d374787ecf0f6239efa2d4593e741f6fcc3cc47a4"
   },
   {
     "key": "item-armor_legs",
@@ -3453,7 +3273,7 @@
       100,
       123
     ],
-    "sha256": "d948737b9ff773835e91f5bf761515223c96bc9addb94c155dacbeb9a69aee04"
+    "sha256": "f9c6d8aed582de2f3e01ba7f16ac8d0fc4ade24d5f1904e8f29739a142676af7"
   },
   {
     "key": "item-armor_knightGreaves2",
@@ -3471,7 +3291,7 @@
       100,
       123
     ],
-    "sha256": "a8d4416cae09b16e558b81a94be6e0028b4b14d434c123f8f7c5551338b58e6a"
+    "sha256": "416e95dff153540ff982caf85b78f209bb5be222d9c4079b70fcf1ea5cfeba5f"
   },
   {
     "key": "item-armor_knightGreaves3",
@@ -3489,7 +3309,7 @@
       100,
       123
     ],
-    "sha256": "9dba8884b7eada36d57bc847a6a5daae2b10f8611a7d73c6a38893f33f283c61"
+    "sha256": "2845ea7c0a0df5b5f89d73d6d14d59e6ba943be08f2fd9adf2b161e8fbdeeb3f"
   },
   {
     "key": "item-armor_boots",
@@ -3507,7 +3327,7 @@
       112,
       133
     ],
-    "sha256": "762a376b0019f14f7e8948322c957189cb85b78f22b4dc7fd26855945d02ff04"
+    "sha256": "592bfaa64593c77d7fea9f1b3a8a151140c0bb771146474d87cbfb30e5da8298"
   },
   {
     "key": "item-armor_knightSabatons2",
@@ -3525,7 +3345,7 @@
       112,
       133
     ],
-    "sha256": "83bdcc0e1721bf264f949e25f7c30d933f3bfb536cee5fb49cdaebeff21525d7"
+    "sha256": "662885f313c1990a5e79004713b3c49db2c92104b895453774152e2828e3cc00"
   },
   {
     "key": "item-armor_knightSabatons3",
@@ -3543,7 +3363,7 @@
       112,
       133
     ],
-    "sha256": "66f34148df2721d0ee1e5458d76b309dfcf3d53e3f79c898196bc568b76ccfc6"
+    "sha256": "07c94579eae88474372b32c192c3df85c1c79e9a412f07ca604d5ddfdb9e5df9"
   },
   {
     "key": "item-armor_knightRoundPauldrons1",
@@ -3561,7 +3381,7 @@
       129,
       105
     ],
-    "sha256": "ccc6301267ce754913483bf58b8059009e5eba29d4c084f229745dc47440cd0c"
+    "sha256": "19808b58aa22ff417bfe2ab3c6fe19911a9fd1f530a3c9a2001e325ca991da97"
   },
   {
     "key": "item-armor_knightRoundPauldrons2",
@@ -3579,7 +3399,7 @@
       129,
       105
     ],
-    "sha256": "27fdb7828ea24bb8daa1f32d1330be4c80b6b4e8c25151c29f2ae0ffc589eb44"
+    "sha256": "ffa667a1b0c14f2deb59fcd446348e62c667cf661efad7d3c8ec82057a8aa6c6"
   },
   {
     "key": "item-armor_knightRoundPauldrons3",
@@ -3597,7 +3417,7 @@
       129,
       105
     ],
-    "sha256": "4a2ee6cfd33bb17ab7f53a0ad1e5c8ec93a7975bf27f4eed224dc9ddac7f8ec5"
+    "sha256": "c2f728547eeaadea1bce9bbfb161b457e3bbcd6667400d01c52a0b9de79f60c0"
   },
   {
     "key": "item-armor_knightSpikedPauldrons1",
@@ -3615,7 +3435,7 @@
       127,
       108
     ],
-    "sha256": "38ceabee94711bdd0bfca3152be3f1ba1c45c8c37b5a071ac7cff66bc82105c5"
+    "sha256": "2b7d641bea6d5735a7e69babcf01143174670dae4208552da62e358e5f409c40"
   },
   {
     "key": "item-armor_knightSpikedPauldrons2",
@@ -3633,7 +3453,7 @@
       127,
       108
     ],
-    "sha256": "09e404235c2cf2a3c49d8944199d2e666891bb9ebce944d87764ae36ecbfe340"
+    "sha256": "ef744d220d3296c1885c0a1fd32f918e1d31405c1060ff8392191695e4870028"
   },
   {
     "key": "item-armor_knightSpikedPauldrons3",
@@ -3651,7 +3471,7 @@
       127,
       108
     ],
-    "sha256": "b67638ba1d2a2edad4d3299ca9097fff28f2e6573a2da49b850035dbfe661588"
+    "sha256": "2f6ed022ce9804d251827b988b07bb0ed5033a5cc3234d521e86d4298d54d10c"
   },
   {
     "key": "item-armor_knightScarf1",
@@ -3669,7 +3489,7 @@
       124,
       116
     ],
-    "sha256": "18a1fe1819d45f4c725b1d0410714f52b5aa47bceded6f92b6553b92a4457bd1"
+    "sha256": "7fe78350de355ab189cac5b2bd90431593452fcbf430283abc86c70bb31bb769"
   },
   {
     "key": "item-armor_knightScarf2",
@@ -3687,7 +3507,7 @@
       124,
       116
     ],
-    "sha256": "fc1aff77180dde4ed88faae6b5ce8ff984b3dffd59fb35ad0abe85dc52e6dc6a"
+    "sha256": "e776eaee674a95a541f96dcdd95e870692c0bf2a83de36531e754eda93a3e334"
   },
   {
     "key": "item-armor_knightScarf3",
@@ -3705,7 +3525,7 @@
       124,
       116
     ],
-    "sha256": "2a0bf08960735492c2179ea90fb72b265754c2c2ab48cdb184689354f8397d59"
+    "sha256": "4ada588f5669607e68720e7e90c3e595008531ac1d35abc1fac4ed64d14e7522"
   },
   {
     "key": "item-armor_nobleCrown1",
@@ -3723,7 +3543,7 @@
       117,
       111
     ],
-    "sha256": "22ded1b6ce1644918c009c8e1654f8f8e00ec1d80d0650fa8580da4e87e841c9"
+    "sha256": "09cc0b652aecec761afe48c578afb0aba8338ca8fa8922ba2397207e5928f04a"
   },
   {
     "key": "item-armor_nobleCrown2",
@@ -3741,7 +3561,7 @@
       117,
       111
     ],
-    "sha256": "70a4109e13a505491dfc2d2a35aa27dee6af449578d93484112d57a76270744b"
+    "sha256": "aa46cb1ba99a0462cfaa5d91ba76318f680e48044acff150a59129c0d9d29a2f"
   },
   {
     "key": "item-armor_nobleCrown3",
@@ -3759,7 +3579,7 @@
       117,
       111
     ],
-    "sha256": "7d7942c136beb44b5faf0a138232e6894b9438f109974b801c49323039d2fa64"
+    "sha256": "977463bde037d22bb834136d91879185b9ebab08be8b603cba96cca280724149"
   },
   {
     "key": "item-armor_nobleGorget1",
@@ -3777,7 +3597,7 @@
       125,
       115
     ],
-    "sha256": "a4c72edec668d5b34cd6736198abe1de729b1c57ea98c3f5156020964d1a1efa"
+    "sha256": "f5760690ff0c62c011f276760e75aecc57cca985d11e4f7745d8f4d4636d403d"
   },
   {
     "key": "item-armor_nobleGorget2",
@@ -3795,7 +3615,7 @@
       125,
       115
     ],
-    "sha256": "62ba60ec595508108aaff7ff775fc2c2dc655c917877152c497c36d2e5192cfe"
+    "sha256": "574944e4a6c73abace04257d2ad8e7090cbfddd56cea99f6ffea628dfafcd68c"
   },
   {
     "key": "item-armor_nobleGorget3",
@@ -3813,7 +3633,7 @@
       125,
       115
     ],
-    "sha256": "954e63c787d184df4c21e1417521d64da0d6dd3a6c3fc1b9275268c3595d9b36"
+    "sha256": "03df370d071a05b92526d37764190722fb2add801bb85b7a8cf18194d8d4c0d2"
   },
   {
     "key": "item-armor_noblePauldron1",
@@ -3831,7 +3651,7 @@
       127,
       102
     ],
-    "sha256": "6e5fb51dcc1116a1e4d5910328f2dbd64e7aaa5a213f5a0e2d7612cf6c55a66c"
+    "sha256": "5341dfe8ab4347b7a6699f22020375e18b39aae236f561fa930bdb955428d373"
   },
   {
     "key": "item-armor_noblePauldron2",
@@ -3849,7 +3669,7 @@
       127,
       102
     ],
-    "sha256": "8ce7feab854f56e8650e5ed636ea6f8ada636cbeeecc33334b3c3a8a256814ad"
+    "sha256": "d59dbc9675d2004aa3f0cadd8070ed6210366ecafd63b7a989e1a649f372f00b"
   },
   {
     "key": "item-armor_noblePauldron3",
@@ -3867,7 +3687,7 @@
       127,
       102
     ],
-    "sha256": "eaf1e885ec197f38d89fe287d242fed537d27016734170b028e36683ac42cfc9"
+    "sha256": "eeb9160cf95f398d2f674067a9f63fec0e8a570b29d60effdf61ad13680c9c82"
   },
   {
     "key": "item-armor_nobleLionPauldron1",
@@ -3885,7 +3705,7 @@
       119,
       114
     ],
-    "sha256": "77e183788860d46f980b3762b594ff45fb2b47d2026bb4b8efcdfeed76ef0291"
+    "sha256": "77ffcd609ead0b27a8851eb413899d56daee95359434fc3c1441b9e98b95f5d3"
   },
   {
     "key": "item-armor_nobleLionPauldron2",
@@ -3903,7 +3723,7 @@
       119,
       114
     ],
-    "sha256": "2437cbdef49f0876c908147018049bde1d85d27842fae0e31646716f16d7300a"
+    "sha256": "fd378f4a4376f19a4976bf8bdc206ecadf3c4c57713d21aa81c988c2149d5ca6"
   },
   {
     "key": "item-armor_nobleLionPauldron3",
@@ -3921,7 +3741,7 @@
       119,
       114
     ],
-    "sha256": "223a259bf48d8070da84939f8e03de53af9811c3df5657f00a1c912ec7310a97"
+    "sha256": "59e37b9b2ab2b601fdc2708ce1881eb6db82c15e4fb82af128bd4549d2b4017f"
   },
   {
     "key": "item-armor_nobleCoat1",
@@ -3939,7 +3759,7 @@
       119,
       127
     ],
-    "sha256": "ea8e16654061c3d0065ce0eb7f4abeb038c9d6600d08c7e3e382554b31a78e7d"
+    "sha256": "8d0bc67e5d04c683a2a8c872eecb09b5ad3afb19f8ce7ac7f581576586cc3cc4"
   },
   {
     "key": "item-armor_nobleCoat2",
@@ -3957,7 +3777,7 @@
       119,
       127
     ],
-    "sha256": "24e16ec875a6e04bc693e32f53515b76696307864faa9f34d5b25cf6151803e1"
+    "sha256": "98a72f41887be2e21505997d728880b57614b80c25d6dec03c1e43b69d5a8ba7"
   },
   {
     "key": "item-armor_nobleCoat3",
@@ -3975,7 +3795,7 @@
       119,
       127
     ],
-    "sha256": "d961354eb16d47eee2cb0b2399f30be21e4b5612da04be6e3d5875a3c8890604"
+    "sha256": "f98d7e9d3da2f4fcfe2facfebe8f62a99376eadbea7d1e672629d63b607dfceb"
   },
   {
     "key": "item-armor_nobleSleeves1",
@@ -3993,7 +3813,7 @@
       133,
       97
     ],
-    "sha256": "1f95ca6267c5ca718a3fce02d3d6bcd2fe7ed59256ffa1f31b8195524f441b76"
+    "sha256": "844eaf6208e4b36192d961a91573b538412f8ad93ecce38272f1902ca0887aef"
   },
   {
     "key": "item-armor_nobleSleeves2",
@@ -4029,7 +3849,7 @@
       133,
       97
     ],
-    "sha256": "944678973ac991fa063a15ba6316d0d96eec9d7a9814b08f7e2d0fb5b16521a2"
+    "sha256": "37d772bbbd1e8c56676879e2a27c3c2a739cd4c286534ace718db559e05a3e7b"
   },
   {
     "key": "item-armor_nobleTrousers1",
@@ -4047,7 +3867,7 @@
       98,
       127
     ],
-    "sha256": "4a3890a1111d31c999b0e9cebbf73f752d31c20a27289907978baedf06b2d425"
+    "sha256": "9aeeb6e8ebfaf577b50e239bd9d8560a54ce6fd772ccba10fe9be77667b419a7"
   },
   {
     "key": "item-armor_nobleTrousers2",
@@ -4065,7 +3885,7 @@
       98,
       127
     ],
-    "sha256": "cf6893e552b0ae40d85c77014d68e9a82f439ff40b727a678137b458c561ba02"
+    "sha256": "ce6944671ae202092781d34f94698817faaffcc503f9cd5dfd9fa9dbe92556b8"
   },
   {
     "key": "item-armor_nobleTrousers3",
@@ -4083,7 +3903,7 @@
       98,
       127
     ],
-    "sha256": "ec9fff8ed185c89f9ee7168acbeb32569193a25bb9fa9d4f60881300c803ff0b"
+    "sha256": "e9215328add84f0557b484e2d01246e2411831ae8d74f78d603ad006eae043d6"
   },
   {
     "key": "item-armor_nobleBoots1",
@@ -4101,7 +3921,7 @@
       116,
       131
     ],
-    "sha256": "df496df89762317349cbae6d39ad2a5176d5e44eaa676a54eb4f50a10d8bcff8"
+    "sha256": "09b6adb69e683855f948ca3b2fe7e14597c1f4b76dfabe35dd1731ee8d36d0c3"
   },
   {
     "key": "item-armor_nobleBoots2",
@@ -4119,7 +3939,7 @@
       116,
       131
     ],
-    "sha256": "a29fff4a135ef0c43c3ce40dd7407846f8c00f87784c88bb0bf58e7d42c1dc33"
+    "sha256": "08756d78a8ed6771b50cdb747cadd838a6f47c07b7d218e5aad41a497675089f"
   },
   {
     "key": "item-armor_nobleBoots3",
@@ -4137,7 +3957,7 @@
       116,
       131
     ],
-    "sha256": "e3aa56b085dfc073a6220d530148b6aab6327ec3496fd389ea1c69244551f1b9"
+    "sha256": "75f0eb5f9b1409adbc6fb4be028f21c682640696571333c6d110272ba6691320"
   },
   {
     "key": "item-armor_peasantShirt1",
@@ -4155,7 +3975,7 @@
       125,
       122
     ],
-    "sha256": "132656a8d0df7df2d3774c635415f6677a33370bcf0d9a41883de5b0f8f91c7c"
+    "sha256": "c4e92ee37f30695912a018def74576c6855a4ed5c9c2d1be80433ce77f60ad9a"
   },
   {
     "key": "item-armor_peasantShirt2",
@@ -4173,7 +3993,7 @@
       125,
       122
     ],
-    "sha256": "f22d619a9e1a75b5b737c81d24e07adfede83791fd133feeca1dbb11529d5d5e"
+    "sha256": "b01de081ee728f5eaa9ea95983e3d6672090540d6a6ea60a6821e601a6ba1705"
   },
   {
     "key": "item-armor_peasantShirt3",
@@ -4191,7 +4011,7 @@
       125,
       122
     ],
-    "sha256": "6bbac1ff000061404064b2b5c415c3ebe1a5bcb43d49aa358e1a48bc94880787"
+    "sha256": "9c2333d8448208f5ded395c67b97431c9ee82ea908043abc20676d94f99d2836"
   },
   {
     "key": "item-armor_peasantSleeves1",
@@ -4209,7 +4029,7 @@
       136,
       97
     ],
-    "sha256": "778a938a47db4136ff01b8d715254341e66a42f67b3db02c6ad26e87c91c7a07"
+    "sha256": "942d26bcdf53d8c5dff60fa81e531c99586bb6151326dbe8c419bccd49bca0d4"
   },
   {
     "key": "item-armor_peasantSleeves2",
@@ -4227,7 +4047,7 @@
       136,
       97
     ],
-    "sha256": "2e719f8d206d6d008a98df324ff590428072a44a5cfc85a7c603088fdc3b1a1d"
+    "sha256": "375578d4c38a8d996ee772bfbe0a0fc88521c74e7864e68506ecc97af5ae7526"
   },
   {
     "key": "item-armor_peasantSleeves3",
@@ -4245,7 +4065,7 @@
       136,
       97
     ],
-    "sha256": "529cd1e070d5551fcdaf87a9aea272f099ab1e096eee0575174f94bf66ca002f"
+    "sha256": "c1a25bcdac6853829164b5bbd85993e98a0ddce23bd31414446b545501ba4460"
   },
   {
     "key": "item-armor_peasantTrousers1",
@@ -4263,7 +4083,7 @@
       104,
       127
     ],
-    "sha256": "6749d096ea1138255e74789ba77d1a91146564782ebe1f5c90f29e053547817a"
+    "sha256": "d564c8ebb7f037f32e7f8c1d2eaf1a929a2a1f121adbf862a7dadba954aebdca"
   },
   {
     "key": "item-armor_peasantTrousers2",
@@ -4281,7 +4101,7 @@
       104,
       127
     ],
-    "sha256": "5b3b2610980168d3823b8d25ed8a819add9f4268cc2becbf9f49fb141618dc04"
+    "sha256": "ed88953217c9615e5d1a05b087e1988fd027e7df6e424e78cd2ccf7544efebdc"
   },
   {
     "key": "item-armor_peasantTrousers3",
@@ -4299,7 +4119,7 @@
       104,
       127
     ],
-    "sha256": "1a75fea96ab8009a2c3a69c82a65c7433c761e95ffbba6286a8cdfb21cb2ff0c"
+    "sha256": "19456b9cf656f53f858ea33afdb3470326a746b1393dd8abaaa8a8e1fee7a711"
   },
   {
     "key": "item-armor_peasantShoes1",
@@ -4317,7 +4137,7 @@
       114,
       131
     ],
-    "sha256": "b4f691e67a555c4c512d7cac556777755617ffaa235550d389c363346e86236d"
+    "sha256": "317e9367f3aec13e6b4d46ed7205fc330e81af741dc16602c875b22c2770173e"
   },
   {
     "key": "item-armor_peasantShoes2",
@@ -4335,7 +4155,7 @@
       114,
       131
     ],
-    "sha256": "a69ea52bd03ce6076b65bbd7b1d058404726cba77d4c70082ba3bb4009812295"
+    "sha256": "e985b72350383402082501f818a773fdf5ccb8442c07a0b79cc5313864351ad5"
   },
   {
     "key": "item-armor_peasantShoes3",
@@ -4353,7 +4173,7 @@
       114,
       131
     ],
-    "sha256": "cc6b625af515f61d729950267eb6743bbc141c47fe7ce906b2fd46d8b64d07bd"
+    "sha256": "2618b4a8e45cbec61940feebfba69f3549446a6fa3d7fcd171fe845d5dfa15bf"
   },
   {
     "key": "item-armor_rangerHood1",
@@ -4371,7 +4191,7 @@
       109,
       122
     ],
-    "sha256": "4811e9b37a39c59760caf853e6277d129d9b0802d58618f3be30cc55131cbe9c"
+    "sha256": "91517ed8223e8c0b9b74fdcf877336ce0a3c0c73a743777908b70c9d9fdb4eb9"
   },
   {
     "key": "item-armor_rangerHood2",
@@ -4389,7 +4209,7 @@
       109,
       122
     ],
-    "sha256": "f6de02b5a96e5516a4294a95c1c9a187a9fcee02dc525eef6750026ce63f0164"
+    "sha256": "5d3e0d801e16359a8ba2ab436089c9a4a9a3d76bc6b7dfe41765e1bda767f107"
   },
   {
     "key": "item-armor_rangerHood3",
@@ -4407,7 +4227,7 @@
       109,
       122
     ],
-    "sha256": "ae75507481600bb9e1b1ec2db98d26b6b399dcb7d7f0d1d0c9b4df6807fc3f94"
+    "sha256": "f9746f3b14e44a2b4f1dfce08bb65770e56f7a27d2dbcee47aa4726c8d51003c"
   },
   {
     "key": "item-armor_rangerPauldron1",
@@ -4425,7 +4245,7 @@
       115,
       113
     ],
-    "sha256": "cef15b0aed929b0ac9132bf0ac2b40eccb620a66053c2494c2be6ee9fc8e9bb7"
+    "sha256": "135f6488fd1199f6a4d6e2d30d39f572a76c9b1bb5f144ec17bb054947c76db7"
   },
   {
     "key": "item-armor_rangerPauldron2",
@@ -4443,7 +4263,7 @@
       115,
       113
     ],
-    "sha256": "42d793bc34a6b50417c629d21534ba2564c69a5bef5122286ede755513317807"
+    "sha256": "ef4e95e99842ca9d98929e2b34a51bff12ad219359ba4180a1ecc8624769dfb8"
   },
   {
     "key": "item-armor_rangerPauldron3",
@@ -4461,7 +4281,7 @@
       115,
       113
     ],
-    "sha256": "0d3ea3fddeab558dc3220feb9a5acb08d1ae27d9cae82fdf79b7746b166b6803"
+    "sha256": "21531bf6c4ae27b1a8089f29b05751b30c75dcb825bbd1ae665fde82eca2b41d"
   },
   {
     "key": "item-armor_rangerTunic1",
@@ -4479,7 +4299,7 @@
       116,
       120
     ],
-    "sha256": "5a3fa5fd085fffcf3daa3a8e4c673c18a33c7f1fc3ba7f0394d876dedee224a4"
+    "sha256": "ab7d77205b83fce15b3512c11c05ea0b89d925565265ee3f7be6f0e3bbb08422"
   },
   {
     "key": "item-armor_rangerTunic2",
@@ -4497,7 +4317,7 @@
       116,
       120
     ],
-    "sha256": "41107547220425ebdde4b6d32918ace6b6f102768794403d572880da0d5394e3"
+    "sha256": "09b027f0bc2acf525e4da0d6e2b5853cc48e192e78706183338cc7c6c27de286"
   },
   {
     "key": "item-armor_rangerTunic3",
@@ -4515,7 +4335,7 @@
       116,
       120
     ],
-    "sha256": "58b6aeb4c4f9a3c7872239560f6db1661a70cacc611ebaab12be9b84545bea3f"
+    "sha256": "ad469fb2c613103eaaaa5b491c32e03a6f9bc44ab34451936adeaf7448de7e21"
   },
   {
     "key": "item-armor_rangerBracers1",
@@ -4533,7 +4353,7 @@
       134,
       95
     ],
-    "sha256": "2d2f872c6d17c5ffd6eaa7e0feddc5bde3240e4ce597af81de33f7d0921242b5"
+    "sha256": "2bbb34401064105e402a2c68ce32c8c4cc6e82f2920db80a346a56a077ba000b"
   },
   {
     "key": "item-armor_rangerBracers2",
@@ -4551,7 +4371,7 @@
       134,
       95
     ],
-    "sha256": "69569c263a4ab6ba3a3b2f9d295f933c726d54bfb62cd9c1f9d28dfe90815365"
+    "sha256": "37f4291f2116969bf936b9b47ed2e56eb5b106a884694304523d50ddcd18624c"
   },
   {
     "key": "item-armor_rangerBracers3",
@@ -4569,7 +4389,7 @@
       134,
       95
     ],
-    "sha256": "e3ea2c018a9e5e27705353c3e23b04d5baefc36e277b6c1eed32d7ce8e1fcb8f"
+    "sha256": "58c80ad6fa7b193632bf2e31e3a7c0a11a5a8dd58dc2ec196704ed5b52707118"
   },
   {
     "key": "item-armor_rangerTrousers1",
@@ -4587,7 +4407,7 @@
       105,
       127
     ],
-    "sha256": "658a42c44226365e662adc895d643cc53912f59517a7eb9482a6059c0269a6c2"
+    "sha256": "f4dd6105305a1d6265f7393cebae3b8db80a534eb5e511c0288cbbce9423a86e"
   },
   {
     "key": "item-armor_rangerTrousers2",
@@ -4605,7 +4425,7 @@
       105,
       127
     ],
-    "sha256": "a5b61cae26d8e110eb7752f41ef1b1802bb1fd5067c39da1558ddc8cfd2257e3"
+    "sha256": "205b2cd482b45db37fc8a9b55d11d8d6b76fe4c15ae5509ae71da7bf1860a851"
   },
   {
     "key": "item-armor_rangerTrousers3",
@@ -4623,7 +4443,7 @@
       105,
       127
     ],
-    "sha256": "244e80a5faf205d2b01f832669e1c5c12afbc63d8db96402e0af71974134cc3d"
+    "sha256": "c3170042a7b824c9fd7ca648413ea3f671f96abcd95666cd5b4e4a3c5bee4657"
   },
   {
     "key": "item-armor_rangerBoots1",
@@ -4641,7 +4461,7 @@
       109,
       132
     ],
-    "sha256": "9d1127a4259cf75963d8af0a4e057982c5000b533e0fb288c4991deded8b15bc"
+    "sha256": "783b0a8772b4507bce8d11fd49f5a6509af16586e20d8de8af34fb56d1cb3242"
   },
   {
     "key": "item-armor_rangerBoots2",
@@ -4659,7 +4479,7 @@
       109,
       132
     ],
-    "sha256": "6f63e81284789d44dec96d273e5bfe0ce63c10f470a0bed90288eb19f876332e"
+    "sha256": "1263f673bf76b8c604c26b7da13ba15cfe8712def7add039e3df0f4296cfb82b"
   },
   {
     "key": "item-armor_rangerBoots3",
@@ -4677,7 +4497,7 @@
       109,
       132
     ],
-    "sha256": "44af26d10746b7aa9b3913c279d9e3296e862f6f57e8902d40e3fdbed767f286"
+    "sha256": "cdebd674cc372244bc747867b785939f843469fc1a7cd9190df0711f03e9c355"
   },
   {
     "key": "item-armor_wizardRobeTop1",
@@ -4695,7 +4515,7 @@
       117,
       120
     ],
-    "sha256": "f8a3c5e38b8ebe074fdf429ba3227eddcbd1c2aadf7632a892cd48d0f17a251d"
+    "sha256": "57eaa0bce05687bcac2a08b95db8bc16265e40cbc61e27ab54540c304c918899"
   },
   {
     "key": "item-armor_wizardRobeTop2",
@@ -4713,7 +4533,7 @@
       117,
       120
     ],
-    "sha256": "c6e04c76969d868d955ae7271cdd3c7eb4bac433ca67dd0a8f7cfe49a6c40e59"
+    "sha256": "583e3107f1a68bb12a2f082a62ddf158bb51a453e986354d20cb27e20031cbca"
   },
   {
     "key": "item-armor_wizardRobeTop3",
@@ -4731,7 +4551,7 @@
       117,
       120
     ],
-    "sha256": "12871f2782ee8c76edd8243342aa56eeb4c01950f2305fe31c26f7f8c146ab0b"
+    "sha256": "619d389487efcf1730af451027a39f3107f0dc0dcc85d8383ad913f996adf60c"
   },
   {
     "key": "item-armor_wizardBracers1",
@@ -4749,7 +4569,7 @@
       133,
       95
     ],
-    "sha256": "aa6bc5dcfc5e9213efb0ce07e53fec01a1dbe27d1ef59244547a883ac54f4efa"
+    "sha256": "c9a9454c236c66453c57a7a0726c7824c13ca715fa83b4443a3bd99eccf34102"
   },
   {
     "key": "item-armor_wizardBracers2",
@@ -4767,7 +4587,7 @@
       133,
       95
     ],
-    "sha256": "23767774ceff8edfcdbeff6ffa9d888939b3e1e5832026605ad790f8b8a8ce4c"
+    "sha256": "4ee879bbbdc42ab331b37244c6237162a4e636986830fe2ad570ab9025739a6d"
   },
   {
     "key": "item-armor_wizardBracers3",
@@ -4785,7 +4605,7 @@
       133,
       95
     ],
-    "sha256": "89f9645a914f9a8a2fb9e7770efddd85bb226c001626ed6ecefc8d651b62551b"
+    "sha256": "8bc375e8b7fd0e65096fec963d61dc999c385eac87ad00544f5aca6a3271549c"
   },
   {
     "key": "item-armor_wizardRobeBottom1",
@@ -4803,7 +4623,7 @@
       104,
       126
     ],
-    "sha256": "e2c0a72f9943012c473d169388d8a9858789007cb7b14ce187f1c0dcc8a6aa9b"
+    "sha256": "21ef553b283e1cdf272940fb677f72655641577340be25be972cadba6fd53b7a"
   },
   {
     "key": "item-armor_wizardRobeBottom2",
@@ -4821,7 +4641,7 @@
       104,
       126
     ],
-    "sha256": "c8b7c13f4cf2847c0c980d9208e71098c5d00a6b64af072ef282e66f3606029e"
+    "sha256": "ecab4eae0f34dec592213e66560b85cee74137472d4d0d7c28f83f2175dd26bb"
   },
   {
     "key": "item-armor_wizardRobeBottom3",
@@ -4839,7 +4659,7 @@
       104,
       126
     ],
-    "sha256": "c9b964af4fbc9a9e181b432ac46a30a43f20b3027c6f762520b78956f8975700"
+    "sha256": "d5551ed0be630707f06881e346410395f45b2f28be62a03995e0e3715064d9a0"
   },
   {
     "key": "item-armor_wizardBoots1",
@@ -4857,7 +4677,7 @@
       111,
       131
     ],
-    "sha256": "4bd715d12824a82cc0c3f5db442eb4c13ec0c4b36f24129b971f6d38fc53f5a8"
+    "sha256": "fc184cbe0f98bb4dd31122e854dea65158cb15ba060d875151edbb6cf02cd913"
   },
   {
     "key": "item-armor_wizardBoots2",
@@ -4875,7 +4695,7 @@
       111,
       131
     ],
-    "sha256": "023a68d549ce4ba4acc5fec5987371f85b30f239180f8a0f4be56a6783d9fe35"
+    "sha256": "636fd56980ca6ab7a8186fcf5e81c6a1fe2f9c5caff6d75134ceade93e0ce994"
   },
   {
     "key": "item-armor_wizardBoots3",
@@ -4893,7 +4713,7 @@
       111,
       131
     ],
-    "sha256": "012847cccd180a2893298357ea74a351189a61cf3666c7b22d8174ccb55de2f8"
+    "sha256": "db59100069fc053930756149ea24fd1e7c4da4c8686f82f1a0a5899d435bb590"
   },
   {
     "key": "item-armor_cape",
@@ -4911,6 +4731,492 @@
       109,
       125
     ],
-    "sha256": "4d2f981b6ce7f6c240ae09fb7982661f884aa296a1bc69fdfee27656674ca8d2"
+    "sha256": "6a869e924d4366914d1ec36c230d234e17b9dbf689cb0e84f67a1ebc30290378"
+  },
+  {
+    "key": "item-weapon_battleaxe",
+    "id": "weapon:battleaxe",
+    "name": "Iron battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.05947446894426678
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      91,
+      121
+    ],
+    "sha256": "fba69d71a6715979e7959d157f3f6002964002e19b83abd467a465a45a8b0632"
+  },
+  {
+    "key": "item-weapon_dagger",
+    "id": "weapon:dagger",
+    "name": "Iron dagger",
+    "model": "weapon",
+    "bounds": [
+      0.3463768185417617,
+      0.7244718426607479,
+      0.05748222406271318
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "67326c3f30fe7d0eb29529019ffca18a611c092e5c9932c885254eb7dfa3fb6d"
+  },
+  {
+    "key": "item-weapon_scimitar",
+    "id": "weapon:scimitar",
+    "name": "Iron scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.5680971662972915,
+      1.2450869941797404,
+      0.07175023879472849
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "843ca27b4dccfb952b7cee2c73785214b5f4cfcb60fca4cb5d97ae2af8a6cf14"
+  },
+  {
+    "key": "item-weapon_longsword",
+    "id": "weapon:longsword",
+    "name": "Iron longsword",
+    "model": "weapon",
+    "bounds": [
+      0.5438498113959847,
+      1.2841715039901347,
+      0.061251869315750655
+    ],
+    "pixelBounds": [
+      56,
+      23,
+      92,
+      123
+    ],
+    "sha256": "0cf47ff19d7bbc9ffda673bcd2514914e933c8f81cf9ddc18fb6db35949a73c0"
+  },
+  {
+    "key": "item-weapon_twohand",
+    "id": "weapon:twohand",
+    "name": "Iron 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.7920078533494594,
+      1.9027627715937472,
+      0.07027802163711215
+    ],
+    "pixelBounds": [
+      54,
+      22,
+      89,
+      124
+    ],
+    "sha256": "62fed959d24648afccdbc7ceb4d8919bd662d7e2747ebe7a229c12c117e1b857"
+  },
+  {
+    "key": "item-weapon_shortsword",
+    "id": "weapon:shortsword",
+    "name": "Iron shortsword",
+    "model": "weapon",
+    "bounds": [
+      0.3922412250431396,
+      0.9246587329868299,
+      0.07592028457113525
+    ],
+    "pixelBounds": [
+      55,
+      24,
+      91,
+      122
+    ],
+    "sha256": "3bf8a117c72d7e9f442455c7d9ceaf74dc8d32695789568360b50b8b92ee56a9"
+  },
+  {
+    "key": "item-weapon_pickaxe",
+    "id": "weapon:pickaxe",
+    "name": "Bronze pickaxe",
+    "model": "weapon",
+    "bounds": [
+      0.88216593500323,
+      1.0911793874398283,
+      0.10762047046569756
+    ],
+    "pixelBounds": [
+      49,
+      26,
+      108,
+      113
+    ],
+    "sha256": "bf479022f9e145f05334307ebbc32f2de4c68d1a3f18c7162bf23b2d4bd2a42f"
+  },
+  {
+    "key": "item-weapon_axe",
+    "id": "weapon:axe",
+    "name": "Iron axe",
+    "model": "weapon",
+    "bounds": [
+      0.5961561448189339,
+      0.9197122140631371,
+      0.07726798193038617
+    ],
+    "pixelBounds": [
+      43,
+      17,
+      104,
+      115
+    ],
+    "sha256": "d630311069fe7802d294152e6f2d32922dfab1f5ed80e542ba4d651e1b5d15d2"
+  },
+  {
+    "key": "item-weapon_bronzeSword",
+    "id": "weapon:bronzeSword",
+    "name": "Bronze sword",
+    "model": "weapon",
+    "bounds": [
+      0.5780656202236738,
+      1.1800516446123626,
+      0.06640217111101737
+    ],
+    "pixelBounds": [
+      53,
+      25,
+      87,
+      120
+    ],
+    "sha256": "bd31a1e2a8b375ab6cd1bf26bb5857ffee3860bf9bee1fccb5657537f7e6638b"
+  },
+  {
+    "key": "item-weapon_bronzeAxe",
+    "id": "weapon:bronzeAxe",
+    "name": "Bronze axe",
+    "model": "weapon",
+    "bounds": [
+      0.587676813019355,
+      1.0064977665294084,
+      0.05288247255642035
+    ],
+    "pixelBounds": [
+      62,
+      18,
+      101,
+      122
+    ],
+    "sha256": "c181b0d534573383649e342196eda44bd16ad1a5f31b4b26b8e44f92836a8c94"
+  },
+  {
+    "key": "item-weapon_waraxe",
+    "id": "weapon:waraxe",
+    "name": "Iron war axe",
+    "model": "weapon",
+    "bounds": [
+      0.6315794838397444,
+      1.2650875178952514,
+      0.061415449736643445
+    ],
+    "pixelBounds": [
+      48,
+      21,
+      92,
+      119
+    ],
+    "sha256": "89951096b1c3183e6d3f9df625270826fe204faf873e0d27a99fb464f1f6cbc0"
+  },
+  {
+    "key": "item-weapon_hammer",
+    "id": "weapon:hammer",
+    "name": "Iron hammer",
+    "model": "weapon",
+    "bounds": [
+      0.6252083096865574,
+      1.1054489231052511,
+      0.19534287212729348
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      104,
+      111
+    ],
+    "sha256": "6d29124a70d74205a39cf7c4e5a3c85618e01cda15e34288fd81231a1b16c82e"
+  },
+  {
+    "key": "item-weapon_spear",
+    "id": "weapon:spear",
+    "name": "Iron spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.0836207159642323
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "a6560afbe8f109186747bbe4e7b3d363339dfbd3310218e035960e6f6f966d7d"
+  },
+  {
+    "key": "item-weapon_goldenSword",
+    "id": "weapon:goldenSword",
+    "name": "Gilded sword",
+    "model": "weapon",
+    "bounds": [
+      0.6878453410402117,
+      1.564254626167533,
+      0.06206244313764547
+    ],
+    "pixelBounds": [
+      53,
+      23,
+      89,
+      123
+    ],
+    "sha256": "1545145626ceb134149afc67967f417695c73def85e2698d91121ae68bcc1c5c"
+  },
+  {
+    "key": "item-weapon_warhammer",
+    "id": "weapon:warhammer",
+    "name": "Iron warhammer",
+    "model": "weapon",
+    "bounds": [
+      0.9869364988199136,
+      1.5180213112950853,
+      0.2269600522373726
+    ],
+    "pixelBounds": [
+      56,
+      17,
+      107,
+      114
+    ],
+    "sha256": "ceb2423358b7a98ab6a0d46464aefe531702e178cbef8e6f0ddede3e274afbcc"
+  },
+  {
+    "key": "item-weapon_scythe",
+    "id": "weapon:scythe",
+    "name": "War scythe",
+    "model": "weapon",
+    "bounds": [
+      1.3230416885947986,
+      1.7428994171872723,
+      0.086947233497116
+    ],
+    "pixelBounds": [
+      36,
+      21,
+      106,
+      113
+    ],
+    "sha256": "8d669cc92282a34c0bd8cf968839e3570c77270a92c4af49dc19f082c135c3d3"
+  },
+  {
+    "key": "item-weapon_claymore",
+    "id": "weapon:claymore",
+    "name": "Crimson claymore",
+    "model": "weapon",
+    "bounds": [
+      0.7481071983390344,
+      1.9342184202048398,
+      0.08022095474422798
+    ],
+    "pixelBounds": [
+      57,
+      22,
+      90,
+      123
+    ],
+    "sha256": "af023b13ca1510acf9545e622712e4cd7e7f241aa48b303b3f35d7489a06c6a6"
+  },
+  {
+    "key": "item-weapon_woodenBow",
+    "id": "weapon:woodenBow",
+    "name": "Wooden bow",
+    "model": "weapon",
+    "bounds": [
+      0.8306397620582038,
+      1.605315687666265,
+      0.06944181432539767
+    ],
+    "pixelBounds": [
+      53,
+      33,
+      99,
+      126
+    ],
+    "sha256": "2cdc785c256828723e3bce70f0f56be46fb18082c96b6a450d4d81549bc9c000"
+  },
+  {
+    "key": "item-weapon_longbow",
+    "id": "weapon:longbow",
+    "name": "Longbow",
+    "model": "weapon",
+    "bounds": [
+      0.8574346322469617,
+      1.6571001403589836,
+      0.07168187612536539
+    ],
+    "pixelBounds": [
+      51,
+      33,
+      99,
+      126
+    ],
+    "sha256": "053cbe6ef377e92b15ed4636fb02d45264a79ff7badd89859c54f825a53f21d6"
+  },
+  {
+    "key": "item-weapon_goldenBow",
+    "id": "weapon:goldenBow",
+    "name": "Gilded bow",
+    "model": "weapon",
+    "bounds": [
+      0.8891579385480071,
+      1.6662223143126869,
+      0.07168187612536539
+    ],
+    "pixelBounds": [
+      53,
+      28,
+      99,
+      126
+    ],
+    "sha256": "1e00871d13b46a1670b522eab16a58ef8f3f1199ffcfc3d6a42d41538a16eed9"
+  },
+  {
+    "key": "item-weapon_bloodthornBow",
+    "id": "weapon:bloodthornBow",
+    "name": "Bloodthorn bow",
+    "model": "weapon",
+    "bounds": [
+      0.8651378219210103,
+      1.7033945926405138,
+      0.06687215699752838
+    ],
+    "pixelBounds": [
+      54,
+      29,
+      98,
+      124
+    ],
+    "sha256": "cf94f01f9880ef77404d30761bcf9e84387c0df0ea24c27059f9bddb8bda62e0"
+  },
+  {
+    "key": "item-shield_woodenShield",
+    "id": "shield:woodenShield",
+    "name": "Wooden buckler",
+    "model": "shield",
+    "bounds": [
+      0.9403744503111261,
+      0.949999988079071,
+      0.27360301179547086
+    ],
+    "pixelBounds": [
+      34,
+      20,
+      121,
+      116
+    ],
+    "sha256": "ab9b83d95cac1ac47c60b81cf83523243ea1cb0f8f2e28d67227514aa6e8fd12"
+  },
+  {
+    "key": "item-shield_roundShield",
+    "id": "shield:roundShield",
+    "name": "Wooden round shield",
+    "model": "shield",
+    "bounds": [
+      1,
+      1,
+      0.3017975402081363
+    ],
+    "pixelBounds": [
+      23,
+      24,
+      117,
+      123
+    ],
+    "sha256": "9b6d7eefbc4a58f8a33248b35e08acbfff8fab625d8357465c412e845f90b0d5"
+  },
+  {
+    "key": "item-shield_quarteredShield",
+    "id": "shield:quarteredShield",
+    "name": "Quartered round shield",
+    "model": "shield",
+    "bounds": [
+      1,
+      1,
+      0.3017975402081363
+    ],
+    "pixelBounds": [
+      23,
+      24,
+      117,
+      123
+    ],
+    "sha256": "06671899e86b2dd0ebf314a7e403af7a7d04829f7b65545035ce1503272b84f5"
+  },
+  {
+    "key": "item-shield_celticShield",
+    "id": "shield:celticShield",
+    "name": "Gilded celtic shield",
+    "model": "shield",
+    "bounds": [
+      0.7109058127396128,
+      1.4500000476837158,
+      0.47867215539398644
+    ],
+    "pixelBounds": [
+      48,
+      16,
+      98,
+      118
+    ],
+    "sha256": "448001d6fa673321aa3c875e17d5ec3db16f08c5e80d0bbe3eb7d9bf60aae6ef"
+  },
+  {
+    "key": "item-shield_square",
+    "id": "shield:square",
+    "name": "Iron heater shield",
+    "model": "shield",
+    "bounds": [
+      0.8994125000459214,
+      1.149999976158142,
+      0.26855677411914747
+    ],
+    "pixelBounds": [
+      31,
+      19,
+      109,
+      124
+    ],
+    "sha256": "4e20fcd6b7c6d36840aa3367bc1285e4a8808c80bd29b40d8759bffffd8060a5"
+  },
+  {
+    "key": "item-shield_kite",
+    "id": "shield:kite",
+    "name": "Iron kiteshield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "620c353702a3463c8e832e19711d309d60e2ee8b3e02d718ca627edd8f359fc9"
   }
 ]
