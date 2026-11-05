@@ -1,147 +1,46 @@
-import {sampleRunCycle} from './run-cycle.js?v=release-20261104-lowpoly54';
-const SWORDS=new Set(['longsword','scimitar','shortsword','dagger']);
-// One distance-driven locomotion controller for every human in Eldervale.
-// This module has no renderer or account dependencies and can be regression tested.
-export function createHumanoidAnimator(rig){
- let phase=0,blend=0,time=0,impact=0;const restY=new WeakMap();let combatBlend=0,runBlend=0;
- return {update(dt,{distance=0,speed=0,attack=0,hit=0,twoHanded=false,shield=false,armed=false,weapon=null,block=0,locomotion=null,style=null}={}){
-  if(!Number.isFinite(dt)||dt<=0)return;
-  dt=Math.min(dt,.1);time+=dt;rig.tick?.(dt);
-  distance=Number.isFinite(distance)?Math.max(0,distance):0;
-  speed=Number.isFinite(speed)?Math.max(0,speed):0;
-  // Smooth incoming damage into a short, recoverable full-body reaction.
-  const incoming=Number.isFinite(hit)?Math.max(0,Math.min(1,hit)):0;
-  impact=Math.max(incoming,impact*Math.exp(-9*dt));
-  const moving=distance>1e-6;
-  blend+=(moving?1-blend:-blend)*(1-Math.exp(-12*dt));
-  const mode=locomotion||(attack>0||block>0?'combat':speed>3.5?'run':'walk');
-  const transition=1-Math.exp(-12*dt);
-  combatBlend+=((mode==='combat'?1:0)-combatBlend)*transition;
-  runBlend+=((moving?(mode==='run'?1:mode==='jog'?.65:0):0)-runBlend)*transition;
-  const walkBlend=Math.max(0,1-combatBlend-runBlend),run=runBlend,pace=Math.min(1,speed/1.9);
-  // Combat keeps the existing short, planted approach. Walking has an extended
-  // recovery and low foot lift; running has a flight phase and high recovery.
-  const stance=.60*combatBlend+.52*walkBlend+.32*runBlend;
-  const strideLength=(1.1+.45*pace)*combatBlend+(2.25+.20*pace)*walkBlend+3.4*runBlend;
-  const footLift=.12*combatBlend+.09*walkBlend+.30*runBlend;
-  const cycleLength=mode==='combat'?1.1+.45*pace:mode==='run'?6.0:mode==='jog'?4.2:2.25+.20*pace;
-  phase+=distance*Math.PI*2/cycleLength;
-  const gait=Math.sin(phase),stride=(.24+run*.12)*blend;
-  const upper=Math.abs(rig.leftKnee.position.y),lower=rig.leftAnkle?Math.abs(rig.leftAnkle.position.y):.42*(rig.legScale||1.3),length=upper+lower;
-  const lean=.12*runBlend*blend;
-  const reach=strideLength*stance/(2*rig.root.scale.z),baseDown=Math.sqrt(Math.max(.1,length*length-reach*reach))-.03*runBlend-.002;
-  const phases=[((phase/(Math.PI*2))%1+1)%1,((phase/(Math.PI*2)+.5)%1+1)%1],contacts=phases.filter(u=>u<stance);
-  // Extend the supporting leg through mid-stance instead of holding both knees
-  // in the same crouch throughout the whole walking cycle.
-  const supportReach=Math.max(0,...phases.filter(u=>u<stance).map(u=>Math.abs(reach*(1-2*u/stance))));
-  const supportDown=Math.sqrt(Math.max(.1,(length-.015)**2-supportReach**2));
-  const down=baseDown+(supportDown-baseDown)*walkBlend,flight=0;
-  for(const [leg,knee,ankle,offset] of [[rig.leftLeg,rig.leftKnee,rig.leftAnkle,0],[rig.rightLeg,rig.rightKnee,rig.rightAnkle,.5]]){
-   const u=((phase/(Math.PI*2)+offset)%1+1)%1,swing=u>=stance,t=swing?(u-stance)/(1-stance):u/stance;
-   // Walk: relaxed contact/passing/contact with a low, almost straight recovery.
-   // Run: fold the heel behind the hip first, then drive the knee forward.
-   // These are different spatial paths, not the same walk on a faster clock.
-   const ease=t*t*(3-2*t),runT=Math.max(0,Math.min(1,(t-.28)/.72)),runEase=runT*runT*(3-2*runT);
-   const walkForward=reach*(2*ease-1),runForward=reach*(2*runEase-1);
-   const forward=swing?walkForward*(1-runBlend)+runForward*runBlend:reach*(1-2*t);
-   const recovery=Math.sin(Math.PI*Math.pow(t,.72));
-   const lift=swing?Math.sin(t*Math.PI)*footLift*(1-runBlend)+recovery*.30*runBlend:0;
-   const y=down-lift-Math.tan(lean)*forward*rig.root.scale.z,d=Math.min(length-.00001,Math.hypot(forward,y));
-   const bend=Math.acos(Math.max(-1,Math.min(1,(d*d-upper*upper-lower*lower)/(2*upper*lower))));
-   const hip=Math.atan2(-forward,y)-Math.atan2(lower*Math.sin(bend),upper+lower*Math.cos(bend));
-   // Locomotion owns the hip planes too: discard the outward riding pose.
-   leg.rotation.set(hip*blend,0,0);knee.rotation.x=bend*blend;
-   if(ankle)ankle.rotation.x=-(hip+bend)*blend-lean+(swing?Math.sin(t*Math.PI)*.16*runBlend*blend:0);
+import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261104-lowpoly54';
+// Clip-driven animation for every human in Eldervale (Quaternius Universal
+// Animation Library, CC0). The caller describes what the character is doing;
+// this picks the clip, cross-fades, and scales playback to the real travel
+// speed so feet do not slide. Gameplay roots are never moved here.
 
-  }
-  // Visual pelvis compression keeps contact feet at their standing ground height.
-  // Physics, saved positions and pathfinding roots are never translated.
-  const walkRise=.014*(1-Math.cos(phase*2))*walkBlend*blend;const bob=(down-length+flight)*blend;rig.root.rotation.x=lean;
-  // Running armor and torso share pelvis compression; keep the relaxed walk profile.
-  for(const child of rig.root.children){if(child.userData.attachedCape||child.userData.heldWorkProp||rig.skinned&&child.isSkinnedMesh)continue;if(!restY.has(child))restY.set(child,child.position.y);const upperBody=child!==rig.leftLeg&&child!==rig.rightLeg,legacyUpper=((baseDown-length)*combatBlend+(-.035+.004*Math.cos(phase*2))*runBlend-.025*walkBlend)*blend+walkRise;child.position.y=restY.get(child)+(upperBody?legacyUpper*(1-Math.min(1,runBlend/.65))+(bob+walkRise*runBlend)*Math.min(1,runBlend/.65):bob+walkRise*runBlend)}
-  const splay=rig.armSplay||0;
-  for(const limb of [rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow]){limb.rotation.y=0;limb.rotation.z=0}
-  // Relaxed stance: upper arms angle outward from the body.
-  rig.leftArm.rotation.z=splay;rig.rightArm.rotation.z=-splay;
-  rig.leftHand?.quaternion.identity();rig.rightHand?.quaternion.identity();
-  const armSwing=(.11*combatBlend+.32*walkBlend+.45*runBlend)*blend;
-  const armWave=Math.cos(phase);
-  rig.leftArm.rotation.x=armWave*armSwing+Math.sin(time*1.7)*.018*(1-blend);
-  rig.rightArm.rotation.x=-armWave*armSwing-Math.sin(time*1.7)*.018*(1-blend);
-  const elbow=-.10-.78*runBlend*blend;
-  rig.leftElbow.rotation.x=elbow-Math.max(0,gait)*.06*blend;
-  rig.rightElbow.rotation.x=elbow-Math.max(0,-gait)*.06*blend;
-  // Retarget measured running joint motion onto the existing body; never move
-  // the authoritative root with animation. Distance determines playback phase.
-  const captured=sampleRunCycle(phase/(Math.PI*2)),runWeight=runBlend*blend;
-  for(const [side,index] of [['left',0],['right',5]]){
-   for(const [part,j] of [['Leg',0],['Knee',1],['Ankle',2],['Arm',3],['Elbow',4]]){
-    const joint=rig[side+part];if(joint)joint.rotation.x+=(captured[index+j]-joint.rotation.x)*runWeight;
-   }
-  }
-  if(rig.leftHand)rig.leftHand.rotation.y=-Math.PI/2*runWeight;if(rig.rightHand)rig.rightHand.rotation.y=Math.PI/2*runWeight;
-  // Armed idle: forearm raised forward so the blade stands point-up in front of
-  // the body; left forearm carries the shield ahead of the torso.
-  if(armed&&!twoHanded&&attack<=0){
-   rig.rightArm.rotation.x=-.24-gait*(.035*combatBlend+.055*walkBlend+.12*runBlend)*blend;
-   rig.rightArm.rotation.z=-.10;
-   // Swords stand point-up; axes and picks keep the forward ready hold.
-   rig.rightElbow.rotation.x=SWORDS.has(weapon)?-1.3:-.22;
-   rig.rightHand?.rotation.set(0,0,0);
-  }
-  // Walking with a one-handed sword: arm swings gently, the blade stays point-up
-  // and slightly forward rather than hanging toward the ground.
-  const travelCarry=walkBlend;
-  if(armed&&!twoHanded&&attack<=0&&block<=0&&SWORDS.has(weapon)){
-   rig.rightArm.rotation.x=rig.rightArm.rotation.x*(1-travelCarry)+(.02-armWave*.08*blend)*travelCarry;
-   rig.rightElbow.rotation.x=rig.rightElbow.rotation.x*(1-travelCarry)-1.2*travelCarry;
-   rig.rightHand.rotation.x=0;
-  }
-  // Reset combat channels every frame so interrupted attacks cannot leave a pose stuck.
-  if(!armed||twoHanded||attack>0)rig.rightArm.rotation.z=-splay;
-  if(attack>0&&!twoHanded){
-   const t=Math.max(0,Math.min(1,1-attack/.55)),s=t*t*(3-2*t),pulse=Math.sin(t*Math.PI);
-   if(style==='stab'||style==='lunge'||!style&&(weapon==='shortsword'||weapon==='dagger')){
-    rig.rightArm.rotation.x=-.45-(style==='lunge'?.95:.65)*pulse;rig.rightElbow.rotation.x=-.8+.72*pulse;rig.rightHand.rotation.x=1.25*pulse;rig.rightArm.rotation.z=-.12;
-   }else if(style==='slash'||weapon==='scimitar'){
-    rig.rightArm.rotation.x=-.75+pulse*.35;rig.rightArm.rotation.y=-.85+s*1.7;rig.rightArm.rotation.z=-.30-pulse*.20;rig.rightElbow.rotation.x=-.40;rig.rightHand.rotation.z=-.35+s*.65;
-   }else{
-    rig.rightArm.rotation.x=-1.35+s*1.8;rig.rightArm.rotation.y=.30-s*.60;rig.rightArm.rotation.z=-.30+s*.20;rig.rightElbow.rotation.x=-.45+pulse*.15;
-   }
-  }
-  for(const child of rig.leftHand?.children||[])if(child.userData.shieldMount)child.rotation.set(...(block>0&&attack<=0?[0,0,0]:[.70,1.02,-.10]));
-  if(shield&&!twoHanded){rig.leftArm.rotation.x=(-.15-gait*.03*blend)*(1-travelCarry)+(.03+armWave*.06*blend)*travelCarry;rig.leftArm.rotation.z=.10;rig.leftElbow.rotation.x=-.55*(1-travelCarry)-.16*travelCarry;rig.leftHand?.rotation.set(0,0,0)}
-  if(twoHanded&&rig.solveArm){
-   const V=rig.root.position.constructor;
-   if(attack>0){
-    const t=Math.max(0,Math.min(1,1-attack/.55)),swing=Math.sin(t*Math.PI),angle=swing*1.8,direction=new V(0,Math.cos(angle),Math.sin(angle)),target=new V(0,1.82+swing*.10,rig.skinned?.36+swing*.04:.46+swing*.06);
-    if(style==='stab'||style==='lunge'){direction.set(0,.25,1).normalize();target.set(0,rig.skinned?1.95:1.55,(rig.skinned?.32:.45)+swing*(rig.skinned?(style==='lunge'?.18:.13):(style==='lunge'?.7:.4)))}rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10).add(new V(.018,0,0)),direction);
-   }else{
-    // Rest the greatsword on the right shoulder: hand in front of the chest,
-    // blade angled up and back over the shoulder. The free arm walks naturally.
-    rig.solveArm('right',new V(-.28,2.0,.46),new V(-.05,.75,-.66).normalize(),new V(0,.66,.75));
-   }
-  }
-  if(block>0&&attack<=0){
-   if(twoHanded&&rig.solveArm){const V=rig.root.position.constructor,direction=new V(-.65,.65,.30).normalize(),target=new V(-.12,1.88,.40);rig.solveArm('right',target,direction);rig.solveArm('left',target.clone().addScaledVector(direction,.10),direction)}
-   else if(shield&&rig.solveArm){const V=rig.root.position.constructor;rig.solveArm('left',new V(.12,rig.skinned?1.94:1.68,rig.skinned?.45:.62),new V(0,1,0),new V(0,0,1))}
-   else{rig.rightArm.rotation.x=-.85;rig.rightElbow.rotation.x=-.7;rig.rightHand.rotation.z=-.45}
-  }
-  if(rig.head){rig.head.rotation.y=0;rig.head.rotation.x=-gait*.012*blend-impact*.06;rig.head.rotation.z=Math.sin(time*.7)*.008*(1-blend)}
-  if(rig.neck)rig.neck.scale.y=1+Math.sin(time*1.7)*.008*(1-blend);
-  for(const side of ['left','right']){
-   const hand=rig[side+'Hand'],surface=rig.meshes?.[side+'Hand'],holding=hand?.children.some(o=>o.isGroup&&o.visible),inward=(side==='left'?-1:1)*Math.PI/2;
-   if(!holding&&attack<=0&&block<=0)hand?.rotation.set(0,inward,0);
-   // Bare palms face the thighs. Equipment keeps its established wrist frame;
-   // turn only the hand surface around its handle in that frame.
-   if(surface)surface.rotation.y=holding||attack>0||block>0?inward:0;
-   rig.setHandGrip?.(side,holding||attack>0?.95:.45+.1*blend);
-  }
-  // Never translate the whole rig: grounded feet and gameplay root stay stable.
-  if(rig.torso){
-   rig.torso.scale.y=1+Math.sin(time*1.7)*.004*(1-blend);
-   rig.torso.rotation.x=impact*.045;rig.torso.rotation.z=-impact*.025;
-  }
-  return {blend,run,gait:mode,flight:contacts.length===0&&runBlend>.8,contacts:{left:((phase/(Math.PI*2))%1+1)%1<stance,right:((phase/(Math.PI*2)+.5)%1+1)%1<stance},attack:attack>0,hit:impact>0.01};
- }};
+// Travel speed of each loop in world units per second (root motion × scale).
+const STRIDE={Walk_Loop:.975*CHARACTER_SCALE,Jog_Fwd_Loop:5.36*CHARACTER_SCALE,Sprint_Loop:8.25*CHARACTER_SCALE};
+const FADE=.18;
+// Town and profession activities → looping clips.
+const ACTIVITY={smith:'Fixing_Kneeling',fix:'Fixing_Kneeling',garden:'Fixing_Kneeling',sweep:'Push_Loop',push:'Push_Loop',carry:'Idle_Torch_Loop',read:'Idle_Talking_Loop',talk:'Idle_Talking_Loop',sit:'Sitting_Idle_Loop',interact:'Interact',pickup:'PickUp_Table',swim:'Swim_Idle_Loop',mine:'Sword_Attack',woodcut:'Sword_Attack',fish:'Idle_Torch_Loop',cook:'Interact',craft:'Fixing_Kneeling'};
+const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_Shoot','Hit_Chest','Hit_Head','Jump_Start','Jump_Land','Death01','Interact','PickUp_Table','Roll']);
+
+export function createHumanoidAnimator(rig){
+ const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
+ const actions=new Map(),weights=new Map();let current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0;
+ function action(name){if(!clips[name])name='Idle_Loop';if(!actions.has(name)){const a=mixer.clipAction(clips[name]);a.enabled=true;a.setEffectiveWeight(0);if(ONE_SHOT.has(name)){a.setLoop(2200,1);a.clampWhenFinished=true}a.play();actions.set(name,a);weights.set(name,0)}return actions.get(name)}
+ function startOneShot(name,duration){const a=action(name);a.reset();a.play();const length=clips[name]?.duration||1;a.timeScale=duration?length/duration:1;oneShot=name;oneShotLeft=duration||length;}
+ action('Idle_Loop').setEffectiveWeight(1);weights.set('Idle_Loop',1);
+ return {mixer,update(dt,{distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,airborne:air=false,activity=null,dead=false}={}){
+  if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);time+=dt;
+  speed=Number.isFinite(speed)?Math.max(0,speed):0;distance=Number.isFinite(distance)?Math.max(0,distance):0;
+  const moving=distance>1e-5&&speed>.15&&!mounted;
+  // Event-driven one-shots: a new attack, a fresh hit, take-off and landing.
+  if(attack>lastAttack+.05||attack>0&&lastAttack<=0){const magic=style==='magic'||weapon==='staff';startOneShot(magic?'Spell_Simple_Shoot':armed?'Sword_Attack':(punch++%2?'Punch_Cross':'Punch_Jab'),Math.max(.35,attack))}
+  lastAttack=attack;
+  const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>.5&&lastHit<=.5&&!oneShot)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
+  if(air&&!airborne)startOneShot('Jump_Start',.3);else if(!air&&airborne)startOneShot('Jump_Land',.35);airborne=!!air;
+  // Base loop for the current state.
+  let base;
+  if(dead)base='Death01';
+  else if(mounted)base=clips.Driving_Loop?'Driving_Loop':'Sitting_Idle_Loop';
+  else if(airborne)base='Jump_Loop';
+  else if(moving){const gait=locomotion==='run'?'Sprint_Loop':locomotion==='jog'?'Jog_Fwd_Loop':locomotion==='walk'||locomotion==='combat'?'Walk_Loop':speed>6.5?'Sprint_Loop':speed>2.6?'Jog_Fwd_Loop':'Walk_Loop';base=gait;}
+  else{const work=ACTIVITY[activity||rig.activity];base=work||(armed||block>0?'Sword_Idle':'Idle_Loop');}
+  if(base!==current){current=base;action(base).reset?.()}
+  const loop=action(base);if(STRIDE[base])loop.timeScale=Math.max(.55,Math.min(1.7,speed/STRIDE[base]));else loop.timeScale=1;
+  // Cross-fade: the active one-shot (if any) takes over, then hands back.
+  if(oneShot){oneShotLeft-=dt;if(oneShotLeft<=0&&!(oneShot==='Death01'))oneShot=null}
+  const target=oneShot||base,k=1-Math.exp(-dt/FADE*3);
+  for(const [name,a] of actions){const w=weights.get(name)+((name===target?1:0)-weights.get(name))*k;weights.set(name,w<.001?0:w);a.setEffectiveWeight(weights.get(name))}
+  mixer.update(dt);
+  const run=base==='Sprint_Loop'?1:base==='Jog_Fwd_Loop'?.65:0;
+  return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target};
+ },dispose(){mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
 }

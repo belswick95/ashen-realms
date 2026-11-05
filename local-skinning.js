@@ -12,7 +12,7 @@ export function installLocalSkinning(T,root,skeleton,meshes,{preserveInverses=fa
  const base=new T.Vector3(),v=new T.Vector3(),cpuInverse=new T.Matrix4(),cpuOffset=new T.Matrix4();
  for(const mesh of meshes)mesh.applyBoneTransform=function(index,vector){
   const indices=this.geometry.attributes.skinIndex,weights=this.geometry.attributes.skinWeight;base.copy(vector).applyMatrix4(this.bindMatrix);vector.set(0,0,0);cpuInverse.copy(root.matrixWorld).invert();
-  for(let j=0;j<4;j++){const w=weights.array[index*4+j];if(!w)continue;const k=indices.array[index*4+j];cpuOffset.multiplyMatrices(cpuInverse,skeleton.bones[k].matrixWorld).multiply(skeleton.boneInverses[k]);vector.addScaledVector(v.copy(base).applyMatrix4(cpuOffset),w);}return vector.applyMatrix4(this.bindMatrixInverse);
+  for(let j=0;j<4;j++){const w=j===0?weights.getX(index):j===1?weights.getY(index):j===2?weights.getZ(index):weights.getW(index);if(!w)continue;const k=j===0?indices.getX(index):j===1?indices.getY(index):j===2?indices.getZ(index):indices.getW(index);cpuOffset.multiplyMatrices(cpuInverse,skeleton.bones[k].matrixWorld).multiply(skeleton.boneInverses[k]);vector.addScaledVector(v.copy(base).applyMatrix4(cpuOffset),w);}return vector.applyMatrix4(this.bindMatrixInverse);
  };
  skeleton.userData={...(skeleton.userData||{}),characterLocal:true};
  return skeleton;

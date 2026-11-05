@@ -16,6 +16,9 @@
     "test:scenery": "node scripts/scenery-smoke.cjs"
   },
   "devDependencies": {
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
     "playwright-core": "1.51.1",
     "three": "0.160.1"
   }
