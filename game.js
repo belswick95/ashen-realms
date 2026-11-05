@@ -61,7 +61,7 @@ import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20
 const ARMOR_SLOTS=[...OUTFIT_SLOTS,'cape'];
 import {stepEnergy,footIcon} from './run-energy.js?v=release-20261105-capital78';
 import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261105-capital78';
-import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity} from './economy.js?v=release-20261105-capital78';
+import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity,serviceOutOfReach} from './economy.js?v=release-20261105-capital78';
 import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261105-capital78';
 import {mapPoint} from './minimap.js?v=release-20261105-capital78';
 import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261105-capital78';
@@ -770,7 +770,8 @@ if(Number.isFinite(saved.x)&&Number.isFinite(saved.z)){const p=landscape.nearest
 const stats=document.querySelector('#stats'),inventory=document.querySelector('#inventory'),log=document.querySelector('#log'),equipment=document.querySelector('#equipment'),menu=document.querySelector('#contextmenu');
 const inventoryGold=document.createElement('div');inventoryGold.id='inventory-gold';inventory.before(inventoryGold);inventoryGold.oncontextmenu=e=>{e.preventDefault();showMenu(e.clientX,e.clientY,[['Drop gold',()=>requestDrop(state,'gold')]])};
 const tradePanel=createTradePanel(state,{say:s=>say(s)}),groundDrops=createGroundDrops(T,scene,landscape,targets),combatHealth=createCombatHealth(T,camera);var npcDuelIds=new Set(),combatPlayerIds=new Set();
-const services=createServicePanel(state,{onChange:()=>{save();draw()},onOpen:()=>{dest=null;walkQueue=[];mapDestination=null;action=null;combatTurns.cancel();closeDialog()}});
+let serviceAnchor=null;
+const services=createServicePanel(state,{onChange:()=>{save();draw()},onOpen:()=>{serviceAnchor={x:player.position.x,z:player.position.z};dest=null;walkQueue=[];mapDestination=null;action=null;combatTurns.cancel();closeDialog()}});
 
 let activeTab='inventory',mapOpen=false;const mapCanvas=document.querySelector('#minimap'),largeMap=document.querySelector('#worldmap'),mapPanel=document.querySelector('#map-panel');
 let minimapExtent=90,running=false;
@@ -1397,7 +1398,7 @@ player.position.y=landscape.walkHeight(player.position.x,player.position.z)+floo
 for(const npc of npcs)npc.root.position.y=landscape.walkHeight(npc.root.position.x,npc.root.position.z)+floorOffset(npc.serverPose?.data?.floor||npc.profile?.floor||0,npc.root.position.x,npc.root.position.z);
 for(const mob of creatures)mob.root.position.y=landscape.walkHeight(mob.root.position.x,mob.root.position.z)+floorOffset(mob.serverPose?.data?.floor||mob.config?.floor||0,mob.root.position.x,mob.root.position.z);
 if(!dest&&!walkQueue.length&&!realmPlayerPose?.moving)mapDestination=null;
-updatePendingArrival();if(walkFlagState&&flagExpired(walkFlagState,player.position,{moving:window.eldervaleAuthority?!!realmPlayerPose?.moving:!!dest,pending:routePending,now:performance.now()}))hideWalkFlag();
+updatePendingArrival();if(services.isOpen&&serviceOutOfReach(serviceAnchor,player.position)){services.close();serviceAnchor=null}if(walkFlagState&&flagExpired(walkFlagState,player.position,{moving:window.eldervaleAuthority?!!realmPlayerPose?.moving:!!dest,pending:routePending,now:performance.now()}))hideWalkFlag();
 const traveled=Math.hypot(player.position.x-frameStart.x,player.position.z-frameStart.z);
 if(!window.eldervaleAuthority&&!mounted){const energyStep=stepEnergy(state.runEnergy,running,traveled>.001,dt);state.runEnergy=energyStep.energy;running=energyStep.running;if(energyStep.exhausted)say('You are out of energy and slow to a walk.')}updateRunButton();
 if(!window.eldervaleAuthority)mounted=!!state.equippedMount&&mountAllowed(player.position.x,player.position.z,persistentRows.values());
