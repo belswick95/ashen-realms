@@ -1,5 +1,5 @@
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {preloadWeapons} from './weapon-assets.js?v=release-20261105-osrs67';
+import {preloadWeapons} from './weapon-assets.js?v=release-20261105-qa68';
 // Loads and caches the Quaternius character assets (assets/characters, CC0).
 // Geometry is shared between every character; each character only creates
 // its own bones and lightweight SkinnedMesh wrappers.
