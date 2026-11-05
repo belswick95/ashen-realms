@@ -1,3 +1,4 @@
+import {animateWork,createWorkKit} from './npc-activities.js?v=release-20261105-session59';
 // Original townsfolk, small walking loops and visible work. Service NPCs keep their jobs.
 export function townResidents(settlements){
  const resident=(name,role,x,z,color,activity,patrol)=>({name,role,x,z,color,activity,behavior:patrol?'patrol':'stationary',patrol,lines:[`A good day for ${role.toLowerCase()}. There is always work to do around here.`,`The roads bring new faces to our town every day.`]});
@@ -21,5 +22,11 @@ export function townResidents(settlements){
 }
 export function townPropLayout(kind){return kind==='carry'?{width:.52,height:.34,depth:.28,y:1.64,z:.50,handX:.275,handY:1.63}:kind==='read'?{width:.40,height:.055,depth:.28,y:1.70,z:.50,handX:.19,handY:1.71}:null;}
 // Every character is clip-driven: standing workers loop their job clip
-// (animation.js ACTIVITY), and travelling hands back to locomotion.
-export function animateTownActivity(rig,kind,time,moving=false){if(!kind)return;rig.setActivity?.(moving?null:kind)}
+// (animation.js ACTIVITY) with a matching prop and hand layer
+// (npc-activities.js); travelling hands back to locomotion. A person on a
+// server route works only at the route's stations, never at a random pause.
+export function animateTownActivity(rig,kind,time,moving=false){if(!kind&&!rig.townRoute&&!rig.work?.weight){rig.setActivity?.(null);return}return animateWork(rig,kind,time,moving)}
+export {createWorkKit};
+// Civilians keep any defensive weapon out of sight; it would otherwise put
+// them in a fighting stance and stop their work.
+export function carriesWeapon(profile={}){return /guard|warden|knight|soldier|ranger|scout|hunter|bandit|sentinel/i.test(String(profile.role||''))||profile.attackable===true}
