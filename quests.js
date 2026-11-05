@@ -1,4 +1,5 @@
 import {goods,quantity} from './economy.js?v=release-20261105-capital78';
+import {levelSkills} from './level-up.js?v=release-20261105-capital78';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!=null)n.textContent=text;for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);return n};
 const button=(parent,label,fn)=>{const n=el('button',label,{type:'button'});n.onclick=fn;parent.append(n);return n};
 function input(parent,label,value,type='text',choices=null){const wrap=el('label',label),n=el(choices?'select':type==='textarea'?'textarea':'input');if(choices){for(const [v,t]of choices)n.append(el('option',t,{value:v}));n.value=value??''}else if(type==='checkbox'){n.type=type;n.checked=!!value}else{if(type!=='textarea')n.type=type;n.value=value??''}wrap.append(n);parent.append(wrap);return n}
@@ -26,15 +27,140 @@ export async function questEditor(root,{rpc,action,note}){
   }draw();
  }catch(e){note(e.message,true)}
 }
+// ---------------------------------------------------------------- quest journal (Quests tab)
+// Pure rules first (tested in tests/quest-journal.test.js), then the DOM.
+// RuneScape colours: grey = not started, yellow = started, green = completed.
+export const QUEST_STATUS={
+ notStarted:{label:'Not started',className:'quest-not-started'},
+ started:{label:'In progress',className:'quest-started'},
+ complete:{label:'Completed',className:'quest-complete'}};
+export const questStatus=q=>q?.completed?'complete':q?.accepted?'started':'notStarted';
+export const questPoints=q=>Math.max(0,Math.floor(Number(q?.data?.questPoints??1))||0);
+export const CHAIN_TITLES={tutorial:'Castle Training'};
+// Sections in journal order: the starter (tutorial) chain by its order, then every other quest
+// grouped by chain (unchained quests last, as "Quests"), keeping the server's order inside.
+export function journalSections(quests=[]){
+ const groups=new Map();
+ for(const q of quests){const chain=q?.data?.chain||'';if(!groups.has(chain))groups.set(chain,[]);groups.get(chain).push(q)}
+ const keys=[...groups.keys()].sort((a,b)=>(a==='tutorial'?-1:b==='tutorial'?1:!a?1:!b?-1:a.localeCompare(b)));
+ return keys.map(chain=>{const list=groups.get(chain);if(chain)list.sort((a,b)=>(a.data.order||0)-(b.data.order||0));
+  return {chain,title:CHAIN_TITLES[chain]||(chain?chain[0].toUpperCase()+chain.slice(1).replace(/[-_]/g,' '):'Quests'),quests:list,complete:list.filter(q=>q.completed).length}});
+}
+export function journalSummary(quests=[]){
+ const complete=quests.filter(q=>q.completed);
+ return {total:quests.length,complete:complete.length,started:quests.filter(q=>q.accepted&&!q.completed).length,points:complete.reduce((n,q)=>n+questPoints(q),0),maxPoints:quests.reduce((n,q)=>n+questPoints(q),0)};
+}
+const SKILL_KEY=skill=>skill==='woodcutting'?'woodXP':skill+'XP';
+export const skillInfo=skill=>{const s=levelSkills.find(s=>s.key===SKILL_KEY(skill));return {name:s?.name||String(skill)[0].toUpperCase()+String(skill).slice(1),icon:s?.icon||'★'}};
+const itemName=id=>goods[id]?.name||String(id).replace(/^[a-z]+:/,'').replace(/([A-Z])/g,' $1').toLowerCase();
+// Reward lines as shown in the journal and the completion scroll, in OSRS order:
+// quest points, experience per skill, items, then coins.
+export function rewardEntries(data={},{points=true}={}){
+ const out=[];const qp=questPoints({data});
+ if(points&&qp)out.push({kind:'points',amount:qp,label:qp+' Quest Point'+(qp===1?'':'s')});
+ for(const [skill,n]of Object.entries(data.xp||{}))if(Number(n)>0){const s=skillInfo(skill);out.push({kind:'xp',skill,amount:Number(n),icon:s.icon,label:Number(n).toLocaleString('en-GB')+' '+s.name+' XP'})}
+ for(const [id,n]of Object.entries(data.items||{}))if(Number(n)>0)out.push({kind:'item',id,amount:Number(n),label:(Number(n)>1?Number(n)+' × ':'')+itemName(id)});
+ if(Number(data.gold)>0)out.push({kind:'coins',amount:Number(data.gold),label:Number(data.gold).toLocaleString('en-GB')+' coins'});
+ return out;
+}
+// Objective rows with progress. A completed quest shows every objective as done (players who
+// finished training before per-quest records existed have no progress rows).
+export function objectiveRows(q,carried=()=>0){
+ return (q?.data?.objectives||[]).map((o,i)=>{
+  const raw=q.completed?o.amount:o.type==='collect'?carried(o.target):Number(q.progress?.[i])||0,count=Math.min(o.amount,raw);
+  const label=['collect','talk','kill'].includes(o.type)&&!o.label?(o.type==='collect'?'Return '+itemName(o.target):o.type==='talk'?'Talk to '+o.target:'Defeat '+o.target):o.type==='collect'?'Return '+(o.label||itemName(o.target)):o.label||o.type;
+  return {label,count,amount:o.amount,done:count>=o.amount,started:!!q.accepted}});
+}
+// A quest that just turned from started to complete (one at a time; bulk changes such as an
+// owner skipping the training never pop a scroll per quest).
+export function newlyCompleted(previous,rows){
+ if(!previous)return [];
+ const done=rows.filter(q=>q.completed&&previous.get(q.id)==='started');
+ return done.length===1?done:[];
+}
+const COIN_ICON='<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="22" cy="34" rx="14" ry="6" fill="#8a6414"/><ellipse cx="22" cy="31" rx="14" ry="6" fill="#e3b53c" stroke="#7a5510"/><ellipse cx="27" cy="24" rx="14" ry="6" fill="#8a6414"/><ellipse cx="27" cy="21" rx="14" ry="6" fill="#f2c94c" stroke="#7a5510"/><ellipse cx="24" cy="13" rx="12" ry="5" fill="#ffd866" stroke="#7a5510"/><path d="M19 12h10" stroke="#b07f1a" stroke-width="2"/></svg>';
+const SCROLL_ICON='<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="10" width="28" height="30" rx="3" fill="#e8d3a2" stroke="#6b4b22" stroke-width="2"/><rect x="7" y="7" width="34" height="6" rx="3" fill="#b88a4a" stroke="#6b4b22"/><rect x="7" y="37" width="34" height="6" rx="3" fill="#b88a4a" stroke="#6b4b22"/><path d="M15 20h18M15 25h18M15 30h12" stroke="#7a5a32" stroke-width="2"/></svg>';
+export const questIconHtml=data=>data?.icon==='coins'?COIN_ICON:goods[data?.icon]?.icon||goods[Object.keys(data?.items||{})[0]]?.icon||SCROLL_ICON;
+const rewardIconHtml=r=>r.kind==='item'?goods[r.id]?.icon||SCROLL_ICON:r.kind==='coins'?COIN_ICON:r.kind==='points'?SCROLL_ICON:null;
+const html=(tag,markup,cls)=>{const n=el(tag,null,cls?{class:cls}:{});n.innerHTML=markup;return n};
+
+function rewardList(data,{points=true}={}){
+ const ul=el('ul',null,{class:'quest-rewards'});
+ for(const r of rewardEntries(data,{points})){const li=el('li',null,{'data-kind':r.kind});const icon=r.icon?el('span',r.icon,{class:'quest-reward-icon','aria-hidden':'true'}):html('span',rewardIconHtml(r),'quest-reward-icon');li.append(icon,el('span',r.label));ul.append(li)}
+ return ul;
+}
+
+// OSRS-style "Quest complete!" scroll: parchment unrolls, quest art on the left,
+// "You are awarded:" list on the right, jingle on the Sound effects channel.
+let scrollOpen=null;
+export function showQuestComplete(q,{totalPoints=null,jingle=true}={}){
+ if(typeof document==='undefined'||!q?.data)return null;
+ scrollOpen?.close?.();
+ const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ const dialog=el('dialog',null,{class:'quest-scroll-dialog','aria-labelledby':'quest-scroll-title'});
+ const scroll=el('div',null,{class:'quest-scroll'+(reduced?' reduced':'')}),paper=el('div',null,{class:'quest-scroll-paper'});
+ const title=el('h2',null,{id:'quest-scroll-title'});title.append(el('span','Congratulations!',{class:'quest-scroll-congrats'}),el('span','You have completed '+q.data.name+'!',{class:'quest-scroll-name'}));
+ const body=el('div',null,{class:'quest-scroll-body'}),art=el('div',null,{class:'quest-scroll-art'});
+ art.append(html('div',questIconHtml(q.data),'quest-scroll-icon'),el('p','Quest Points: '+(totalPoints??questPoints(q)),{class:'quest-scroll-points'}));
+ const awards=el('div',null,{class:'quest-scroll-awards'});awards.append(el('h3','You are awarded:'),rewardList(q.data));
+ body.append(art,awards);
+ const close=el('button','Close',{type:'button',class:'quest-scroll-close'});
+ paper.append(title,body,close);
+ scroll.append(el('div',null,{class:'quest-scroll-rod top','aria-hidden':'true'}),paper,el('div',null,{class:'quest-scroll-rod bottom','aria-hidden':'true'}));
+ const sparks=el('div',null,{class:'quest-scroll-sparks','aria-hidden':'true'});
+ if(!reduced)for(let i=0;i<18;i++){const s=el('i');s.style.setProperty('--x',(Math.round(Math.random()*100))+'%');s.style.setProperty('--d',(Math.random()*1.2).toFixed(2)+'s');s.style.setProperty('--h',(40+Math.round(Math.random()*30))+'vh');sparks.append(s)}
+ dialog.append(sparks,scroll);document.body.append(dialog);
+ const finish=()=>{if(dialog.open)dialog.close()};
+ close.onclick=finish;dialog.addEventListener('click',e=>{if(e.target===dialog)finish()});
+ dialog.addEventListener('close',()=>{dialog.remove();if(scrollOpen===dialog)scrollOpen=null});
+ try{dialog.showModal()}catch{dialog.setAttribute('open','')}
+ close.focus({preventScroll:true});scrollOpen=dialog;
+ if(jingle)import('./music.js?v=release-20261105-capital78').then(m=>m.playLevelUpJingle?.('quest')).catch(()=>{});
+ return dialog;
+}
+
 export function createQuestJournal(state){
  const css=el('link',null,{rel:'stylesheet',href:'./quests.css?v=release-20261105-capital78'});document.head.append(css);
  // The journal lives in the bottom-right panel as the Quests tab; the floating dialog is only a fallback for pages without that panel.
- const tab=document.querySelector('#side [data-tab=quests]'),host=document.querySelector('#quests-tab');let panel=null,list=el('div',null,{class:'quest-list'}),status=el('p','',{role:'status'});
- if(host&&tab){host.replaceChildren(el('h3','Quests'),list,status);tab.addEventListener('click',()=>{filter=null;status.textContent='';draw()})}
- else{const toggle=button(document.body,'📜',()=>open());toggle.id='quest-journal-toggle';toggle.title='Quest journal';toggle.setAttribute('aria-label','Open quest journal');panel=el('dialog',null,{id:'quest-journal'});const head=el('header');head.append(el('h2','Quest journal'));button(head,'Close',()=>panel.close());panel.append(head,list,status);document.body.append(panel)}
- let quests=[],filter=null,signature='',pending=false;
- function draw(){list.replaceChildren();const visible=quests.filter(q=>!filter||q.data.giver===filter);if(filter)button(list,'Show all quests',()=>{filter=null;draw()}).className='quest-show-all';if(!visible.length)list.append(el('p','No quests available here yet. The owner can publish quests in World studio.'));for(const q of visible){const card=el('article');card.append(el('h3',q.data.name+(q.completed?' · Complete':q.accepted?' · Active':'')),el('p',q.data.description));for(const [i,o]of q.data.objectives.entries()){const count=o.type==='collect'?Math.min(o.amount,quantity(state,o.target)):q.progress[i]||0;card.append(el('p',(['collect','talk','kill'].includes(o.type)?(o.type==='collect'?'Return':o.type==='talk'?'Talk to':'Defeat')+' '+(o.label||goods[o.target]?.name||o.target):o.label||o.type)+' · '+Math.min(o.amount,count)+'/'+o.amount))}card.append(el('small','Rewards: '+(q.data.gold||0)+' gold'+Object.entries(q.data.items||{}).map(([id,n])=>' · '+n+' '+(goods[id]?.name||id)).join('')+Object.entries(q.data.xp||{}).map(([k,n])=>' · '+n+' '+k+' XP').join('')));if(!q.completed&&q.data.chain!=='tutorial'){const b=button(card,q.accepted?'Hand in at quest giver':'Accept at quest giver',async()=>{if(pending)return;pending=true;b.disabled=true;try{const ok=await window.eldervaleRealm?.command(q.accepted?'quest_complete':'quest_accept',{id:q.id});status.textContent=ok?(q.accepted?'Quest completed.':'Quest accepted.'):window.eldervaleRealm?.lastError||'World connection required.'}finally{pending=false;draw()}});b.disabled=pending}list.append(card)}}
+ const tab=document.querySelector('#side [data-tab=quests]'),host=document.querySelector('#quests-tab');let panel=null;
+ const head=el('header',null,{class:'quest-journal-head'}),summary=el('p','',{class:'quest-summary'}),list=el('div',null,{class:'quest-list'}),status=el('p','',{role:'status'});
+ const legend=el('p',null,{class:'quest-legend','aria-label':'Colour key'});for(const k of ['notStarted','started','complete'])legend.append(el('span',QUEST_STATUS[k].label,{class:QUEST_STATUS[k].className}));
+ head.append(el('h3','Quests'),summary);
+ if(host&&tab){host.replaceChildren(head,legend,list,status);host.classList.add('quest-journal');tab.addEventListener('click',()=>{filter=null;selected=null;status.textContent='';draw()})}
+ else{const toggle=button(document.body,'📜',()=>open());toggle.id='quest-journal-toggle';toggle.title='Quest journal';toggle.setAttribute('aria-label','Open quest journal');panel=el('dialog',null,{id:'quest-journal',class:'quest-journal'});const top=el('header');top.append(el('h2','Quest journal'));button(top,'Close',()=>panel.close());panel.append(top,head,legend,list,status);document.body.append(panel)}
+ let quests=[],filter=null,selected=null,signature='',pending=false,previous=null;
+ const carried=id=>quantity(state,id);
+ function drawSummary(){const s=journalSummary(quests);summary.replaceChildren(el('strong','Quest Points: '+s.points),el('span',s.complete+'/'+s.total+' complete'))}
+ function detail(q){
+  const st=questStatus(q),card=el('article',null,{class:'quest-detail '+QUEST_STATUS[st].className});
+  button(card,'‹ All quests',()=>{selected=null;draw()}).className='quest-back';
+  card.append(el('h3',q.data.name),el('p',QUEST_STATUS[st].label+(q.data.chain==='tutorial'?' · Castle Training '+(q.data.order||'')+'/'+quests.filter(x=>x.data.chain==='tutorial').length:''),{class:'quest-state'}));
+  if(q.data.giverName)card.append(el('p','Start: talk to '+q.data.giverName+'.',{class:'quest-start'}));
+  card.append(el('p',q.data.description||''));
+  card.append(el('h4','Objectives'));const ol=el('ol',null,{class:'quest-objectives'});
+  for(const o of objectiveRows(q,carried)){const li=el('li',null,{class:o.done&&o.started?'done':''});li.append(el('span',o.label),el('small',o.started?Math.min(o.amount,o.count)+'/'+o.amount:'—'));ol.append(li)}
+  card.append(ol,el('h4','Rewards'),rewardList(q.data));
+  if(!q.completed&&q.data.chain!=='tutorial'){const b=button(card,q.accepted?'Hand in at quest giver':'Accept at quest giver',async()=>{if(pending)return;pending=true;b.disabled=true;try{const ok=await window.eldervaleRealm?.command(q.accepted?'quest_complete':'quest_accept',{id:q.id});status.textContent=ok?(q.accepted?'Quest completed.':'Quest accepted.'):window.eldervaleRealm?.lastError||'World connection required.'}finally{pending=false;draw()}});b.className='quest-action';b.disabled=pending}
+  return card;
+ }
+ function draw(){
+  drawSummary();list.replaceChildren();
+  const q=selected&&quests.find(x=>x.id===selected);if(q){legend.hidden=true;list.append(detail(q));return}
+  legend.hidden=false;selected=null;
+  const visible=quests.filter(q=>!filter||q.data.giver===filter);
+  if(filter)button(list,'Show all quests',()=>{filter=null;draw()}).className='quest-show-all';
+  if(!visible.length){list.append(el('p','No quests available here yet. The owner can publish quests in World studio.'));return}
+  for(const section of journalSections(visible)){
+   const box=el('section',null,{class:'quest-section'}),h=el('h4');h.append(el('span',section.title),el('small',section.complete+'/'+section.quests.length));box.append(h);
+   const ul=el('ul',null,{class:'quest-names'});
+   for(const item of section.quests){const st=questStatus(item),li=el('li'),b=el('button',item.data.name,{type:'button',class:'quest-name '+QUEST_STATUS[st].className,'aria-label':item.data.name+', '+QUEST_STATUS[st].label});b.onclick=()=>{selected=item.id;draw();list.scrollTop=0;host?.scrollTo?.({top:0})};li.append(b);ul.append(li)}
+   box.append(ul);list.append(box);
+  }
+ }
  const shown=()=>panel?panel.open:!host.hidden&&tab.getAttribute('aria-expanded')!=='false';
- function open(npc=null){if(panel){if(!panel.open)panel.showModal()}else if(!shown()||!tab.classList.contains('selected'))tab.click();filter=npc;draw();status.textContent='Accept and hand in quests near their giver. Collected items are consumed when handed in.'}
- return {open,hasFor:npc=>quests.some(q=>q.data.giver===npc&&!q.completed&&q.data.chain!=='tutorial'),sync(rows=[]){quests=rows;const next=JSON.stringify([rows,rows.flatMap(q=>q.data.objectives.filter(o=>o.type==='collect').map(o=>quantity(state,o.target)))]);if(next!==signature){signature=next;if(!pending&&(!panel||panel.open))draw()}}};
+ function open(npc=null){if(panel){if(!panel.open)panel.showModal()}else if(!shown()||!tab.classList.contains('selected'))tab.click();filter=npc;selected=null;const mine=npc?quests.filter(q=>q.data.giver===npc&&q.data.chain!=='tutorial'):[];if(mine.length===1)selected=mine[0].id;draw();status.textContent='Accept and hand in quests near their giver. Collected items are consumed when handed in.'}
+ return {open,draw,hasFor:npc=>quests.some(q=>q.data.giver===npc&&!q.completed&&q.data.chain!=='tutorial'),sync(rows=[]){
+  for(const q of newlyCompleted(previous,rows))showQuestComplete(q,{totalPoints:journalSummary(rows).points});
+  previous=new Map(rows.map(q=>[q.id,questStatus(q)]));quests=rows;
+  const next=JSON.stringify([rows,rows.flatMap(q=>q.data.objectives.filter(o=>o.type==='collect').map(o=>quantity(state,o.target)))]);if(next!==signature){signature=next;if(!pending&&(!panel||panel.open))draw()}}};
 }
