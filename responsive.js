@@ -5,7 +5,8 @@
 export function deviceProfile({width,height,coarse=false,touch=false,memory=8,tablet=false,phone=false}){
  const compact=width<=700||((coarse||touch)&&height<=700&&width>height),constrained=memory>0&&memory<=4;
  if(phone)return {compact,tablet:false,phone:true,rotateRequired:(coarse||touch)&&height>width,preset:'low',pixelCap:1.25};
- return {compact,tablet:!compact&&!!tablet,rotateRequired:(coarse||touch)&&height>width,preset:compact?(constrained?'low':'medium'):tablet?(constrained?'low':'medium'):'high',pixelCap:compact||tablet?1.5:2};
+ // Only phones are gated to landscape: a portrait tablet (iPad 744-1024px wide) plays fine.
+ return {compact,tablet:!compact&&!!tablet,rotateRequired:(coarse||touch)&&height>width&&width<600,preset:compact?(constrained?'low':'medium'):tablet?(constrained?'low':'medium'):'high',pixelCap:compact||tablet?1.5:2};
 }
 export const graphicsPresets={low:{scale:.65,distance:110,shadows:false},medium:{scale:.8,distance:210,shadows:true},high:{scale:1,distance:330,shadows:true},ultra:{scale:1.25,distance:440,shadows:true}};
 export function effectiveGraphics(settings,profile){const auto=settings.preset==='auto',preset=graphicsPresets[auto?profile.preset:settings.preset]||graphicsPresets.high;return {...settings,...(auto?preset:{}),pixelCap:auto?profile.pixelCap:2.5}}

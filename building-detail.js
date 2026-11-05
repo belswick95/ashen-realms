@@ -1,4 +1,4 @@
-import {batchStaticMeshes} from './static-batch.js?v=release-20261105-perf79';
+import {batchStaticMeshes} from './static-batch.js?v=release-20261105-mobile80';
 // Exterior dressing for every town building, in the house's own frame:
 // walls are ±1.91 × ±1.83 (outer faces x=±2.00, z=±1.92), the floor top is
 // .125, wall tops 3.0, eaves 3.12 and ridge 4.40, with the door on +Z.

@@ -8,3 +8,8 @@ test('short touch screens use the compact HUD even when Safari reports a desktop
  for(const dimensions of [{width:1366,height:600},{width:1024,height:500},{width:932,height:430}])assert.equal(deviceProfile({...dimensions,touch:true,coarse:false}).compact,true);
  assert.equal(deviceProfile({width:1440,height:900,touch:true}).compact,false);
 });
+
+test('portrait tablets are not asked to rotate; portrait phones still are',()=>{
+ for(const d of [{width:820,height:1180},{width:768,height:1024},{width:744,height:1133},{width:1024,height:1366}])assert.equal(deviceProfile({...d,touch:true}).rotateRequired,false);
+ for(const d of [{width:375,height:667},{width:430,height:932},{width:412,height:915}])assert.equal(deviceProfile({...d,touch:true,coarse:true}).rotateRequired,true);
+});
