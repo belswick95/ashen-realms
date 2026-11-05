@@ -13,7 +13,7 @@ export async function startWorld(db,user,{initial,flush,disconnect}){
   if(Date.parse(access?.kicked_at)>startedAt){stopped=true;await disconnect('Removed by the owner: '+access.reason);return}
   if(snapshot.settings.maintenance&&!snapshot.owner){stopped=true;await disconnect('Eldervale is in maintenance mode. Please try again later.');return}
   await window.eldervaleWorldBridge.apply(snapshot.entities||[]);cursor=snapshot.settings.revision;
-  if(!initialized){initialized=true;if(snapshot.settings.welcome)window.eldervaleWorldBridge.notice(snapshot.settings.welcome)}
+  if(!initialized){initialized=true;if(snapshot.settings.welcome&&String(snapshot.settings.welcome).trim()!=='Welcome to Eldervale!')window.eldervaleWorldBridge.notice(snapshot.settings.welcome)/* the client already greets with this line */}
   const at=snapshot.settings.restart_at;if(at&&Date.parse(at)>now)restartSeen=at;if(!at)restartSeen=null;
   if(snapshot.settings.announcement!==lastAnnouncement&&Date.parse(snapshot.settings.announcement_until)>now){lastAnnouncement=snapshot.settings.announcement;window.eldervaleWorldBridge.notice(lastAnnouncement)}
   if(Date.parse(access?.muted_until)>now){window.eldervaleMutedUntil=access.muted_until}else window.eldervaleMutedUntil=null;
