@@ -20,13 +20,16 @@ export function shadowQuality(preset='high',compact=false){
 
 // Sun by day, moon by night. The light swaps body only while it sits at the
 // horizon, where `fade` is ~0, so the shadow direction never visibly jumps.
-// Noon is tilted (~70 degrees) so midday shadows still read beside objects.
+// The arc is tilted so midday shadows still read beside objects.
 // The direction is quantised to ~0.25 degrees: re-aiming the shadow camera
 // every sky tick makes edges crawl, a step a minute does not.
 export function celestialLight(T,hour){
  const angle=(hour-6)/24*Math.PI*2,elevation=Math.sin(angle),night=elevation<0;
  const a=Math.round((night?angle+Math.PI:angle)/.0044)*.0044,c=Math.cos(a);
- const direction=new T.Vector3(c*.6+.22,Math.max(.26,Math.sin(a)),c*.8+.3).normalize().multiplyScalar(85);
+ // East-west axis (.6,0,.8); the arc leans 25 degrees toward (.8,0,-.6) like a
+ // mid-latitude sun, so noon stands at ~65 degrees and shadows always fall north.
+ const up=Math.sin(a)*.906,lean=Math.sin(a)*.423;
+ const direction=new T.Vector3(c*.6+lean*.8,Math.max(.26,up),c*.8-lean*.6).normalize().multiplyScalar(85);
  const t=Math.min(1,Math.abs(elevation)/.12),fade=t*t*(3-2*t);
  return {direction,night,fade};
 }

@@ -9,5 +9,8 @@ const sunStops=[[0,0x9fb4dc],[.2,0xb8bfd8],[.38,0xffb27a],[.62,0xffd6a8],[1,0xff
 // Hemisphere sky/ground: cool deep night, warmer bounce from the ground by day.
 const skyStops=[[0,0x93a8d4],[.35,0xb4c0dc],[1,0xcfe2ff]],groundStops=[[0,0x3a3646],[.35,0x5a4a3c],[1,0x6b5a3e]];
 export function lightingAt(daylight){const d=Math.max(0,Math.min(1,Number(daylight)||0)),e=d*d*(3-2*d);
- return {ambient:1.1+e*.15,directional:.45+e*2.05,exposure:1.12-e*.22,lantern:1-d,skyNight:0x26394f,
+ // ambient is the total sky fill; by day the sky environment map
+ // (natural-environment.js) already supplies most of it, so the hemisphere
+ // light steps back and sun shadows keep their contrast.
+ return {ambient:1.1+e*.15,hemisphere:1.1-e*.65,directional:.45+e*2.05,exposure:1.12-e*.17,lantern:1-d,skyNight:0x26394f,
   sunColor:ramp(sunStops,d),skyColor:ramp(skyStops,d),groundColor:ramp(groundStops,d)}}
