@@ -1,5 +1,5 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261105-weapons56';
-import {heldItem} from './weapon-assets.js?v=release-20261105-weapons56';
+import {meshItemIcon} from './item-appearance.js?v=release-20261105-staffs57';
+import {heldItem} from './weapon-assets.js?v=release-20261105-staffs57';
 // Weapons are Quaternius CC0 models (assets/weapons, scripts/build-weapons.mjs)
 // in the held-item frame: grip at the origin, blade along +Y, edge toward +X.
 // Keys are what saves, the server catalog and equipment use; the first eight
@@ -27,11 +27,25 @@ export const weaponCatalog={
  woodenBow:W('Wooden bow','bow',6,10,2.4,12,50,15,'A simple wooden shortbow.',{twoHanded:true,ranged:true}),
  longbow:W('Longbow','bow',8,13,2.6,15,95,28,'A tall bow with the longest reach.',{twoHanded:true,ranged:true}),
  goldenBow:W('Gilded bow','bow',10,16,2.4,14,220,66,'A gilded recurve bow.',{twoHanded:true,ranged:true}),
- bloodthornBow:W('Bloodthorn bow','bow',12,18,2.5,14,320,96,'A cruel thorned recurve bow.',{twoHanded:true,ranged:true})
+ bloodthornBow:W('Bloodthorn bow','bow',12,18,2.5,14,320,96,'A cruel thorned recurve bow.',{twoHanded:true,ranged:true}),
+ // Staffs: two-handed magic. The off hand casts a bolt in the gem's colour.
+ apprenticeStaff:W('Apprentice staff','staff',5,9,2.4,10,40,12,'A crooked staff set with a green focus gem.',{twoHanded:true,ranged:true,magic:true,color:0x6cf07a}),
+ sapphireStaff:W('Sapphire staff','staff',9,14,2.4,11,160,48,'A staff crowned with a deep blue sapphire.',{twoHanded:true,ranged:true,magic:true,color:0x5b7dff}),
+ amethystStaff:W('Amethyst staff','staff',11,16,2.5,11,220,66,'A staff holding a humming amethyst.',{twoHanded:true,ranged:true,magic:true,color:0xc45bff}),
+ emberStaff:W('Ember staff','staff',13,18,2.6,10,300,90,'A staff whose ruby burns like a coal.',{twoHanded:true,ranged:true,magic:true,color:0xff6a3d})
 };
-for(const item of Object.values(weaponCatalog))item.desc+=(item.ranged?' Ranged '+item.reach+' · ':' ')+'Attack +'+item.attack+' · Damage +'+item.damage+' · Attack turn '+item.speed+'s.';
+for(const item of Object.values(weaponCatalog))item.desc+=(item.magic?' Magic range '+item.reach+' · ':item.ranged?' Ranged '+item.reach+' · ':' ')+'Attack +'+item.attack+' · Damage +'+item.damage+' · Attack turn '+item.speed+'s.';
 export const isTwoHanded=key=>!!weaponCatalog[key]?.twoHanded;
 export const isRanged=key=>!!weaponCatalog[key]?.ranged;
+export const isMagic=key=>!!weaponCatalog[key]?.magic;
+// Bows are held in the bow (left) hand; everything else, staffs included, in the right.
+export const isBow=key=>isRanged(key)&&!isMagic(key);
 // Held model for an item key (an empty group if the assets are not loaded).
-export function makeWeapon(T,key){return heldItem(T,weaponCatalog[key]?key:'longsword','weapon')}
+const glows=new Map();
+export function makeWeapon(T,key){
+ const g=heldItem(T,weaponCatalog[key]?key:'longsword','weapon'),item=weaponCatalog[key],tip=g.getObjectByName('tip');
+ // Staffs: a soft glow around the focus gem (shared geometry and material per colour).
+ if(item?.magic&&tip){if(!glows.has(item.color))glows.set(item.color,{geometry:new T.IcosahedronGeometry(.075,1),material:new T.MeshBasicMaterial({color:item.color,transparent:true,opacity:.45,blending:T.AdditiveBlending,depthWrite:false})});const {geometry,material}=glows.get(item.color);geometry.userData.eldervaleShared=material.userData.eldervaleShared=true;const glow=new T.Mesh(geometry,material);glow.name='gem-glow';glow.castShadow=false;glow.position.y=-.03;tip.add(glow)}
+ return g;
+}
 export function iconForWeapon(key){return meshItemIcon('weapon:'+key)}

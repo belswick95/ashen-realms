@@ -2,21 +2,24 @@
 //   Medieval Weapons Pack (Sept 2018) - OBJ/MTL, flat colours
 //   Fantasy Props MegaKit (Standard)  - glTF with trim-sheet textures
 //
-// usage: node scripts/build-weapons.mjs <medieval-weapons-dir> <megakit-dir>
+//   Magic Staff Set (AnyRPG)          - FBX with one texture per gem colour
+//
+// usage: node scripts/build-weapons.mjs <medieval-weapons-dir> <megakit-dir> <staff-dir>
 //   medieval-weapons-dir  ".../Medieval Weapons Pack - Sept 2018"
 //   megakit-dir           ".../Fantasy Props MegaKit[Standard]" (has Exports/ and Textures/)
+//   staff-dir             unzipped magicstaffset.zip (staff01.fbx, StaffGem*D.png)
 //
 // Every item becomes one top-level node named after its item key, in the
 // game's held-item frame: the fist/grip at the origin, blade or handle along
 // +Y, single-headed weapons' heads and blade edges toward +X, shield faces
 // toward +Z. Sizes are world units.
 import fs from 'node:fs';import path from 'node:path';import os from 'node:os';import {execFileSync} from 'node:child_process';
-import * as T from 'three';import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+import * as T from 'three';import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
 import {Document,NodeIO} from '@gltf-transform/core';import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
 import {dedup,prune,quantize} from '@gltf-transform/functions';
 
-const [medievalDir,megakitDir]=process.argv.slice(2);
-if(!medievalDir||!megakitDir){console.error('usage: node scripts/build-weapons.mjs <medieval-weapons-dir> <megakit-dir>');process.exit(1)}
+const [medievalDir,megakitDir,staffDir]=process.argv.slice(2);
+if(!medievalDir||!megakitDir||!staffDir){console.error('usage: node scripts/build-weapons.mjs <medieval-weapons-dir> <megakit-dir> <staff-dir>');process.exit(1)}
 const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..'),out=path.join(root,'assets/weapons');
 fs.rmSync(out,{recursive:true,force:true});fs.mkdirSync(path.join(out,'textures'),{recursive:true});
 
@@ -55,6 +58,13 @@ const MEGAKIT={
  bronzeAxe:['Axe_Bronze','shaft',.95,.2],
  pickaxe:['Pickaxe_Bronze','shaft',.95,.2],
  woodenShield:['Shield_Wooden','shield',.95,'center']
+};
+// Magic Staff Set: one staff mesh, gem colour by texture. [texture, length, grip fraction]
+const STAFFS={
+ apprenticeStaff:['StaffGemGreenD',1.75,.42],
+ sapphireStaff:['StaffGemRoyalD',1.8,.42],
+ amethystStaff:['StaffGemVioletD',1.8,.42],
+ emberStaff:['StaffGemRedD',1.85,.42]
 };
 const METAL=/Steel|Gold|Silver|Iron/i,WOOD=/Wood|Brown/i;
 
@@ -130,11 +140,39 @@ for(const [key,[file,kind,length,grip]] of Object.entries(MEGAKIT)){
   if(prim.getIndices())out.setIndices(accessor('SCALAR',new Uint32Array(prim.getIndices().getArray())));mesh.addPrimitive(out)}
  node.setExtras({kind,source:'Fantasy Props MegaKit/'+file});
 }
+// 3) Magic Staff Set: FBX geometry (textures are applied per gem colour).
+{
+ T.TextureLoader.prototype.load=function(url){const t=new T.Texture();t.name=url;return t};
+ const buf=fs.readFileSync(path.join(staffDir,'staff01.fbx'));const fbx=new FBXLoader().parse(buf.buffer.slice(buf.byteOffset,buf.byteOffset+buf.byteLength),'');fbx.updateMatrixWorld(true);
+ let src=null;fbx.traverse(o=>{if(o.isMesh&&!src)src=o});const g=src.geometry.clone().applyMatrix4(src.matrixWorld),pos=g.attributes.position,count=pos.count;
+ const pts=[];for(let i=0;i<count;i++)pts.push(new T.Vector3().fromBufferAttribute(pos,i));
+ const box=new T.Box3().setFromPoints(pts),len=box.max.y-box.min.y;
+ // The crook and gem end is the wider one: put it at +Y.
+ const spread=(lo,hi)=>{const b=new T.Box3();for(const v of pts)if(v.y>=lo&&v.y<=hi)b.expandByPoint(v);const s=b.getSize(new T.Vector3());return s.x+s.z};
+ const flip=spread(box.min.y,box.min.y+.15*len)>spread(box.max.y-.15*len,box.max.y);
+ for(const [key,[tex,length,grip]] of Object.entries(STAFFS)){
+  const s=length/len,M=new T.Matrix4();if(flip)M.makeRotationZ(Math.PI);
+  const up=pts.map(v=>v.clone().applyMatrix4(M)),b=new T.Box3().setFromPoints(up),gy=b.min.y+grip*(b.max.y-b.min.y);
+  // Centre the shaft (not the crook) in the fist.
+  const band=up.filter(v=>Math.abs(v.y-gy)<.05*len),c=band.reduce((a,v)=>a.add(v),new T.Vector3()).divideScalar(Math.max(1,band.length));
+  M.premultiply(new T.Matrix4().makeTranslation(-c.x,-gy,-c.z)).premultiply(new T.Matrix4().makeScale(s,s,s));
+  const normalM=new T.Matrix3().getNormalMatrix(M),P=new Float32Array(count*3),N=new Float32Array(count*3),UV=new Float32Array(count*2),v=new T.Vector3();
+  for(let i=0;i<count;i++){v.fromBufferAttribute(pos,i).applyMatrix4(M).toArray(P,i*3);v.fromBufferAttribute(g.attributes.normal,i).applyMatrix3(normalM).normalize().toArray(N,i*3);UV[i*2]=g.attributes.uv.getX(i);UV[i*2+1]=1-g.attributes.uv.getY(i)}
+  if(M.determinant()<0)for(let i=0;i<count;i+=3)for(const [arr,n] of [[P,3],[N,3],[UV,2]])for(let k=0;k<n;k++){const a=arr[(i+1)*n+k];arr[(i+1)*n+k]=arr[(i+2)*n+k];arr[(i+2)*n+k]=a}
+  const tb=new T.Box3();for(let i=0;i<count;i++)tb.expandByPoint(v.fromArray(P,i*3));
+  const file='textures/'+tex+'.webp';textureJobs.push([path.join(staffDir,tex+'.png'),path.join(out,file),[128,512]]);
+  const mat=doc.createMaterial(key).setBaseColorFactor([1,1,1,1]).setMetallicFactor(0).setRoughnessFactor(.7).setExtras({textures:{map:file}});
+  const node=doc.createNode(key);scene.addChild(node);const mesh=doc.createMesh(key);node.setMesh(mesh);
+  mesh.addPrimitive(doc.createPrimitive().setAttribute('POSITION',accessor('VEC3',P)).setAttribute('NORMAL',accessor('VEC3',N)).setAttribute('TEXCOORD_0',accessor('VEC2',UV)).setMaterial(mat));
+  // Spells leave from the gem at the top of the staff.
+  node.setExtras({kind:'staff',source:'Magic Staff Set/'+tex,tip:[0,tb.max.y-.06,0]});
+ }
+}
 // Trim sheets → small WebP (they are shared by every MegaKit item).
-const py="import sys,json\nfrom PIL import Image\nfor src,dst,size in json.load(sys.stdin):\n im=Image.open(src).convert('RGB');im=im.resize((size,size),Image.LANCZOS);im.save(dst,'WEBP',quality=84,method=6)\n";
+const py="import sys,json\nfrom PIL import Image\nfor src,dst,size in json.load(sys.stdin):\n im=Image.open(src).convert('RGB');im=im.resize(tuple(size) if isinstance(size,list) else (size,size),Image.LANCZOS);im.save(dst,'WEBP',quality=84,method=6)\n";
 execFileSync('python3',['-I','-c',py],{input:JSON.stringify(textureJobs),stdio:['pipe','inherit','inherit']});
 
-await doc.transform(dedup(),prune(),quantize({pattern:/^(POSITION|NORMAL)$/,quantizePosition:14,quantizeNormal:10}));
+await doc.transform(dedup(),prune({keepAttributes:true}),quantize({pattern:/^(POSITION|NORMAL)$/,quantizePosition:14,quantizeNormal:10}));
 const file=path.join(out,'weapons.glb');await io.write(file,doc);fs.rmSync(tmp,{recursive:true,force:true});
-fs.writeFileSync(path.join(out,'LICENSE.md'),'# Weapon assets\n\nAll models and textures in this folder are by Quaternius (https://quaternius.com), released under CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/).\n\n- Medieval Weapons Pack (September 2018)\n- Fantasy Props MegaKit (Standard)\n\nGenerated by scripts/build-weapons.mjs.\n');
+fs.writeFileSync(path.join(out,'LICENSE.md'),'# Weapon assets\n\nAll models and textures in this folder are released under CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/).\n\n- Medieval Weapons Pack (September 2018), by Quaternius (https://quaternius.com)\n- Fantasy Props MegaKit (Standard), by Quaternius (https://quaternius.com)\n- Magic Staff Set, by AnyRPG (https://opengameart.org/content/magic-staff-set)\n\nGenerated by scripts/build-weapons.mjs.\n');
 console.log('weapons.glb',(fs.statSync(file).size/1024).toFixed(0)+' KB; textures',fs.readdirSync(path.join(out,'textures')).map(f=>f+' '+(fs.statSync(path.join(out,'textures',f)).size/1024).toFixed(0)+'KB').join(', '));

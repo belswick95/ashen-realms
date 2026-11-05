@@ -7,7 +7,7 @@ const server=http.createServer((req,res)=>{try{const name=new URL(req.url,'http:
 const page=`<!doctype html><body style="margin:0;background:#223"><div id="health-hud"></div><canvas id="c" width="1600" height="900"></canvas>
 <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
 <script type="module">
-import * as T from "three";const V="?v=release-20261105-weapons56";
+import * as T from "three";const V="?v=release-20261105-staffs57";
 const {preloadCharacters,ensurePart}=await import("/character-assets.js"+V);await preloadCharacters(T);
 const {buildCharacterDisplay}=await import("/character-display.js"+V);const {outfitItems}=await import("/outfits.js"+V);const {createHorseMount}=await import("/horse-mount.js"+V);const {createPlayerHUD}=await import("/player-hud.js"+V);
 const renderer=new T.WebGLRenderer({canvas:document.querySelector("#c"),antialias:true,preserveDrawingBuffer:true});renderer.outputColorSpace=T.SRGBColorSpace;
@@ -18,7 +18,7 @@ const knight=v=>set("knight",v,["Armet","Breastplate","Gauntlets","Greaves","Sab
 const weaponMode=location.hash==="#weapons";const {weaponCatalog}=await import("/weapons.js"+V);const {shieldCatalog}=await import("/shields.js"+V);const {weaponStore}=await import("/weapon-assets.js"+V);
 const cases=weaponMode?[
  ...["longsword","axe","battleaxe","pickaxe","spear","warhammer","scythe","claymore"].flatMap(w=>[[w,{},{weapon:w,shield:"kite"},{},30],[w+" swing",{},{weapon:w,shield:"kite"},i=>i<4?{attack:.6}:{attack:Math.max(0,.6-i/60)},20]]),
- ["bow",{},{weapon:"woodenBow"},{},30],["bow walk",{},{weapon:"longbow"},{distance:3.2/60,speed:3.2,locomotion:"walk"},40],["bow draw",{},{weapon:"goldenBow"},i=>i<2?{attack:1}:{attack:Math.max(0,1-i/60)},38],["bow aim start",{sex:"female"},{weapon:"bloodthornBow"},i=>i<2?{attack:1}:{attack:Math.max(0,1-i/60)},14],["block round",{},{weapon:"spear",shield:"celticShield"},{block:.5},25]]:[
+ ["bow",{},{weapon:"woodenBow"},{},30],["bow walk",{},{weapon:"longbow"},{distance:3.2/60,speed:3.2,locomotion:"walk"},40],["bow draw",{},{weapon:"goldenBow"},i=>i<2?{attack:1}:{attack:Math.max(0,1-i/60)},38],["bow aim start",{sex:"female"},{weapon:"bloodthornBow"},i=>i<2?{attack:1}:{attack:Math.max(0,1-i/60)},14],["block round",{},{weapon:"spear",shield:"celticShield"},{block:.5},25],["staff",{sex:"female",hairColor:"#c0b5a3"},{weapon:"amethystStaff",armor:set("wizard",2,["RobeTop","Bracers","RobeBottom","Boots"])},{},30],["staff cast",{},{weapon:"emberStaff",armor:set("wizard",3,["RobeTop","Bracers","RobeBottom","Boots"])},i=>i<2?{attack:.55}:{attack:Math.max(0,.55-i/60)},14],["staff walk",{},{weapon:"sapphireStaff",armor:set("wizard",1,["RobeTop","Bracers","RobeBottom","Boots"])},{distance:3.2/60,speed:3.2,locomotion:"walk"},40]]:[
  ["idle armed",{},{weapon:"longsword",shield:"kite"},{},30],
  ["walk",{},{weapon:"longsword",shield:"kite"},{distance:3.2/60,speed:3.2,locomotion:"walk"},40],
  ["sprint",{sex:"female",hair:"Buns"},{},{distance:12/60,speed:12,locomotion:"run"},40],
@@ -39,7 +39,8 @@ cases.forEach(([label,look,loadout,motion,frames],i)=>{const holder=new T.Group(
  const horse=label==="mounted"?createHorseMount(T,holder):null;
  for(let f=0;f<frames;f++){const m=typeof motion==="function"?motion(f):motion;d.update(1/60,m);d.visual.position.y=0;horse?.update({active:true,distance:.05,rig:d.rig,visual:d.visual})}
  if(i===0)hudModel=parent;labels.push(label)});
-if(weaponMode){const keys=[...Object.keys(weaponStore.items)];keys.forEach((k,i)=>{const m=weaponStore.items[k].clone(true);const g=new T.Group();g.add(m);g.position.set((i-(keys.length-1)/2)*.95,1.0,9);g.rotation.y=0;scene.add(g);const ax=new T.AxesHelper(.25);g.add(ax)})}
+if(weaponMode){const {createArrows}=await import('/arrows.js'+V);const bolts=createArrows(T,scene);for(const [i,c] of [[0,0xff6a3d],[1,0x5b7dff],[2,0xc45bff]].entries?[[0,0xff6a3d],[1,0x5b7dff],[2,0xc45bff]]:[]){bolts.fire(new T.Vector3(-6+i*.0,1.8,8-i*1.5),new T.Vector3(6,1.8,8-i*1.5),{kind:'bolt',color:c,height:0});}bolts.update(.2);
+const keys=[...Object.keys(weaponStore.items)];keys.forEach((k,i)=>{const m=weaponStore.items[k].clone(true);const g=new T.Group();g.add(m);g.position.set((i-(keys.length-1)/2)*.95,1.0,9);g.rotation.y=0;scene.add(g);const ax=new T.AxesHelper(.25);g.add(ax)})}
 const camera=new T.PerspectiveCamera(30,16/9,.1,200);if(weaponMode){camera.position.set(0,7,40);camera.lookAt(0,1.2,2)}else{camera.position.set(0,9,34);camera.lookAt(0,1.2,0)}renderer.setSize(1600,900,false);renderer.render(scene,camera);
 // HUD portrait of the first character.
 window.view=(px,py,pz,tx,ty,tz,fov=30)=>{camera.position.set(px,py,pz);camera.fov=fov;camera.updateProjectionMatrix();camera.lookAt(tx,ty,tz);renderer.render(scene,camera)};window.mainLoop=setInterval(()=>renderer.render(scene,camera),200);

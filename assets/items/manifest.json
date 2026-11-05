@@ -4842,24 +4842,6 @@
     "sha256": "3bf8a117c72d7e9f442455c7d9ceaf74dc8d32695789568360b50b8b92ee56a9"
   },
   {
-    "key": "item-weapon_pickaxe",
-    "id": "weapon:pickaxe",
-    "name": "Bronze pickaxe",
-    "model": "weapon",
-    "bounds": [
-      0.88216593500323,
-      1.0911793874398283,
-      0.10762047046569756
-    ],
-    "pixelBounds": [
-      49,
-      26,
-      108,
-      113
-    ],
-    "sha256": "bf479022f9e145f05334307ebbc32f2de4c68d1a3f18c7162bf23b2d4bd2a42f"
-  },
-  {
     "key": "item-weapon_axe",
     "id": "weapon:axe",
     "name": "Iron axe",
@@ -4876,42 +4858,6 @@
       115
     ],
     "sha256": "d630311069fe7802d294152e6f2d32922dfab1f5ed80e542ba4d651e1b5d15d2"
-  },
-  {
-    "key": "item-weapon_bronzeSword",
-    "id": "weapon:bronzeSword",
-    "name": "Bronze sword",
-    "model": "weapon",
-    "bounds": [
-      0.5780656202236738,
-      1.1800516446123626,
-      0.06640217111101737
-    ],
-    "pixelBounds": [
-      53,
-      25,
-      87,
-      120
-    ],
-    "sha256": "bd31a1e2a8b375ab6cd1bf26bb5857ffee3860bf9bee1fccb5657537f7e6638b"
-  },
-  {
-    "key": "item-weapon_bronzeAxe",
-    "id": "weapon:bronzeAxe",
-    "name": "Bronze axe",
-    "model": "weapon",
-    "bounds": [
-      0.587676813019355,
-      1.0064977665294084,
-      0.05288247255642035
-    ],
-    "pixelBounds": [
-      62,
-      18,
-      101,
-      122
-    ],
-    "sha256": "c181b0d534573383649e342196eda44bd16ad1a5f31b4b26b8e44f92836a8c94"
   },
   {
     "key": "item-weapon_waraxe",
@@ -5112,24 +5058,6 @@
     "sha256": "cf94f01f9880ef77404d30761bcf9e84387c0df0ea24c27059f9bddb8bda62e0"
   },
   {
-    "key": "item-shield_woodenShield",
-    "id": "shield:woodenShield",
-    "name": "Wooden buckler",
-    "model": "shield",
-    "bounds": [
-      0.9403744503111261,
-      0.949999988079071,
-      0.27360301179547086
-    ],
-    "pixelBounds": [
-      34,
-      20,
-      121,
-      116
-    ],
-    "sha256": "ab9b83d95cac1ac47c60b81cf83523243ea1cb0f8f2e28d67227514aa6e8fd12"
-  },
-  {
     "key": "item-shield_roundShield",
     "id": "shield:roundShield",
     "name": "Wooden round shield",
@@ -5218,5 +5146,149 @@
       124
     ],
     "sha256": "620c353702a3463c8e832e19711d309d60e2ee8b3e02d718ca627edd8f359fc9"
+  },
+  {
+    "key": "item-weapon_pickaxe",
+    "id": "weapon:pickaxe",
+    "name": "Bronze pickaxe",
+    "model": "weapon",
+    "bounds": [
+      0.88216593500323,
+      1.0911793874398283,
+      0.10762047046569756
+    ],
+    "pixelBounds": [
+      49,
+      26,
+      108,
+      113
+    ],
+    "sha256": "f5ab5d1c67a9d2c6656261e7db493dfab644430c89da1fac1c08a1b44a4bcf80"
+  },
+  {
+    "key": "item-weapon_bronzeSword",
+    "id": "weapon:bronzeSword",
+    "name": "Bronze sword",
+    "model": "weapon",
+    "bounds": [
+      0.5780656202236738,
+      1.1800516446123626,
+      0.06640217111101737
+    ],
+    "pixelBounds": [
+      53,
+      25,
+      87,
+      120
+    ],
+    "sha256": "44c23b5b4883e8e92f4a7039b068b97fa633546f519bc7f8cfe8d9e67c260d90"
+  },
+  {
+    "key": "item-weapon_bronzeAxe",
+    "id": "weapon:bronzeAxe",
+    "name": "Bronze axe",
+    "model": "weapon",
+    "bounds": [
+      0.587676813019355,
+      1.0064977665294084,
+      0.05288247255642035
+    ],
+    "pixelBounds": [
+      62,
+      18,
+      101,
+      122
+    ],
+    "sha256": "9d759e045485514fe3257285b18c48ee8137179cbf7238fd70a807b4abd079c2"
+  },
+  {
+    "key": "item-weapon_apprenticeStaff",
+    "id": "weapon:apprenticeStaff",
+    "name": "Apprentice staff",
+    "model": "weapon",
+    "bounds": [
+      0.5961321863532112,
+      1.7141996971150164,
+      0.17239906002990812
+    ],
+    "pixelBounds": [
+      51,
+      21,
+      90,
+      124
+    ],
+    "sha256": "33cece3238d0cff98e7c0fee8640b9dc685cd69eb6d7c6cfa523b7723bee26bf"
+  },
+  {
+    "key": "item-weapon_sapphireStaff",
+    "id": "weapon:sapphireStaff",
+    "name": "Sapphire staff",
+    "model": "weapon",
+    "bounds": [
+      0.6131645385955597,
+      1.7631768429953614,
+      0.1773247486337095
+    ],
+    "pixelBounds": [
+      51,
+      21,
+      90,
+      124
+    ],
+    "sha256": "22b6d4aad4e99b04a105feb9ecea3765ea42a2f21f5abf44301868f42c921780"
+  },
+  {
+    "key": "item-weapon_amethystStaff",
+    "id": "weapon:amethystStaff",
+    "name": "Amethyst staff",
+    "model": "weapon",
+    "bounds": [
+      0.6131645385955597,
+      1.7631768429953614,
+      0.1773247486337095
+    ],
+    "pixelBounds": [
+      51,
+      21,
+      90,
+      124
+    ],
+    "sha256": "b942561b083fa715fc7a1ad033c42c466c1548daab35c48731aded352cb2f21f"
+  },
+  {
+    "key": "item-weapon_emberStaff",
+    "id": "weapon:emberStaff",
+    "name": "Ember staff",
+    "model": "weapon",
+    "bounds": [
+      0.630196870533767,
+      1.8121539304904126,
+      0.18225043136563385
+    ],
+    "pixelBounds": [
+      51,
+      21,
+      90,
+      124
+    ],
+    "sha256": "79da9b26bc499116d64c4aeac441c2995168b4f771e0dcf7e47df5a90e27b055"
+  },
+  {
+    "key": "item-shield_woodenShield",
+    "id": "shield:woodenShield",
+    "name": "Wooden buckler",
+    "model": "shield",
+    "bounds": [
+      0.9403744503111261,
+      0.949999988079071,
+      0.27360301179547086
+    ],
+    "pixelBounds": [
+      34,
+      20,
+      121,
+      116
+    ],
+    "sha256": "6c5d10b48ad1d8c618040ab7aefdcf80f053f677c006ae113eb5e0e5dbc4d062"
   }
 ]

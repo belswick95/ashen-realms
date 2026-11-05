@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
-import {weaponCatalog,isRanged,isTwoHanded,makeWeapon} from '../weapons.js';import {shieldCatalog,makeShield} from '../shields.js';
+import {weaponCatalog,isRanged,isTwoHanded,isMagic,isBow,makeWeapon} from '../weapons.js';import {npcAppearance} from '../npc-looks.js';import {shieldCatalog,makeShield} from '../shields.js';
 import {buildHumanoid} from '../humanoid.js';import {createHumanoidAnimator} from '../animation.js';import {buildCharacterDisplay,publicCharacter} from '../character-display.js';
 import {createArrows} from '../arrows.js';import {weaponStore} from '../weapon-assets.js';
 
@@ -7,7 +7,7 @@ test('every weapon and shield has a model, and bows are two-handed ranged weapon
  for(const key of [...Object.keys(weaponCatalog),...Object.keys(shieldCatalog),'arrow'])assert.ok(weaponStore.items[key],key);
  for(const key of Object.keys(weaponCatalog)){const g=makeWeapon(T,key);let meshes=0;g.traverse(o=>{if(o.isMesh)meshes++});assert.ok(meshes>0,key)}
  for(const key of Object.keys(shieldCatalog)){const g=makeShield(T,key);let meshes=0;g.traverse(o=>{if(o.isMesh)meshes++});assert.ok(meshes>0,key)}
- const bows=Object.keys(weaponCatalog).filter(isRanged);assert.deepEqual(bows,['woodenBow','longbow','goldenBow','bloodthornBow']);
+ const bows=Object.keys(weaponCatalog).filter(isBow);assert.deepEqual(bows,['woodenBow','longbow','goldenBow','bloodthornBow']);
  for(const bow of bows){assert.ok(isTwoHanded(bow));assert.ok(weaponCatalog[bow].reach>=12)}
  for(const key of ['twohand','claymore','warhammer','scythe'])assert.ok(isTwoHanded(key),key);
  assert.equal(isTwoHanded('longsword'),false);assert.equal(isRanged(undefined),false);
@@ -38,4 +38,29 @@ test('arrows fly tip-first from the bow to the target, land on time, then disapp
  arrows.update(.2);assert.ok(arrow.position.distanceTo(new T.Vector3(0,1.5,12))<1e-6,'lands on the chest');
  arrows.update(.7);assert.equal(arrows.count,0);assert.equal(arrow.parent,null);
  assert.equal(arrows.fire(new T.Vector3(),new T.Vector3()),null,'no zero-length shots');
+});
+
+test('staffs are two-handed magic: held upright in the right hand, with a gem tip and a gem colour',()=>{
+ const staffs=Object.keys(weaponCatalog).filter(isMagic);assert.deepEqual(staffs,['apprenticeStaff','sapphireStaff','amethystStaff','emberStaff']);
+ for(const key of staffs){const w=weaponCatalog[key];assert.ok(isRanged(key)&&isTwoHanded(key)&&!isBow(key),key);assert.ok(w.reach>=10&&Number.isInteger(w.color),key);
+  const g=makeWeapon(T,key),tip=g.getObjectByName('tip');assert.ok(tip&&tip.position.y>.9,key+' tip near the gem')}
+ const d=buildCharacterDisplay(T,new T.Group(),{},{weapon:'sapphireStaff',shield:'kite'});let pose;for(let i=0;i<30;i++)pose=d.update(1/60,{});
+ assert.equal(d.data.loadout.shield,null);assert.equal(d.rig.rightHand.children.filter(o=>o.userData.weaponMount).length,1);assert.equal(pose.gait,'Idle_Loop');
+ d.visual.updateMatrixWorld(true);const staff=d.rig.rightHand.children.find(o=>o.userData.weaponMount);assert.ok(new T.Vector3(0,1,0).transformDirection(staff.matrixWorld).y>.95,'upright');d.dispose();
+});
+test('a staff attack casts with the spell clip and releases one bolt from the casting hand',()=>{
+ const root=new T.Group(),rig=buildHumanoid(T,root),a=createHumanoidAnimator(rig);let releases=0,clip=null,attack=.55;
+ for(let i=0;i<60;i++){const pose=a.update(1/60,{armed:true,ranged:true,magic:true,attack});attack=Math.max(0,attack-1/60);if(pose.released){releases++;clip=pose.clip;root.updateMatrixWorld(true);assert.ok(rig.leftHand.getWorldPosition(new T.Vector3()).z>.6,'casting hand forward')}assert.equal(pose.aim,0,'no bow draw')}
+ assert.equal(releases,1);assert.equal(clip,'Spell_Simple_Shoot');
+});
+test('spell bolts fly straight and vanish on impact, disposing their glow',()=>{
+ const scene=new T.Scene(),arrows=createArrows(T,scene);const bolt=arrows.fire(new T.Vector3(0,1.6,0),new T.Vector3(0,1.6,9),{kind:'bolt',color:0xc45bff});
+ assert.ok(bolt.userData.spellBolt);let disposed=0;bolt.traverse(o=>{if(o.isMesh)o.material.addEventListener('dispose',()=>disposed++)});
+ arrows.update(.15);assert.ok(Math.abs(bolt.position.y-1.6)<1e-9,'no arc');assert.ok(new T.Vector3(0,1,0).applyQuaternion(bolt.quaternion).z>.99);
+ arrows.update(.3);arrows.update(.01);assert.equal(arrows.count,0);assert.equal(bolt.parent,null);assert.ok(disposed>0);
+});
+test('wizard NPCs carry the staff matching their robe',()=>{
+ const seen=new Set();for(let i=0;i<6;i++){const d=npcAppearance({role:'Court wizard'},i);assert.ok(isMagic(d.staff));const robe=Object.keys(d.equipped)[0];seen.add(d.staff+':'+robe.slice(-1))}
+ for(const pair of seen)assert.ok(['sapphireStaff:1','amethystStaff:2','emberStaff:3'].includes(pair),pair);
+ assert.equal(npcAppearance({role:'Baker'},0).staff,null);
 });

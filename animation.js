@@ -1,4 +1,4 @@
-import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261105-weapons56';
+import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261105-staffs57';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip, cross-fades, and scales playback to the real travel
@@ -18,18 +18,18 @@ const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_S
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
  const actions=new Map(),weights=new Map();let current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0;
- const arms=createArmLayers(rig);let aim=0,shot=null;
+ const arms=createArmLayers(rig);let aim=0,shot=null,cast=null;
  const loops={};
  function clipFor(name){const [clip,loop]=name.split('@');if(!loop)return clips[clip];if(!clips[clip])return null;return loops[name]||(loops[name]=Object.assign(clips[clip].clone(),{name}))}
  function action(name){if(!clipFor(name))name='Idle_Loop';if(!actions.has(name)){const a=mixer.clipAction(clipFor(name));a.enabled=true;a.setEffectiveWeight(0);if(ONE_SHOT.has(name)){a.setLoop(2200,1);a.clampWhenFinished=true}a.play();actions.set(name,a);weights.set(name,0)}return actions.get(name)}
  function startOneShot(name,duration){const a=action(name);a.reset();a.play();const length=clips[name]?.duration||1;a.timeScale=duration?length/duration:1;oneShot=name;oneShotLeft=duration||length;}
  action('Idle_Loop').setEffectiveWeight(1);weights.set('Idle_Loop',1);
- return {mixer,update(dt,{distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,airborne:air=false,activity=null,dead=false,ranged=false}={}){
+ return {mixer,update(dt,{distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,airborne:air=false,activity=null,dead=false,ranged=false,magic=false}={}){
   if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);time+=dt;
   speed=Number.isFinite(speed)?Math.max(0,speed):0;distance=Number.isFinite(distance)?Math.max(0,distance):0;
   const moving=distance>1e-5&&speed>.15&&!mounted;
   // Event-driven one-shots: a new attack, a fresh hit, take-off and landing.
-  if(attack>lastAttack+.05||attack>0&&lastAttack<=0){const magic=style==='magic'||weapon==='staff';if(ranged)shot={t:0,duration:Math.max(.6,attack)};else startOneShot(magic?'Spell_Simple_Shoot':armed?'Sword_Attack':(punch++%2?'Punch_Cross':'Punch_Jab'),Math.max(.35,attack))}
+  if(attack>lastAttack+.05||attack>0&&lastAttack<=0){const spell=magic||style==='magic';if(spell){startOneShot('Spell_Simple_Shoot',Math.max(.45,attack));cast={t:0,at:Math.max(.45,attack)*.45}}else if(ranged)shot={t:0,duration:Math.max(.6,attack)};else startOneShot(spell?'Spell_Simple_Shoot':armed?'Sword_Attack':(punch++%2?'Punch_Cross':'Punch_Jab'),Math.max(.35,attack))}
   lastAttack=attack;
   const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>.5&&lastHit<=.5&&!oneShot)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
   if(air&&!airborne)startOneShot('Jump_Start',.3);else if(!air&&airborne)startOneShot('Jump_Land',.35);airborne=!!air;
@@ -51,7 +51,10 @@ export function createHumanoidAnimator(rig){
   // Blocking raises the shield across the chest on top of whatever clip plays.
   guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
   // Bow shot: raise and draw over 70% of the attack, release, then lower.
-  let draw=0,released=false;if(shot){shot.t+=dt;const u=shot.t/shot.duration;draw=u<.7?Math.min(1,u/.7)**.8:0;if(u>=.7&&!shot.released){shot.released=released=true}if(u>=1.25)shot=null}
+  let draw=0,released=false;
+  // Spell: the bolt leaves the casting (left) hand partway through the cast.
+  if(cast){cast.t+=dt;if(cast.t>=cast.at){released=true;cast=null}}
+  if(shot){shot.t+=dt;const u=shot.t/shot.duration;draw=u<.7?Math.min(1,u/.7)**.8:0;if(u>=.7&&!shot.released){shot.released=true;released=true}if(u>=1.25)shot=null}
   aim+=((shot&&!mounted&&!dead?1:0)-aim)*Math.min(1,k*1.6);if(aim<.001)aim=0;if(aim)arms.aim(aim,draw);
   const run=base==='Sprint_Loop'?1:base==='Jog_Fwd_Loop'?.65:0;
   return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released};
