@@ -18,3 +18,8 @@ $a$jsonb_object_agg(x,greatest(490050,coalesce((skills->>x)$a$,$a$jsonb_object_a
 $a$jsonb_object_agg(x,greatest(490050,coalesce((stats->>x)$a$,$a$jsonb_object_agg(x,greatest(480200,coalesce((stats->>x)$a$]);
 
 update public.player_saves set level=eldervale_private.combat_level(skills) where level is distinct from eldervale_private.combat_level(skills);
+
+-- Staff "Set level" path (combat and older skills) also caps at 99.
+select eldervale_private.patch_function('eldervale_private.admin_staff_base(text,jsonb)'::regprocedure,array[
+$a$or n not between 1 and 100 then raise exception 'Use a valid skill XP key and level 1–100'$a$,
+$a$or n not between 1 and 99 then raise exception 'Use a valid skill XP key and level 1–99'$a$]);
