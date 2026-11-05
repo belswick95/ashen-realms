@@ -225,13 +225,13 @@ html body.fantasy-hud.phone-layout #map-widget #map-toggle .map-toggle-icon{widt
    Art: assets/cursors (built by scripts/build-cursors.py). Hotspots: arrow tip 1 1, fingertip 9 1, hourglass centre 15 15. */
 @media (hover:hover) and (pointer:fine){
 :root{
- --cursor-arrow:url(assets/cursors/arrow.png?v=release-20261105-qa68) 1 1,auto;
- --cursor-hand:url(assets/cursors/hand.png?v=release-20261105-qa68) 9 1,pointer;
- --cursor-wait:url(assets/cursors/wait.png?v=release-20261105-qa68) 15 15,progress;}
+ --cursor-arrow:url(assets/cursors/arrow.png?v=release-20261105-visuals69) 1 1,auto;
+ --cursor-hand:url(assets/cursors/hand.png?v=release-20261105-visuals69) 9 1,pointer;
+ --cursor-wait:url(assets/cursors/wait.png?v=release-20261105-visuals69) 15 15,progress;}
 @supports (cursor:-webkit-image-set(url(assets/cursors/arrow.png) 1x) 1 1,auto){:root{
- --cursor-arrow:-webkit-image-set(url(assets/cursors/arrow.png?v=release-20261105-qa68) 1x,url(assets/cursors/arrow@2x.png?v=release-20261105-qa68) 2x) 1 1,auto;
- --cursor-hand:-webkit-image-set(url(assets/cursors/hand.png?v=release-20261105-qa68) 1x,url(assets/cursors/hand@2x.png?v=release-20261105-qa68) 2x) 9 1,pointer;
- --cursor-wait:-webkit-image-set(url(assets/cursors/wait.png?v=release-20261105-qa68) 1x,url(assets/cursors/wait@2x.png?v=release-20261105-qa68) 2x) 15 15,progress}}
+ --cursor-arrow:-webkit-image-set(url(assets/cursors/arrow.png?v=release-20261105-visuals69) 1x,url(assets/cursors/arrow@2x.png?v=release-20261105-visuals69) 2x) 1 1,auto;
+ --cursor-hand:-webkit-image-set(url(assets/cursors/hand.png?v=release-20261105-visuals69) 1x,url(assets/cursors/hand@2x.png?v=release-20261105-visuals69) 2x) 9 1,pointer;
+ --cursor-wait:-webkit-image-set(url(assets/cursors/wait.png?v=release-20261105-visuals69) 1x,url(assets/cursors/wait@2x.png?v=release-20261105-visuals69) 2x) 15 15,progress}}
 html,body,canvas{cursor:var(--cursor-arrow)}
 /* :where() keeps these at low specificity so the loading hourglass below always wins. */
 :where(button,a[href],summary,select,label:has(>input[type=checkbox]),input:is([type=checkbox],[type=radio],[type=range],[type=submit],[type=button],[type=color]),[role=button],[role=tab],[role=menuitem],[data-tab],.slot,.equip-slot,.bank-slot,.skill-tile,#contextmenu>*,.hud-panel-close):not(:disabled){cursor:var(--cursor-hand)!important}
