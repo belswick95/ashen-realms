@@ -87,6 +87,16 @@ test('the Lunge tooltip names all three skills it trains, as the server awards',
  assert.match(game,/Splits combat XP equally between Attack, Strength and Defence\./);
 });
 
+test('right-clicking bare ground still offers Walk here / Cancel',()=>{
+ assert.match(game,/if\(!only\)\{if\(walkHere\)menuAt\(e\.clientX,e\.clientY,\[\['Cancel',\(\)=>\{\}\]\]\);else closeMenu\(\);return\}/);
+});
+
+test('world chat sends the profile username the insert policy checks, not the "Adventurer" display fallback',()=>{
+ const social=readFileSync(new URL('../social.js',import.meta.url),'utf8');
+ assert.match(social,/insert\(\{sender_id:user\.id,sender_name:senderName,body\}\)/);
+ assert.match(social,/from\('player_profiles'\)\.select\('username'\)/);
+});
+
 test('the castle hearth opens the cooking recipes rather than the old cook-and-eat fish shortcut',()=>{
  assert.doesNotMatch(game,/command\(a\.kind==='altar'\?'pray':'cook'/);
  assert.match(game,/a\?\.kind==='hearth'\)professions\.open\(\{station:'cooking',target:e\.target\}\)/);
