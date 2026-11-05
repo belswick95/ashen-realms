@@ -64,3 +64,10 @@ test('wizard NPCs carry the staff matching their robe',()=>{
  for(const pair of seen)assert.ok(['sapphireStaff:1','amethystStaff:2','emberStaff:3'].includes(pair),pair);
  assert.equal(npcAppearance({role:'Baker'},0).staff,null);
 });
+import {goods} from '../economy.js';import {fromPlayerRow,toPlayerRow} from '../player-save.js';import {usesArrows} from '../weapons.js';
+test('bows use the fletched Iron arrows as ammunition; staffs and melee weapons need none',()=>{
+ assert.equal(goods.arrows.name,'Iron arrows');assert.equal(goods.arrows.stackable,true);assert.equal(goods.arrows.field,undefined,'a stack, not an equipment slot');
+ for(const bow of ['woodenBow','longbow','goldenBow','bloodthornBow'])assert.ok(usesArrows(bow),bow);
+ for(const other of ['apprenticeStaff','emberStaff','longsword',null])assert.equal(usesArrows(other),false,String(other));
+ const s=fromPlayerRow({stats:{arrows:37},inventory:{},equipment:{},skills:{}});assert.equal(s.arrows,37);assert.equal(toPlayerRow(s,{id:'t'}).stats.arrows,37);
+});

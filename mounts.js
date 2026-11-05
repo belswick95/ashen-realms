@@ -1,6 +1,6 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261105-staffs57';
-import {castle} from './castle-layout.js?v=release-20261105-staffs57';
-import {isBuilding,localPoint} from './world-surfaces.js?v=release-20261105-staffs57';
+import {meshItemIcon} from './item-appearance.js?v=release-20261105-arrows58';
+import {castle} from './castle-layout.js?v=release-20261105-arrows58';
+import {isBuilding,localPoint} from './world-surfaces.js?v=release-20261105-arrows58';
 export const mountIcon=meshItemIcon('mount:armoredWhiteHorse');
 export const mountCatalog={armoredWhiteHorse:{name:'Armored white horse',icon:mountIcon,multiplier:3,description:'Ride at 3× walking speed without using run energy. Automatically dismounts in buildings, castles, combat and while gathering.'}};
 export const MOUNT_SPEED=19.2;

@@ -1,5 +1,5 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261105-staffs57';
-import {heldItem} from './weapon-assets.js?v=release-20261105-staffs57';
+import {meshItemIcon} from './item-appearance.js?v=release-20261105-arrows58';
+import {heldItem} from './weapon-assets.js?v=release-20261105-arrows58';
 // Weapons are Quaternius CC0 models (assets/weapons, scripts/build-weapons.mjs)
 // in the held-item frame: grip at the origin, blade along +Y, edge toward +X.
 // Keys are what saves, the server catalog and equipment use; the first eight
@@ -35,6 +35,9 @@ export const weaponCatalog={
  emberStaff:W('Ember staff','staff',13,18,2.6,10,300,90,'A staff whose ruby burns like a coal.',{twoHanded:true,ranged:true,magic:true,color:0xff6a3d})
 };
 for(const item of Object.values(weaponCatalog))item.desc+=(item.magic?' Magic range '+item.reach+' · ':item.ranged?' Ranged '+item.reach+' · ':' ')+'Attack +'+item.attack+' · Damage +'+item.damage+' · Attack turn '+item.speed+'s.';
+// Bows use one 'arrows' item (the fletching product, also sold by outfitters)
+// per shot; staffs need none.
+export const usesArrows=key=>isRanged(key)&&!weaponCatalog[key]?.magic;
 export const isTwoHanded=key=>!!weaponCatalog[key]?.twoHanded;
 export const isRanged=key=>!!weaponCatalog[key]?.ranged;
 export const isMagic=key=>!!weaponCatalog[key]?.magic;
