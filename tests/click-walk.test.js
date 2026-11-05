@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
-import {WALK_SPEED,RUN_SPEED,MOUNT_SPEED,TILE,GAME_TICK,travelSpeed,isTap,dragThreshold,mapClickToWorld,flagExpired,createWalkFlag} from '../click-walk.js';
+import {WALK_SPEED,RUN_SPEED,MOUNT_SPEED,TILE,GAME_TICK,travelSpeed,isTap,dragThreshold,mapClickToWorld,flagExpired,createClickRipple,rippleFrame,RIPPLE_COLORS,approachPoint,withinReach,arrivalStatus} from '../click-walk.js';
 import {mapPoint} from '../minimap.js';import {searchRoute} from '../route-search.js';import {CHARACTER_SCALE} from '../character-assets.js';
 import {STRIDE,createHumanoidAnimator} from '../animation.js';import {gaitPlayback} from '../gait-cadence.js';import {buildHumanoid} from '../humanoid.js';import {mountSpeed} from '../mounts.js';
 
@@ -44,7 +44,6 @@ test('the red flag stays until arrival or a finished walk, not during route sear
  assert.equal(flagExpired(flag,{x:0,z:0},{now:500}),false,'grace before the first server reply');
  assert.equal(flagExpired(flag,{x:0,z:0},{now:5000}),true,'walk ended short of the flag');
  assert.equal(flagExpired(flag,{x:9.5,z:.2},{moving:true,now:100}),true,'arrived');
- const f=createWalkFlag(T);assert.equal(f.visible,false);f.place(1,2,3);assert.equal(f.visible,true);assert.deepEqual(f.group.position.toArray(),[1,2,3]);f.update(.1);f.hide();assert.equal(f.visible,false);f.dispose();
 });
 
 const run=gen=>{let n;do{n=gen.next()}while(!n.done);return n.value};
@@ -68,4 +67,29 @@ test('pathfinding is bounded: a hopeless search ends within its node budget quic
  let checks=0;const canTravel=(a,b)=>{checks++;return segmentClear((x,z)=>Math.hypot(x-30,z)>2&&Math.hypot(x-30,z)<3)(a,b)};
  const started=performance.now();const path=run(searchRoute({start:{x:0,z:0},goal:{x:30,z:0},canTravel,maxNodes:3000}));
  assert.ok(performance.now()-started<3000,'took '+(performance.now()-started)+'ms');assert.ok(checks<3000*12,'edge checks '+checks);assert.ok(path.length>0);
+});
+
+test('ground clicks show a ring that grows and fades: yellow to walk, red to interact',()=>{
+ let last=rippleFrame(0);assert.equal(last.done,false);assert.ok(last.opacity>.9);
+ for(let age=.05;age<.55;age+=.05){const f=rippleFrame(age);assert.ok(f.scale>last.scale,'grows');assert.ok(f.opacity<last.opacity,'fades');last=f}
+ assert.equal(rippleFrame(.6).done,true);assert.equal(rippleFrame(.6).opacity,0);
+ const walk=createClickRipple(T,'walk'),hit=createClickRipple(T,'interact');
+ assert.equal(walk.group.children[0].material.color.getHex(),RIPPLE_COLORS.walk);assert.equal(hit.group.children[0].material.color.getHex(),RIPPLE_COLORS.interact);
+ assert.ok((RIPPLE_COLORS.walk>>16)>200&&(RIPPLE_COLORS.walk>>8&255)>180&&(RIPPLE_COLORS.walk&255)<120,'yellow');
+ let alive=0;while(walk.update(1/60))alive++;assert.ok(alive>20&&alive<40,'about half a second');walk.dispose();hit.dispose();
+});
+
+test('click-to-interact walks into reach, acts only after stopping, and a newer click cancels it',()=>{
+ const tree={x:10,z:0},from={x:0,z:0};const stand=approachPoint(from,tree,3);
+ assert.ok(withinReach(stand,tree,3),'the approach spot is within reach');assert.ok(stand.x<tree.x,'on the walker side');
+ assert.deepEqual(approachPoint({x:9,z:0},tree,3),{x:9,z:0},'already close: stay put');
+ const pending={...tree,reach:3,generation:4,startedAt:0};
+ assert.equal(arrivalStatus(pending,from,{routing:true,generation:4,now:100}),'walking');
+ assert.equal(arrivalStatus(pending,from,{generation:4,now:500}),'waiting','the first reply may not show the walk yet');
+ assert.equal(arrivalStatus(pending,{x:5,z:0},{moving:true,generation:4,now:3000}),'walking');
+ assert.equal(arrivalStatus(pending,{x:8,z:0},{moving:false,generation:4,now:3100}),'arrived');
+ assert.equal(arrivalStatus(pending,{x:2,z:0},{moving:false,generation:4,now:3500}),'waiting');
+ assert.equal(arrivalStatus(pending,{x:2,z:0},{moving:false,generation:4,now:5000}),'failed','stopped out of reach');
+ assert.equal(arrivalStatus(pending,{x:8,z:0},{generation:5,now:3100}),'cancelled');
+ assert.equal(arrivalStatus(null,from),'none');
 });

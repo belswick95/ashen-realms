@@ -40,3 +40,25 @@ export function reconcileActivePose(position,target,input,dt,now,options){
  if(options?.canStep&&!options.canStep(position,next))return false;
  position.x=next.x;position.z=next.z;return true;
 }
+
+// Click-to-walk: the server reports where the walker stood at `at` and the
+// waypoints still ahead. Snapshots arrive every ~250 ms, so chasing the raw
+// pose makes the avatar surge and stall (and the gait flicker between walk and
+// idle). Advance the pose along its remaining path to the presentation time so
+// the local walker glides at the real ground speed and stops where the server
+// stops. Returns {x,z,yaw,moving}.
+export function projectPathPose(pose,now,{maxSeconds=1.5}={}){
+ if(!pose)return null;
+ const path=Array.isArray(pose.path)?pose.path:[];
+ const out={x:pose.x,z:pose.z,yaw:pose.yaw,moving:false};
+ if(!path.length||!(pose.speed>0)||!Number.isFinite(pose.at)||!Number.isFinite(now))return out;
+ let budget=pose.speed*Math.max(0,Math.min(maxSeconds,(now-pose.at)/1000));
+ for(const point of path){
+  const gx=Number(point?.[0]??point?.x),gz=Number(point?.[1]??point?.z);if(!Number.isFinite(gx)||!Number.isFinite(gz))break;
+  const dx=gx-out.x,dz=gz-out.z,d=Math.hypot(dx,dz);if(d<1e-6)continue;
+  out.yaw=Math.atan2(dx,dz);out.moving=true;
+  if(budget<d){out.x+=dx/d*budget;out.z+=dz/d*budget;return out}
+  out.x=gx;out.z=gz;budget-=d;
+ }
+ out.moving=false;return out;
+}

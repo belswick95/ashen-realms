@@ -1,6 +1,7 @@
 import {mapDestination} from './minimap.js?v=release-20261105-houses65';
 // RuneScape-style point-and-click travel: travel pace, tap-versus-drag on the
-// world canvas, minimap clicks back to world points, and the red destination flag.
+// world canvas, minimap clicks back to world points, ground ripples and the
+// red destination flag on the minimap.
 
 // Pace. A RuneScape tile is about one character-width (~1 m); players walk one
 // tile per 0.6 s game tick and run two. Eldervale characters are Quaternius
@@ -37,24 +38,46 @@ export function flagExpired(flag,position,{moving=false,pending=false,now=0}={})
  return now-flag.at>FLAG_GRACE;
 }
 
-// A small red pennant on a pole, planted at the destination.
-export function createWalkFlag(T){
- const group=new T.Group(),red=new T.MeshBasicMaterial({color:0xd8261e,side:T.DoubleSide}),pole=new T.MeshBasicMaterial({color:0x3b2a1a});
- const stick=new T.Mesh(new T.CylinderGeometry(.035,.035,1.1,6),pole);stick.position.y=.55;group.add(stick);
- const shape=new T.BufferGeometry();shape.setAttribute('position',new T.Float32BufferAttribute([0,1.08,0,0,.72,0,.55,.9,0],3));shape.computeVertexNormals();
- const cloth=new T.Mesh(shape,red);group.add(cloth);
- const base=new T.Mesh(new T.RingGeometry(.16,.26,20),new T.MeshBasicMaterial({color:0xd8261e,transparent:true,opacity:.8,side:T.DoubleSide,depthWrite:false}));base.rotation.x=-Math.PI/2;base.position.y=.02;group.add(base);
- group.visible=false;group.name='walk-flag';
- let time=0;
- return {group,cloth,
-  place(x,y,z){group.position.set(x,y,z);group.visible=true;time=0},
-  hide(){group.visible=false},
-  get visible(){return group.visible},
-  update(dt){if(!group.visible)return;time+=dt;cloth.rotation.y=Math.sin(time*3)*.25},
-  dispose(){group.removeFromParent();for(const o of [stick,cloth,base]){o.geometry.dispose();o.material.dispose()}}};
+// RuneScape-style click feedback on the ground: a ring that grows and fades
+// (yellow for a walk, red for an interaction). The destination flag is drawn
+// on the minimap only.
+export const RIPPLE_TIME=.55,RIPPLE_COLORS={walk:0xffd83a,interact:0xe0261d};
+export function rippleFrame(age,duration=RIPPLE_TIME){
+ const t=Math.max(0,age)/duration;if(!(t<1))return {scale:1.6,opacity:0,inner:0,done:true};
+ const ease=1-(1-t)**2;return {scale:.35+1.25*ease,opacity:.95*(1-t)**1.2,inner:Math.max(0,.9*(1-t*1.8)),done:false};
+}
+export function createClickRipple(T,kind='walk'){
+ const color=RIPPLE_COLORS[kind]??RIPPLE_COLORS.walk,group=new T.Group();group.name='click-ripple';
+ const ringMaterial=new T.MeshBasicMaterial({color,transparent:true,opacity:.95,side:T.DoubleSide,depthWrite:false}),dotMaterial=ringMaterial.clone();
+ const ring=new T.Mesh(new T.RingGeometry(.42,.52,40),ringMaterial),dot=new T.Mesh(new T.CircleGeometry(.12,20),dotMaterial);
+ for(const m of [ring,dot]){m.rotation.x=-Math.PI/2;m.renderOrder=3;group.add(m)}
+ let age=0;
+ return {group,kind,
+  update(dt){age+=dt;const f=rippleFrame(age);ring.scale.setScalar(f.scale);ringMaterial.opacity=f.opacity;dotMaterial.opacity=f.inner;return !f.done},
+  dispose(){group.removeFromParent();for(const m of [ring,dot]){m.geometry.dispose();m.material.dispose()}}};
 }
 // Draws the same red flag on a 2D map canvas at (x, y).
 export function drawMapFlag(ctx,x,y){
  ctx.save();ctx.strokeStyle='#2b1a0e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y+2);ctx.lineTo(x,y-12);ctx.stroke();
  ctx.fillStyle='#e0261d';ctx.strokeStyle='#4a0d09';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y-12);ctx.lineTo(x+10,y-8.5);ctx.lineTo(x,y-5);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+}
+
+// Click-to-interact: walk into reach of a target, then act on arrival.
+// A spot short of the target on the walker's side, so the route ends beside a
+// tree, rock or stand instead of trying to enter its collision.
+export function approachPoint(from,target,reach){
+ const dx=from.x-target.x,dz=from.z-target.z,d=Math.hypot(dx,dz),stand=Math.max(.8,Math.min(reach*.6,reach-.5));
+ if(d<=stand||d<1e-6)return {x:from.x,z:from.z};
+ return {x:target.x+dx/d*stand,z:target.z+dz/d*stand};
+}
+export function withinReach(position,target,reach){return !!position&&Math.hypot(position.x-target.x,position.z-target.z)<=reach}
+// 'arrived' (act now), 'walking', 'waiting' (stopped, waiting for the server to
+// settle), 'failed' (stopped out of reach) or 'cancelled' (a newer click).
+export const ARRIVAL_SETTLE=1200;
+export function arrivalStatus(pending,position,{moving=false,routing=false,generation,now=0,settle=ARRIVAL_SETTLE}={}){
+ if(!pending)return 'none';
+ if(generation!==undefined&&generation!==pending.generation)return 'cancelled';
+ if(routing||moving){pending.activeAt=now;return 'walking'}
+ if(withinReach(position,pending,pending.reach))return 'arrived';
+ return now-(pending.activeAt??pending.startedAt??now)>settle?'failed':'waiting';
 }
