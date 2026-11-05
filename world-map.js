@@ -64,6 +64,18 @@ export function regionAnchors(regions,weightsAt,extent,step=20,avoid=[],clear=70
  return regions.filter(r=>sums[r.id].n).map(r=>({name:r.name,x:sums[r.id].x/sums[r.id].n,z:sums[r.id].z/sums[r.id].n}));
 }
 
+// The player's death pile: a hand-drawn skull (24×24 inline SVG; the canvas draws the same paths).
+export const SKULL_PATHS={head:'M12 2.2C7.1 2.2 3.6 5.6 3.6 10.1c0 2.6 1.1 4.5 2.9 5.7v2.9c0 .7.5 1.2 1.2 1.2h1.4v-2.1h1.6v2.1h2.6v-2.1h1.6v2.1h1.4c.7 0 1.2-.5 1.2-1.2v-2.9c1.8-1.2 2.9-3.1 2.9-5.7 0-4.5-3.5-7.9-8.4-7.9Z',
+ eyes:'M8.6 8.6c1.3 0 2.3 1 2.3 2.2 0 1.1-.9 1.9-2.1 1.9-1.3 0-2.4-.8-2.4-2 0-1.2.9-2.1 2.2-2.1ZM15.4 8.6c1.3 0 2.2.9 2.2 2.1 0 1.2-1.1 2-2.4 2-1.2 0-2.1-.8-2.1-1.9 0-1.2 1-2.2 2.3-2.2Z',
+ nose:'M12 13.1l1.15 2.2h-2.3Z'};
+export const SKULL_SVG='<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="'+SKULL_PATHS.head+'" fill="#efe6cf" stroke="#1b1408" stroke-width="1.3" stroke-linejoin="round"/><path d="'+SKULL_PATHS.eyes+SKULL_PATHS.nose+'" fill="#1b1408"/></svg>';
+export function drawSkullIcon(ctx,x,y,size=20){
+ const k=size/24,P=globalThis.Path2D;ctx.save();ctx.translate(x-12*k,y-12*k);ctx.scale(k,k);
+ ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(12.8,21.4,7.2,1.9,0,0,Math.PI*2);ctx.fill();
+ if(P){const head=new P(SKULL_PATHS.head);ctx.fillStyle='#efe6cf';ctx.fill(head);ctx.strokeStyle='#1b1408';ctx.lineWidth=1.3;ctx.lineJoin='round';ctx.stroke(head);ctx.fillStyle='#1b1408';ctx.fill(new P(SKULL_PATHS.eyes));ctx.fill(new P(SKULL_PATHS.nose))}
+ else{ctx.fillStyle='#efe6cf';ctx.strokeStyle='#1b1408';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(12,10.5,8,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#1b1408';for(const ex of [8.6,15.4]){ctx.beginPath();ctx.arc(ex,10.7,2,0,Math.PI*2);ctx.fill()}}
+ ctx.restore();
+}
 const SERIF="Georgia,'Palatino Linotype','Book Antiqua',Palatino,'Times New Roman',serif";
 function hash(x,z){const n=Math.sin(x*127.1+z*311.7)*43758.5453;return n-Math.floor(n)}
 function valueNoise(x,z){const xi=Math.floor(x),zi=Math.floor(z),u=x-xi,v=z-zi,s=t=>t*t*(3-2*t);const a=hash(xi,zi),b=hash(xi+1,zi),c=hash(xi,zi+1),d=hash(xi+1,zi+1);return (a+(b-a)*s(u))*(1-s(v))+(c+(d-c)*s(u))*s(v)}
@@ -214,6 +226,10 @@ export function createWorldMap({canvas,source}){
   for(const p of poisNow()){const q=S(p.x,p.z);if(q.x<-10||q.y<-10||q.x>w+10||q.y>h+10||!free(q.x,q.y,icon))continue;placed.push({x:q.x,y:q.y,r:icon});drawPoiIcon(ctx,p.kind,q.x,q.y,icon)}
   for(const pl of placesNow()){const q=S(pl.x,pl.z);if(q.x<-80||q.y<-30||q.x>w+80||q.y>h+30)continue;const big=pl.kind==='castle'||pl.capital;
    const font=(big?'bold ':'bold ')+Math.round(big?17:15)+'px '+SERIF;outlinedText(ctx,pl.name,q.x,q.y-(k>2?24:16),{font,fill:big?'#ffe7a8':'#fff3d4',width:4})}
+  // The player's death pile: skull with the time left beneath it.
+  const pile=source.deathPile?.();if(pile){const q=S(pile.x,pile.z),pulse=(Math.sin(performance.now()/420)+1)/2;
+   ctx.save();ctx.strokeStyle='rgba(224,38,29,'+(.35+.35*pulse)+')';ctx.lineWidth=2;ctx.beginPath();ctx.arc(q.x,q.y,14+pulse*3,0,Math.PI*2);ctx.stroke();ctx.restore();
+   drawSkullIcon(ctx,q.x,q.y-1,22);outlinedText(ctx,pile.label,q.x,q.y+22,{font:'bold 13px '+SERIF,fill:'#ffe3d6',stroke:'#2a0b07',width:4})}
   // Destination flag and the player's arrow.
   const flag=source.flag?.();if(flag){const q=S(flag.x,flag.z);ctx.save();ctx.translate(q.x,q.y);ctx.strokeStyle='#2b1a0e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,2);ctx.lineTo(0,-16);ctx.stroke();ctx.fillStyle='#e0261d';ctx.strokeStyle='#4a0d09';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(12,-12);ctx.lineTo(0,-8);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}
   const me=source.player?.();if(me){const q=S(me.x,me.z),pulse=(Math.sin(performance.now()/260)+1)/2;ctx.save();ctx.translate(q.x,q.y);
@@ -230,7 +246,7 @@ export function createWorldMap({canvas,source}){
 
  function refreshLegend(){legend.replaceChildren();const title=doc.createElement('strong');title.textContent='Legend';legend.append(title);const kinds=new Set(poisNow().map(p=>p.kind));
   for(const [kind,def] of Object.entries(POI_KINDS)){if(!kinds.has(kind))continue;const row=doc.createElement('div'),c=doc.createElement('canvas');c.width=c.height=40;const g=c.getContext('2d');g.scale(2,2);drawPoiIcon(g,kind,10,10,8);row.append(c,def.label);legend.append(row)}
-  for(const [label,draw2] of [['You',g=>{g.translate(10,10);g.fillStyle='#fff';g.strokeStyle='#101a14';g.lineWidth=1.5;g.beginPath();g.moveTo(0,-7);g.lineTo(5,5);g.lineTo(0,2);g.lineTo(-5,5);g.closePath();g.fill();g.stroke()}],['Destination',g=>{g.strokeStyle='#2b1a0e';g.lineWidth=1.5;g.beginPath();g.moveTo(7,17);g.lineTo(7,3);g.stroke();g.fillStyle='#e0261d';g.beginPath();g.moveTo(7,3);g.lineTo(16,6);g.lineTo(7,9);g.closePath();g.fill()}]]){const row=doc.createElement('div'),c=doc.createElement('canvas');c.width=c.height=40;const g=c.getContext('2d');g.scale(2,2);draw2(g);row.append(c,label);legend.append(row)}}
+  for(const [label,draw2] of [['You',g=>{g.translate(10,10);g.fillStyle='#fff';g.strokeStyle='#101a14';g.lineWidth=1.5;g.beginPath();g.moveTo(0,-7);g.lineTo(5,5);g.lineTo(0,2);g.lineTo(-5,5);g.closePath();g.fill();g.stroke()}],['Your death pile',g=>drawSkullIcon(g,10,10,17)],['Destination',g=>{g.strokeStyle='#2b1a0e';g.lineWidth=1.5;g.beginPath();g.moveTo(7,17);g.lineTo(7,3);g.stroke();g.fillStyle='#e0261d';g.beginPath();g.moveTo(7,3);g.lineTo(16,6);g.lineTo(7,9);g.closePath();g.fill()}]]){const row=doc.createElement('div'),c=doc.createElement('canvas');c.width=c.height=40;const g=c.getContext('2d');g.scale(2,2);draw2(g);row.append(c,label);legend.append(row)}}
 
  // Pointer input: drag to pan, two fingers to pinch, tap to select.
  const pointers=new Map();let drag=null,moved=0;
@@ -253,7 +269,8 @@ export function createWorldMap({canvas,source}){
  function select(sx,sy){const at=screenToWorld(view,sx,sy,w,h),r=16/view.scale;
   const hit=pickFeature(poisNow().map(p=>({...p,label:(p.name?p.name+' · ':'')+POI_KINDS[p.kind].label})),at.x,at.z,r)||pickFeature(placesNow().map(p=>({...p,label:p.name})),at.x,at.z,Math.max(r,28/view.scale))||pickFeature(buildingsNow().map(b=>({...b,label:b.name||'Building'})),at.x,at.z,Math.max(r,4));
   const me=source.player?.();const youAre=me&&Math.hypot(me.x-at.x,me.z-at.z)<r;
-  selected=youAre?{label:'You are here'}:hit;info.hidden=!selected;if(selected)info.textContent=selected.label;win.clearTimeout(infoTimer);if(selected)infoTimer=win.setTimeout(()=>{info.hidden=true},4000)}
+  const pile=source.deathPile?.(),onPile=pile&&Math.hypot(pile.x-at.x,pile.z-at.z)<r;
+  selected=onPile?{label:pile.label+' left · your death pile'}:youAre?{label:'You are here'}:hit;info.hidden=!selected;if(selected)info.textContent=selected.label;win.clearTimeout(infoTimer);if(selected)infoTimer=win.setTimeout(()=>{info.hidden=true},4000)}
  function zoomBy(f){const from=target||view;animateTo(zoomAround(from,f,w/2,h/2,w,h,extent,MAX))}
  tool('+','Zoom in',()=>zoomBy(1.6));tool('−','Zoom out',()=>zoomBy(1/1.6));
  tool('◎','Centre on me',()=>{const me=source.player?.();if(me)animateTo({x:me.x,z:me.z,scale:Math.max(view.scale,2.2)})});

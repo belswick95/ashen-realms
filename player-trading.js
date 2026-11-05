@@ -1,4 +1,4 @@
-import {goods,inventoryEntries,quantity,isWorn} from './economy.js?v=release-20261105-polish70';
+import {goods,inventoryEntries,quantity,isWorn} from './economy.js?v=release-20261105-death72';
 import {TRADE_REQUEST_SECONDS,tradeFinished,neverOpened,tradeRoles,requestDeadline,secondsLeft,requestExpired,requestOutcomeMessage} from './trade-requests.js?v=release-20261105-death72';
 const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e};
 // The 10-second request popup: the target accepts or declines, the requester

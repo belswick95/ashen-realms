@@ -1,4 +1,4 @@
-import {goods,quantity} from './economy.js?v=release-20261105-polish70';
+import {goods,quantity} from './economy.js?v=release-20261105-death72';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!=null)n.textContent=text;for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);return n};
 const button=(parent,label,fn)=>{const n=el('button',label,{type:'button'});n.onclick=fn;parent.append(n);return n};
 function input(parent,label,value,type='text',choices=null){const wrap=el('label',label),n=el(choices?'select':type==='textarea'?'textarea':'input');if(choices){for(const [v,t]of choices)n.append(el('option',t,{value:v}));n.value=value??''}else if(type==='checkbox'){n.type=type;n.checked=!!value}else{if(type!=='textarea')n.type=type;n.value=value??''}wrap.append(n);parent.append(wrap);return n}
@@ -27,7 +27,7 @@ export async function questEditor(root,{rpc,action,note}){
  }catch(e){note(e.message,true)}
 }
 export function createQuestJournal(state){
- const css=el('link',null,{rel:'stylesheet',href:'./quests.css?v=release-20261105-polish70'});document.head.append(css);
+ const css=el('link',null,{rel:'stylesheet',href:'./quests.css?v=release-20261105-death72'});document.head.append(css);
  // The journal lives in the bottom-right panel as the Quests tab; the floating dialog is only a fallback for pages without that panel.
  const tab=document.querySelector('#side [data-tab=quests]'),host=document.querySelector('#quests-tab');let panel=null,list=el('div',null,{class:'quest-list'}),status=el('p','',{role:'status'});
  if(host&&tab){host.replaceChildren(el('h3','Quests'),list,status);tab.addEventListener('click',()=>{filter=null;status.textContent='';draw()})}

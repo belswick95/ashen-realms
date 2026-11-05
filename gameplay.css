@@ -225,13 +225,13 @@ html body.fantasy-hud.phone-layout #map-widget #map-toggle .map-toggle-icon{widt
    Art: assets/cursors (built by scripts/build-cursors.py). Hotspots: arrow tip 1 1, fingertip 9 1, hourglass centre 15 15. */
 @media (hover:hover) and (pointer:fine){
 :root{
- --cursor-arrow:url(assets/cursors/arrow.png?v=release-20261105-polish70) 1 1,auto;
- --cursor-hand:url(assets/cursors/hand.png?v=release-20261105-polish70) 9 1,pointer;
- --cursor-wait:url(assets/cursors/wait.png?v=release-20261105-polish70) 15 15,progress;}
+ --cursor-arrow:url(assets/cursors/arrow.png?v=release-20261105-death72) 1 1,auto;
+ --cursor-hand:url(assets/cursors/hand.png?v=release-20261105-death72) 9 1,pointer;
+ --cursor-wait:url(assets/cursors/wait.png?v=release-20261105-death72) 15 15,progress;}
 @supports (cursor:-webkit-image-set(url(assets/cursors/arrow.png) 1x) 1 1,auto){:root{
- --cursor-arrow:-webkit-image-set(url(assets/cursors/arrow.png?v=release-20261105-polish70) 1x,url(assets/cursors/arrow@2x.png?v=release-20261105-polish70) 2x) 1 1,auto;
- --cursor-hand:-webkit-image-set(url(assets/cursors/hand.png?v=release-20261105-polish70) 1x,url(assets/cursors/hand@2x.png?v=release-20261105-polish70) 2x) 9 1,pointer;
- --cursor-wait:-webkit-image-set(url(assets/cursors/wait.png?v=release-20261105-polish70) 1x,url(assets/cursors/wait@2x.png?v=release-20261105-polish70) 2x) 15 15,progress}}
+ --cursor-arrow:-webkit-image-set(url(assets/cursors/arrow.png?v=release-20261105-death72) 1x,url(assets/cursors/arrow@2x.png?v=release-20261105-death72) 2x) 1 1,auto;
+ --cursor-hand:-webkit-image-set(url(assets/cursors/hand.png?v=release-20261105-death72) 1x,url(assets/cursors/hand@2x.png?v=release-20261105-death72) 2x) 9 1,pointer;
+ --cursor-wait:-webkit-image-set(url(assets/cursors/wait.png?v=release-20261105-death72) 1x,url(assets/cursors/wait@2x.png?v=release-20261105-death72) 2x) 15 15,progress}}
 html,body,canvas{cursor:var(--cursor-arrow)}
 /* :where() keeps these at low specificity so the loading hourglass below always wins. */
 :where(button,a[href],summary,select,label:has(>input[type=checkbox]),input:is([type=checkbox],[type=radio],[type=range],[type=submit],[type=button],[type=color]),[role=button],[role=tab],[role=menuitem],[data-tab],.slot,.equip-slot,.bank-slot,.skill-tile,#contextmenu>*,.hud-panel-close):not(:disabled){cursor:var(--cursor-hand)!important}
@@ -257,3 +257,21 @@ body.fantasy-hud #map-widget #map-toggle{display:grid!important}
 /* Player trade request: 10-second popup with large touch-friendly Accept / Decline. */
 #trade-request{position:fixed;z-index:9000;left:50%;top:max(84px,env(safe-area-inset-top));transform:translateX(-50%);width:min(380px,calc(100vw - 24px));padding:14px 16px 12px;background:linear-gradient(145deg,#24372cfa,#111d17fa);border:2px solid #c9a865;border-radius:10px;box-shadow:0 12px 40px #000b;color:#f1e3c2;font:15px/1.4 Georgia,serif;text-align:center}#trade-request[hidden]{display:none}.trade-request-text{margin:0 0 9px;font-size:16px;color:#f5dc9e}.trade-request-meter{height:6px;border-radius:4px;background:#0c1712;border:1px solid #6d6145;overflow:hidden}.trade-request-meter span{display:block;height:100%;background:linear-gradient(90deg,#c99a4a,#f0d17f);transform-origin:left center}.trade-request-count{display:block;margin-top:5px;font:bold 13px Arial;color:#e9cf8c}#trade-request small{display:block;min-height:0;font:12px Arial;color:#d6c7a2}.trade-request-buttons{display:flex;gap:10px;margin-top:8px}.trade-request-buttons button{flex:1;min-height:48px;margin:0;font:bold 16px Arial;border-radius:7px;border:1px solid #d7b878;color:#fff;touch-action:manipulation}body #trade-request .trade-request-buttons button.trade-accept{background:linear-gradient(#4f9248,#2d5c29)}body #trade-request .trade-request-buttons button.trade-decline{background:linear-gradient(#94493f,#5c2a24)}.trade-request-buttons button:disabled{opacity:.45}
 @media(max-height:500px){#trade-request{top:max(8px,env(safe-area-inset-top));padding:9px 12px 9px}.trade-request-text{font-size:14px;margin-bottom:6px}.trade-request-buttons button{min-height:44px}}
+/* 28-slot RuneScape backpack: a fixed 4×7 grid whose rows share the panel height, so every slot
+   stays visible without scrolling on desktop, iPad and phone landscape (scrolls only as a fallback). */
+body #side>#inventory{grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(7,minmax(24px,1fr))!important;grid-auto-rows:minmax(24px,1fr)!important;gap:4px!important;align-content:stretch!important;margin-top:6px!important;padding-right:0!important}
+body #side>#inventory>.slot{height:auto!important;min-height:0!important;margin:0!important;padding:2px!important;position:relative}
+body #side>#inventory>.slot .item-icon svg{max-width:min(44px,100%);max-height:100%}
+body.phone-layout #side>#inventory,body.compact-layout #side>#inventory{gap:3px!important}
+/* RuneScape-style death: a dark red fade with "Oh dear, you are dead!" while the death pose plays. */
+.death-overlay{position:fixed;inset:0;z-index:8500;display:flex;align-items:center;justify-content:center;pointer-events:auto;background:radial-gradient(ellipse at center,rgba(40,0,0,.05) 30%,rgba(28,0,0,.72) 100%);opacity:0;transition:opacity .9s ease;touch-action:none}
+.death-overlay.show{opacity:1}
+.death-overlay[hidden]{display:none}
+.death-overlay p{margin:0;padding:0 16px;font:700 clamp(22px,4.4vw,38px)/1.2 Georgia,'Palatino Linotype',serif;color:#f1d9c8;text-shadow:0 2px 0 #2a0703,0 0 18px rgba(0,0,0,.8);letter-spacing:.02em;text-align:center}
+.kept-on-death{margin-top:10px;padding:8px 10px;border:1px solid rgba(214,182,120,.35);border-radius:8px;background:rgba(20,14,8,.45);font-size:13px}
+.kept-on-death summary{cursor:pointer;font-weight:700;color:#f0d9a3}
+.kept-on-death ul{list-style:none;margin:8px 0 6px;padding:0;display:grid;gap:4px}
+.kept-on-death li{display:flex;align-items:center;gap:8px}
+.kept-on-death li .item-icon{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center}
+.kept-on-death li .item-icon svg,.kept-on-death li .item-icon img{max-width:100%;max-height:100%}
+.kept-on-death p{margin:0;opacity:.85;line-height:1.35}
