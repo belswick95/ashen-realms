@@ -7,14 +7,16 @@ import {creatureMaterial} from './creature-material.js?v=release-20261105-sessio
 import {dragonModel} from './monster-dragon.js?v=release-20261105-session59';
 import {castleObject} from './castle-models.js?v=release-20261105-session59';
 import {buildCharacterDisplay} from './character-display.js?v=release-20261105-session59';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-session59';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);
- if(['human','goblin','skeleton'].includes(d.species)||d.kind==='npc'){
+ const animal=farmAnimalModel(T,parent,d);if(animal)return animal;
+ if(['human','goblin','skeleton','zombie','orc'].includes(d.species)||d.kind==='npc'){
   // Monsters reuse the human body with their own skin, hair and clothing.
   const species=d.species,set=(o,v,pieces)=>Object.fromEntries(pieces.map(p=>[o+p+v,true]));
-  const appearance=species==='goblin'?{sex:'male',skin:'#74864b',hair:'Bald',beard:'Clean shaven',hairColor:'#211b18'}:species==='skeleton'?{sex:'male',skin:'#d7cfb9',hair:'Bald',beard:'Clean shaven',hairColor:'#c0b5a3'}:{sex:'male',skin:'#c9916b',hair:'Short parted',hairColor:'#5b3c28'};
-  const armor=/guard/.test(d.role||'')?{helm:true,chest:true,legs:true,boots:true,knightGauntlets1:true}:species==='goblin'?set('ranger',2,['Tunic','Trousers','Bracers']):species==='skeleton'?{...set('peasant',2,['Shirt','Trousers']),knightArmet3:true}:{};
+  const appearance=species==='zombie'?{sex:'male',skin:'#7f9170',hair:'Short parted',beard:'Clean shaven',hairColor:'#2b2a22'}:species==='orc'?{sex:'male',skin:'#5f7a43',hair:'Bald',beard:'Short beard',hairColor:'#1c1a14'}:species==='goblin'?{sex:'male',skin:'#74864b',hair:'Bald',beard:'Clean shaven',hairColor:'#211b18'}:species==='skeleton'?{sex:'male',skin:'#d7cfb9',hair:'Bald',beard:'Clean shaven',hairColor:'#c0b5a3'}:{sex:'male',skin:'#c9916b',hair:'Short parted',hairColor:'#5b3c28'};
+  const armor=/guard/.test(d.role||'')?{helm:true,chest:true,legs:true,boots:true,knightGauntlets1:true}:species==='zombie'?set('peasant',2,['Shirt','Trousers']):species==='orc'?set('knight',3,['Gambeson','Gauntlets','SpikedPauldrons','HornedHelm']):species==='goblin'?set('ranger',2,['Tunic','Trousers','Bracers']):species==='skeleton'?{...set('peasant',2,['Shirt','Trousers']),knightArmet3:true}:{};
   const display=buildCharacterDisplay(T,parent,appearance,{weapon:d.weapon,armor},{trusted:true});
   const effect=serviceAttackEffect(T,display.rig,d.attackType);
   return {update(dt,m){display.update(dt,{...m,locomotion:m.attack>0?'combat':'walk'});effect.update(m.attack||0)},dispose:()=>display.dispose()};
@@ -57,7 +59,7 @@ export function actorModel(T,parent,d){
   jaw.rotation.x=d.attackType==='bite'?a*.8:0;head.rotation.x=d.attackType==='bite'?-a*.3:0;wings.forEach((q,i)=>q.rotation.z=(i?1:-1)*(.2+Math.sin(tick*5)*.35));effect.visible=magical&&a>.25;effect.scale.setScalar(.7+a*.6);
  },dispose(){group.traverse(o=>{o.geometry?.dispose();if(o.material&&!materials.has(o.material.color?.getHex()))o.material.dispose()});for(const m of materials.values())m.dispose();group.removeFromParent()}};
 }
-export function objectModel(T,parent,id,d={}){const camp=campObject(T,parent,id,d);if(camp)return camp;
+export function objectModel(T,parent,id,d={}){const camp=campObject(T,parent,id,d);if(camp)return camp;const farm=farmObjectModel(T,parent,id);if(farm)return farm;
  const station=professionStationModel(T,parent,id,d);if(station)return station;
  const g=new T.Group();parent.add(g);const wood=0x745335,stone=0x92998e,metal=0x444b49;
  if(id.startsWith('castle_')||['altar','hearth'].includes(id)){castleObject(T,g,id,d);Object.assign(parent.userData,g.userData);return g;}
