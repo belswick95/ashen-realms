@@ -12,7 +12,7 @@
 html.game-viewport,html.game-viewport body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
 body.game-active{--hud-left:max(8px,env(safe-area-inset-left));--hud-right:max(8px,env(safe-area-inset-right));--hud-bottom:max(8px,env(safe-area-inset-bottom));-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body.game-active #side{min-height:0}
-body.game-active #side> :is(#inventory,#equipment,#skills,#friends-tab,#blocked-tab,#settings-tab){min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#b29b66 #15251d}
+body.game-active #side> :is(#inventory,#equipment,#skills,#friends-tab,#blocked-tab,#quests-tab,#settings-tab){min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#b29b66 #15251d}
 body.game-active #side>.tabs{flex:0 0 auto}
 body.game-active #contextmenu{max-height:calc(var(--visible-height,100dvh) - 16px);overflow-y:auto;overscroll-behavior:contain}
 body.compact-layout #account-bar{left:var(--hud-left)!important;top:max(6px,env(safe-area-inset-top))!important;bottom:auto!important;max-width:190px;min-height:32px;padding:4px 7px!important;font-size:10px!important;gap:5px}
@@ -213,3 +213,32 @@ body #equipment .equipment-doll-extras .equip-slot .item-icon{width:44px!importa
 #equipment .stance-toggle button{flex:1;min-height:34px;margin:0;padding:5px;font:12px Arial}
 body #equipment :is(.attack-styles,.stance-toggle) button:is([aria-pressed=true],.active):not(:disabled){background:linear-gradient(165deg,#d9b05c,#94733f 55%,#6a4f25)!important;border-color:#ffe2a0!important;color:#1d140a!important;font-weight:bold;box-shadow:0 0 10px #e7bf6a99,inset 0 1px #fff6!important;text-shadow:0 1px #f6d99b}
 @media(max-width:480px){#equipment .equipment-doll{width:min(100%,250px)}}
+/* World-map button beside the minimap: a large, clear touch/click target (M still toggles the map). */
+body.fantasy-hud #map-widget .map-head{width:38px!important;height:38px!important}
+body.fantasy-hud #map-widget #map-toggle{width:38px!important;height:38px!important;min-height:38px!important;padding:4px!important;background:linear-gradient(#3b4a44,#18241f)!important;border:1px solid #c9a55a!important;box-shadow:0 2px 6px #0008,inset 0 1px #f2dc9b33!important;touch-action:manipulation}
+body.fantasy-hud #map-widget #map-toggle .map-toggle-icon{display:block;width:28px;height:28px}
+body.fantasy-hud #map-widget #map-toggle:hover{border-color:#f1d087!important}
+html body.fantasy-hud.phone-layout #map-widget .map-head{width:34px!important;height:34px!important}
+html body.fantasy-hud.phone-layout #map-widget #map-toggle{width:34px!important;height:34px!important;min-height:34px!important;padding:3px!important}
+html body.fantasy-hud.phone-layout #map-widget #map-toggle .map-toggle-icon{width:26px;height:26px}
+/* Fantasy pixel-art cursors for mouse/trackpad only (touch devices never match this query).
+   Art: assets/cursors (built by scripts/build-cursors.py). Hotspots: arrow tip 1 1, fingertip 9 1, hourglass centre 15 15. */
+@media (hover:hover) and (pointer:fine){
+:root{
+ --cursor-arrow:url(assets/cursors/arrow.png?v=release-20261105-cap99v62) 1 1,auto;
+ --cursor-hand:url(assets/cursors/hand.png?v=release-20261105-cap99v62) 9 1,pointer;
+ --cursor-wait:url(assets/cursors/wait.png?v=release-20261105-cap99v62) 15 15,progress;}
+@supports (cursor:-webkit-image-set(url(assets/cursors/arrow.png) 1x) 1 1,auto){:root{
+ --cursor-arrow:-webkit-image-set(url(assets/cursors/arrow.png?v=release-20261105-cap99v62) 1x,url(assets/cursors/arrow@2x.png?v=release-20261105-cap99v62) 2x) 1 1,auto;
+ --cursor-hand:-webkit-image-set(url(assets/cursors/hand.png?v=release-20261105-cap99v62) 1x,url(assets/cursors/hand@2x.png?v=release-20261105-cap99v62) 2x) 9 1,pointer;
+ --cursor-wait:-webkit-image-set(url(assets/cursors/wait.png?v=release-20261105-cap99v62) 1x,url(assets/cursors/wait@2x.png?v=release-20261105-cap99v62) 2x) 15 15,progress}}
+html,body,canvas{cursor:var(--cursor-arrow)}
+/* :where() keeps these at low specificity so the loading hourglass below always wins. */
+:where(button,a[href],summary,select,label:has(>input[type=checkbox]),input:is([type=checkbox],[type=radio],[type=range],[type=submit],[type=button],[type=color]),[role=button],[role=tab],[role=menuitem],[data-tab],.slot,.equip-slot,.bank-slot,.skill-tile,#contextmenu>*,.hud-panel-close):not(:disabled){cursor:var(--cursor-hand)!important}
+:where(button,input,select):disabled{cursor:var(--cursor-arrow)!important}
+:where(input:not([type]),input:is([type=text],[type=email],[type=password],[type=search],[type=number],[type=url]),textarea,[contenteditable=true]){cursor:text!important}
+canvas.cursor-interact{cursor:var(--cursor-hand)}
+body.cursor-wait,body.cursor-wait *,#area-loading{cursor:var(--cursor-wait)!important}
+}
+/* Seven panel tabs (incl. Quests) always share the bar evenly instead of overflowing it. */
+body.fantasy-hud #side>.tabs>button[data-tab]{flex:1 1 0!important;min-width:0!important;width:auto!important}

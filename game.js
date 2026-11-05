@@ -19,6 +19,7 @@ import {createWaterSystem} from './water-rendering.js?v=release-20261105-cap99v6
 import {fishingDock} from './waterfront.js?v=release-20261105-cap99v62';
 import {createSurfaceCoverIndex,isBuilding,buildingPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261105-cap99v62';
 import {installFantasyHUD} from './hud-redesign.js?v=release-20261105-cap99v62';
+import {installWorldHoverCursor} from './cursors.js?v=release-20261105-cap99v62';
 import {installMMOControls,jumpHeight,isAirborne} from './mmorpg-controls.js?v=release-20261105-cap99v62';
 import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261105-cap99v62';
 import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261105-cap99v62';
@@ -1035,7 +1036,7 @@ function draw(){
  if(state.equippedWeapon){const styles=document.createElement('div');styles.className='attack-styles';for(const [key,label,hint]of [['stab','Stab','Awards Attack XP. Higher Attack improves accuracy.'],['slash','Slash','Awards Strength XP. Higher Strength increases damage.'],['lunge','Lunge','Splits combat XP equally between Attack and Strength.']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.title=hint;b.setAttribute('aria-label',label+' — '+hint);b.setAttribute('aria-pressed',String(attackStyle===key));b.classList.toggle('active',attackStyle===key);b.onclick=()=>{attackStyle=key;if(window.eldervaleAuthority){stylePending={style:key,until:performance.now()+4000};Promise.resolve(window.eldervaleRealm.command('attack_style',{style:key})).then(ok=>{if(ok===false)stylePending=null}).catch(()=>{stylePending=null})}draw()};styles.append(b)}equipment.append(styles)}
  equipment.append(stanceToggle(document,stancePreference,v=>{stancePreference=saveStance(v);lastPanelKey=null;draw()}));
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.tab===activeTab));
- inventory.hidden=activeTab!=='inventory';equipment.hidden=activeTab!=='equipment';skillsPanel.hidden=activeTab!=='skills';for(const key of ['friends','blocked','settings'])document.querySelector('#'+key+'-tab').hidden=activeTab!==key;if(activeTab==='skills')drawSkills();
+ inventory.hidden=activeTab!=='inventory';equipment.hidden=activeTab!=='equipment';skillsPanel.hidden=activeTab!=='skills';for(const key of ['friends','blocked','quests','settings'])document.querySelector('#'+key+'-tab').hidden=activeTab!==key;if(activeTab==='skills')drawSkills();
  const slots=[],wornCopies=new Set();
  const owned=(field,kind,worn)=>{for(const key of state[field]){const identity=field+':'+key;if(worn(key)&&!wornCopies.has(identity)){wornCopies.add(identity);continue}slots.push({kind,key})}};
  owned('mountsOwned','mount',key=>state.equippedMount===key);owned('weaponsOwned','weapon',key=>state.equippedWeapon===key);owned('armorOwned','armor',key=>!!state.equipped[key]);owned('shieldsOwned','shield',key=>state.equippedShield===key);owned('jewelryOwned','jewelry',key=>state[jewelryCatalog[key].slot]===key);
@@ -1360,4 +1361,4 @@ const applyNavigationWorld=window.eldervaleWorldBridge.apply;window.eldervaleWor
 
 window.eldervaleMapItems=()=>persistentRows.values();
 
-installFantasyHUD();
+installFantasyHUD();installWorldHoverCursor({element:renderer.domElement,camera,targets,raycaster:new T.Raycaster(),isBlocked:()=>window.eldervaleWorldLoading===true});
