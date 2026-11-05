@@ -1,7 +1,7 @@
-import {installLocalSkinning} from './local-skinning.js?v=release-20261105-arrows58';
-import {characterStore as store,CHARACTER_SCALE,ensurePart,outfitMaterial,skinMaterial,hairMaterial,eyeMaterial} from './character-assets.js?v=release-20261105-arrows58';
-import {outfitItems,wornOutfit,OUTFIT_SLOTS} from './outfits.js?v=release-20261105-arrows58';
-import {BEARDS,SKINS,HAIRS} from './appearance.js?v=release-20261105-arrows58';
+import {installLocalSkinning} from './local-skinning.js?v=release-20261105-session59';
+import {characterStore as store,CHARACTER_SCALE,ensurePart,outfitMaterial,skinMaterial,hairMaterial,eyeMaterial} from './character-assets.js?v=release-20261105-session59';
+import {outfitItems,wornOutfit,OUTFIT_SLOTS} from './outfits.js?v=release-20261105-session59';
+import {BEARDS,SKINS,HAIRS} from './appearance.js?v=release-20261105-session59';
 // Skinned Quaternius characters (CC0) for the player, remote players and NPCs.
 // Every body region is an artist-made outfit part on one shared skeleton;
 // clips from the Universal Animation Library drive the bones (animation.js).
@@ -47,7 +47,9 @@ export function buildHumanoid(T,root,look={}){
  function apply(slot,key,src){const item=outfitItems[key];remove(slot);slotMeshes[slot]={key,meshes:wear(src,name=>/Regular/.test(name)?skinMaterial('body',sex,skinTint):outfitMaterial(item.outfit,item.variant))};for(const m of slotMeshes[slot].meshes)m.userData.outfitSlot=slot;refreshHair()}
  function setSlot(slot,key){
   if(slotMeshes[slot]?.key===key)return;const part=outfitItems[key]?.[sex];if(!part){remove(slot);return}
-  if(store.parts[part])apply(slot,key,store.parts[part]);else ensurePart(part).then(src=>{if(worn[slot]===key&&slotMeshes[slot]?.key!==key)apply(slot,key,src)}).catch(()=>{});
+  if(store.parts[part])apply(slot,key,store.parts[part]);else ensurePart(part).then(src=>{if(worn[slot]===key&&slotMeshes[slot]?.key!==key){apply(slot,key,src);
+   // Late parts: let views that cloned this body (the HUD portrait) rebuild.
+   if(typeof dispatchEvent==='function'&&typeof CustomEvent==='function')dispatchEvent(new CustomEvent('eldervale-outfit-part',{detail:{slot,mesh:slotMeshes[slot]?.meshes[0]}}))}}).catch(()=>{});
  }
  let hairHidden=false;
  function refreshHair(){const helm=outfitItems[worn.helm];for(const m of hairMeshes)m.visible=!hairHidden&&!helm?.hidesHair;for(const m of beardMeshes)m.visible=!hairHidden&&!helm?.hidesBeard}

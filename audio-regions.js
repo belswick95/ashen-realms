@@ -1,5 +1,5 @@
-import {generatedWorld} from './procedural-world.js?v=release-20261105-arrows58';
-import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261105-arrows58';
+import {generatedWorld} from './procedural-world.js?v=release-20261105-session59';
+import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261105-session59';
 export const townMusic=[
  {id:'oakcross',name:'Oakcross',x:0,z:0,radius:50,title:'Lord of the Land'},
  {id:'northwatch',name:'Northwatch',x:-60,z:45,radius:22,title:'Night Vigil'},
