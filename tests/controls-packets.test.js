@@ -1,6 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {installMMOControls} from '../mmorpg-controls.js';
-test('quick taps emit one start/stop, repeated keys do not flood packets, and Shift survives a movement release',()=>{
- const listeners={},element=()=>({style:{setProperty(){}},setAttribute(){},append(){},addEventListener(){},querySelector(){return element()}}),document={body:{append(){},classList:{toggle(){}}},createElement:element,querySelector:()=>null,addEventListener(){}};
- const prior={};for(const [key,value] of Object.entries({document,addEventListener:(n,fn)=>listeners[n]=fn,matchMedia:()=>({matches:false}),setInterval:()=>1,clearInterval:()=>{}})){prior[key]=globalThis[key];globalThis[key]=value}
- const packets=[],sprints=[];try{const controls=installMMOControls({getYaw:()=>0,getCameraYaw:()=>0,isRightMouse:()=>false,isBlocked:()=>false,onInput:p=>packets.push(p),onJump(){},onSprint:s=>sprints.push(s)}),event=code=>({code,preventDefault(){},target:null});listeners.keydown(event('ShiftLeft'));listeners.keydown(event('KeyW'));listeners.keydown(event('KeyW'));controls.update(.016,performance.now()+16);listeners.keyup(event('KeyW'));assert.deepEqual(packets.map(p=>p.moving),[true,false]);assert.deepEqual(sprints,[true]);listeners.keydown(event('KeyW'));listeners.keyup(event('KeyW'));listeners.keyup(event('ShiftLeft'));assert.deepEqual(packets.map(p=>p.moving),[true,false,true,false]);assert.deepEqual(sprints,[true,false]);controls.clear()}finally{for(const [key,value] of Object.entries(prior))if(value===undefined)delete globalThis[key];else globalThis[key]=value}
+test('RuneScape controls: movement keys and the thumbstick are gone, Space still jumps',()=>{
+ const listeners={},made=[],element=()=>{const e={id:'',style:{setProperty(){}},setAttribute(){},append(){},addEventListener(){},querySelector(){return element()}};made.push(e);return e},document={body:{append(){},classList:{toggle(){}}},createElement:element,querySelector:()=>null,addEventListener(){}};
+ const prior={};for(const [key,value] of Object.entries({document,addEventListener:(n,fn)=>listeners[n]=fn,matchMedia:()=>({matches:false})})){prior[key]=globalThis[key];globalThis[key]=value}
+ let jumps=0;try{const controls=installMMOControls({isBlocked:()=>false,onJump(){jumps++}}),event=(code,extra={})=>({code,preventDefault(){},target:null,...extra});
+  for(const code of ['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ShiftLeft'])listeners.keydown(event(code));
+  assert.equal(controls.update(.016,0),null,'no keyboard movement input');assert.equal(jumps,0);
+  listeners.keydown(event('Space'));listeners.keydown(event('Space',{repeat:true}));assert.equal(jumps,1);
+  assert.ok(!made.some(e=>e.id==='movement-pad'||e.id==='movement-base'),'no on-screen joystick');assert.ok(made.some(e=>e.id==='touch-jump'));
+ }finally{for(const [key,value] of Object.entries(prior))globalThis[key]=value}
 });
