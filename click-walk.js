@@ -18,13 +18,16 @@ export const TAP_SLOP={mouse:5,pen:8,touch:10};
 export function dragThreshold(pointerType){return TAP_SLOP[pointerType]??TAP_SLOP.mouse}
 export function isTap(travelled,pointerType){return Number.isFinite(travelled)&&travelled<=dragThreshold(pointerType)}
 
-// Client point on a map canvas → world point. The minimap is north-up and
-// centred on the player; the world map is north-up and centred on the origin.
-export function mapClickToWorld(clientX,clientY,rect,{player,extent,width,height,world=false}){
+// Client point on a map canvas → world point. The minimap is centred on the
+// player and turned so `heading` is up (camera-up, RuneScape style; π = north-up);
+// the world map is north-up and centred on the origin. `circle` ignores clicks
+// outside a round minimap's visible disc.
+export function mapClickToWorld(clientX,clientY,rect,{player,extent,width,height,world=false,heading=Math.PI,circle=false}){
  if(!rect||!(rect.width>0)||!(rect.height>0))return null;
  const u=(clientX-rect.left)/rect.width,v=(clientY-rect.top)/rect.height;
  if(!(u>=0&&u<=1&&v>=0&&v<=1))return null;
- return mapDestination(u,v,world?{x:0,z:0}:player,Math.PI,extent,width||rect.width,height||rect.height);
+ if(circle&&(u-.5)**2+(v-.5)**2>.25)return null;
+ return mapDestination(u,v,world?{x:0,z:0}:player,world?Math.PI:heading,extent,width||rect.width,height||rect.height);
 }
 
 // The flag stays until the walker arrives, a new destination replaces it, or
