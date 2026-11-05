@@ -1,5 +1,5 @@
-import {recipes} from './professions.js?v=release-20261105-session59';
-import {makeItemModel} from './item-models.js?v=release-20261105-session59';
+import {recipes} from './professions.js?v=release-20261105-living60';
+import {makeItemModel} from './item-models.js?v=release-20261105-living60';
 export function createProfessionVisuals(T,scene,landscape,targets,{getActor,getObject,makePickaxe}){
  const fires=new Map(),activities=new Map(),crops=new Map();let jobs=[];
  const dispose=root=>{root.removeFromParent();root.traverse(o=>{if(!o.geometry?.userData?.eldervaleShared)o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])if(!m?.userData?.eldervaleShared)m?.dispose()})};
