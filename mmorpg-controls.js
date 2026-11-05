@@ -9,6 +9,8 @@ export function movementInput(keys,yaw,cameraYaw,rightMouse,dt,mouseForward=fals
 }
 export function touchMovement(x,y,cameraYaw){const length=Math.hypot(x,y);if(length<.16)return {x:0,z:0,yaw:cameraYaw+Math.PI,moving:false};const right=x/Math.max(1,length),forward=-y/Math.max(1,length),yaw=cameraYaw+Math.PI,dx=Math.sin(yaw)*forward-Math.cos(yaw)*right,dz=Math.cos(yaw)*forward+Math.sin(yaw)*right;return {x:dx,z:dz,yaw:Math.atan2(dx,dz),moving:true};}
 export function jumpHeight(timestamp,now){const t=(now-Date.parse(timestamp))/800;return t>=0&&t<=1?2.8*t*(1-t):0}
+// True while a jump that started at `timestamp` is in the air (drives the jump clips).
+export function isAirborne(timestamp,now){const t=(now-Date.parse(timestamp))/800;return t>0&&t<1}
 export function installMMOControls({element,getYaw,getCameraYaw,isRightMouse,isBlocked,onInput,onJump,onSprint}){
  const keys=new Set(),valid=new Set(['KeyW','KeyA','KeyS','KeyD','KeyQ','KeyE','ArrowUp','ArrowDown','ArrowLeft','ArrowRight']);let yaw=getYaw(),active=false,sprint=false,lastPacket=0,lastSignature='',touchId=null,touchX=0,touchY=0,mouseButtons=0;
  const chord=()=> (mouseButtons&3)===3,right=()=>isRightMouse()||!!(mouseButtons&2);

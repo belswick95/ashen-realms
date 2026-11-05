@@ -1710,96 +1710,6 @@
     "sha256": "f1c9ef0d5fdfdb42d19ba3147125fc56f5510fb2288fff827c27fb7e885b23a5"
   },
   {
-    "key": "item-armor_helm",
-    "id": "armor:helm",
-    "name": "Iron full helm",
-    "model": "helm",
-    "bounds": [
-      0.37699998617172237,
-      0.6299999999999999,
-      0.5284500025570393
-    ],
-    "pixelBounds": [
-      32,
-      22,
-      105,
-      123
-    ],
-    "sha256": "3cb9bdbda2c0f37bea8779eddad8e6557e87ebc805cb87c2086ebd8803fd9865"
-  },
-  {
-    "key": "item-armor_chest",
-    "id": "armor:chest",
-    "name": "Iron platebody",
-    "model": "chest",
-    "bounds": [
-      0.9440399980926514,
-      1.1450001001358032,
-      0.5885999891161918
-    ],
-    "pixelBounds": [
-      39,
-      17,
-      109,
-      127
-    ],
-    "sha256": "85a45abcff4e24208616bb8185f72d6c30a9321012c9be6d2e4d9d7232faf9ba"
-  },
-  {
-    "key": "item-armor_legs",
-    "id": "armor:legs",
-    "name": "Iron platelegs",
-    "model": "legs",
-    "bounds": [
-      0.7453440059604645,
-      1.2835466550354906,
-      0.3799999952316284
-    ],
-    "pixelBounds": [
-      42,
-      12,
-      102,
-      130
-    ],
-    "sha256": "cff61285b55cda4ed74d7cadf4dc6c46a44454b5ae46756ca43da3a85c73cc5f"
-  },
-  {
-    "key": "item-armor_boots",
-    "id": "armor:boots",
-    "name": "Iron boots",
-    "model": "boots",
-    "bounds": [
-      0.6053439904632568,
-      0.27841442780536824,
-      0.4103813171386719
-    ],
-    "pixelBounds": [
-      10,
-      27,
-      127,
-      116
-    ],
-    "sha256": "ee9caaf2bb71f954f9ea0598ff186af05a0f5ef978f527209922a3f4def6b751"
-  },
-  {
-    "key": "item-armor_cape",
-    "id": "armor:cape",
-    "name": "Crimson cape",
-    "model": "cape",
-    "bounds": [
-      1.2867201566696167,
-      2.030000002682209,
-      0.28363962441682816
-    ],
-    "pixelBounds": [
-      45,
-      16,
-      108,
-      130
-    ],
-    "sha256": "9692a78e383567364087fac51c8d75b5f57470d3e1fc9f91c2d87f7243bf42f6"
-  },
-  {
     "key": "item-shield_square",
     "id": "shield:square",
     "name": "Iron square shield",
@@ -2679,7 +2589,7 @@
       110,
       116
     ],
-    "sha256": "1a30f86dac223735db84e02546af2e53c4f9dd8ca05e90638af17443e52782fe"
+    "sha256": "06dd6c3c288c8a58e7911e999c0dcc895ae721019593756f8a3deaecce868115"
   },
   {
     "key": "item-pear",
@@ -2697,7 +2607,7 @@
       99,
       122
     ],
-    "sha256": "35819cd256dfcc80da808c666290bc73daa023512fa202ac3bf9ab73668f5bfc"
+    "sha256": "aa650f9bf96a2a1a20f434bb257017e756b8183434f81ca3500e95c545edb91f"
   },
   {
     "key": "item-trailBerries",
@@ -2715,7 +2625,7 @@
       119,
       118
     ],
-    "sha256": "0acc7b12e0392cf6d0a11fe4acc724bf7ca36351cb581b4c1f0e07833c645311"
+    "sha256": "938ea47294b2bbf95f3ca1e3fdc0f22ede4662bc023e6f1cb1920d8c048d97df"
   },
   {
     "key": "item-orange",
@@ -2733,7 +2643,7 @@
       110,
       116
     ],
-    "sha256": "0c4088481e1d091323d0f132119d4a294bb9274d9d8d9b97406116ddf4ff9b77"
+    "sha256": "7b8de21dbbe03d52e35c088cb5d923c0885458091bba7e402e6f966a0d01a5ee"
   },
   {
     "key": "item-carrot",
@@ -2751,7 +2661,7 @@
       120,
       105
     ],
-    "sha256": "d94d6dd923eecdb43ca49f232aa418c8bcff969796ad46afd1a0fd1baea69d6d"
+    "sha256": "1149515fd791243ef5bf1eb08c12d9be7bed138b62f373565cad5165e756216a"
   },
   {
     "key": "item-mushroom",
@@ -2769,7 +2679,7 @@
       118,
       108
     ],
-    "sha256": "2f87132959a000f9303bf5014811b97a495169f5743fe8803462f05b214167eb"
+    "sha256": "ad0444d8866476387c5376dbfeb201d469bd10f74a86fbf9238ed8c3d874c40d"
   },
   {
     "key": "item-egg",
@@ -2787,7 +2697,7 @@
       105,
       118
     ],
-    "sha256": "a3f0fb7eb8c79c708d61bc73d3d2169d7d9047f2fa21d8b6a583163f656013f2"
+    "sha256": "b9663259f5c063c1be20a59b367fcc04be2064a9bb64cfdcfe86101561878f26"
   },
   {
     "key": "item-cheese",
@@ -2823,7 +2733,7 @@
       131,
       96
     ],
-    "sha256": "571588251b98128874f834a4f4e8d8c4a165c79571177ad7a0819910a8e779ec"
+    "sha256": "da1f62127caf6e14a0bdf02714b37304e3d811499086ab44de3f07e200849adf"
   },
   {
     "key": "item-shrimp",
@@ -2841,7 +2751,7 @@
       115,
       99
     ],
-    "sha256": "8e416e5fdae901d379f0e52f34b6a6ab7057044c577028fc48931c35ae44ca35"
+    "sha256": "8e62d57105ce06024102a2aa1b1d7eef32fcaf00eff73ed56023727288ba7dbb"
   },
   {
     "key": "item-salmon",
@@ -2859,7 +2769,7 @@
       125,
       93
     ],
-    "sha256": "d14dfdf3ea7c578bed3d5e4052133f897bf073e49bde14f2f9a3baffa601ccaf"
+    "sha256": "e2821dd664c3f7495cce13466cd5c8e40dd506ff9e19dad49aebdb10cc347d7a"
   },
   {
     "key": "item-trailRations",
@@ -2877,7 +2787,7 @@
       121,
       101
     ],
-    "sha256": "a5c53fdc1b6b6722abb971b1a1590cd818570e168494ff9d59fd71832ce2327b"
+    "sha256": "928a0d43bcd7afdede7a41fd6542c5cf4bba0971adf8aa762d4b5e2251dc42c8"
   },
   {
     "key": "item-roastChicken",
@@ -2895,7 +2805,7 @@
       121,
       111
     ],
-    "sha256": "f5e0c766daae806f77531a68df3fedc798ef33f62e1097df4a53933d79dd27aa"
+    "sha256": "3d0755949391ae9fd8fe696204ac68e91405acab5a46963870700821c9582b89"
   },
   {
     "key": "item-berryPie",
@@ -2913,7 +2823,7 @@
       119,
       110
     ],
-    "sha256": "dfc3c7ec9f943fc80faf6d666e0871cf8ab481b45a40474832667b9bd733587b"
+    "sha256": "7a3a51f2604c2a98bb5910072f4c7ee7dcf51564696429ac8fc9931fbc860a02"
   },
   {
     "key": "item-cheesePizza",
@@ -2949,7 +2859,7 @@
       118,
       101
     ],
-    "sha256": "521352493a09f764471d13b14e876b9a2b2e82f443da7533fa63a5c79b919842"
+    "sha256": "8cd081953bd6dcb76241a5cae06041cb7950f5b01dc26bc4709d0ab3ecd2d9a0"
   },
   {
     "key": "item-linen",
@@ -3075,7 +2985,7 @@
       135,
       123
     ],
-    "sha256": "348855384fda7f888987dd067f56c5cc364ead21cac3f0ccf45a7955b3d0ed81"
+    "sha256": "df17cc45b287f0d07445247a74edda2f1fb1dbe510a14ae6018832316509d918"
   },
   {
     "key": "item-travelJournal",
@@ -3129,7 +3039,7 @@
       110,
       124
     ],
-    "sha256": "7ffb0874cb8b8fff75882067e89f0f2fe052af9a4793fc084c27f6dd4f66a684"
+    "sha256": "5d8033475c9e96846d675b1a3d9b7b34d4f1b8d704936b9d83e8909058d495f5"
   },
   {
     "key": "model-rope",
@@ -3201,7 +3111,7 @@
       135,
       123
     ],
-    "sha256": "348855384fda7f888987dd067f56c5cc364ead21cac3f0ccf45a7955b3d0ed81"
+    "sha256": "df17cc45b287f0d07445247a74edda2f1fb1dbe510a14ae6018832316509d918"
   },
   {
     "key": "model-book",
@@ -3255,6 +3165,1752 @@
       110,
       124
     ],
-    "sha256": "7ffb0874cb8b8fff75882067e89f0f2fe052af9a4793fc084c27f6dd4f66a684"
+    "sha256": "5d8033475c9e96846d675b1a3d9b7b34d4f1b8d704936b9d83e8909058d495f5"
+  },
+  {
+    "key": "item-armor_helm",
+    "id": "armor:helm",
+    "name": "Iron armet helm",
+    "model": "helm",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "598134fa1a821a3077510b549c4cf76a10b283ae6a554d7241365d4dae7ae825"
+  },
+  {
+    "key": "item-armor_knightArmet2",
+    "id": "armor:knightArmet2",
+    "name": "Gilded armet helm",
+    "model": "knightArmet2",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "be4eb7bca832e832643d41321651953857d58d41953cd5e1fa2355926e23dc89"
+  },
+  {
+    "key": "item-armor_knightArmet3",
+    "id": "armor:knightArmet3",
+    "name": "Blacksteel armet helm",
+    "model": "knightArmet3",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "5d1907d8bb6c0f867561ed94a46fef0c8f0f70052429a0fde0ba27dcc6fbcbac"
+  },
+  {
+    "key": "item-armor_knightHornedHelm1",
+    "id": "armor:knightHornedHelm1",
+    "name": "Iron horned helm",
+    "model": "knightHornedHelm1",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "4bf1fdc17360f0e38d0d79c5060e08997d050019b13fd642ef7c1ad6d7fcf33b"
+  },
+  {
+    "key": "item-armor_knightHornedHelm2",
+    "id": "armor:knightHornedHelm2",
+    "name": "Gilded horned helm",
+    "model": "knightHornedHelm2",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "72496eedf2d4264ce3a13301b5422725f0c9df3698464f3cef22de688b2a5cbb"
+  },
+  {
+    "key": "item-armor_knightHornedHelm3",
+    "id": "armor:knightHornedHelm3",
+    "name": "Blacksteel horned helm",
+    "model": "knightHornedHelm3",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "03dc72975495b29b554b4d54e2b757fdff8bfbb564c60c701d62ff63cb38c692"
+  },
+  {
+    "key": "item-armor_chest",
+    "id": "armor:chest",
+    "name": "Iron breastplate",
+    "model": "chest",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "b9f3b9c9fbd7d81c4e1965ab9a1910d1ae62d0797bc7215035359341228695c4"
+  },
+  {
+    "key": "item-armor_knightBreastplate2",
+    "id": "armor:knightBreastplate2",
+    "name": "Gilded breastplate",
+    "model": "knightBreastplate2",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "80641aa85b68b79799509519b9afe8c661ef134363a0193226727ec34a014e6e"
+  },
+  {
+    "key": "item-armor_knightBreastplate3",
+    "id": "armor:knightBreastplate3",
+    "name": "Blacksteel breastplate",
+    "model": "knightBreastplate3",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "6da87ca432ff9bc544f05a8b9652790454a6e0d758b985a9aa1ba417e38d0b63"
+  },
+  {
+    "key": "item-armor_knightGambeson1",
+    "id": "armor:knightGambeson1",
+    "name": "Iron gambeson",
+    "model": "knightGambeson1",
+    "bounds": [
+      0.5242622150334177,
+      0.85,
+      0.4364787743766594
+    ],
+    "pixelBounds": [
+      40,
+      18,
+      106,
+      131
+    ],
+    "sha256": "3f08e833386015bb4fce7c824b3213d8e999a2dbcfda41062c57091681ab3e48"
+  },
+  {
+    "key": "item-armor_knightGambeson2",
+    "id": "armor:knightGambeson2",
+    "name": "Gilded gambeson",
+    "model": "knightGambeson2",
+    "bounds": [
+      0.5242622150334177,
+      0.85,
+      0.4364787743766594
+    ],
+    "pixelBounds": [
+      40,
+      18,
+      106,
+      131
+    ],
+    "sha256": "e38b26376ccfddc1986306481c54362524b33fda0e4549e139e5572663913cfa"
+  },
+  {
+    "key": "item-armor_knightGambeson3",
+    "id": "armor:knightGambeson3",
+    "name": "Blacksteel gambeson",
+    "model": "knightGambeson3",
+    "bounds": [
+      0.5242622150334177,
+      0.85,
+      0.4364787743766594
+    ],
+    "pixelBounds": [
+      40,
+      18,
+      106,
+      131
+    ],
+    "sha256": "7c07bd6871cb8e04287a686cd54784dd5ea6fa27738a46a37e0761171e394c99"
+  },
+  {
+    "key": "item-armor_knightGauntlets1",
+    "id": "armor:knightGauntlets1",
+    "name": "Iron gauntlets",
+    "model": "knightGauntlets1",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "5ca846eafde62210bdc30641de8d9f66f0ea9210727de917dbc8949e1b20dba6"
+  },
+  {
+    "key": "item-armor_knightGauntlets2",
+    "id": "armor:knightGauntlets2",
+    "name": "Gilded gauntlets",
+    "model": "knightGauntlets2",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "1a951d88e25d304046368e8f337710457240bb155e0fec53d51ac9251fc3b35e"
+  },
+  {
+    "key": "item-armor_knightGauntlets3",
+    "id": "armor:knightGauntlets3",
+    "name": "Blacksteel gauntlets",
+    "model": "knightGauntlets3",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "55f4742a5f47e44aaef2e4d888b9c5e3ee249ed40d3eb4ef2074de6309c39589"
+  },
+  {
+    "key": "item-armor_legs",
+    "id": "armor:legs",
+    "name": "Iron greaves",
+    "model": "legs",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "d948737b9ff773835e91f5bf761515223c96bc9addb94c155dacbeb9a69aee04"
+  },
+  {
+    "key": "item-armor_knightGreaves2",
+    "id": "armor:knightGreaves2",
+    "name": "Gilded greaves",
+    "model": "knightGreaves2",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "a8d4416cae09b16e558b81a94be6e0028b4b14d434c123f8f7c5551338b58e6a"
+  },
+  {
+    "key": "item-armor_knightGreaves3",
+    "id": "armor:knightGreaves3",
+    "name": "Blacksteel greaves",
+    "model": "knightGreaves3",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "9dba8884b7eada36d57bc847a6a5daae2b10f8611a7d73c6a38893f33f283c61"
+  },
+  {
+    "key": "item-armor_boots",
+    "id": "armor:boots",
+    "name": "Iron sabatons",
+    "model": "boots",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "762a376b0019f14f7e8948322c957189cb85b78f22b4dc7fd26855945d02ff04"
+  },
+  {
+    "key": "item-armor_knightSabatons2",
+    "id": "armor:knightSabatons2",
+    "name": "Gilded sabatons",
+    "model": "knightSabatons2",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "83bdcc0e1721bf264f949e25f7c30d933f3bfb536cee5fb49cdaebeff21525d7"
+  },
+  {
+    "key": "item-armor_knightSabatons3",
+    "id": "armor:knightSabatons3",
+    "name": "Blacksteel sabatons",
+    "model": "knightSabatons3",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "66f34148df2721d0ee1e5458d76b309dfcf3d53e3f79c898196bc568b76ccfc6"
+  },
+  {
+    "key": "item-armor_knightRoundPauldrons1",
+    "id": "armor:knightRoundPauldrons1",
+    "name": "Iron round pauldrons",
+    "model": "knightRoundPauldrons1",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "ccc6301267ce754913483bf58b8059009e5eba29d4c084f229745dc47440cd0c"
+  },
+  {
+    "key": "item-armor_knightRoundPauldrons2",
+    "id": "armor:knightRoundPauldrons2",
+    "name": "Gilded round pauldrons",
+    "model": "knightRoundPauldrons2",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "27fdb7828ea24bb8daa1f32d1330be4c80b6b4e8c25151c29f2ae0ffc589eb44"
+  },
+  {
+    "key": "item-armor_knightRoundPauldrons3",
+    "id": "armor:knightRoundPauldrons3",
+    "name": "Blacksteel round pauldrons",
+    "model": "knightRoundPauldrons3",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "4a2ee6cfd33bb17ab7f53a0ad1e5c8ec93a7975bf27f4eed224dc9ddac7f8ec5"
+  },
+  {
+    "key": "item-armor_knightSpikedPauldrons1",
+    "id": "armor:knightSpikedPauldrons1",
+    "name": "Iron spiked pauldrons",
+    "model": "knightSpikedPauldrons1",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "38ceabee94711bdd0bfca3152be3f1ba1c45c8c37b5a071ac7cff66bc82105c5"
+  },
+  {
+    "key": "item-armor_knightSpikedPauldrons2",
+    "id": "armor:knightSpikedPauldrons2",
+    "name": "Gilded spiked pauldrons",
+    "model": "knightSpikedPauldrons2",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "09e404235c2cf2a3c49d8944199d2e666891bb9ebce944d87764ae36ecbfe340"
+  },
+  {
+    "key": "item-armor_knightSpikedPauldrons3",
+    "id": "armor:knightSpikedPauldrons3",
+    "name": "Blacksteel spiked pauldrons",
+    "model": "knightSpikedPauldrons3",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "b67638ba1d2a2edad4d3299ca9097fff28f2e6573a2da49b850035dbfe661588"
+  },
+  {
+    "key": "item-armor_knightScarf1",
+    "id": "armor:knightScarf1",
+    "name": "Iron scarf",
+    "model": "knightScarf1",
+    "bounds": [
+      0.85,
+      0.6138096255378888,
+      0.849481185338908
+    ],
+    "pixelBounds": [
+      30,
+      25,
+      124,
+      116
+    ],
+    "sha256": "18a1fe1819d45f4c725b1d0410714f52b5aa47bceded6f92b6553b92a4457bd1"
+  },
+  {
+    "key": "item-armor_knightScarf2",
+    "id": "armor:knightScarf2",
+    "name": "Gilded scarf",
+    "model": "knightScarf2",
+    "bounds": [
+      0.85,
+      0.6138096255378888,
+      0.849481185338908
+    ],
+    "pixelBounds": [
+      30,
+      25,
+      124,
+      116
+    ],
+    "sha256": "fc1aff77180dde4ed88faae6b5ce8ff984b3dffd59fb35ad0abe85dc52e6dc6a"
+  },
+  {
+    "key": "item-armor_knightScarf3",
+    "id": "armor:knightScarf3",
+    "name": "Blacksteel scarf",
+    "model": "knightScarf3",
+    "bounds": [
+      0.85,
+      0.6138096255378888,
+      0.849481185338908
+    ],
+    "pixelBounds": [
+      30,
+      25,
+      124,
+      116
+    ],
+    "sha256": "2a0bf08960735492c2179ea90fb72b265754c2c2ab48cdb184689354f8397d59"
+  },
+  {
+    "key": "item-armor_nobleCrown1",
+    "id": "armor:nobleCrown1",
+    "name": "Crimson crown",
+    "model": "nobleCrown1",
+    "bounds": [
+      0.85,
+      0.43274330881679735,
+      0.85
+    ],
+    "pixelBounds": [
+      26,
+      34,
+      117,
+      111
+    ],
+    "sha256": "22ded1b6ce1644918c009c8e1654f8f8e00ec1d80d0650fa8580da4e87e841c9"
+  },
+  {
+    "key": "item-armor_nobleCrown2",
+    "id": "armor:nobleCrown2",
+    "name": "Royal blue crown",
+    "model": "nobleCrown2",
+    "bounds": [
+      0.85,
+      0.43274330881679735,
+      0.85
+    ],
+    "pixelBounds": [
+      26,
+      34,
+      117,
+      111
+    ],
+    "sha256": "70a4109e13a505491dfc2d2a35aa27dee6af449578d93484112d57a76270744b"
+  },
+  {
+    "key": "item-armor_nobleCrown3",
+    "id": "armor:nobleCrown3",
+    "name": "Emerald crown",
+    "model": "nobleCrown3",
+    "bounds": [
+      0.85,
+      0.43274330881679735,
+      0.85
+    ],
+    "pixelBounds": [
+      26,
+      34,
+      117,
+      111
+    ],
+    "sha256": "7d7942c136beb44b5faf0a138232e6894b9438f109974b801c49323039d2fa64"
+  },
+  {
+    "key": "item-armor_nobleGorget1",
+    "id": "armor:nobleGorget1",
+    "name": "Crimson gorget",
+    "model": "nobleGorget1",
+    "bounds": [
+      0.85,
+      0.5049623096407971,
+      0.7687536240730003
+    ],
+    "pixelBounds": [
+      31,
+      35,
+      125,
+      115
+    ],
+    "sha256": "a4c72edec668d5b34cd6736198abe1de729b1c57ea98c3f5156020964d1a1efa"
+  },
+  {
+    "key": "item-armor_nobleGorget2",
+    "id": "armor:nobleGorget2",
+    "name": "Royal blue gorget",
+    "model": "nobleGorget2",
+    "bounds": [
+      0.85,
+      0.5049623096407971,
+      0.7687536240730003
+    ],
+    "pixelBounds": [
+      31,
+      35,
+      125,
+      115
+    ],
+    "sha256": "62ba60ec595508108aaff7ff775fc2c2dc655c917877152c497c36d2e5192cfe"
+  },
+  {
+    "key": "item-armor_nobleGorget3",
+    "id": "armor:nobleGorget3",
+    "name": "Emerald gorget",
+    "model": "nobleGorget3",
+    "bounds": [
+      0.85,
+      0.5049623096407971,
+      0.7687536240730003
+    ],
+    "pixelBounds": [
+      31,
+      35,
+      125,
+      115
+    ],
+    "sha256": "954e63c787d184df4c21e1417521d64da0d6dd3a6c3fc1b9275268c3595d9b36"
+  },
+  {
+    "key": "item-armor_noblePauldron1",
+    "id": "armor:noblePauldron1",
+    "name": "Crimson pauldron",
+    "model": "noblePauldron1",
+    "bounds": [
+      0.85,
+      0.17650074770348217,
+      0.24200109866634115
+    ],
+    "pixelBounds": [
+      17,
+      48,
+      127,
+      102
+    ],
+    "sha256": "6e5fb51dcc1116a1e4d5910328f2dbd64e7aaa5a213f5a0e2d7612cf6c55a66c"
+  },
+  {
+    "key": "item-armor_noblePauldron2",
+    "id": "armor:noblePauldron2",
+    "name": "Royal blue pauldron",
+    "model": "noblePauldron2",
+    "bounds": [
+      0.85,
+      0.17650074770348217,
+      0.24200109866634115
+    ],
+    "pixelBounds": [
+      17,
+      48,
+      127,
+      102
+    ],
+    "sha256": "8ce7feab854f56e8650e5ed636ea6f8ada636cbeeecc33334b3c3a8a256814ad"
+  },
+  {
+    "key": "item-armor_noblePauldron3",
+    "id": "armor:noblePauldron3",
+    "name": "Emerald pauldron",
+    "model": "noblePauldron3",
+    "bounds": [
+      0.85,
+      0.17650074770348217,
+      0.24200109866634115
+    ],
+    "pixelBounds": [
+      17,
+      48,
+      127,
+      102
+    ],
+    "sha256": "eaf1e885ec197f38d89fe287d242fed537d27016734170b028e36683ac42cfc9"
+  },
+  {
+    "key": "item-armor_nobleLionPauldron1",
+    "id": "armor:nobleLionPauldron1",
+    "name": "Crimson lion pauldron",
+    "model": "nobleLionPauldron1",
+    "bounds": [
+      0.85,
+      0.5588152714621417,
+      0.6805551316873684
+    ],
+    "pixelBounds": [
+      17,
+      34,
+      119,
+      114
+    ],
+    "sha256": "77e183788860d46f980b3762b594ff45fb2b47d2026bb4b8efcdfeed76ef0291"
+  },
+  {
+    "key": "item-armor_nobleLionPauldron2",
+    "id": "armor:nobleLionPauldron2",
+    "name": "Royal blue lion pauldron",
+    "model": "nobleLionPauldron2",
+    "bounds": [
+      0.85,
+      0.5588152714621417,
+      0.6805551316873684
+    ],
+    "pixelBounds": [
+      17,
+      34,
+      119,
+      114
+    ],
+    "sha256": "2437cbdef49f0876c908147018049bde1d85d27842fae0e31646716f16d7300a"
+  },
+  {
+    "key": "item-armor_nobleLionPauldron3",
+    "id": "armor:nobleLionPauldron3",
+    "name": "Emerald lion pauldron",
+    "model": "nobleLionPauldron3",
+    "bounds": [
+      0.85,
+      0.5588152714621417,
+      0.6805551316873684
+    ],
+    "pixelBounds": [
+      17,
+      34,
+      119,
+      114
+    ],
+    "sha256": "223a259bf48d8070da84939f8e03de53af9811c3df5657f00a1c912ec7310a97"
+  },
+  {
+    "key": "item-armor_nobleCoat1",
+    "id": "armor:nobleCoat1",
+    "name": "Crimson noble coat",
+    "model": "nobleCoat1",
+    "bounds": [
+      0.85,
+      0.85,
+      0.40874813074129457
+    ],
+    "pixelBounds": [
+      37,
+      20,
+      119,
+      127
+    ],
+    "sha256": "ea8e16654061c3d0065ce0eb7f4abeb038c9d6600d08c7e3e382554b31a78e7d"
+  },
+  {
+    "key": "item-armor_nobleCoat2",
+    "id": "armor:nobleCoat2",
+    "name": "Royal blue noble coat",
+    "model": "nobleCoat2",
+    "bounds": [
+      0.85,
+      0.85,
+      0.40874813074129457
+    ],
+    "pixelBounds": [
+      37,
+      20,
+      119,
+      127
+    ],
+    "sha256": "24e16ec875a6e04bc693e32f53515b76696307864faa9f34d5b25cf6151803e1"
+  },
+  {
+    "key": "item-armor_nobleCoat3",
+    "id": "armor:nobleCoat3",
+    "name": "Emerald noble coat",
+    "model": "nobleCoat3",
+    "bounds": [
+      0.85,
+      0.85,
+      0.40874813074129457
+    ],
+    "pixelBounds": [
+      37,
+      20,
+      119,
+      127
+    ],
+    "sha256": "d961354eb16d47eee2cb0b2399f30be21e4b5612da04be6e3d5875a3c8890604"
+  },
+  {
+    "key": "item-armor_nobleSleeves1",
+    "id": "armor:nobleSleeves1",
+    "name": "Crimson noble sleeves",
+    "model": "nobleSleeves1",
+    "bounds": [
+      0.85,
+      0.08415173802911466,
+      0.08674581133457442
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "1f95ca6267c5ca718a3fce02d3d6bcd2fe7ed59256ffa1f31b8195524f441b76"
+  },
+  {
+    "key": "item-armor_nobleSleeves2",
+    "id": "armor:nobleSleeves2",
+    "name": "Royal blue noble sleeves",
+    "model": "nobleSleeves2",
+    "bounds": [
+      0.85,
+      0.08415173802911466,
+      0.08674581133457442
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "81d59173acadb70d61938a618338a206d25adc0bd8382bc87d0aad310b07fd6f"
+  },
+  {
+    "key": "item-armor_nobleSleeves3",
+    "id": "armor:nobleSleeves3",
+    "name": "Emerald noble sleeves",
+    "model": "nobleSleeves3",
+    "bounds": [
+      0.85,
+      0.08415173802911466,
+      0.08674581133457442
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "944678973ac991fa063a15ba6316d0d96eec9d7a9814b08f7e2d0fb5b16521a2"
+  },
+  {
+    "key": "item-armor_nobleTrousers1",
+    "id": "armor:nobleTrousers1",
+    "name": "Crimson noble trousers",
+    "model": "nobleTrousers1",
+    "bounds": [
+      0.3927686391796625,
+      0.85,
+      0.26597033600878933
+    ],
+    "pixelBounds": [
+      46,
+      14,
+      98,
+      127
+    ],
+    "sha256": "4a3890a1111d31c999b0e9cebbf73f752d31c20a27289907978baedf06b2d425"
+  },
+  {
+    "key": "item-armor_nobleTrousers2",
+    "id": "armor:nobleTrousers2",
+    "name": "Royal blue noble trousers",
+    "model": "nobleTrousers2",
+    "bounds": [
+      0.3927686391796625,
+      0.85,
+      0.26597033600878933
+    ],
+    "pixelBounds": [
+      46,
+      14,
+      98,
+      127
+    ],
+    "sha256": "cf6893e552b0ae40d85c77014d68e9a82f439ff40b727a678137b458c561ba02"
+  },
+  {
+    "key": "item-armor_nobleTrousers3",
+    "id": "armor:nobleTrousers3",
+    "name": "Emerald noble trousers",
+    "model": "nobleTrousers3",
+    "bounds": [
+      0.3927686391796625,
+      0.85,
+      0.26597033600878933
+    ],
+    "pixelBounds": [
+      46,
+      14,
+      98,
+      127
+    ],
+    "sha256": "ec9fff8ed185c89f9ee7168acbeb32569193a25bb9fa9d4f60881300c803ff0b"
+  },
+  {
+    "key": "item-armor_nobleBoots1",
+    "id": "armor:nobleBoots1",
+    "name": "Crimson noble boots",
+    "model": "nobleBoots1",
+    "bounds": [
+      0.6483886226996673,
+      0.85,
+      0.6377010406811731
+    ],
+    "pixelBounds": [
+      32,
+      12,
+      116,
+      131
+    ],
+    "sha256": "df496df89762317349cbae6d39ad2a5176d5e44eaa676a54eb4f50a10d8bcff8"
+  },
+  {
+    "key": "item-armor_nobleBoots2",
+    "id": "armor:nobleBoots2",
+    "name": "Royal blue noble boots",
+    "model": "nobleBoots2",
+    "bounds": [
+      0.6483886226996673,
+      0.85,
+      0.6377010406811731
+    ],
+    "pixelBounds": [
+      32,
+      12,
+      116,
+      131
+    ],
+    "sha256": "a29fff4a135ef0c43c3ce40dd7407846f8c00f87784c88bb0bf58e7d42c1dc33"
+  },
+  {
+    "key": "item-armor_nobleBoots3",
+    "id": "armor:nobleBoots3",
+    "name": "Emerald noble boots",
+    "model": "nobleBoots3",
+    "bounds": [
+      0.6483886226996673,
+      0.85,
+      0.6377010406811731
+    ],
+    "pixelBounds": [
+      32,
+      12,
+      116,
+      131
+    ],
+    "sha256": "e3aa56b085dfc073a6220d530148b6aab6327ec3496fd389ea1c69244551f1b9"
+  },
+  {
+    "key": "item-armor_peasantShirt1",
+    "id": "armor:peasantShirt1",
+    "name": "Brown shirt",
+    "model": "peasantShirt1",
+    "bounds": [
+      0.85,
+      0.7252769554734946,
+      0.35261238441114534
+    ],
+    "pixelBounds": [
+      25,
+      16,
+      125,
+      122
+    ],
+    "sha256": "132656a8d0df7df2d3774c635415f6677a33370bcf0d9a41883de5b0f8f91c7c"
+  },
+  {
+    "key": "item-armor_peasantShirt2",
+    "id": "armor:peasantShirt2",
+    "name": "Charcoal shirt",
+    "model": "peasantShirt2",
+    "bounds": [
+      0.85,
+      0.7252769554734946,
+      0.35261238441114534
+    ],
+    "pixelBounds": [
+      25,
+      16,
+      125,
+      122
+    ],
+    "sha256": "f22d619a9e1a75b5b737c81d24e07adfede83791fd133feeca1dbb11529d5d5e"
+  },
+  {
+    "key": "item-armor_peasantShirt3",
+    "id": "armor:peasantShirt3",
+    "name": "Blue shirt",
+    "model": "peasantShirt3",
+    "bounds": [
+      0.85,
+      0.7252769554734946,
+      0.35261238441114534
+    ],
+    "pixelBounds": [
+      25,
+      16,
+      125,
+      122
+    ],
+    "sha256": "6bbac1ff000061404064b2b5c415c3ebe1a5bcb43d49aa358e1a48bc94880787"
+  },
+  {
+    "key": "item-armor_peasantSleeves1",
+    "id": "armor:peasantSleeves1",
+    "name": "Brown sleeves",
+    "model": "peasantSleeves1",
+    "bounds": [
+      0.85,
+      0.12220589778570679,
+      0.13719173050687375
+    ],
+    "pixelBounds": [
+      11,
+      46,
+      136,
+      97
+    ],
+    "sha256": "778a938a47db4136ff01b8d715254341e66a42f67b3db02c6ad26e87c91c7a07"
+  },
+  {
+    "key": "item-armor_peasantSleeves2",
+    "id": "armor:peasantSleeves2",
+    "name": "Charcoal sleeves",
+    "model": "peasantSleeves2",
+    "bounds": [
+      0.85,
+      0.12220589778570679,
+      0.13719173050687375
+    ],
+    "pixelBounds": [
+      11,
+      46,
+      136,
+      97
+    ],
+    "sha256": "2e719f8d206d6d008a98df324ff590428072a44a5cfc85a7c603088fdc3b1a1d"
+  },
+  {
+    "key": "item-armor_peasantSleeves3",
+    "id": "armor:peasantSleeves3",
+    "name": "Blue sleeves",
+    "model": "peasantSleeves3",
+    "bounds": [
+      0.85,
+      0.12220589778570679,
+      0.13719173050687375
+    ],
+    "pixelBounds": [
+      11,
+      46,
+      136,
+      97
+    ],
+    "sha256": "529cd1e070d5551fcdaf87a9aea272f099ab1e096eee0575174f94bf66ca002f"
+  },
+  {
+    "key": "item-armor_peasantTrousers1",
+    "id": "armor:peasantTrousers1",
+    "name": "Brown trousers",
+    "model": "peasantTrousers1",
+    "bounds": [
+      0.5523819696646015,
+      0.85,
+      0.2987594225898007
+    ],
+    "pixelBounds": [
+      41,
+      22,
+      104,
+      127
+    ],
+    "sha256": "6749d096ea1138255e74789ba77d1a91146564782ebe1f5c90f29e053547817a"
+  },
+  {
+    "key": "item-armor_peasantTrousers2",
+    "id": "armor:peasantTrousers2",
+    "name": "Charcoal trousers",
+    "model": "peasantTrousers2",
+    "bounds": [
+      0.5523819696646015,
+      0.85,
+      0.2987594225898007
+    ],
+    "pixelBounds": [
+      41,
+      22,
+      104,
+      127
+    ],
+    "sha256": "5b3b2610980168d3823b8d25ed8a819add9f4268cc2becbf9f49fb141618dc04"
+  },
+  {
+    "key": "item-armor_peasantTrousers3",
+    "id": "armor:peasantTrousers3",
+    "name": "Blue trousers",
+    "model": "peasantTrousers3",
+    "bounds": [
+      0.5523819696646015,
+      0.85,
+      0.2987594225898007
+    ],
+    "pixelBounds": [
+      41,
+      22,
+      104,
+      127
+    ],
+    "sha256": "1a75fea96ab8009a2c3a69c82a65c7433c761e95ffbba6286a8cdfb21cb2ff0c"
+  },
+  {
+    "key": "item-armor_peasantShoes1",
+    "id": "armor:peasantShoes1",
+    "name": "Brown shoes",
+    "model": "peasantShoes1",
+    "bounds": [
+      0.6590762047181615,
+      0.85,
+      0.620242927335429
+    ],
+    "pixelBounds": [
+      32,
+      12,
+      114,
+      131
+    ],
+    "sha256": "b4f691e67a555c4c512d7cac556777755617ffaa235550d389c363346e86236d"
+  },
+  {
+    "key": "item-armor_peasantShoes2",
+    "id": "armor:peasantShoes2",
+    "name": "Charcoal shoes",
+    "model": "peasantShoes2",
+    "bounds": [
+      0.6590762047181615,
+      0.85,
+      0.620242927335429
+    ],
+    "pixelBounds": [
+      32,
+      12,
+      114,
+      131
+    ],
+    "sha256": "a69ea52bd03ce6076b65bbd7b1d058404726cba77d4c70082ba3bb4009812295"
+  },
+  {
+    "key": "item-armor_peasantShoes3",
+    "id": "armor:peasantShoes3",
+    "name": "Blue shoes",
+    "model": "peasantShoes3",
+    "bounds": [
+      0.6590762047181615,
+      0.85,
+      0.620242927335429
+    ],
+    "pixelBounds": [
+      32,
+      12,
+      114,
+      131
+    ],
+    "sha256": "cc6b625af515f61d729950267eb6743bbc141c47fe7ce906b2fd46d8b64d07bd"
+  },
+  {
+    "key": "item-armor_rangerHood1",
+    "id": "armor:rangerHood1",
+    "name": "Forest ranger hood",
+    "model": "rangerHood1",
+    "bounds": [
+      0.7587923825800348,
+      0.85,
+      0.8369258705404827
+    ],
+    "pixelBounds": [
+      38,
+      27,
+      109,
+      122
+    ],
+    "sha256": "4811e9b37a39c59760caf853e6277d129d9b0802d58618f3be30cc55131cbe9c"
+  },
+  {
+    "key": "item-armor_rangerHood2",
+    "id": "armor:rangerHood2",
+    "name": "Shadow ranger hood",
+    "model": "rangerHood2",
+    "bounds": [
+      0.7587923825800348,
+      0.85,
+      0.8369258705404827
+    ],
+    "pixelBounds": [
+      38,
+      27,
+      109,
+      122
+    ],
+    "sha256": "f6de02b5a96e5516a4294a95c1c9a187a9fcee02dc525eef6750026ce63f0164"
+  },
+  {
+    "key": "item-armor_rangerHood3",
+    "id": "armor:rangerHood3",
+    "name": "Hunter ranger hood",
+    "model": "rangerHood3",
+    "bounds": [
+      0.7587923825800348,
+      0.85,
+      0.8369258705404827
+    ],
+    "pixelBounds": [
+      38,
+      27,
+      109,
+      122
+    ],
+    "sha256": "ae75507481600bb9e1b1ec2db98d26b6b399dcb7d7f0d1d0c9b4df6807fc3f94"
+  },
+  {
+    "key": "item-armor_rangerPauldron1",
+    "id": "armor:rangerPauldron1",
+    "name": "Forest ranger pauldron",
+    "model": "rangerPauldron1",
+    "bounds": [
+      0.85,
+      0.49977416302987765,
+      0.7639805291909543
+    ],
+    "pixelBounds": [
+      23,
+      33,
+      115,
+      113
+    ],
+    "sha256": "cef15b0aed929b0ac9132bf0ac2b40eccb620a66053c2494c2be6ee9fc8e9bb7"
+  },
+  {
+    "key": "item-armor_rangerPauldron2",
+    "id": "armor:rangerPauldron2",
+    "name": "Shadow ranger pauldron",
+    "model": "rangerPauldron2",
+    "bounds": [
+      0.85,
+      0.49977416302987765,
+      0.7639805291909543
+    ],
+    "pixelBounds": [
+      23,
+      33,
+      115,
+      113
+    ],
+    "sha256": "42d793bc34a6b50417c629d21534ba2564c69a5bef5122286ede755513317807"
+  },
+  {
+    "key": "item-armor_rangerPauldron3",
+    "id": "armor:rangerPauldron3",
+    "name": "Hunter ranger pauldron",
+    "model": "rangerPauldron3",
+    "bounds": [
+      0.85,
+      0.49977416302987765,
+      0.7639805291909543
+    ],
+    "pixelBounds": [
+      23,
+      33,
+      115,
+      113
+    ],
+    "sha256": "0d3ea3fddeab558dc3220feb9a5acb08d1ae27d9cae82fdf79b7746b166b6803"
+  },
+  {
+    "key": "item-armor_rangerTunic1",
+    "id": "armor:rangerTunic1",
+    "name": "Forest ranger tunic",
+    "model": "rangerTunic1",
+    "bounds": [
+      0.85,
+      0.85,
+      0.7242393261513107
+    ],
+    "pixelBounds": [
+      32,
+      29,
+      116,
+      120
+    ],
+    "sha256": "5a3fa5fd085fffcf3daa3a8e4c673c18a33c7f1fc3ba7f0394d876dedee224a4"
+  },
+  {
+    "key": "item-armor_rangerTunic2",
+    "id": "armor:rangerTunic2",
+    "name": "Shadow ranger tunic",
+    "model": "rangerTunic2",
+    "bounds": [
+      0.85,
+      0.85,
+      0.7242393261513107
+    ],
+    "pixelBounds": [
+      32,
+      29,
+      116,
+      120
+    ],
+    "sha256": "41107547220425ebdde4b6d32918ace6b6f102768794403d572880da0d5394e3"
+  },
+  {
+    "key": "item-armor_rangerTunic3",
+    "id": "armor:rangerTunic3",
+    "name": "Hunter ranger tunic",
+    "model": "rangerTunic3",
+    "bounds": [
+      0.85,
+      0.85,
+      0.7242393261513107
+    ],
+    "pixelBounds": [
+      32,
+      29,
+      116,
+      120
+    ],
+    "sha256": "58b6aeb4c4f9a3c7872239560f6db1661a70cacc611ebaab12be9b84545bea3f"
+  },
+  {
+    "key": "item-armor_rangerBracers1",
+    "id": "armor:rangerBracers1",
+    "name": "Forest ranger bracers",
+    "model": "rangerBracers1",
+    "bounds": [
+      0.85,
+      0.07714219469378292,
+      0.082097313769004
+    ],
+    "pixelBounds": [
+      10,
+      51,
+      134,
+      95
+    ],
+    "sha256": "2d2f872c6d17c5ffd6eaa7e0feddc5bde3240e4ce597af81de33f7d0921242b5"
+  },
+  {
+    "key": "item-armor_rangerBracers2",
+    "id": "armor:rangerBracers2",
+    "name": "Shadow ranger bracers",
+    "model": "rangerBracers2",
+    "bounds": [
+      0.85,
+      0.07714219469378292,
+      0.082097313769004
+    ],
+    "pixelBounds": [
+      10,
+      51,
+      134,
+      95
+    ],
+    "sha256": "69569c263a4ab6ba3a3b2f9d295f933c726d54bfb62cd9c1f9d28dfe90815365"
+  },
+  {
+    "key": "item-armor_rangerBracers3",
+    "id": "armor:rangerBracers3",
+    "name": "Hunter ranger bracers",
+    "model": "rangerBracers3",
+    "bounds": [
+      0.85,
+      0.07714219469378292,
+      0.082097313769004
+    ],
+    "pixelBounds": [
+      10,
+      51,
+      134,
+      95
+    ],
+    "sha256": "e3ea2c018a9e5e27705353c3e23b04d5baefc36e277b6c1eed32d7ce8e1fcb8f"
+  },
+  {
+    "key": "item-armor_rangerTrousers1",
+    "id": "armor:rangerTrousers1",
+    "name": "Forest ranger trousers",
+    "model": "rangerTrousers1",
+    "bounds": [
+      0.49095431379131443,
+      0.85,
+      0.30737174596392713
+    ],
+    "pixelBounds": [
+      40,
+      22,
+      105,
+      127
+    ],
+    "sha256": "658a42c44226365e662adc895d643cc53912f59517a7eb9482a6059c0269a6c2"
+  },
+  {
+    "key": "item-armor_rangerTrousers2",
+    "id": "armor:rangerTrousers2",
+    "name": "Shadow ranger trousers",
+    "model": "rangerTrousers2",
+    "bounds": [
+      0.49095431379131443,
+      0.85,
+      0.30737174596392713
+    ],
+    "pixelBounds": [
+      40,
+      22,
+      105,
+      127
+    ],
+    "sha256": "a5b61cae26d8e110eb7752f41ef1b1802bb1fd5067c39da1558ddc8cfd2257e3"
+  },
+  {
+    "key": "item-armor_rangerTrousers3",
+    "id": "armor:rangerTrousers3",
+    "name": "Hunter ranger trousers",
+    "model": "rangerTrousers3",
+    "bounds": [
+      0.49095431379131443,
+      0.85,
+      0.30737174596392713
+    ],
+    "pixelBounds": [
+      40,
+      22,
+      105,
+      127
+    ],
+    "sha256": "244e80a5faf205d2b01f832669e1c5c12afbc63d8db96402e0af71974134cc3d"
+  },
+  {
+    "key": "item-armor_rangerBoots1",
+    "id": "armor:rangerBoots1",
+    "name": "Forest ranger boots",
+    "model": "rangerBoots1",
+    "bounds": [
+      0.5404492324594867,
+      0.85,
+      0.511291848506119
+    ],
+    "pixelBounds": [
+      37,
+      16,
+      109,
+      132
+    ],
+    "sha256": "9d1127a4259cf75963d8af0a4e057982c5000b533e0fb288c4991deded8b15bc"
+  },
+  {
+    "key": "item-armor_rangerBoots2",
+    "id": "armor:rangerBoots2",
+    "name": "Shadow ranger boots",
+    "model": "rangerBoots2",
+    "bounds": [
+      0.5404492324594867,
+      0.85,
+      0.511291848506119
+    ],
+    "pixelBounds": [
+      37,
+      16,
+      109,
+      132
+    ],
+    "sha256": "6f63e81284789d44dec96d273e5bfe0ce63c10f470a0bed90288eb19f876332e"
+  },
+  {
+    "key": "item-armor_rangerBoots3",
+    "id": "armor:rangerBoots3",
+    "name": "Hunter ranger boots",
+    "model": "rangerBoots3",
+    "bounds": [
+      0.5404492324594867,
+      0.85,
+      0.511291848506119
+    ],
+    "pixelBounds": [
+      37,
+      16,
+      109,
+      132
+    ],
+    "sha256": "44af26d10746b7aa9b3913c279d9e3296e862f6f57e8902d40e3fdbed767f286"
+  },
+  {
+    "key": "item-armor_wizardRobeTop1",
+    "id": "armor:wizardRobeTop1",
+    "name": "Blue wizard robe top",
+    "model": "wizardRobeTop1",
+    "bounds": [
+      0.85,
+      0.85,
+      0.5885952330088198
+    ],
+    "pixelBounds": [
+      31,
+      24,
+      117,
+      120
+    ],
+    "sha256": "f8a3c5e38b8ebe074fdf429ba3227eddcbd1c2aadf7632a892cd48d0f17a251d"
+  },
+  {
+    "key": "item-armor_wizardRobeTop2",
+    "id": "armor:wizardRobeTop2",
+    "name": "Violet wizard robe top",
+    "model": "wizardRobeTop2",
+    "bounds": [
+      0.85,
+      0.85,
+      0.5885952330088198
+    ],
+    "pixelBounds": [
+      31,
+      24,
+      117,
+      120
+    ],
+    "sha256": "c6e04c76969d868d955ae7271cdd3c7eb4bac433ca67dd0a8f7cfe49a6c40e59"
+  },
+  {
+    "key": "item-armor_wizardRobeTop3",
+    "id": "armor:wizardRobeTop3",
+    "name": "Crimson wizard robe top",
+    "model": "wizardRobeTop3",
+    "bounds": [
+      0.85,
+      0.85,
+      0.5885952330088198
+    ],
+    "pixelBounds": [
+      31,
+      24,
+      117,
+      120
+    ],
+    "sha256": "12871f2782ee8c76edd8243342aa56eeb4c01950f2305fe31c26f7f8c146ab0b"
+  },
+  {
+    "key": "item-armor_wizardBracers1",
+    "id": "armor:wizardBracers1",
+    "name": "Blue wizard bracers",
+    "model": "wizardBracers1",
+    "bounds": [
+      0.85,
+      0.07894405617568148,
+      0.08705243284422509
+    ],
+    "pixelBounds": [
+      10,
+      51,
+      133,
+      95
+    ],
+    "sha256": "aa6bc5dcfc5e9213efb0ce07e53fec01a1dbe27d1ef59244547a883ac54f4efa"
+  },
+  {
+    "key": "item-armor_wizardBracers2",
+    "id": "armor:wizardBracers2",
+    "name": "Violet wizard bracers",
+    "model": "wizardBracers2",
+    "bounds": [
+      0.85,
+      0.07894405617568148,
+      0.08705243284422509
+    ],
+    "pixelBounds": [
+      10,
+      51,
+      133,
+      95
+    ],
+    "sha256": "23767774ceff8edfcdbeff6ffa9d888939b3e1e5832026605ad790f8b8a8ce4c"
+  },
+  {
+    "key": "item-armor_wizardBracers3",
+    "id": "armor:wizardBracers3",
+    "name": "Crimson wizard bracers",
+    "model": "wizardBracers3",
+    "bounds": [
+      0.85,
+      0.07894405617568148,
+      0.08705243284422509
+    ],
+    "pixelBounds": [
+      10,
+      51,
+      133,
+      95
+    ],
+    "sha256": "89f9645a914f9a8a2fb9e7770efddd85bb226c001626ed6ecefc8d651b62551b"
+  },
+  {
+    "key": "item-armor_wizardRobeBottom1",
+    "id": "armor:wizardRobeBottom1",
+    "name": "Blue wizard robe bottom",
+    "model": "wizardRobeBottom1",
+    "bounds": [
+      0.5340159306619465,
+      0.85,
+      0.29720297860652484
+    ],
+    "pixelBounds": [
+      39,
+      25,
+      104,
+      126
+    ],
+    "sha256": "e2c0a72f9943012c473d169388d8a9858789007cb7b14ce187f1c0dcc8a6aa9b"
+  },
+  {
+    "key": "item-armor_wizardRobeBottom2",
+    "id": "armor:wizardRobeBottom2",
+    "name": "Violet wizard robe bottom",
+    "model": "wizardRobeBottom2",
+    "bounds": [
+      0.5340159306619465,
+      0.85,
+      0.29720297860652484
+    ],
+    "pixelBounds": [
+      39,
+      25,
+      104,
+      126
+    ],
+    "sha256": "c8b7c13f4cf2847c0c980d9208e71098c5d00a6b64af072ef282e66f3606029e"
+  },
+  {
+    "key": "item-armor_wizardRobeBottom3",
+    "id": "armor:wizardRobeBottom3",
+    "name": "Crimson wizard robe bottom",
+    "model": "wizardRobeBottom3",
+    "bounds": [
+      0.5340159306619465,
+      0.85,
+      0.29720297860652484
+    ],
+    "pixelBounds": [
+      39,
+      25,
+      104,
+      126
+    ],
+    "sha256": "c9b964af4fbc9a9e181b432ac46a30a43f20b3027c6f762520b78956f8975700"
+  },
+  {
+    "key": "item-armor_wizardBoots1",
+    "id": "armor:wizardBoots1",
+    "name": "Blue wizard boots",
+    "model": "wizardBoots1",
+    "bounds": [
+      0.5968962675862911,
+      0.85,
+      0.5026795251319925
+    ],
+    "pixelBounds": [
+      33,
+      17,
+      111,
+      131
+    ],
+    "sha256": "4bd715d12824a82cc0c3f5db442eb4c13ec0c4b36f24129b971f6d38fc53f5a8"
+  },
+  {
+    "key": "item-armor_wizardBoots2",
+    "id": "armor:wizardBoots2",
+    "name": "Violet wizard boots",
+    "model": "wizardBoots2",
+    "bounds": [
+      0.5968962675862911,
+      0.85,
+      0.5026795251319925
+    ],
+    "pixelBounds": [
+      33,
+      17,
+      111,
+      131
+    ],
+    "sha256": "023a68d549ce4ba4acc5fec5987371f85b30f239180f8a0f4be56a6783d9fe35"
+  },
+  {
+    "key": "item-armor_wizardBoots3",
+    "id": "armor:wizardBoots3",
+    "name": "Crimson wizard boots",
+    "model": "wizardBoots3",
+    "bounds": [
+      0.5968962675862911,
+      0.85,
+      0.5026795251319925
+    ],
+    "pixelBounds": [
+      33,
+      17,
+      111,
+      131
+    ],
+    "sha256": "012847cccd180a2893298357ea74a351189a61cf3666c7b22d8174ccb55de2f8"
+  },
+  {
+    "key": "item-armor_cape",
+    "id": "armor:cape",
+    "name": "Crimson cape",
+    "model": "cape",
+    "bounds": [
+      1.2866014242172241,
+      2.0300000056624414,
+      0.4819999859929085
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      109,
+      125
+    ],
+    "sha256": "4d2f981b6ce7f6c240ae09fb7982661f884aa296a1bc69fdfee27656674ca8d2"
   }
 ]
