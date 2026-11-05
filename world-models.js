@@ -1,14 +1,14 @@
-import {campObject} from './camp-models.js?v=release-20261105-cap99v62';
-import {professionStationModel} from './profession-models.js?v=release-20261105-cap99v62';
-import {oreResources} from './profession-data.js?v=release-20261105-cap99v62';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261105-cap99v62';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261105-cap99v62';
-import {creatureMaterial} from './creature-material.js?v=release-20261105-cap99v62';
-import {dragonModel} from './monster-dragon.js?v=release-20261105-cap99v62';
-import {castleObject} from './castle-models.js?v=release-20261105-cap99v62';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261105-cap99v62';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-cap99v62';
-import {townProp,dressFountain} from './town-props.js?v=release-20261105-cap99v62';
+import {campObject} from './camp-models.js?v=release-20261105-clickwalk63';
+import {professionStationModel} from './profession-models.js?v=release-20261105-clickwalk63';
+import {oreResources} from './profession-data.js?v=release-20261105-clickwalk63';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261105-clickwalk63';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261105-clickwalk63';
+import {creatureMaterial} from './creature-material.js?v=release-20261105-clickwalk63';
+import {dragonModel} from './monster-dragon.js?v=release-20261105-clickwalk63';
+import {castleObject} from './castle-models.js?v=release-20261105-clickwalk63';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261105-clickwalk63';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-clickwalk63';
+import {townProp,dressFountain} from './town-props.js?v=release-20261105-clickwalk63';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);
