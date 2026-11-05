@@ -2,6 +2,15 @@ import {installLocalSkinning} from './local-skinning.js?v=release-20261105-camer
 import {characterStore as store,CHARACTER_SCALE,ensurePart,outfitMaterial,skinMaterial,hairMaterial,eyeMaterial} from './character-assets.js?v=release-20261105-camera75';
 import {outfitItems,wornOutfit,OUTFIT_SLOTS} from './outfits.js?v=release-20261105-camera75';
 import {BEARDS,SKINS,HAIRS} from './appearance.js?v=release-20261105-camera75';
+// Characters used to skip frustum culling (frustumCulled=false), so every
+// NPC and monster in the region was drawn twice a frame (camera + shadow map)
+// even behind the camera. Skinned vertices stay in the model's local frame
+// (bind matrix is identity), so a padded sphere around the model origin bounds every
+// animation pose; three.js reuses this sphere instead of re-skinning on CPU.
+export function characterCullSphere(T,mesh){const g=mesh.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const s=g.boundingSphere;
+ // Centred on the model origin so the bound also holds if the source armature
+ // was rotated (e.g. Z-up exports): any rotation of the bind sphere fits inside.
+ mesh.boundingSphere=new T.Sphere(new T.Vector3(),s.center.length()+s.radius*1.5);mesh.frustumCulled=true;return mesh.boundingSphere}
 // Skinned Quaternius characters (CC0) for the player, remote players and NPCs.
 // Every body region is an artist-made outfit part on one shared skeleton;
 // clips from the Universal Animation Library drive the bones (animation.js).
@@ -27,7 +36,7 @@ export function buildHumanoid(T,root,look={}){
  // body). Bone palettes stay character-local (local-skinning.js) so skinning
  // is equally precise anywhere in the world, including on iPad GPUs.
  function wear(source,materialFor,list){const added=[];source.traverse(o=>{if(!o.isSkinnedMesh)return;
-   const m=new T.SkinnedMesh(o.geometry,materialFor(o.material.name));m.name=o.name;m.castShadow=true;m.receiveShadow=false;m.frustumCulled=false;
+   const m=new T.SkinnedMesh(o.geometry,materialFor(o.material.name));m.name=o.name;m.castShadow=true;m.receiveShadow=false;characterCullSphere(T,m);
    const skeleton=new T.Skeleton(o.skeleton.bones.map(b=>bones[b.name]),o.skeleton.boneInverses);model.add(m);m.bind(skeleton,new T.Matrix4());
    m.bindMode=T.DetachedBindMode;m.bindMatrix.identity();m.bindMatrixInverse.identity();installLocalSkinning(T,model,skeleton,[m],{preserveInverses:true});
    added.push(m);meshes.push(m);list?.push(m)});return added}
