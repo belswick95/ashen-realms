@@ -15,8 +15,20 @@ export function buildWarhorse(T,parent){
  for(const side of [-1,1]){const p=[[side*.23,1.80,-.72],[side*.29,1.81,.28],[side*.405,1.18,.22],[side*.41,1.17,-.73]];panel(p,blue);line([...p,p[0]],.014,gold);line([[side*.23,1.78,-.24],[side*.40,1.49,-.24],[side*.34,1.08,-.24]],.018,dark);line([[side*.37,1.45,-.12],[side*.40,1.12,-.12],[side*.54,1.10,-.12],[side*.55,1.42,-.12]],.015,steel);}
  // Keep the fitted saddle cloth and stirrups; raised leather seat/rims pierced the cape.
 
- for(const side of [-1,1]){panel([[side*.08,1.87,.70],[side*.26,1.76,.76],[side*.29,1.25,.69],[side*.07,1.18,.77]],steel);line([[side*.08,1.87,.71],[side*.26,1.76,.77],[side*.29,1.25,.70],[side*.07,1.18,.78]],.012,gold);line([[side*.16,1.90,1.55],[side*.23,1.77,1.45],[side*.25,2.38,.21]],.014,dark);}
+ for(const side of [-1,1]){panel([[side*.08,1.87,.70],[side*.26,1.76,.76],[side*.29,1.25,.69],[side*.07,1.18,.77]],steel);line([[side*.08,1.87,.71],[side*.26,1.76,.77],[side*.29,1.25,.70],[side*.07,1.18,.78]],.012,gold);}
  let seatOffset=[0,0];
  function pose(phase,moving){const count=horseAsset.saddle.length,f=((phase%1)+1)%1*count,i=Math.floor(f)%count,j=(i+1)%count,t=f-i;for(const skin of skins){skin.morphTargetInfluences.fill(0);if(moving){skin.morphTargetInfluences[i]=1-t;skin.morphTargetInfluences[j]=t;}}seatOffset=moving?horseAsset.saddle[i].map((v,k)=>v*(1-t)+horseAsset.saddle[j][k]*t):[0,0];barrel.position.set(0,seatOffset[0],seatOffset[1]);return seatOffset;}
- return {root,barrel,tail,resources,skins,pose,legs:horseAsset.hoofContacts.map((offset,i)=>({offset,front:i>1})),get seatOffset(){return seatOffset}};
+ // Reins: bit ring → over the neck → the rider's hand. Straight leather
+ // segments are re-aimed every frame so the line ends in the rider's fist.
+ const reinGeometry=new T.CylinderGeometry(.014,.014,1,6,1,true);reinGeometry.translate(0,.5,0);reinGeometry.rotateX(Math.PI/2);resources.push(reinGeometry);
+ const reins=[-1,1].map(side=>({bit:new T.Vector3(side*.16,1.90,1.55),neck:new T.Vector3(side*.2,2.02,1.12),hand:new T.Vector3(side*.25,2.38,.21),segments:[0,1].map(()=>{const m=new T.Mesh(reinGeometry,dark);m.castShadow=true;barrel.add(m);return m})}));
+ const inverse=new T.Matrix4(),look=new T.Vector3(),sag=new T.Vector3();
+ function aim(m,from,to){m.position.copy(from);m.scale.set(1,1,Math.max(1e-4,from.distanceTo(to)));m.lookAt(look.copy(to).applyMatrix4(barrel.matrixWorld))}
+ // Hands in world space (left, right); omitted hands keep the resting grip.
+ function setReins(left,right){root.updateMatrixWorld(true);inverse.copy(barrel.matrixWorld).invert();
+  reins.forEach((r,i)=>{const hand=i?right:left;if(hand)r.hand.copy(hand).applyMatrix4(inverse);
+   // The rein drapes over the neck between the bit and the hand.
+   sag.copy(r.bit).lerp(r.hand,.35);sag.y=Math.min(sag.y,r.neck.y);sag.x=r.neck.x+(r.hand.x-r.neck.x)*.3;aim(r.segments[0],r.bit,sag);aim(r.segments[1],sag,r.hand)})}
+ setReins();
+ return {root,barrel,tail,resources,skins,pose,setReins,reins,legs:horseAsset.hoofContacts.map((offset,i)=>({offset,front:i>1})),get seatOffset(){return seatOffset}};
 }

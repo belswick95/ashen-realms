@@ -46,12 +46,16 @@ export function startMusic({scene='world'}={}){
  function setScene(next){mode=next;zone=null;tick();notify()}
  function hoof({volume:gainValue=1,hard=false,front=false,pan=0}={}){
   if(!enabled||!environmentEnabled||!ctx||ctx.state!=='running'||document.hidden||gainValue<=0)return;
-  const t=ctx.currentTime,gain=ctx.createGain(),filter=ctx.createBiquadFilter(),noise=ctx.createBufferSource(),panner=ctx.createStereoPanner();
-  // Short, filtered hoof-shell crack plus a low ground impact; no looping hiss.
-  noise.buffer=noiseBuffer;filter.type='bandpass';filter.frequency.value=hard?1550:690;filter.Q.value=hard?1.9:.7;
-  gain.gain.setValueAtTime(Math.min(1,gainValue)*(hard?.28:.18)*(front?.9:1),t);gain.gain.exponentialRampToValueAtTime(.0001,t+.065);panner.pan.value=Math.max(-1,Math.min(1,pan));
-  noise.connect(filter);filter.connect(gain);gain.connect(panner);panner.connect(environmentBus);noise.start(t,(front?.3:.8));noise.stop(t+.07);noise.onended=()=>{noise.disconnect();filter.disconnect();gain.disconnect();panner.disconnect()};
-  const impact=ctx.createOscillator(),body=ctx.createGain();impact.frequency.setValueAtTime(hard?155:105,t);impact.frequency.exponentialRampToValueAtTime(45,t+.075);body.gain.setValueAtTime(Math.min(1,gainValue)*.075,t);body.gain.exponentialRampToValueAtTime(.0001,t+.09);impact.connect(body);body.connect(environmentBus);impact.start(t);impact.stop(t+.10);impact.onended=()=>{impact.disconnect();body.disconnect()};
+  // Clip-clop: a hollow hoof-wall knock (pitched, quickly falling), a short
+  // grit click from the ground and a soft low thud. Hard ground rings higher.
+  const t=ctx.currentTime+.002,level=Math.min(1,gainValue)*(front?.85:1),vary=.92+Math.random()*.16,out=ctx.createGain(),panner=ctx.createStereoPanner();
+  out.gain.value=level;panner.pan.value=Math.max(-1,Math.min(1,pan));out.connect(panner);panner.connect(environmentBus);
+  const parts=[];const env=(node,peak,attack,decay)=>{const g=ctx.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+attack+decay);node.connect(g);g.connect(out);parts.push(node,g);return g};
+  const knock=ctx.createOscillator();knock.type='triangle';const pitch=(hard?640:390)*vary*(front?1.08:1);knock.frequency.setValueAtTime(pitch,t);knock.frequency.exponentialRampToValueAtTime(pitch*.55,t+.07);env(knock,hard?.34:.26,.003,hard?.075:.06);
+  const noise=ctx.createBufferSource(),band=ctx.createBiquadFilter();noise.buffer=noiseBuffer;band.type='bandpass';band.frequency.value=hard?2600:1100;band.Q.value=hard?1.6:.8;noise.connect(band);parts.push(band);env(band,hard?.5:.32,.002,hard?.035:.05);
+  const thud=ctx.createOscillator();thud.type='sine';thud.frequency.setValueAtTime(hard?120:95,t);thud.frequency.exponentialRampToValueAtTime(48,t+.1);env(thud,hard?.16:.24,.004,.11);
+  for(const source of [knock,noise,thud]){source.start(t,source===noise?Math.random()*3:undefined);source.stop(t+.16)}
+  thud.onended=()=>{for(const n of parts)n.disconnect();out.disconnect();panner.disconnect()};
  }
  function celebrate(){if(!enabled||document.hidden)return false;celebration?.pause();const audio=new Audio('/assets/audio/level-up.mp3');celebration=audio;audio.volume=volume/100;audio.setAttribute('playsinline','');ramp(musicBus,enabled&&musicEnabled?volume/100*.18:0,.12);audio.addEventListener('ended',()=>{if(celebration===audio){celebration=null;applyVolume()}});void audio.play().catch(()=>{if(celebration===audio){celebration=null;applyVolume()}});return true;}
  function toggleMaster(){enabled=!enabled;storage.setItem('eldervale-audio-enabled',String(enabled));applyVolume();if(enabled)unlock();notify()}
