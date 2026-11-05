@@ -1,3 +1,4 @@
+import {capital,capitalActive,capitalMapWalls,inCapitalClearing,isCapitalTown,townExtent} from './capital-layout.js?v=release-20261105-perf77';
 import {campClearing} from './camp-blueprint.js?v=release-20261105-perf77';
 import {createLevelUpPanel} from './level-up.js?v=release-20261105-perf77';
 import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261105-perf77';
@@ -56,7 +57,7 @@ import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=re
 import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261105-perf77';
 import {armorCatalog,weaponStats,meleeProtection,meleeRoll} from './melee-stats.js?v=release-20261105-perf77';
 import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261105-perf77';
-import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261105-perf77';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon} from './world-map.js?v=release-20261105-perf77';
+import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261105-perf77';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon,drawCityWalls} from './world-map.js?v=release-20261105-perf77';
 const ARMOR_SLOTS=[...OUTFIT_SLOTS,'cape'];
 import {stepEnergy,footIcon} from './run-energy.js?v=release-20261105-perf77';
 import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261105-perf77';
@@ -181,7 +182,7 @@ const forestTrees=[];
 const treeHitGeometry=new T.ConeGeometry(2.35,6.5,8);
 const treeHitMaterial=new T.MeshBasicMaterial({visible:false});
 function tree(x,z){
- if(inCastle(x,z,9)||landscape.waterAt(x,z)>.01||distanceToRoad(x,z)<4||landscapeSettlements.some(([sx,sz])=>Math.hypot(x-sx,z-sz)<(sx===0&&sz===0?54:32)))return;
+ if(inCastle(x,z,9)||capitalActive()&&inCapitalClearing(x,z)||landscape.waterAt(x,z)>.01||distanceToRoad(x,z)<4||landscapeSettlements.some(([sx,sz])=>Math.hypot(x-sx,z-sz)<(sx===0&&sz===0?54:32)))return;
  forestTrees.push({x,z});
  // Retain individual harvest targets and world coordinates independently of rendering.
  const hit=new T.Mesh(treeHitGeometry,treeHitMaterial);hit.position.set(x,4,z);scene.add(hit);
@@ -672,7 +673,7 @@ const fireLoops=new Map(),levelFireworks=createLevelFireworks(T,scene);let celeb
 // are and which way the camera faces, time of day, water, towns and farms,
 // forest density, the Winterwatch snow and Emberspire's heat, plus nearby
 // smithies, chapels and livestock to place their sounds.
-const soundTowns=generatedWorld?generatedWorld.towns.map(t=>({x:t.x,z:t.z,name:t.name,radius:46})):townMusic.map(t=>({x:t.x,z:t.z,name:t.name,radius:t.radius}));
+const soundTowns=generatedWorld?generatedWorld.towns.map(t=>({...townExtent(t,46),name:t.name})):townMusic.map(t=>({x:t.x,z:t.z,name:t.name,radius:t.radius}));
 let soundSourceCache={at:0,list:[],forest:.5};
 function soundSources(){const now=performance.now();if(now-soundSourceCache.at<4000)return soundSourceCache;const list=[],p=player.position,v=new T.Vector3();let trees=0;
  for(const t of targets){const u=t.userData;if(u.kind==='tree'){const dx=(u.x??0)-p.x,dz=(u.z??0)-p.z;if(Number.isFinite(u.x)&&dx*dx+dz*dz<900)trees++;continue}
@@ -865,6 +866,7 @@ for(const lake of worldLakes){
  for(const bridge of landscape.bridges){const x=toX(bridge.x),y=toY(bridge.z);ctx.save();ctx.translate(x,y);ctx.rotate(-bridge.yaw);ctx.fillStyle='#bba37c';ctx.strokeStyle='#45392b';ctx.lineWidth=1;ctx.fillRect(-bridge.width*pxPerUnit/2,-bridge.length*pzPerUnit/2,bridge.width*pxPerUnit,bridge.length*pzPerUnit);ctx.strokeRect(-bridge.width*pxPerUnit/2,-bridge.length*pzPerUnit/2,bridge.width*pxPerUnit,bridge.length*pzPerUnit);ctx.restore()}
  ctx.strokeStyle='#c6b08a';ctx.lineWidth=Math.max(1.1,2.3*pxPerUnit);
  for(const [a,b] of townStreets){ctx.beginPath();ctx.moveTo(toX(a[0]),toY(a[1]));ctx.lineTo(toX(b[0]),toY(b[1]));ctx.stroke()}
+ if(capitalActive())drawCityWalls(ctx,[capitalMapWalls()],(x,z)=>({x:toX(x),y:toY(z)}),{width:Math.max(2,3.2*pxPerUnit)});
  // Draw buildings from their actual world transforms, including rotated footprints and doorway positions.
  for(const h of houseInteriors){
   const g=h.group,halfW=2*g.scale.x,halfD=1.85*g.scale.z;
@@ -946,7 +948,7 @@ const worldMap=createWorldMap({canvas:largeMap,source:{extent:840,phone:matchMed
  rivers:worldRivers,lakes:worldLakes,lakeOutline,roads:worldRoads,roadPoints,streets:()=>townStreets,bridges:landscape.bridges,castle,trees:()=>forestTrees,
  plazas:()=>worldMapRows().filter(r=>r.data.template==='plaza').map(r=>({x:r.data.x,z:r.data.z,r:8})),
  buildings:()=>houseInteriors.map(h=>({x:h.group.position.x,z:h.group.position.z,halfW:2*h.group.scale.x,halfD:1.85*h.group.scale.z,rot:h.group.rotation.y,roof:'#'+Number(h.roofColor||0x8a4b33).toString(16).padStart(6,'0'),type:h.type,name:h.name})),
- places:()=>places.map(([name,x,z])=>({name,x,z,kind:name.includes('Castle')?'castle':'town'})),
+ places:()=>places.map(([name,x,z])=>({name,x,z,kind:name.includes('Castle')?'castle':'town',...(isCapitalTown({x,z})&&name===capital.name?{capital:true,title:capital.title}:{})})),walls:()=>capitalActive()?[capitalMapWalls()]:[],
  pois:()=>[...houseInteriors.map(h=>({kind:poiKind(h.type),x:h.group.position.x,z:h.group.position.z,name:h.name})),...worldMapRows().map(r=>({kind:r.data.kind==='npc'&&(r.data.quest||r.data.questId)?'quest':poiKind(r.data.template),x:r.data.x,z:r.data.z,name:r.data.name}))],
  player:()=>({x:player.position.x,z:player.position.z,heading:player.rotation.y}),flag:()=>walkFlagState||mapDestination,deathPile:()=>deathFlow.pile(),
  signature:()=>forestTrees.length+':'+townStreets.length+':'+worldMapRows().filter(r=>r.data.template==='plaza').length}});
@@ -1437,7 +1439,7 @@ window.eldervaleWorldBridge={
    h=house(d.x,d.z,d.wallColor||0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stories:d.stories||1,furnished:d.furnished!==false,stone:!!d.stone,roof:d.roof,biome:d.biome});h.realmId=row.id;h.storyData=d;h.stories=addBuildingStories(T,h,d,{box,decorate:decorateTownBuilding,material});h.stories.floors.slice(1).forEach(room=>room.traverse(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&o.geometry.parameters.height===.085){o.userData.storyFloor=room.position.y/3;walkSurfaces.push(o)}}));root=h.group;batchHouse(h);landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
   }else{root=new T.Group();scene.add(root);root.position.set(d.x,landscape.walkHeight(d.x,d.z)+floorOffset(d.floor,d.x,d.z),d.z);{const base=propBase(landscape.heightAt,d);if(base!==null&&Math.abs(landscape.walkHeight(d.x,d.z)-landscape.heightAt(d.x,d.z))<.01)root.position.y=base}
    if(d.kind==='item'){const item=goods[d.item];if(!item){root.removeFromParent();continue}root.add(makeDroppedItemModel(T,d.item));root.position.y+=.025}
-   else if(d.template==='plaza'){const mesh=new T.Mesh(new T.CircleGeometry(8,48),material(0xa39d8b,'cobble'));mesh.rotation.x=-Math.PI/2;mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);for(let i=0;i<geometry.attributes.uv.count;i++)geometry.attributes.uv.setXY(i,geometry.attributes.position.getX(i)/3,geometry.attributes.position.getZ(i)/3);const mesh=new T.Mesh(geometry,material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template,{...d,groundHeight:landscape.heightAt});if(d.template==='fishing_spot')root.position.y=d.waterHeight??.06;
+   else if(d.template==='plaza'){const mesh=new T.Mesh(new T.CircleGeometry(8,48),material(0xa39d8b,'cobble'));mesh.rotation.x=-Math.PI/2;mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);for(let i=0;i<geometry.attributes.uv.count;i++)geometry.attributes.uv.setXY(i,geometry.attributes.position.getX(i)/3,geometry.attributes.position.getZ(i)/3);const mesh=new T.Mesh(geometry,d.paved?material(0xa29d90,'cobble'):material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template,{...d,groundHeight:landscape.heightAt});if(d.template==='fishing_spot')root.position.y=d.waterHeight??.06;
    const hit=new T.Mesh(new T.BoxGeometry(d.template==='castle_gate'?9:1.3,d.template==='castle_gate'?7:2,1.3),new T.MeshBasicMaterial({visible:false}));hit.position.y=d.template==='castle_gate'?3.5:1;root.add(hit);hit.userData={kind:professionStations[d.template]||['hearth','campfire','cooking_tripod','well','fountain'].includes(d.template)?'profession':d.kind==='item'?'worldItem':d.template==='fishing_spot'?'fishing':d.template==='castle_gate'?'castleGate':d.template==='altar'?'altar':d.template==='hearth'?'hearth':d.template==='market'?'merchant':d.template==='tree'||d.template==='pine'?'tree':d.template==='rock'?'rock':'worldObject',x:d.x,z:d.z,station:['hearth','campfire','cooking_tripod'].includes(d.template)?'cooking':['well','fountain'].includes(d.template)?'water':d.template,resource:d.resource};targets.push(hit);
   }
   if(root.userData.animateWater)waterAnimationRoots.add(root);if(['castle_wall','castle_tower','castle_gate'].includes(d.template))cameraWorldOccluders.add(root);if(actor)actor.realmId=row.id;if(!h)root.scale.multiplyScalar(d.scale||1);if(actor?.config)root.scale.setScalar(d.scale||1);root.rotation.y=d.yaw*Math.PI/180;root.traverse(o=>{if(targets.includes(o))o.userData.worldEntityId=row.id});root.userData.storyFloor=d.floor||0;root.userData.waterSource=d.template==='fountain';root.userData.lamp=d.template==='lantern';if(root.userData.surface){root.userData.surfaceData=d;root.userData.surfaceId=row.id;conformSurface(root)}worldInstances.set(row.id,{root,actor,house:h});

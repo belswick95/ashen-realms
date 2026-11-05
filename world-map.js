@@ -97,6 +97,28 @@ export function drawPoiIcon(ctx,kind,x,y,r=9){
  ctx.restore();
 }
 
+// A small gold crown marks the realm's capital on the world map.
+export function drawCrownIcon(ctx,x,y,size=16){
+ const s=size/16;ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.lineJoin='round';
+ ctx.beginPath();ctx.moveTo(-8,5);ctx.lineTo(-9,-4);ctx.lineTo(-4,0);ctx.lineTo(0,-7);ctx.lineTo(4,0);ctx.lineTo(9,-4);ctx.lineTo(8,5);ctx.closePath();
+ ctx.fillStyle='rgba(0,0,0,.5)';ctx.save();ctx.translate(1,1.5);ctx.fill();ctx.restore();
+ ctx.fillStyle='#f2c64e';ctx.strokeStyle='#3a2508';ctx.lineWidth=1.6;ctx.fill();ctx.stroke();
+ ctx.fillStyle='#b8862a';ctx.fillRect(-8,3,16,2.4);ctx.strokeRect(-8,3,16,2.4);
+ for(const [cx,cy,c]of [[0,-7,'#d8344a'],[-9,-4,'#3b7bd4'],[9,-4,'#3b7bd4']]){ctx.fillStyle=c;ctx.beginPath();ctx.arc(cx,cy,1.6,0,Math.PI*2);ctx.fill();ctx.stroke()}
+ ctx.restore();
+}
+// City walls: a thick stone band along each wall polygon, with gaps for the gates.
+export function drawCityWalls(ctx,walls,project,{width=4,gates=[],gateWidth=8}={}){
+ for(const wall of walls||[]){const pts=wall.points||wall;ctx.save();ctx.lineCap='square';ctx.lineJoin='miter';
+  for(const [stroke,lw]of [['#2a2620',width+2],['#9c968a',width]]){ctx.strokeStyle=stroke;ctx.lineWidth=lw;
+   for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],len=Math.hypot(b[0]-a[0],b[1]-a[1]);let cuts=[];
+    for(const g of wall.gates||gates){const t=((g.x-a[0])*(b[0]-a[0])+(g.z-a[1])*(b[1]-a[1]))/(len*len),off=Math.abs((g.x-a[0])*(b[1]-a[1])-(g.z-a[1])*(b[0]-a[0]))/len;if(t>0&&t<1&&off<1)cuts.push([t-gateWidth/2/len,t+gateWidth/2/len])}
+    cuts.sort((u,v)=>u[0]-v[0]);let t0=0;const runs=[];for(const [c0,c1]of cuts){runs.push([t0,c0]);t0=c1}runs.push([t0,1]);
+    for(const [u,v]of runs){if(v<=u)continue;const p=project(a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u),q=project(a[0]+(b[0]-a[0])*v,a[1]+(b[1]-a[1])*v);ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke()}}}
+  ctx.fillStyle='#8d877b';ctx.strokeStyle='#2a2620';ctx.lineWidth=1;for(const t of wall.towers||[]){const p=project(t[0],t[1]);ctx.beginPath();ctx.arc(p.x,p.y,width*1.15,0,Math.PI*2);ctx.fill();ctx.stroke()}
+  ctx.restore()}
+}
+
 function outlinedText(ctx,text,x,y,{font,fill,stroke='#140f08',width=4,shadow=true,spacing=0}){
  ctx.font=font;ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
  if('letterSpacing' in ctx)ctx.letterSpacing=spacing+'px';
@@ -216,6 +238,8 @@ export function createWorldMap({canvas,source}){
     // Two roof planes: the far one a shade darker.
     const half1=along?[corner(-bld.halfW,-bld.halfD),corner(bld.halfW,-bld.halfD),corner(bld.halfW,0),corner(-bld.halfW,0)]:[corner(-bld.halfW,-bld.halfD),corner(0,-bld.halfD),corner(0,bld.halfD),corner(-bld.halfW,bld.halfD)];
     poly(half1);ctx.fillStyle='rgba(0,0,0,.18)';ctx.fill();ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b2.x,b2.y);ctx.strokeStyle='rgba(255,226,170,.55)';ctx.lineWidth=Math.max(.8,k*.3);ctx.stroke()}}
+  // City walls around the capital.
+  drawCityWalls(ctx,source.walls?.(),S,{width:Math.max(2.5,Math.min(9,k*2.6))});
   // Region names: large gold serif, faded out when zoomed in close.
   const regionAlpha=1-smooth(1.6,3,k);if(regionAlpha>.02){ctx.globalAlpha=regionAlpha;const towns=placesNow().map(pl=>S(pl.x,pl.z));for(const r of regions){const p=S(r.x,r.z);for(let i=0;i<4&&towns.some(t=>Math.abs(t.x-p.x)<170&&Math.abs(t.y-p.y)<44);i++)p.y+=46;outlinedText(ctx,r.name.toUpperCase(),p.x,p.y,{font:'italic bold '+Math.round(Math.max(17,Math.min(30,w/36)))+'px '+SERIF,fill:'#f3a83a',stroke:'#2a1505',width:5,spacing:3})}ctx.globalAlpha=1}
   // Lake and river names in pale blue italics.
@@ -224,8 +248,9 @@ export function createWorldMap({canvas,source}){
   const placed=[];const free=(x,y,r)=>!placed.some(q=>Math.abs(q.x-x)<q.r+r&&Math.abs(q.y-y)<q.r+r);
   const icon=Math.round(Math.max(8,Math.min(11,6+k*2.2)));
   for(const p of poisNow()){const q=S(p.x,p.z);if(q.x<-10||q.y<-10||q.x>w+10||q.y>h+10||!free(q.x,q.y,icon))continue;placed.push({x:q.x,y:q.y,r:icon});drawPoiIcon(ctx,p.kind,q.x,q.y,icon)}
-  for(const pl of placesNow()){const q=S(pl.x,pl.z);if(q.x<-80||q.y<-30||q.x>w+80||q.y>h+30)continue;const big=pl.kind==='castle'||pl.capital;
-   const font=(big?'bold ':'bold ')+Math.round(big?17:15)+'px '+SERIF;outlinedText(ctx,pl.name,q.x,q.y-(k>2?24:16),{font,fill:big?'#ffe7a8':'#fff3d4',width:4})}
+  for(const pl of placesNow()){const q=S(pl.x,pl.z);if(q.x<-80||q.y<-30||q.x>w+80||q.y>h+30)continue;const big=pl.kind==='castle'||pl.capital,lift=k>2?24:16;
+   if(pl.capital){const y=q.y-lift-(k>2?14:10);drawCrownIcon(ctx,q.x,y-20,18);outlinedText(ctx,pl.name.toUpperCase(),q.x,y,{font:'bold 22px '+SERIF,fill:'#ffd76a',stroke:'#2a1505',width:5,spacing:2});outlinedText(ctx,pl.title||'Royal Capital',q.x,y+17,{font:'italic 12px '+SERIF,fill:'#f3e2b5',width:3});continue}
+   const font=(big?'bold ':'bold ')+Math.round(big?17:15)+'px '+SERIF;outlinedText(ctx,pl.name,q.x,q.y-lift,{font,fill:big?'#ffe7a8':'#fff3d4',width:4})}
   // The player's death pile: skull with the time left beneath it.
   const pile=source.deathPile?.();if(pile){const q=S(pile.x,pile.z),pulse=(Math.sin(performance.now()/420)+1)/2;
    ctx.save();ctx.strokeStyle='rgba(224,38,29,'+(.35+.35*pulse)+')';ctx.lineWidth=2;ctx.beginPath();ctx.arc(q.x,q.y,14+pulse*3,0,Math.PI*2);ctx.stroke();ctx.restore();
