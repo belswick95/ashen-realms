@@ -23,5 +23,5 @@
 .tutorial-caption span{display:block;margin-top:8px;font:italic clamp(15px,2.6vw,20px) Georgia,serif}
 .tutorial-skip{position:absolute;right:16px;bottom:calc(11vh + 12px);padding:8px 14px;min-height:40px;border:1px solid #f6e7bf88;border-radius:4px;background:#000a;color:#f6e7bf;font:600 14px system-ui,sans-serif;cursor:pointer}
 .tutorial-fade{position:fixed;inset:0;z-index:1150;background:#000;opacity:0;pointer-events:none}
-body.tutorial-cutscene>:not(canvas):not(.tutorial-letterbox):not(.tutorial-fade):not(.tutorial-dialogue){visibility:hidden}
+body.tutorial-cutscene>:not(canvas):not(.tutorial-letterbox):not(.tutorial-fade):not(.tutorial-dialogue){opacity:0!important;pointer-events:none!important;transition:opacity .4s}
 @media (max-width:600px){.tutorial-hud{top:calc(64px + env(safe-area-inset-top));font-size:13px}.tutorial-dialogue{font-size:15px;bottom:calc(10px + env(safe-area-inset-bottom))}}

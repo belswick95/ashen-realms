@@ -10,4 +10,4 @@ export function heldOpen({kind,template}={},{roles=[],stations=[]}={}){
  if(HELD_OPEN_TEMPLATES.includes(template))return true;
  return roles.some(r=>SERVICE_ROLES.includes(r))||stations.some(s=>SERVICE_STATIONS.includes(s));
 }
-export function heldOpenExamine(kind){return kind==='castle_gate'||kind==='castleGate'?'The castle gates stand open.':'The doors are held open for business.'}
+export function heldOpenExamine(kind){if((kind==='castle_gate'||kind==='castleGate')&&globalThis.eldervaleTutorial?.gateLocked?.())return 'The Great Gate is barred. You should finish your training before leaving the castle.';return kind==='castle_gate'||kind==='castleGate'?'The castle gates stand open.':'The doors are held open for business.'}
