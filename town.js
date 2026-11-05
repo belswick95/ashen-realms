@@ -22,7 +22,8 @@ export function decorateTownBuilding(T,record,{box,material}){
  const removable=mesh=>{roofParts.push(mesh);return mesh};
  const table=(x,z)=>{b(1.25,.12,.65,0x79583a,x,.85,z);for(const dx of [-.45,.45])b(.12,.7,.48,0x573d2d,x+dx,.44,z)};
  if(type==='bank'){
-  // Tellering hall, two service windows, rear vault and deposit chests.
+  // Tellering hall, two service windows, rear vault and deposit chests. The
+  // stone portico, inn framing and forge chimney belong to building-detail.js.
   for(const x of (record.stories>1?[-1.05]:[-1.05,1.05])){
    const stand=b(1.35,.85,.42,0x6b4b31,x,.55,-.38),top=b(1.43,.12,.53,0xb19a65,x,1.03,-.38);(record.bankStands??=[]).push(stand,top);
    for(const dx of [-.57,.57])b(.055,.8,.06,0xb49a55,x+dx,1.48,-.38,'stone');
@@ -33,12 +34,9 @@ export function decorateTownBuilding(T,record,{box,material}){
   for(const dx of [-.37,.37])b(.07,1.45,.04,0xb4a16d,dx,1.0,-1.54,'stone');
   const wheel=new T.Mesh(new T.TorusGeometry(.19,.035,6,16),material(0xc0ac78));wheel.position.set(0,1.1,-1.49);g.add(wheel);
   for(const x of [-1.35,1.35]){b(.58,.5,.5,0x61462f,x,.38,-1.28);b(.62,.08,.54,0xaa925c,x,.67,-1.28,'stone')}
-  for(const x of [-.72,.72]){b(.2,2.3,.24,0xd1cbb3,x,1.28,1.97,'masonry');b(.33,.15,.34,0xbcb69e,x,.24,1.97,'masonry')}
-  b(1.85,.24,.45,0xc6bda3,0,2.49,1.97,'masonry');
  }else if(type==='hall'){
   b(2.7,.32,1.1,0x777970,0,.28,-.9,'masonry');table(0,-.95);
   for(const x of [-1.25,1.25])for(const z of [-.1,.8])b(.6,.35,.45,0x75583c,x,.3,z);
-  for(const x of [-1.2,1.2])b(.3,1.4,.06,0x244c60,x,1.95,1.95,'cloth');
   const tower=removable(b(.95,1.7,1.05,0xa6a699,0,4.45,0,'masonry'));
   removable(b(1.18,.18,1.25,0xddd2af,0,5.3,0,'masonry'));
   const clock=new T.Mesh(new T.CircleGeometry(.27,24),material(0xe4d4a1));clock.position.set(0,4.65,.535);g.add(clock);roofParts.push(clock);
@@ -47,12 +45,10 @@ export function decorateTownBuilding(T,record,{box,material}){
   for(const x of (record.stories>1?[-1.1]:[-1.1,1.1])){table(x,.2);for(const z of [-.4,.8])b(1,.3,.25,0x6d4b30,x,.35,z)}
   b(2.7,.9,.5,0x68442c,0,.55,-1.25);b(2.85,.12,.62,0x98774b,0,1.06,-1.25);
   for(const x of [-1.1,-.4,.4,1.1])b(.16,.22,.16,0xc7ae73,x,1.23,-1.25,'stone');
-  for(const side of [-1,1]){b(.14,2.95,.12,0x59412d,side*1.05,1.55,1.96);b(3.8,.13,.15,0x59412d,0,2.25,1.96)}
  }else if(type==='forge'){
   b(1.1,1.7,.8,0x5e625c,-1,1,-1.1,'masonry');b(.7,.45,.05,0x201e19,-1,.68,-.67,'stone');
   b(.52,.16,.06,0xe7a24f,-1,.5,-.62,'stone');
   b(.7,.55,.5,0x596367,.7,.4,.2,'stone');b(1,.18,.45,0x858c88,.7,.76,.2,'stone');
-  removable(b(.6,2.4,.6,0x777b70,-1.1,4.1,-1.05,'masonry'));
  }else if(type==='chapel'){
   for(const x of (record.stories>1?[-1.05]:[-1.05,1.05]))for(const z of [-.7,.2,.9]){b(.8,.35,.35,0x725639,x,.35,z);b(.8,.55,.1,0x725639,x,.65,z-.17)}
   b(1.3,.8,.48,0xc7bfa5,0,.55,-1.35,'masonry');

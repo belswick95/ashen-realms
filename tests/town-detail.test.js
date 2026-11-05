@@ -34,3 +34,23 @@ test('buildings gain framed windows, shutters, a tiled roof and smoke without ma
  assert.ok(meshes>=8&&meshes<=40,'merged detail: '+meshes);assert.ok(roofParts.some(p=>p.getObjectById(out.roof.id)),'roof detail hides with the roof');assert.ok(out.roof.children.some(o=>o.isPoints),'chimney smoke');
  const stone=detailBuilding(T,{group:new T.Group(),roofParts:[]},{box,material,stone:true,type:'chapel'});assert.ok(!stone.roof.children.some(o=>o.isPoints),'no smoke from the chapel');
 });
+
+test('each building has one deterministic material style chosen by role, with a mixed town',async()=>{
+ const {buildingStyle}=await import('../building-detail.js');
+ for(const type of ['bank','forge','chapel','hall'])assert.equal(buildingStyle({type,x:3,z:9}).material,'stone',type);
+ assert.equal(buildingStyle({type:'inn',x:3,z:9}).material,'timber');assert.equal(buildingStyle({type:'barn',x:3,z:9}).material,'plank');
+ assert.deepEqual(buildingStyle({type:'cottage',x:12.5,z:-40}),buildingStyle({type:'cottage',x:12.5,z:-40}),'stable per position');
+ const kinds=new Set();for(let i=0;i<60;i++)kinds.add(buildingStyle({type:'cottage',x:i*7.3,z:i*-3.1}).material);assert.ok(kinds.size>=2,'cottages vary');
+ for(let i=0;i<40;i++){const s=buildingStyle({type:['cottage','inn','bank'][i%3],x:i*5.1,z:i*2.7});assert.ok(s.stone?['slate','tile'].includes(s.roofKind):['thatch','shingle'].includes(s.roofKind),'roof matches walls')}
+});
+
+test('facade detail stays on the walls: nothing pokes past the wall plate or far beyond the footprint',()=>{
+ const cache=new Map(),material=(c,k)=>{const key=c+k;if(!cache.has(key))cache.set(key,new T.MeshStandardMaterial({color:c}));return cache.get(key)};
+ const box=(w,h,d,c,x,y,z,p,kind)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),material(c,kind));m.position.set(x,y,z);p.add(m);return m};
+ for(const [type,x] of [['cottage',0],['cottage',4.4],['cottage',9.9],['inn',1],['bank',2],['forge',3],['chapel',4]]){const group=new T.Group();group.position.set(x,0,x*3);
+  const out=detailBuilding(T,{group,roofParts:[]},{box,material,type});group.updateMatrixWorld(true);const b=new T.Box3().setFromObject(out.walls);
+  assert.ok(b.max.y<3.0,`${type} wall detail stays under the wall plate`);assert.ok(Math.abs(b.min.x-group.position.x)<2.17&&Math.abs(b.max.x-group.position.x)<2.17,`${type} width`);assert.ok(b.min.z-group.position.z>-2.09&&b.max.z-group.position.z<2.4,`${type} depth`);
+  const storey=new T.Group();storey.add(new T.Mesh(new T.BoxGeometry(3.76,.085,3.56)));
+  // An upper storey keeps its walkable floor box separate from the merged facade.
+  const record={group,roofParts:[]};detailBuilding(T,record,{box,material,type});record.dressStorey(storey);let floors=0;storey.traverse(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&o.geometry.parameters.height===.085)floors++});assert.equal(floors,1)}
+});

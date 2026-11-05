@@ -13,10 +13,13 @@ export function addBuildingStories(T,h,d,{box,decorate,material}){
  for(let floor=1;floor<count;floor++){
   const room=new T.Group();room.position.y=STORY_HEIGHT*floor;h.group.add(room);floors.push(room);
   const shell=new T.Group();room.add(shell);shells.push(shell);
-  box(3.76,.085,3.56,0x81684c,0,.0825,0,shell,d.stone?'masonry':'floor');
-  for(const side of [-1,1]){box(.18,3,3.84,d.wallColor||0xc7bfa7,side*1.91,1.5,0,shell,d.stone?'masonry':'plaster');box(3.64,3,.18,d.wallColor||0xc7bfa7,0,1.5,side*1.83,shell,d.stone?'masonry':'plaster');box(3.7,.12,.13,0x6c5039,0,.3,side*1.71,shell,'wood');
-   for(const x of [-1.1,1.1]){box(.66,.85,.08,0x7c9ca5,x,1.8,side*1.94,shell);box(.75,.07,.12,0x574331,x,1.8,side*2,shell,'wood')}
+  box(3.76,.085,3.56,0x81684c,0,.0825,0,shell,(h.style?.stone??d.stone)?'masonry':'floor');
+  // Upper walls match the ground floor's material; its facade rules dress them.
+  const wallColor=h.style?.wall??d.wallColor??0xc7bfa7,wallKind=h.style?.wallKind??(d.stone?'masonry':'plaster');
+  for(const side of [-1,1]){box(.18,3,3.84,wallColor,side*1.91,1.5,0,shell,wallKind);box(3.64,3,.18,wallColor,0,1.5,side*1.83,shell,wallKind);box(3.7,.12,.13,0x6c5039,0,.3,side*1.71,shell,'wood');
+   if(!h.dressStorey)for(const x of [-1.1,1.1]){box(.66,.85,.08,0x7c9ca5,x,1.8,side*1.94,shell);box(.75,.07,.12,0x574331,x,1.8,side*2,shell,'wood')}
   }
+  h.dressStorey?.(shell);
   const furniture=new T.Group();room.add(furniture);furnishings.push(furniture);if(d.furnished!==false){const b=(w,h,depth,color,x,y,z,kind='wood')=>box(w,h,depth,color,x,y,z,furniture,kind);const roomType=(floor===2?d.topRoom:null)||d.upperRoom||'home';if(roomType==='workshop'){b(.3,1.4,2.2,0x62462f,-1.55,.85,-.25);b(.9,.12,.35,0x796044,-.5,1.7,-1.45)}else if(roomType==='home'){b(.85,.3,1.4,0x6b5038,-1,.3,-.6);b(.75,.14,1.2,0x7e8a76,-1,.52,-.6,'cloth');b(1.25,.1,.55,0x79583a,-.65,.85,1);for(const x of [-1.1,-.2])b(.12,.7,.45,0x573d2d,x,.44,1);b(1.1,1.6,.4,0x62462f,-.8,.93,-1.35)}else if(roomType==='chapel'){b(1.2,.8,.5,0xc7bfa5,-.5,.55,-1.1,'masonry');for(const z of [0,.8]){b(1.3,.35,.4,0x725639,-.5,.35,z);b(1.3,.55,.1,0x725639,-.5,.65,z-.18)}b(.09,.7,.09,0xd9bb70,-.5,1.6,-1.3,'stone');b(.45,.08,.09,0xd9bb70,-.5,1.75,-1.3,'stone')}else if(roomType==='armory'){b(1.4,1.6,.12,0x60492f,-.65,.9,-1.5);for(const x of [-1.1,-.65,-.2]){b(.06,1.1,.06,0x9ca7a5,x,1.2,-1.39,'stone');b(.25,.05,.08,0xa28c57,x,.78,-1.39,'stone')}b(1.5,.5,.7,0x65503a,-.5,.4,.7)}else{b(1.7,.12,.8,0x79583a,-.6,.85,0);for(const x of [-1.2,0])b(.12,.7,.6,0x573d2d,x,.44,0);for(const z of [-.7,.7])b(1.5,.35,.3,0x75583c,-.6,.3,z)}}
  }
  // A readable stair flight and landing at each level; server validates use at this anchor.

@@ -57,7 +57,7 @@ import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-202
 import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261105-walkanim64';
 import {createPlayerHUD} from './player-hud.js?v=release-20261105-walkanim64';
 import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261105-walkanim64';
-import {detailBuilding} from './building-detail.js?v=release-20261105-walkanim64';
+import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261105-walkanim64';
 import {stabilizeSun,shadowQuality} from './sun-shadow.js?v=release-20261105-walkanim64';
 import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261105-walkanim64';
 import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261105-walkanim64';
@@ -87,7 +87,7 @@ Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:.5,far
 const waterSystem=createWaterSystem(T,scene,renderer,landscape);
 // Seeded procedural canvas textures, cached and shared across meshes.
 const textureCache=new Map();
-function texture(kind,base){if(['masonry','wood','roof','plaster','floor','cloth','cobble'].includes(kind))return surfaceTexture(T,kind,base);const key=kind+base;if(textureCache.has(key))return textureCache.get(key);const canvas=document.createElement('canvas');const groundKind=kind==='grass'||kind==='dirt';const texSize=groundKind?256:128;canvas.width=texSize;canvas.height=texSize;const ctx=canvas.getContext('2d');ctx.fillStyle='#'+base.toString(16).padStart(6,'0');ctx.fillRect(0,0,texSize,texSize);let seed=base>>>0;const rnd=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
+function texture(kind,base){if(['masonry','wood','roof','plaster','floor','cloth','cobble','thatch'].includes(kind))return surfaceTexture(T,kind,base);const key=kind+base;if(textureCache.has(key))return textureCache.get(key);const canvas=document.createElement('canvas');const groundKind=kind==='grass'||kind==='dirt';const texSize=groundKind?256:128;canvas.width=texSize;canvas.height=texSize;const ctx=canvas.getContext('2d');ctx.fillStyle='#'+base.toString(16).padStart(6,'0');ctx.fillRect(0,0,texSize,texSize);let seed=base>>>0;const rnd=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
 for(let i=0;i<750;i++){const x=rnd()*128,y=rnd()*128,r=.4+rnd()*2.7;ctx.fillStyle=rnd()>.5?'rgba(255,248,208,.075)':'rgba(18,27,18,.09)';ctx.fillRect(x,y,r,r)}
 if(kind==='water'){for(let i=0;i<180;i++){const x=rnd()*128,y=rnd()*128;ctx.strokeStyle=i%3?'#a9d1cb30':'#1f536333';ctx.lineWidth=.4+rnd()*.6;ctx.beginPath();ctx.moveTo(x,y);ctx.bezierCurveTo(x+3,y-1,x+7,y+1,x+12,y);ctx.stroke()}}
 if(kind==='wood'){for(let i=0;i<22;i++){ctx.strokeStyle=i%2?'#ffffff16':'#130d0b24';ctx.lineWidth=.5+rnd()*1.6;ctx.beginPath();const y=i*6+rnd()*3;ctx.moveTo(0,y);ctx.bezierCurveTo(36,y+3,78,y-3,128,y+2);ctx.stroke()}}
@@ -112,7 +112,7 @@ if(kind==='dirt'){
 if(kind==='leaf'){for(let i=0;i<180;i++){const x=rnd()*128,y=rnd()*128;ctx.fillStyle=rnd()>.5?'#d6e5a124':'#122b1b30';ctx.beginPath();ctx.ellipse(x,y,1+rnd()*4,1+rnd()*2,rnd()*6,0,Math.PI*2);ctx.fill()}}
 if(kind==='roof'){for(let y=0;y<128;y+=15){ctx.strokeStyle='#160f0c44';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(128,y);ctx.stroke();for(let x=(y%30?8:0);x<128;x+=24){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+15);ctx.stroke()}}}
 const t=new T.CanvasTexture(canvas);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.magFilter=T.LinearFilter;t.minFilter=T.LinearMipmapLinearFilter;t.generateMipmaps=true;t.anisotropy=groundKind?Math.min(8,renderer.capabilities.getMaxAnisotropy()):4;textureCache.set(key,t);return t}
-const materialCache=new Map();function material(c,kind='stone'){const key=c+kind;if(!materialCache.has(key))materialCache.set(key,new T.MeshStandardMaterial({map:texture(kind,c),bumpMap:['masonry','roof','wood','plaster','floor'].includes(kind)?texture(kind,c):null,bumpScale:kind==='masonry'?.045:.018,roughness:kind==='wood'?.86:.95,color:0xffffff}));materialCache.get(key).userData.eldervaleShared=true;return materialCache.get(key)}const targets=[];
+const materialCache=new Map();function material(c,kind='stone'){const key=c+kind;if(!materialCache.has(key))materialCache.set(key,new T.MeshStandardMaterial({map:texture(kind,c),bumpMap:['masonry','roof','wood','plaster','floor','thatch'].includes(kind)?texture(kind,c):null,bumpScale:kind==='masonry'?.045:.018,roughness:kind==='wood'?.86:.95,color:0xffffff}));materialCache.get(key).userData.eldervaleShared=true;return materialCache.get(key)}const targets=[];
 renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
 function box(w,h,d,c,x,y,z,p=scene,kind='stone'){const o=new T.Mesh(scaleSurfaceUV(new T.BoxGeometry(w,h,d),w,h,d),material(c,kind));o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;p.add(o);return o}
 function sphere(r,c,x,y,z,p=scene){const o=new T.Mesh(new T.SphereGeometry(r,10,8),material(c));o.position.set(x,y,z);o.castShadow=true;p.add(o);return o}
@@ -179,7 +179,9 @@ function rock(x,z){
 }
 let currentInterior={floor:0,building:null};const playerFloorMap={};function floorOffset(floor,x,z){if(!floor)return 0;for(const row of persistentRows.values())if(!row.deleted&&['cottage','bank','inn','forge'].includes(row.data.template)&&validStoryPosition(row.data,x,z,floor))return storyOffset(row.data,floor);return 0}const houseInteriors=[];const mapProps=[];
 function house(x,z,c,scale=1.65,rotation=0,options={}){
- const sx=scale*(options.width||1),sz=scale*(options.depth||1),wallKind=options.stone?'masonry':'plaster',roofColor=options.roof||0x634332;
+ const sx=scale*(options.width||1),sz=scale*(options.depth||1);
+ // One coherent material style per building, from its role and a stable seed.
+ const style=buildingStyle({type:options.type||'cottage',x,z,stone:options.stone,biome:options.biome}),wallKind=style.wallKind,roofColor=style.roof;c=style.wall;
  // Keep full building footprints ashore, including existing lakeside hamlets.
  const radius=2.4*Math.hypot(sx,sz);
  const dry=(px,pz)=>[-1,0,1].every(a=>[-1,0,1].every(b=>landscape.waterAt(px+a*radius,pz+b*radius)<=0));
@@ -199,46 +201,47 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  const inner=new T.Path();inner.moveTo(-2.02,-1.93);inner.lineTo(-2.02,1.93);inner.lineTo(2.02,1.93);inner.lineTo(2.02,-1.93);inner.closePath();apron.holes.push(inner);
  const apronGeometry=new T.ShapeGeometry(apron);apronGeometry.rotateX(-Math.PI/2);const apronMesh=new T.Mesh(apronGeometry,material(0xa39c83,'dirt'));apronMesh.position.y=.014;apronMesh.receiveShadow=true;group.add(apronMesh);
 
- box(3.76,.085,3.56,0x81684c,0,.0825,0,group,options.stone?'masonry':'floor');
+ box(3.76,.085,3.56,0x81684c,0,.0825,0,group,style.stone?'masonry':'floor');
  // Walls meet at edges. Overlapping box caps used to compete in the depth
  // buffer along the corners, independently of the grass/foundation seam.
  box(3.64,3,.18,c,0,1.5,-1.83,group,wallKind);
  for(const side of [-1,1])box(.18,3,3.84,c,side*1.91,1.5,0,group,wallKind);
  for(const side of [-1,1])box(1.30,3,.18,c,side*1.17,1.5,1.83,group,wallKind);
  box(1.04,.75,.18,c,0,2.625,1.83,group,wallKind);
+ // Fill the opening above the door leaf so the frame fits the door itself.
+ box(1.04,.47,.18,c,0,2.015,1.83,group,wallKind);
  for(const side of [-1,1]){
   box(.07,.38,3.42,0x69513b,side*1.79,.32,0,group,'wood');
   box(.14,2.8,.16,0x66503c,side*1.77,1.5,-1.65,group,'wood');
  }
  box(3.45,.38,.07,0x69513b,0,.32,-1.69,group,'wood');
- box(1.1,.025,1.8,options.stone?0x6b4d43:0x65715c,0,.14,.25,group,'cloth');
+ box(1.1,.025,1.8,style.stone?0x6b4d43:0x65715c,0,.14,.25,group,'cloth');
  box(1.0,.08,.38,0x75543a,-.75,1.28,-1.56,group,'wood');
  for(let i=0;i<4;i++)box(.12,.22+(i%2)*.10,.20,[0x80504a,0x697b66,0x9f875c][i%3],-1.08+i*.2,1.43,-1.55,group,'cloth');
  const roofParts=[];
- for(const side of [-1,1]){
-  const trim=options.stone?0xc2bfae:0x715139;
-  box(.20,3.15,.22,trim,side*1.94,1.55,1.83,group,options.stone?'masonry':'wood');
-  box(.20,3.15,.22,trim,side*1.94,1.55,-1.83,group,options.stone?'masonry':'wood')
- }
- roofParts.push(box(4.25,.18,3.9,0x74543c,0,3.07,0,group,'wood'));
+ // Wall plate: a timber beam, or a stone cornice on masonry buildings.
+ roofParts.push(box(4.25,.18,3.9,style.stone?style.trim:0x74543c,0,3.07,0,group,style.stone?'masonry':'wood'));
  // Roof geometry: ridge x=0 at y=4.40; eaves x=±2.25 at y=3.12.
  // Slopes descend away from the ridge, meeting cleanly at the center.
  const roofRun=2.25,roofRise=1.28,roofLength=Math.hypot(roofRun,roofRise);
  const roofAngle=Math.atan2(roofRise,roofRun);
  for(const side of [-1,1]){
-  const roof=box(roofLength+.04,.16,4.35,roofColor,side*roofRun/2,3.12+roofRise/2,0,group,'roof');
-  roof.rotation.z=-side*roofAngle;roofParts.push(roof);
+  // Thick thatch grows outward from the same underside so the gables still meet it.
+  const thick=style.roofThick,lift=(thick-.16)/2,thatch=style.roofKind==='thatch';
+  const roof=box(roofLength+(thatch?.22:.04),thick,thatch?4.5:4.35,roofColor,side*roofRun/2+side*Math.sin(roofAngle)*lift,3.12+roofRise/2+Math.cos(roofAngle)*lift,0,group,style.roofTexture);
+  ridgeAlignedUV(roof.geometry);roof.rotation.z=-side*roofAngle;roofParts.push(roof);
   // Thin wooden fascia follows the actual eave rather than floating above it.
   const fascia=box(.18,.23,4.45,0x644a32,side*roofRun,3.11,0,group,'wood');roofParts.push(fascia);
  }
  // Close the triangular gable walls under the roof at front and back.
- for(const z of [-1.87,1.87]){
-  const shape=new T.Shape();shape.moveTo(-2,3.08);shape.lineTo(2,3.08);shape.lineTo(0,4.21);shape.closePath();
+ for(const z of [-1.915,1.915]){
+  // The gable follows the roof underside and sits flush with the wall face.
+  const shape=new T.Shape();shape.moveTo(-2,3.0);shape.lineTo(2,3.0);shape.lineTo(2,3.15);shape.lineTo(0,4.29);shape.lineTo(-2,3.15);shape.closePath();
   const gableMaterial=material(c,wallKind).clone();gableMaterial.side=T.DoubleSide;
-  const gable=new T.Mesh(new T.ShapeGeometry(shape),gableMaterial);gable.position.z=z;gable.castShadow=true;group.add(gable);roofParts.push(gable);
+  const gableGeometry=new T.ShapeGeometry(shape),guv=gableGeometry.attributes.uv;for(let i=0;i<guv.count;i++)guv.setXY(i,guv.getX(i)/2,guv.getY(i)/2);
+  const gable=new T.Mesh(gableGeometry,gableMaterial);gable.position.z=z;gable.castShadow=true;group.add(gable);roofParts.push(gable);
  }
  // Hinged, clickable door. A closed door blocks entry.
- box(1.1,.14,.22,0x67452f,0,1.8,1.92,group,'wood');
  const doorPivot=new T.Group();doorPivot.position.set(-.52,0,1.86);group.add(doorPivot);
  const doorMesh=box(1.04,1.75,.13,0x654026,.52,.9,0,doorPivot,'wood');
  box(.12,.12,.09,0xc4a15d,.88,.93,.1,doorPivot,'stone');
@@ -248,22 +251,15 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  if(houseRecord.open)doorPivot.rotation.y=-Math.PI*.53;
  doorHit.userData={kind:'door',house:houseRecord};
  doorMesh.userData={kind:'door',house:houseRecord};targets.push(doorMesh);
- for(const side of [-1,1]){
-  box(.79,.82,.12,0x89aeb8,side*1.25,1.92,1.92,group);
-  box(.1,.91,.17,0x614832,side*1.25,1.92,2.02,group,'wood');
-  box(.85,.10,.17,0x614832,side*1.25,1.92,2.02,group,'wood')
- }
- roofParts.push(box(.4,1.2,.4,0x76665b,1.1,4.35,-.7,group,'stone'));
  houseInteriors.push(houseRecord);
- for(let i=0;i<4;i++)box(.36,.21,.29,0x858479,-1.55+i*.95,.12,1.96,group,'stone');
  if(options.type){if(options.furnished!==false)decorateTownBuilding(T,houseRecord,{box,material});if(options.type!=='armory')buildingLabel(group,options.name)}
- detailBuilding(T,houseRecord,{box,material,stone:!!options.stone,color:c,type:options.type||'cottage',roof:roofColor});
+ detailBuilding(T,houseRecord,{box,material,style,type:options.type||'cottage'});
  for(const stand of houseRecord.bankStands||[]){stand.userData={kind:'bankStand',house:houseRecord};targets.push(stand);}
  return houseRecord;
 }
 function buildingLabel(group,caption){
  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=96;const ctx=canvas.getContext('2d');ctx.fillStyle='#28372e';ctx.fillRect(0,0,512,96);ctx.strokeStyle='#cbb77d';ctx.lineWidth=5;ctx.strokeRect(3,3,506,90);ctx.font='bold 31px Georgia';ctx.textAlign='center';ctx.fillStyle='#f0d99b';ctx.fillText(caption.toUpperCase(),256,60,490);
- const labelTexture=new T.CanvasTexture(canvas);labelTexture.userData.entityOwned=true;const sign=new T.Mesh(new T.PlaneGeometry(2.8,.46),new T.MeshBasicMaterial({map:labelTexture}));sign.position.set(0,2.82,1.945);group.add(sign);
+ const labelTexture=new T.CanvasTexture(canvas);labelTexture.userData.entityOwned=true;const sign=new T.Mesh(new T.PlaneGeometry(2.1,.38),new T.MeshBasicMaterial({map:labelTexture}));sign.position.set(0,2.67,1.995);group.add(sign);
 }
 for(let i=0;i<(generatedWorld?0:520);i++){const a=i*2.399,r=14+Math.sqrt(i)*17,x=Math.sin(a)*r,z=Math.cos(a)*r;if(i%4===0)rock(x,z);else tree(x,z)}
 // Oakcross: a walkable settlement, with a clear central square and houses around its edges.
@@ -1274,7 +1270,7 @@ window.eldervaleWorldBridge={
    const radius=d.roam||0,profile={...config,worldEntityId:row.id,x:d.x,z:d.z,name:d.name||base.name,color:config.color||0x8d7259,lines:(d.dialogue||base.dialogue).split('\n'),behavior:radius||d.route?'patrol':'stationary',patrol:d.route?.length>1?d.route.map(s=>[s.x,s.z]):[[d.x-radius,d.z],[d.x,d.z+radius],[d.x+radius,d.z],[d.x,d.z-radius]]};actor=spawnNPC(profile,npcs.length);actor.attackEffect=serviceAttackEffect(T,actor.rig,config.attackType);root=actor.root;
    if(config.weapon&&!root.userData.armed&&carriesWeapon(config)){attachWeapon(actor.rig,makeWeapon(T,config.weapon),config.weapon);root.userData.armed=true}
   }else if(['cottage','bank','inn','forge'].includes(d.template)){
-   h=house(d.x,d.z,d.wallColor||0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stories:d.stories||1,furnished:d.furnished!==false,stone:!!d.stone,roof:d.roof});h.realmId=row.id;h.storyData=d;h.stories=addBuildingStories(T,h,d,{box,decorate:decorateTownBuilding,material});h.stories.floors.slice(1).forEach(room=>room.traverse(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&o.geometry.parameters.height===.085){o.userData.storyFloor=room.position.y/3;walkSurfaces.push(o)}}));root=h.group;landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
+   h=house(d.x,d.z,d.wallColor||0xc7bfa7,1.3*d.scale,d.yaw*Math.PI/180,{type:d.template==='cottage'?(d.room||'cottage'):d.template,name:d.name||base.name,builder:true,stories:d.stories||1,furnished:d.furnished!==false,stone:!!d.stone,roof:d.roof,biome:d.biome});h.realmId=row.id;h.storyData=d;h.stories=addBuildingStories(T,h,d,{box,decorate:decorateTownBuilding,material});h.stories.floors.slice(1).forEach(room=>room.traverse(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&o.geometry.parameters.height===.085){o.userData.storyFloor=room.position.y/3;walkSurfaces.push(o)}}));root=h.group;landscape.registerFloor(row.id,{x:root.position.x,z:root.position.z,scaleX:root.scale.x,scaleZ:root.scale.z,rotation:root.rotation.y,floorHeight:.125*root.scale.y});
   }else{root=new T.Group();scene.add(root);root.position.set(d.x,landscape.walkHeight(d.x,d.z)+floorOffset(d.floor,d.x,d.z),d.z);
    if(d.kind==='item'){const item=goods[d.item];if(!item){root.removeFromParent();continue}root.add(makeDroppedItemModel(T,d.item));root.position.y+=.025}
    else if(d.template==='plaza'){const mesh=new T.Mesh(new T.CircleGeometry(8,48),material(0xa39d8b,'cobble'));mesh.rotation.x=-Math.PI/2;mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else if(d.template.startsWith('terrain_')||d.template==='road'){const color={terrain_grass:0x6b8557,terrain_sand:0xb6a270,terrain_stone:0x8b8b81,terrain_snow:0xd8e0db,road:0x9c8964}[d.template];const geometry=d.template==='road'?new T.PlaneGeometry(d.width||2.5,d.length||10,8,24):new T.RingGeometry(0,d.radius||10,40,10);geometry.rotateX(-Math.PI/2);for(let i=0;i<geometry.attributes.uv.count;i++)geometry.attributes.uv.setXY(i,geometry.attributes.position.getX(i)/3,geometry.attributes.position.getZ(i)/3);const mesh=new T.Mesh(geometry,material(color,d.template==='terrain_grass'?'grass':d.template==='terrain_stone'?'stone':'dirt'));mesh.receiveShadow=true;root.add(mesh);root.userData.surface=true;}else objectModel(T,root,d.template,{...d,groundHeight:landscape.heightAt});if(d.template==='fishing_spot')root.position.y=d.waterHeight??.06;
