@@ -53,7 +53,8 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
  const cutscene={active:false,shot:null,from:null,to:null,start:0,ms:1,follow:null,skip:false};
  const letterbox=el('div','tutorial-letterbox');letterbox.hidden=true;const caption=el('div','tutorial-caption'),skip=el('button','tutorial-skip','Skip ▸▸');skip.type='button';
  const fader=el('div','tutorial-fade');letterbox.append(el('i','bar top'),el('i','bar bottom'),caption,skip);document.body.append(letterbox,fader);
- const blockKeys=e=>{if(!cutscene.active||box.contains(e.target))return;if(e.key==='Escape'){cutscene.skip=true}if(![' ','Enter'].includes(e.key)||!box.hidden){e.stopPropagation();e.preventDefault()}};
+ // Escape skips the scene even while a line of dialogue (whose Continue button has focus) is showing.
+ const blockKeys=e=>{if(!cutscene.active)return;if(e.key==='Escape'){e.stopPropagation();e.preventDefault();skip.onclick();return}if(box.contains(e.target))return;if(![' ','Enter'].includes(e.key)||!box.hidden){e.stopPropagation();e.preventDefault()}};
  skip.onclick=()=>{cutscene.skip=true;cont.click()};
  const fade=(to,ms)=>{fader.style.transition='opacity '+ms+'ms ease';fader.style.opacity=String(to);return wait(ms)};
  function setShot(shot,ms=0){

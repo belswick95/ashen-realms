@@ -3,8 +3,13 @@ export async function startRealm(db,user,session){
  let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
  const badge=document.createElement('output');badge.id='realm-connection';badge.setAttribute('role','status');badge.style.cssText='position:fixed;top:42px;left:50%;transform:translateX(-50%);z-index:250;background:#25271d;color:#f4d899;padding:7px 12px;border-radius:5px';badge.hidden=true;document.body.append(badge);
  async function request(command='sync',payload={},id=null){
+  if(disposed)throw Error('Disconnected from the world');
   const started=Date.now();const {data,error}=await db.rpc('world_command',{session_id:session,command,payload,request_id:id,event_cursor:cursor});
-  if(error){badge.hidden=false;badge.textContent='World connection: '+error.message;failures++;throw Error(error.message)}
+  if(error){badge.hidden=false;badge.textContent='World connection: '+error.message;failures++;
+   // Signing in elsewhere replaces this world session: stop polling a dead session (it would fail
+   // four times a second forever) and hand over to the sign-in screen.
+   if(/session expired/i.test(error.message)&&!disposed){disposed=true;window.eldervaleSessionLost?.('Your character was signed in from another window or device. Please sign in again.')}
+   throw Error(error.message)}
   if(data.reset)return true;
   const serverTime=Date.parse(data.time);if(serverTime<latestSnapshotTime)return true;latestSnapshotTime=serverTime;
   const finished=Date.now(),sample=finished-started;roundtrip=clockReady?roundtrip*.8+sample*.2:sample;const clockOffset=Date.parse(data.time)-(started+finished)/2;offset=clockReady?offset*.9+clockOffset*.1:clockOffset;clockReady=true;window.eldervaleServerTime=()=>Date.now()+offset;badge.hidden=true;failures=0;

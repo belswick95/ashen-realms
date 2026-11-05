@@ -86,6 +86,7 @@ async function autoLogout(reason){
  sessionStorage.setItem('eldervale-disconnect-reason',reason==='world'?'Disconnected — '+sessionStorage.getItem('eldervale-world-disconnect'):reason==='inactive'?'Disconnected — you were signed out after 5 minutes of inactivity. Please sign in again.':'Disconnected — please sign in again.');
  location.reload();
 }
+window.eldervaleSessionLost=reason=>{if(!user||logoutInProgress)return;sessionStorage.setItem('eldervale-world-disconnect',reason);void autoLogout('world')};
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){hiddenSince=Date.now();try{window.eldervaleCaptureSave?.();saves.stash()}catch{}}
  else if(user){if(Date.now()-lastActivity>=IDLE_LIMIT_MS||hiddenSince&&Date.now()-hiddenSince>=IDLE_LIMIT_MS)void autoLogout('inactive');else recordActivity();hiddenSince=0}
