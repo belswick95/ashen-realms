@@ -98,3 +98,17 @@ test('click-to-interact walks into reach, acts only after stopping, and a newer 
  assert.equal(arrivalStatus(pending,{x:8,z:0},{generation:5,now:3100}),'cancelled');
  assert.equal(arrivalStatus(null,from),'none');
 });
+
+test('fences block routes (client and the server patch agree), so walks go round to the paddock gap',async()=>{
+ const {createObstacleIndex,campObstacleSizes}=await import('../navigation-obstacles.js');const fs=await import('node:fs');
+ const sql=fs.readFileSync(new URL('../db/fence-collision.sql',import.meta.url),'utf8');assert.match(sql,/"fence":\[0\.85,0\.12\]/);assert.deepEqual(campObstacleSizes.fence,[.85,.12]);
+ // The Birchford cow pen: seeded fences (yaw in radians, scaleX 1.3) with one panel missing on the east side.
+ const fences=[];const add=(x,z,yaw)=>fences.push({template:'fence',x,z,yaw,scale:1,scaleX:1.3,scaleZ:1.3});
+ for(const x of [-284,-282,-280,-278]){add(x,131.5,0);add(x,139.5,-Math.PI)}
+ for(const z of [132.5,134.5,136.5,138.5])add(-285,z,Math.PI/2);for(const z of [132.5,136.5,138.5])add(-277,z,-Math.PI/2);
+ const index=createObstacleIndex(fences);const canTravel=segmentClear((x,z)=>index.blocked(x,z));
+ assert.ok(index.blocked(-280,139.5)&&index.blocked(-277,133)&&!index.blocked(-277,134.5),'panels block, the gap does not');
+ const start={x:-281,z:143},goal={x:-281,z:135};assert.ok(!canTravel(start,goal),'straight line crosses the fence');
+ const path=run(searchRoute({start,goal,canTravel,maxNodes:20000}));const end=path.at(-1);assert.ok(Math.hypot(end.x-goal.x,end.z-goal.z)<.5,'reaches the inside');
+ let prev=start;for(const p of path){assert.ok(canTravel(prev,p));prev=p}assert.ok(path.some(p=>p.x>-277.5),'goes round through the east gap');
+});

@@ -7,7 +7,7 @@ export function createMotionTrack({delay=350}={}){let frames=[],epoch=null,lastT
 export function reconcileLocalPose(position,target,dt,{active=false,pending=false,teleport=false}={}){
  if(active||pending||!target)return false;
  if(teleport){position.x=target.x;position.z=target.z;return true;}
- const elapsed=Math.max(0,Math.min(.1,dt)),error=Math.hypot(position.x-target.x,position.z-target.z),weight=Math.min(1-Math.exp(-18*elapsed),(target.speed||6.4)*2*elapsed/Math.max(error,.000001));
+ const elapsed=Math.max(0,Math.min(.25,dt)),error=Math.hypot(position.x-target.x,position.z-target.z),weight=Math.min(1-Math.exp(-18*elapsed),(target.speed||6.4)*2*elapsed/Math.max(error,.000001));
  position.x+=(target.x-position.x)*weight;position.z+=(target.z-position.z)*weight;return true;
 }
 
