@@ -457,7 +457,7 @@ function updateHouseRoofs(){
  for(const house of houseInteriors){
   const local=house.group.worldToLocal(player.position.clone());
   const inside=Math.abs(local.x)<1.93&&Math.abs(local.z)<1.84;
-  if(house.stories)house.stories.floors.slice(1).forEach((room,i)=>room.visible=!inside||currentInterior.floor===i+1);if(house.stories)for(const item of house.stories.furnishings)if(item.userData.stairFloor!==undefined)item.visible=!inside||item.userData.stairFloor===currentInterior.floor;if(inside!==house.inside){house.inside=inside;for(const part of house.roofParts)part.visible=!inside}
+  if(house.stories?.floors)house.stories.floors.slice(1).forEach((room,i)=>room.visible=!inside||currentInterior.floor===i+1);if(house.stories?.furnishings)for(const item of house.stories.furnishings)if(item.userData.stairFloor!==undefined)item.visible=!inside||item.userData.stairFloor===currentInterior.floor;if(inside!==house.inside){house.inside=inside;for(const part of house.roofParts)part.visible=!inside}
  }
 }
 // Shared scenery primitives: low-poly timber, market awnings, wells and village clutter.

@@ -91,7 +91,8 @@ const workers=new Set();
 // Pick what the person is doing right now from their route and position.
 export function currentWork(rig,kind,moving){
  const route=rig.townRoute;let stop=null;
- if(route){let best=1.1;const p=rig.root.position;route.forEach((s,i)=>{const d=Math.hypot(s.x-p.x,s.z-p.z);if(d<best&&(s.act||!stop)){best=d;stop={...s,index:i}}});
+ // A work station within reach wins over a corner of the path beside it.
+ if(route){const p=rig.root.position;let best=Infinity;route.forEach((s,i)=>{const d=Math.hypot(s.x-p.x,s.z-p.z)+(s.act?0:.6);if(d<best&&d<1.1){best=d;stop={...s,index:i}}});
   if(stop&&!moving)rig.lastStop=stop.index;}
  if(moving){const hold=route?route[rig.lastStop??-1]?.hold:kind==='carry'?'crate':null;return {kind:hold==='crate'?'haul':null,moving:true}}
  if(route)return stop?{kind:WORK_KINDS[stop.act]||null,face:Number.isFinite(stop.face)?stop.face:null}:{kind:'rest'};
