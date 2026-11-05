@@ -5,5 +5,7 @@ export function actorMenuLabel({name,level,playerLevel,prefix='',accountId=null,
  if(prefix)row.append(document.createTextNode(prefix));
  if(hasStaffCrown(accountId)){const crown=document.createElement('span');crown.className='menu-admin-crown';crown.innerHTML=crownSVG;crown.title='Eldervale administrator';row.append(crown)}
  row.append(document.createTextNode(String(name||'Adventurer')));
+ // Non-combat NPCs (bankers, shopkeepers, townsfolk) show no level, as in RuneScape.
+ if(level===null)return row;
  const number=Math.max(1,Math.floor(Number(level)||1)),suffix=document.createElement('span');suffix.className='menu-combat-level level-'+levelRelation(playerLevel,number);suffix.textContent=' (level-'+number+')';row.append(suffix);return row;
 }

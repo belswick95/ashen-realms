@@ -20,3 +20,6 @@ export function npcDialogueChoices(profile,lineIndex=0){
  out.push({action:'goodbye',label:'Goodbye.'});return out;
 }
 export function npcGreeting(profile){const service=npcService(profile),line=profile?.lines?.[0];if(line)return line;return service==='bank'?'Good day. How may I help you?':service==='trade'?'Welcome! Care to see my wares?':'Hello there.'}
+// Dialogue text is one line per row; seeds written with a plain SQL string store
+// a literal backslash-n, which must split too rather than show as "\n".
+export function dialogueLines(text){return String(text??'').split(/\r?\n|\\n/).map(l=>l.trim()).filter(Boolean)}

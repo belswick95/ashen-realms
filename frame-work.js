@@ -1,4 +1,8 @@
 export const nextFrame=()=>new Promise(resolve=>{if(typeof requestAnimationFrame==='function'&&!globalThis.document?.hidden)requestAnimationFrame(()=>setTimeout(resolve,0));else setTimeout(resolve,0)});
+// A macrotask yield: lets input and rendering run between slices without
+// waiting a whole animation frame, so CPU work is not paced by the frame rate.
+const channel=typeof MessageChannel==='function'?new MessageChannel():null,queued=[];if(channel){channel.port1.onmessage=()=>queued.shift()?.();channel.port1.unref?.();channel.port2.unref?.()}
+export const nextTask=()=>new Promise(resolve=>{if(channel){queued.push(resolve);channel.port2.postMessage(0)}else setTimeout(resolve,0)});
 // Yield between bounded pieces of CPU work, and allow a newer route to cancel an old one.
 export async function runFrameWork(iterator,{signal,budget=5,yieldFrame=nextFrame,now=()=>performance.now(),onProgress=()=>{}}={}){
  let start=now();await yieldFrame();for(;;){if(signal?.aborted)throw new DOMException('Cancelled','AbortError');const step=iterator.next();if(step.done)return step.value;onProgress(step.value);if(now()-start>=budget){await yieldFrame();start=now();}}
