@@ -22,6 +22,8 @@ const cases=weaponMode?[
  ["idle armed",{},{weapon:"longsword",shield:"kite"},{},30],
  ["walk",{},{weapon:"longsword",shield:"kite"},{distance:3.2/60,speed:3.2,locomotion:"walk"},40],
  ["sprint",{sex:"female",hair:"Buns"},{},{distance:12/60,speed:12,locomotion:"run"},40],
+ ["jog",{},{weapon:"longsword"},{distance:6.4/60,speed:6.4,locomotion:"jog"},47],
+ ["combat stance",{},{weapon:"longsword",shield:"kite"},{combat:true},30],
  ["attack",{},{weapon:"longsword",shield:"kite"},i=>i<4?{attack:.6}:{attack:Math.max(0,.6-i/60)},22],
  ["block",{},{weapon:"longsword",shield:"kite"},{block:.5},25],
  ["jump",{},{},i=>({airborne:i>2}),20],

@@ -92,7 +92,7 @@ test('held items ride the hand sockets at world size and follow the clip',()=>{
 
 test('the animator picks gait clips from speed or requested locomotion and never moves the root',()=>{
  const cases=[[{},'Idle_Loop'],[{distance:1.5/60,speed:1.5},'Walk_Loop'],[{distance:5/60,speed:5},'Jog_Fwd_Loop'],[{distance:9/60,speed:9},'Sprint_Loop'],
-  [{distance:3/60,speed:3,locomotion:'walk'},'Walk_Loop'],[{distance:3/60,speed:3,locomotion:'run'},'Sprint_Loop'],[{armed:true},'Sword_Idle'],[{mounted:true,distance:.1,speed:6},'Driving_Loop'],[{activity:'smith'},'Fixing_Kneeling'],[{dead:true},'Death01']];
+  [{distance:3/60,speed:3,locomotion:'walk'},'Walk_Loop'],[{distance:3/60,speed:3,locomotion:'run'},'Sprint_Loop'],[{armed:true},'Idle_Loop'],[{armed:true,combat:true},'Sword_Idle'],[{combat:true},'Sword_Idle'],[{block:.5},'Sword_Idle'],[{mounted:true,distance:.1,speed:6},'Driving_Loop'],[{activity:'smith'},'Fixing_Kneeling'],[{dead:true},'Death01']];
  for(const [opts,clip] of cases){const r=character(),{pose}=run(r,40,opts);assert.equal(pose.gait,clip,JSON.stringify(opts));assert.deepEqual(r.root.position.toArray(),[0,0,0]);assert.equal(r.root.rotation.x,0)}
 });
 
@@ -102,8 +102,20 @@ test('running leans the head ahead of the hips toward +Z',()=>{
 });
 
 test('playback rate follows travel speed so feet do not slide, within sane limits',()=>{
- const rate=speed=>{const r=character(),{a}=run(r,20,{distance:speed/60,speed,locomotion:'walk'});return a.mixer.existingAction(clipsFor('male').Walk_Loop).timeScale};
- assert.ok(rate(2)>rate(1.2));assert.ok(rate(20)<=1.7);assert.ok(rate(.2)>=.55);
+ const rate=(speed,mode='walk')=>{const r=character(),{a,pose}=run(r,20,{distance:speed/60,speed,locomotion:mode});return a.mixer.existingAction(clipsFor('male')[pose.gait]).timeScale};
+ assert.ok(rate(2)>rate(1.2));assert.ok(rate(20)<=2.4);assert.ok(rate(.2)>=.5);
+ // Jogging at the normal 6.4 travel speed steps faster than the clip, not in slow motion.
+ assert.ok(rate(6.4,'jog')>1.1,'jog cadence '+rate(6.4,'jog'));
+});
+
+test('the planted foot moves backward at the travel speed: short quick strides, no sliding',()=>{
+ for(const [mode,speed] of [['walk',1.5],['walk',3],['jog',5],['jog',6.4],['run',12.8]]){
+  const r=character(),a=createHumanoidAnimator(r),dt=1/120,rows=[];for(let i=0;i<240;i++)a.update(dt,{distance:speed*dt,speed,locomotion:mode});
+  for(let i=0;i<480;i++){a.update(dt,{distance:speed*dt,speed,locomotion:mode});r.root.updateMatrixWorld(true);rows.push(['l','r'].map(s=>world(r.bones['ball_'+s])))}
+  const low=Math.min(...rows.flat().map(p=>p.y)),v=[];
+  for(let i=1;i<rows.length;i++){const k=rows[i][0].y<rows[i][1].y?0:1;if(rows[i][k].y<low+.05&&rows[i-1][k].y<low+.05)v.push((rows[i-1][k].z-rows[i][k].z)/dt)}
+  v.sort((x,y)=>x-y);const median=v[v.length>>1];assert.ok(Math.abs(median-speed)/speed<.15,mode+' '+speed+': planted foot '+median);
+ }
 });
 
 test('frame rate does not change the pose after the same time',()=>{
@@ -114,7 +126,8 @@ test('frame rate does not change the pose after the same time',()=>{
 test('attacks, hits and jumps play one-shots that hand back to the base loop',()=>{
  const r=character(),a=createHumanoidAnimator(r);
  assert.equal(a.update(1/60,{attack:.5,armed:true}).clip,'Sword_Attack');
- let pose;for(let i=0;i<90;i++)pose=a.update(1/60,{armed:true});assert.equal(pose.clip,'Sword_Idle');
+ let pose;for(let i=0;i<90;i++)pose=a.update(1/60,{armed:true});assert.equal(pose.clip,'Sword_Idle','armed attacks hold the combat stance for a while');
+ for(let i=0;i<420;i++)pose=a.update(1/60,{armed:true});assert.equal(pose.clip,'Idle_Loop','then ease back to the relaxed idle');
  assert.equal(a.update(1/60,{attack:.5,style:'magic'}).clip,'Spell_Simple_Shoot');for(let i=0;i<90;i++)a.update(1/60);
  assert.match(a.update(1/60,{attack:.4}).clip,/^Punch_/,'unarmed attacks punch');for(let i=0;i<90;i++)a.update(1/60);
  assert.match(a.update(1/60,{hit:1}).clip,/^Hit_/);for(let i=0;i<60;i++)pose=a.update(1/60,{hit:0});assert.equal(pose.clip,'Idle_Loop');
