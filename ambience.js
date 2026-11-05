@@ -6,7 +6,7 @@
 // dogs, a smithy's hammer and chapel bells. Nothing is a short obvious loop:
 // beds restart at random offsets with long crossfades, one-shots vary in
 // timing, pitch, level and position.
-import {BED_FILES} from './sfx.js?v=release-20261105-light82';
+import {BED_FILES} from './sfx.js?v=release-20261105-minimap83';
 
 const clamp=v=>Math.max(0,Math.min(1,Number(v)||0));
 // Bed levels (0..1) for the current surroundings. `day` is 1 at noon, 0 at night.
