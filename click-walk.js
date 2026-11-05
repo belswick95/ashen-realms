@@ -84,3 +84,10 @@ export function arrivalStatus(pending,position,{moving=false,routing=false,gener
  if(withinReach(position,pending,pending.reach))return 'arrived';
  return now-(pending.activeAt??pending.startedAt??now)>settle?'failed':'waiting';
 }
+
+// Menus. As in RuneScape, people and creatures under the cursor take precedence
+// over scenery (a tree trunk between the camera and a hen must not eat the click).
+export const ACTOR_KINDS=new Set(['creature','npc','player','merchant','groundDrop','worldItem']);
+export function actorsFirst(hits){const kind=h=>h.object?.userData?.kind;const actors=hits.filter(h=>ACTOR_KINDS.has(kind(h)));return actors.length&&!ACTOR_KINDS.has(kind(hits[0]))?[...actors,...hits.filter(h=>!ACTOR_KINDS.has(kind(h)))]:hits}
+// Every right-click menu on the world offers "Walk here", placed before Examine/Cancel.
+export function withWalkHere(choices,walk){if(!walk||choices.some(c=>c[0]==='Walk here'))return choices;const at=choices.findIndex(c=>typeof c[0]==='string'&&/^(Examine|Cancel)/.test(c[0]));const i=at<0?choices.length:at;return [...choices.slice(0,i),walk,...choices.slice(i)]}

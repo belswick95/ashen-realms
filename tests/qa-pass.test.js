@@ -48,3 +48,24 @@ test('a goal across a river walks round by the distant bridge instead of giving 
  const end=path.at(-1);assert.ok(Math.hypot(end.x-goal.x,end.z-goal.z)<1e-6,'reaches the far bank');
  assert.ok(path.some(p=>p.x>=118&&p.x<=128&&Math.abs(p.z)<4),'crosses at the bridge');
 });
+
+test('a fishing spot in the river: route to the bank beside it, not a detour when the near bank is as close',()=>{
+ const walk=(x,z)=>Math.abs(z)>=3||(x>=120&&x<=126);
+ const canTravel=(a,b)=>{const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)*5)||1;for(let i=0;i<=n;i++){const t=i/n;if(!walk(a.x+(b.x-a.x)*t,a.z+(b.z-a.z)*t))return false}return true};
+ const run=g=>{let n;do{n=g.next()}while(!n.done);return n.value};
+ const far=run(searchRoute({start:{x:0,z:8},goal:{x:2,z:-2.4},canTravel,maxNodes:4000,coarseWalk:walk}));
+ assert.ok(far.at(-1).z<=-3&&Math.hypot(far.at(-1).x-2,far.at(-1).z+2.4)<3,'south bank beside the spot: '+JSON.stringify(far.at(-1)));
+ const mid=run(searchRoute({start:{x:0,z:8},goal:{x:2,z:0},canTravel,maxNodes:4000,coarseWalk:walk}));
+ assert.ok(mid.at(-1).z>=3&&mid.length<6,'mid-river spot is fished from the near bank');
+});
+
+test('menus: actors beat scenery under the cursor, and Walk here sits before Examine',async()=>{
+ const {actorsFirst,withWalkHere}=await import('../click-walk.js');
+ const h=k=>({object:{userData:{kind:k}}});
+ assert.deepEqual(actorsFirst([h('tree'),h('creature'),h('worldObject')]).map(x=>x.object.userData.kind),['creature','tree','worldObject']);
+ assert.deepEqual(actorsFirst([h('npc'),h('tree')]).map(x=>x.object.userData.kind),['npc','tree']);
+ const walk=['Walk here',()=>{}];
+ assert.deepEqual(withWalkHere([['Chop down tree'],['Examine tree'],['Cancel']],walk).map(c=>c[0]),['Chop down tree','Walk here','Examine tree','Cancel']);
+ assert.deepEqual(withWalkHere([['Walk here'],['Cancel']],walk).map(c=>c[0]),['Walk here','Cancel']);
+ assert.deepEqual(withWalkHere([['Net'],['Cancel']],null).map(c=>c[0]),['Net','Cancel']);
+});
