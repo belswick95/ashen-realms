@@ -136,7 +136,7 @@ export const tutorialQuests=[
     say('Sister Adeline in the Chapel of the Dawn has some sober words for every adventurer.')]}},
  {key:'tutorial-prayer',requires:'tutorial-banking',name:'Dawn and Dusk',giver:'@castle:48',
   description:'Sister Adeline explains what happens when you die, and how prayer works.',
-  objectives:[{type:'visit',x:-313,z:-317,radius:3,amount:1,label:'Kneel at the Altar of the Dawn',hint:'@castle:27'}],
+  objectives:[{type:'visit',x:-313,z:-317,radius:2.2,amount:1,label:'Kneel at the Altar of the Dawn',hint:'@castle:27'}],
   giverName:'Sister Adeline',icon:'candle',xp:{prayer:250},items:{candle:1},
   dialogue:{
    offer:[say('Every adventurer falls sometime, child. When your Hitpoints reach zero, you die.'),

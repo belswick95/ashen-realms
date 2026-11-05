@@ -1,14 +1,14 @@
 // Castle training client: objective HUD, guide arrow, tutor dialogue, gate lock and the arrival cutscene.
 // Server state (quests + game_flags.tutorial) arrives with every realm sync; nothing here is authoritative.
-import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261105-minimap83';
-import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261105-minimap83';
+import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261105-qa84';
+import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261105-qa84';
 
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 
 export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates}){
- document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261105-minimap83'}));
+ document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261105-qa84'}));
  let quests=[],flags={},locked=false,step=null,talking=false,destroyed=false,selfName='';
  // ---- objective HUD
  const hud=el('section','tutorial-hud');hud.hidden=true;hud.setAttribute('aria-live','polite');
@@ -53,7 +53,8 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
  const cutscene={active:false,shot:null,from:null,to:null,start:0,ms:1,follow:null,skip:false};
  const letterbox=el('div','tutorial-letterbox');letterbox.hidden=true;const caption=el('div','tutorial-caption'),skip=el('button','tutorial-skip','Skip ▸▸');skip.type='button';
  const fader=el('div','tutorial-fade');letterbox.append(el('i','bar top'),el('i','bar bottom'),caption,skip);document.body.append(letterbox,fader);
- const blockKeys=e=>{if(!cutscene.active||box.contains(e.target))return;if(e.key==='Escape'){cutscene.skip=true}if(![' ','Enter'].includes(e.key)||!box.hidden){e.stopPropagation();e.preventDefault()}};
+ // Escape skips the scene even while a line of dialogue (whose Continue button has focus) is showing.
+ const blockKeys=e=>{if(!cutscene.active)return;if(e.key==='Escape'){e.stopPropagation();e.preventDefault();skip.onclick();return}if(box.contains(e.target))return;if(![' ','Enter'].includes(e.key)||!box.hidden){e.stopPropagation();e.preventDefault()}};
  skip.onclick=()=>{cutscene.skip=true;cont.click()};
  const fade=(to,ms)=>{fader.style.transition='opacity '+ms+'ms ease';fader.style.opacity=String(to);return wait(ms)};
  function setShot(shot,ms=0){

@@ -1,13 +1,18 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
-import {loading,commandLabel} from './loading-indicator.js?v=release-20261105-minimap83';
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261105-qa84';
 export async function startRealm(db,user,session){
  let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
  const badge=document.createElement('output');badge.id='realm-connection';badge.setAttribute('role','status');badge.style.cssText='position:fixed;top:42px;left:50%;transform:translateX(-50%);z-index:250;background:#25271d;color:#f4d899;padding:7px 12px;border-radius:5px';badge.hidden=true;document.body.append(badge);
  async function request(command='sync',payload={},id=null){
+  if(disposed)throw Error('Disconnected from the world');
   // A request that hangs (dropped connection) or fails shows "Reconnecting…" until one succeeds.
   const started=Date.now(),slow=loading.begin('Reconnecting…',{key:'realm-slow',delay:4000,kind:'reconnect'});let data,error;
   try{({data,error}=await db.rpc('world_command',{session_id:session,command,payload,request_id:id,event_cursor:cursor}))}catch(e){error=e}finally{slow.end()}
-  if(error){badge.hidden=false;badge.textContent='World connection: '+error.message;failures++;loading.begin('Reconnecting…',{key:'realm-reconnect',kind:'reconnect',timeout:15000});throw Error(error.message)}
+  if(error){badge.hidden=false;badge.textContent='World connection: '+error.message;failures++;
+   // Signing in elsewhere replaces this world session: stop polling a dead session (it would fail
+   // four times a second forever) and hand over to the sign-in screen.
+   if(/session expired/i.test(error.message)&&!disposed){disposed=true;window.eldervaleSessionLost?.('Your character was signed in from another window or device. Please sign in again.');throw Error(error.message)}
+   loading.begin('Reconnecting…',{key:'realm-reconnect',kind:'reconnect',timeout:15000});throw Error(error.message)}
   loading.end('realm-reconnect');
   if(data.reset)return true;
   const serverTime=Date.parse(data.time);if(serverTime<latestSnapshotTime)return true;latestSnapshotTime=serverTime;
