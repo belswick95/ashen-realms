@@ -1,14 +1,14 @@
-import {campObject} from './camp-models.js?v=release-20261105-houses65';
-import {professionStationModel} from './profession-models.js?v=release-20261105-houses65';
-import {oreResources} from './profession-data.js?v=release-20261105-houses65';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261105-houses65';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261105-houses65';
-import {creatureMaterial} from './creature-material.js?v=release-20261105-houses65';
-import {dragonModel} from './monster-dragon.js?v=release-20261105-houses65';
-import {castleObject} from './castle-models.js?v=release-20261105-houses65';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261105-houses65';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-houses65';
-import {townProp,dressFountain} from './town-props.js?v=release-20261105-houses65';
+import {campObject} from './camp-models.js?v=release-20261105-rsclick66';
+import {professionStationModel} from './profession-models.js?v=release-20261105-rsclick66';
+import {oreResources} from './profession-data.js?v=release-20261105-rsclick66';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261105-rsclick66';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261105-rsclick66';
+import {creatureMaterial} from './creature-material.js?v=release-20261105-rsclick66';
+import {dragonModel} from './monster-dragon.js?v=release-20261105-rsclick66';
+import {castleObject} from './castle-models.js?v=release-20261105-rsclick66';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261105-rsclick66';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-rsclick66';
+import {townProp,dressFountain} from './town-props.js?v=release-20261105-rsclick66';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);
