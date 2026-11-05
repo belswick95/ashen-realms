@@ -10,7 +10,10 @@ const store=globalThis.__eldervaleCharacterStore||(globalThis.__eldervaleCharact
 export const characterStore=store;
 const defaultRead=async url=>{const r=await fetch(url);if(!r.ok)throw Error('Character asset '+url+' '+r.status);return r.arrayBuffer()};
 function parse(buffer){return new Promise((resolve,reject)=>new GLTFLoader().parse(buffer,'',resolve,reject))}
-async function loadGlb(name){return parse(await store.read(new URL(name,BASE).href))}
+// Every character shares these geometries. Mark them shared so the generic
+// disposers (ground drops being picked up, world entities and profession props
+// being removed) never free the buffers that every body on screen is using.
+async function loadGlb(name){const gltf=await parse(await store.read(new URL(name,BASE).href));gltf.scene.traverse(o=>{if(o.geometry)o.geometry.userData.eldervaleShared=true});return gltf}
 
 // Preload everything a character needs to appear immediately: rigs, heads,
 // hairstyles, clips and the default (peasant) clothing. Other outfit parts
