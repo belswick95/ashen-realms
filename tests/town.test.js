@@ -31,15 +31,18 @@ test('town landmarks have different sizes and complete finite interior geometry'
  }
 });
 
-test('portrait animates a separate copy of the real speaker without cloning circular hit metadata or moving world lips',()=>{
+test('portrait animates a separate copy of the real speaker without cloning circular hit metadata or moving the world head',()=>{
  const npc=new T.Group(),rig=buildHumanoid(T,npc,{skin:'#67402f',hair:'Long'});
  const hit=new T.Mesh();hit.userData={kind:'npc',root:npc};npc.add(hit);
- const sourceLip=rig.head.getObjectByName('lower-lip'),base=sourceLip.position.y;
- const pose=createTalkingPose(T,npc),copyFace=pose.model.getObjectByName('character-face'),copyLip=pose.model.getObjectByName('lower-lip');
- assert.equal(copyFace.material,rig.face.material);assert.notEqual(copyLip,sourceLip);assert.equal(pose.model.children.length,npc.children.length-1);
- const positions=new Set();for(let i=0;i<30;i++){pose.update(i/12,true);positions.add(copyLip.position.y.toFixed(5))}
- assert.ok(positions.size>8);assert.equal(sourceLip.position.y,base);
- pose.update(1,false);assert.equal(copyLip.position.y,base);pose.update(1,true,true);assert.equal(copyLip.position.y,base);assert.equal(pose.model.getObjectByName('character-head').rotation.y,0);
+ const sourceHead=rig.head,rest=sourceHead.quaternion.clone();
+ const pose=createTalkingPose(T,npc),copyHead=pose.model.getObjectByName('Head');
+ assert.ok(copyHead&&copyHead!==sourceHead);assert.equal(pose.model.children.length,npc.children.length-1,'hit proxy is not cloned');
+ const copies=[];pose.model.traverse(o=>{if(o.isSkinnedMesh)copies.push(o)});assert.equal(copies.length,rig.allMeshes.length);
+ for(const m of copies){assert.notEqual(m.skeleton,rig.face.skeleton);for(const b of m.skeleton.bones){let o=b;while(o.parent)o=o.parent;assert.equal(o,pose.model,'copy is bound to its own bones')}}
+ assert.equal(copies.find(m=>m.name===rig.face.name).material,rig.face.material,'materials are shared');
+ const angles=new Set();for(let i=0;i<30;i++){pose.update(i/12,true);angles.add(copyHead.quaternion.angleTo(rest).toFixed(4))}
+ assert.ok(angles.size>8,'head nods while talking');assert.ok(sourceHead.quaternion.equals(rest),'world speaker untouched');
+ pose.update(1,true,true);assert.ok(copyHead.quaternion.angleTo(rest)<1e-6,'reduced motion holds still');
  pose.dispose();
 });
 test('sun shadow projection stays on its texel grid during small movements',()=>{

@@ -3,97 +3,139 @@ import assert from 'node:assert/strict';
 import * as T from 'three';
 import {buildHumanoid} from '../humanoid.js';
 import {createHumanoidAnimator} from '../animation.js';
-import {buildPlateArmor} from '../armor.js';
+import {characterStore,CHARACTER_SCALE,clipsFor,ensurePart} from '../character-assets.js';
+import {outfitItems,wornOutfit,defaultClothing,OUTFIT_SLOTS} from '../outfits.js';
 import {makeWeapon} from '../weapons.js';
 import {makeShield} from '../shields.js';
-const character=()=>{const root=new T.Group();return buildHumanoid(T,root,{})};
-test('head surface normals face outward and proportions stay below prototype size',()=>{
- const rig=character(),g=rig.face.geometry,p=g.attributes.position,n=g.attributes.normal;
- let outward=0;for(let i=0;i<p.count;i++)outward+=p.getX(i)*n.getX(i)+p.getZ(i)*n.getZ(i);
- assert.ok(outward>0,'head must render its outside surface, not its inside');
- const bounds=new T.Box3().setFromObject(rig.head),size=bounds.getSize(new T.Vector3());
- assert.ok(size.y<.6);assert.ok(size.x<.5);
+// Characters are Quaternius skinned models (assets/characters) driven by
+// animation clips. tests/helpers/preload.js loads the assets before any test.
+const world=o=>o.getWorldPosition(new T.Vector3());
+const character=(look={})=>{const root=new T.Group();return buildHumanoid(T,root,look)};
+const run=(rig,frames,opts)=>{const a=createHumanoidAnimator(rig);let pose;for(let i=0;i<frames;i++)pose=a.update(1/60,typeof opts==='function'?opts(i):opts);rig.root.updateMatrixWorld(true);return {a,pose}};
+
+test('both bodies build skinned meshes on one skeleton with an adult head height',()=>{
+ for(const sex of ['male','female']){
+  const rig=character({sex});rig.root.updateMatrixWorld(true);
+  assert.equal(rig.sex,sex);assert.ok(rig.allMeshes.length>=6);
+  for(const m of rig.allMeshes){assert.ok(m.isSkinnedMesh,m.name);for(const b of m.skeleton.bones)assert.equal(rig.bones[b.name],b,'every mesh is bound to this character\'s own bones')}
+  const head=world(rig.head).y;assert.ok(head>2.2&&head<2.8,sex+' head height '+head);
+  assert.ok(rig.footHeight>0&&rig.footHeight<.3);
+  rig.root.traverse(o=>assert.ok([...o.position,...o.scale].every(Number.isFinite)));
+ }
+ assert.equal(character().model.scale.x,CHARACTER_SCALE);
 });
-test('all hairstyles produce finite transforms and share cached geometry',()=>{
- const rigs=['Side swept','Short crop','Spiky','Buzz cut','Long'].map(hair=>buildHumanoid(T,new T.Group(),{hair}));
- for(const rig of rigs)rig.root.traverse(o=>assert.ok([...o.position,...o.scale].every(Number.isFinite)));
- assert.equal(rigs[0].face.geometry,rigs[1].face.geometry);
- assert.notEqual(rigs[0].head,rigs[1].head);
+
+test('characters share geometry and materials but never bones',()=>{
+ const a=character({skin:'#945d3f'}),b=character({skin:'#945d3f'});
+ assert.equal(a.face.geometry,b.face.geometry);assert.equal(a.face.material,b.face.material);
+ assert.notEqual(a.head,b.head);assert.notEqual(a.face.skeleton,b.face.skeleton);
 });
-test('equipment stays attached to wrists while arms and elbows articulate',()=>{
+
+test('appearance tints skin and hair, chooses the hairstyle and keeps beards male-only',()=>{
+ const r=character({skin:'#402a24',hairColor:'#c0b5a3',hair:'Long',beard:'Beard'});
+ assert.equal(r.face.material.color.getHexString(),'402a24');
+ assert.equal(r.hairMeshes[0].material.color.getHexString(),'c0b5a3');
+ assert.ok(r.hairMeshes.some(m=>/Hair_Long/.test(m.name)));assert.ok(r.hairMeshes.some(m=>/Beard/.test(m.name)));
+ assert.equal(character({hair:'Bald'}).hairMeshes.length,0);
+ assert.ok(!character({sex:'female',beard:'Beard'}).hairMeshes.some(m=>/Beard/.test(m.name)));
+});
+
+test('unarmoured regions wear the starter clothes in the chosen dyes',()=>{
+ const r=character({shirtVariant:3,pantsVariant:2});
+ assert.deepEqual(r.worn,defaultClothing({shirtVariant:3,pantsVariant:2}));
+ assert.deepEqual(Object.keys(r.parts).sort(),['arms','boots','chest','legs']);
+ for(const slot of ['helm','shoulders','neck'])assert.equal(r.parts[slot],undefined);
+});
+
+test('setCoverage dresses one part per slot, hides hair under closed helms and undresses cleanly',async()=>{
+ await Promise.all(['helm','chest','legs','boots','knightRoundPauldrons1','knightHornedHelm2','rangerHood1'].flatMap(k=>[ensurePart(outfitItems[k].male)]));
+ const r=character({hair:'Short parted',beard:'Beard'}),startMeshes=r.allMeshes.length;
+ const worn=r.setCoverage({helm:true,chest:true,legs:true,boots:true,knightRoundPauldrons1:true});
+ assert.equal(worn.helm,'helm');assert.equal(worn.chest,'chest');assert.equal(worn.shoulders,'knightRoundPauldrons1');
+ for(const slot of ['helm','chest','legs','boots','shoulders'])assert.ok(r.parts[slot].meshes.length>0,slot);
+ assert.ok(r.hairMeshes.length>=2&&r.hairMeshes.every(m=>!m.visible),'armet hides hair and beard');
+ // Another item in the same slot replaces the first rather than stacking.
+ r.setCoverage({knightHornedHelm2:true});assert.equal(r.parts.helm.key,'knightHornedHelm2');assert.equal(r.parts.chest.key,'peasantShirt1');
+ // A hood hides hair but not the beard.
+ r.setCoverage({rangerHood1:true});assert.ok(r.hairMeshes.some(m=>m.visible)&&r.hairMeshes.some(m=>!m.visible));
+ r.setCoverage({});assert.equal(r.parts.helm,undefined);assert.ok(r.hairMeshes.every(m=>m.visible));assert.equal(r.allMeshes.length,startMeshes);
+ for(const m of r.allMeshes)assert.ok(r.model.children.includes(m),'no orphaned outfit meshes');
+});
+
+test('outfit parts stream in on first use and the slot keeps its previous mesh until they arrive',async()=>{
+ const key='wizardRobeTop3',part=outfitItems[key].male;delete characterStore.parts[part];characterStore.pending.delete(part);
+ const r=character();r.setCoverage({[key]:true});
+ assert.equal(r.parts.chest.key,'peasantShirt1','not half-dressed while loading');
+ await characterStore.pending.get(part);await Promise.resolve();
+ assert.equal(r.parts.chest.key,key);
+ // A later change that wins the race is not overwritten by a slow load.
+ const slow='nobleCoat2',slowPart=outfitItems[slow].male;delete characterStore.parts[slowPart];characterStore.pending.delete(slowPart);
+ r.setCoverage({[slow]:true});r.setCoverage({});await characterStore.pending.get(slowPart);await Promise.resolve();
+ assert.equal(r.parts.chest.key,'peasantShirt1');
+});
+
+test('every outfit item resolves to a real part for both bodies and one slot',()=>{
+ assert.equal(Object.keys(outfitItems).length,96);
+ for(const item of Object.values(outfitItems)){assert.ok(OUTFIT_SLOTS.includes(item.slot),item.key);for(const sex of ['male','female'])assert.ok(characterStore.manifest.parts[item[sex]],item.key+' '+sex)}
+ for(const legacy of ['helm','chest','legs','boots'])assert.equal(outfitItems[legacy].outfit,'knight');
+ assert.equal(wornOutfit({helm:true,knightHornedHelm1:false}).helm,'helm');
+});
+
+test('held items ride the hand sockets at world size and follow the clip',()=>{
  const r=character(),weapon=makeWeapon(T,'longsword'),shield=makeShield(T,'kite');
- r.rightHand.add(weapon);r.leftHand.add(shield);
- const before=weapon.getWorldPosition(new T.Vector3());
- const a=createHumanoidAnimator(r);a.update(.05,{distance:.2,speed:4,attack:.3});r.root.updateMatrixWorld(true);
- assert.ok(before.distanceTo(weapon.getWorldPosition(new T.Vector3()))>.1);
- assert.equal(weapon.parent,r.rightHand);assert.equal(shield.parent,r.leftHand);
- const slots=buildPlateArmor(T,r.root,r);
- r.root.updateMatrixWorld(true);const headBounds=new T.Box3().setFromObject(r.face),helmetBounds=new T.Box3();for(const part of slots.helm)helmetBounds.union(new T.Box3().setFromObject(part));const headWidth=headBounds.getSize(new T.Vector3()).x,helmetWidth=helmetBounds.getSize(new T.Vector3()).x;assert.ok(helmetWidth>headWidth);assert.ok(helmetWidth<headWidth*1.4);assert.ok(helmetBounds.max.z>headBounds.max.z);
- for(const pieces of Object.values(slots))for(const m of pieces)assert.equal(m.visible,false);
-});
-test('distance drives cadence consistently across frame rates',()=>{
- const run=hz=>{const r=character(),a=createHumanoidAnimator(r);for(let i=0;i<hz;i++)a.update(1/hz,{distance:5/hz,speed:5});return r};
- const a=run(30),b=run(120);
- assert.ok(Math.abs(a.leftLeg.rotation.x-b.leftLeg.rotation.x)<1e-8);
- assert.equal(a.root.position.y,0);
-});
-test('stopping settles gait and ending combat resets attack channels',()=>{
- const r=character(),a=createHumanoidAnimator(r);a.update(.05,{distance:.25,speed:5,attack:.3});
- assert.notEqual(r.rightArm.rotation.z,0);
- for(let i=0;i<180;i++)a.update(1/60);
- assert.ok(Math.abs(r.leftLeg.rotation.x)<1e-10);assert.equal(r.rightArm.rotation.z,-r.armSplay,'arm returns to its relaxed rest angle');
- assert.equal(r.root.position.y,0);assert.ok(r.leftKnee.rotation.x>=0);
- a.update(NaN,{distance:Infinity});assert.ok(Number.isFinite(r.leftArm.rotation.x));
-});
-test('two-handed IK keeps both wrists on the grip during attacks',()=>{
- const r=character(),a=createHumanoidAnimator(r);
- for(const attack of [.5,.3,.1]){
-  a.update(.016,{twoHanded:true,attack});r.root.updateMatrixWorld(true);
-  const right=r.rightHand.getWorldPosition(new T.Vector3()),left=r.leftHand.getWorldPosition(new T.Vector3());
-  assert.ok(Math.abs(right.distanceTo(left)-.10)<.025,'wrists remain one grip length apart');
-  assert.ok(Number.isFinite(right.y));
- }
- a.update(.016);assert.equal(r.leftElbow.rotation.z,0);assert.equal(r.rightElbow.rotation.z,0);
+ r.rightHand.add(weapon);r.leftHand.add(shield);r.root.updateMatrixWorld(true);
+ assert.equal(r.rightHand.parent,r.bones.hand_r);assert.equal(r.leftHand.parent,r.bones.hand_l);
+ assert.ok(Math.abs(r.rightHand.getWorldScale(new T.Vector3()).x-1)<1e-6,'socket undoes the body scale');
+ const before=world(weapon);run(r,30,{attack:.5,armed:true});
+ assert.ok(before.distanceTo(world(weapon))>.1);assert.equal(weapon.parent,r.rightHand);assert.equal(shield.parent,r.leftHand);
 });
 
-test('hair styles use distinct low-poly silhouettes with reusable tapered geometry',()=>{
- const styles=['Side swept','Short crop','Spiky','Buzz cut','Long'];
- const rigs=styles.map(hair=>buildHumanoid(T,new T.Group(),{hair}));
- const strands=rig=>rig.hairMeshes.filter(mesh=>mesh.userData.hairStrand===true);
- assert.deepEqual(rigs.map(r=>strands(r).length),[0,0,7,0,0]);
- assert.equal(rigs[0].hairMeshes[0].geometry,rigs[1].hairMeshes[0].geometry,'same cap shape is cached');
- assert.notEqual(rigs[0].hairMeshes[0].geometry,rigs[3].hairMeshes[0].geometry,'buzz cut is thinner');
- for(const rig of rigs){
-  const headBounds=new T.Box3().setFromObject(rig.head);
-  assert.ok(headBounds.min.y>1.9&&headBounds.max.y<3.0,'hair must stay attached to the head');
- }
+test('the animator picks gait clips from speed or requested locomotion and never moves the root',()=>{
+ const cases=[[{},'Idle_Loop'],[{distance:1.5/60,speed:1.5},'Walk_Loop'],[{distance:5/60,speed:5},'Jog_Fwd_Loop'],[{distance:9/60,speed:9},'Sprint_Loop'],
+  [{distance:3/60,speed:3,locomotion:'walk'},'Walk_Loop'],[{distance:3/60,speed:3,locomotion:'run'},'Sprint_Loop'],[{armed:true},'Sword_Idle'],[{mounted:true,distance:.1,speed:6},'Driving_Loop'],[{activity:'smith'},'Fixing_Kneeling'],[{dead:true},'Death01']];
+ for(const [opts,clip] of cases){const r=character(),{pose}=run(r,40,opts);assert.equal(pose.gait,clip,JSON.stringify(opts));assert.deepEqual(r.root.position.toArray(),[0,0,0]);assert.equal(r.root.rotation.x,0)}
 });
 
-test('stylised body: rigid parts on bones, modest vertex budget and stable equipment anchors',()=>{
- const rig=character();let vertices=0,skinned=0;rig.root.traverse(o=>{if(o.isSkinnedMesh)skinned++;if(o.isMesh)vertices+=o.geometry.attributes.position.count});assert.equal(skinned,0);assert.ok(vertices<9000,'stays light enough for many NPCs: '+vertices);
- assert.equal(rig.meshes.head.parent,rig.head);assert.equal(rig.meshes.leftHand.parent,rig.leftHand);assert.equal(rig.meshes.rightHand.parent,rig.rightHand);
- for(const side of ['left','right'])for(const [part,bone] of [['UpperArm','Arm'],['Forearm','Elbow'],['Thigh','Leg'],['Shin','Knee'],['Foot','Ankle']])assert.equal(rig.parts[side+part].parent,rig[side+bone]);
- const animator=createHumanoidAnimator(rig);animator.update(.016,{speed:5,distance:.08});rig.root.updateMatrixWorld(true);assert.ok(rig.leftArm.parent===rig.root&&rig.rightArm.parent===rig.root);
+test('running leans the head ahead of the hips toward +Z',()=>{
+ const r=character();run(r,90,{distance:9/60,speed:9,locomotion:'run'});
+ assert.ok(world(r.head).z>world(r.bones.pelvis).z+.2);
 });
-test('every armor piece is parented to a bone and is larger than the body part it covers',()=>{
- const rig=character(),slots=buildPlateArmor(T,rig.root,rig);rig.root.updateMatrixWorld(true);
- for(const list of Object.values(slots))for(const m of list){let o=m;while(o&&!o.isBone&&o!==rig.torso)o=o.parent;assert.ok(o,'armor follows a bone')}
- const width=(o)=>new T.Box3().setFromObject(o).getSize(new T.Vector3());
- for(const [part,armor] of [['leftForearm','vambrace'],['leftUpperArm','rerebrace'],['leftThigh','cuisse'],['leftShin','greave'],['shirt','cuirass'],['leftFoot','sabaton'],['face','helm']]){const piece=Object.values(slots).flat().find(m=>m.geometry.userData.armorPiece===armor&&(rig.parts[part].parent===rig.head||m.parent===rig.parts[part].parent));assert.ok(piece,armor);piece.visible=true;const a=width(piece),b=width(rig.parts[part]);assert.ok(a.x>b.x&&a.z>b.z,part)}
+
+test('playback rate follows travel speed so feet do not slide, within sane limits',()=>{
+ const rate=speed=>{const r=character(),{a}=run(r,20,{distance:speed/60,speed,locomotion:'walk'});return a.mixer.existingAction(clipsFor('male').Walk_Loop).timeScale};
+ assert.ok(rate(2)>rate(1.2));assert.ok(rate(20)<=1.7);assert.ok(rate(.2)>=.55);
 });
-test('damage reaction decays, idle breathing remains finite and the gameplay root stays grounded',()=>{
+
+test('frame rate does not change the pose after the same time',()=>{
+ const pose=hz=>{const r=character(),a=createHumanoidAnimator(r);for(let i=0;i<hz;i++)a.update(1/hz,{distance:5/hz,speed:5});r.root.updateMatrixWorld(true);return world(r.rightHand)};
+ assert.ok(pose(30).distanceTo(pose(120))<1e-6);
+});
+
+test('attacks, hits and jumps play one-shots that hand back to the base loop',()=>{
  const r=character(),a=createHumanoidAnimator(r);
- const pose=a.update(1/60,{hit:1});
- assert.equal(pose.hit,true);assert.ok(r.torso.rotation.x>0);assert.ok(r.head.rotation.x<0);
- for(let i=0;i<180;i++)a.update(1/60,{hit:0});
- assert.ok(Math.abs(r.torso.rotation.x)<1e-10);
- assert.ok(Math.abs(r.head.rotation.x)<1e-10);
- assert.ok(r.neck.scale.y>.99&&r.neck.scale.y<1.01);
- assert.equal(r.root.position.y,0);
- a.update(1/60,{hit:NaN});assert.ok(Number.isFinite(r.head.rotation.x));
+ assert.equal(a.update(1/60,{attack:.5,armed:true}).clip,'Sword_Attack');
+ let pose;for(let i=0;i<90;i++)pose=a.update(1/60,{armed:true});assert.equal(pose.clip,'Sword_Idle');
+ assert.equal(a.update(1/60,{attack:.5,style:'magic'}).clip,'Spell_Simple_Shoot');for(let i=0;i<90;i++)a.update(1/60);
+ assert.match(a.update(1/60,{attack:.4}).clip,/^Punch_/,'unarmed attacks punch');for(let i=0;i<90;i++)a.update(1/60);
+ assert.match(a.update(1/60,{hit:1}).clip,/^Hit_/);for(let i=0;i<60;i++)pose=a.update(1/60,{hit:0});assert.equal(pose.clip,'Idle_Loop');
+ assert.equal(a.update(1/60,{airborne:true}).clip,'Jump_Start');for(let i=0;i<30;i++)pose=a.update(1/60,{airborne:true});assert.equal(pose.clip,'Jump_Loop');assert.equal(pose.flight,true);
+ assert.equal(a.update(1/60,{airborne:false}).clip,'Jump_Land');for(let i=0;i<40;i++)pose=a.update(1/60);assert.equal(pose.clip,'Idle_Loop');assert.equal(pose.flight,false);
 });
-test('eyes blink: lids close briefly and return to their relaxed rest angle',()=>{
- const r=character(),a=createHumanoidAnimator(r),rest=r.eyelids[0].rotation.x;let closed=false;
- for(let i=0;i<60*8;i++){a.update(1/60,{});if(r.eyelids[0].rotation.x>rest+.8)closed=true}
- assert.ok(closed,'blinked within eight seconds');assert.equal(r.eyelids[0].rotation.x,r.eyelids[1].rotation.x);
+
+test('bad frame input is ignored and the pose stays finite',()=>{
+ const r=character(),a=createHumanoidAnimator(r);
+ assert.equal(a.update(NaN,{distance:Infinity}),undefined);assert.equal(a.update(-1),undefined);
+ a.update(1/60,{distance:Infinity,speed:NaN,hit:NaN});r.root.updateMatrixWorld(true);
+ for(const b of Object.values(r.bones))assert.ok([...b.quaternion.toArray(),...b.position.toArray()].every(Number.isFinite),b.name);
+});
+
+test('activities are set on the rig and cleared while travelling',()=>{
+ const r=character();r.setActivity('sweep');assert.equal(run(r,30,{}).pose.gait,'Push_Loop');
+ r.setActivity(null);assert.equal(run(r,30,{}).pose.gait,'Idle_Loop');
+});
+
+test('dispose removes the model and the upper-back anchor but not shared geometry',()=>{
+ const root=new T.Group(),r=buildHumanoid(T,root,{}),geometry=r.face.geometry;let disposed=false;geometry.addEventListener('dispose',()=>disposed=true);
+ r.dispose();assert.equal(root.children.length,0);assert.equal(disposed,false);
+ assert.ok(character().face.geometry===geometry);
 });

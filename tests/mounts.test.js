@@ -4,18 +4,18 @@ test('constant triple walking speed ignores sprint and castle/rotated building r
 test('gallop creates exactly four matching ground-contact sounds per stride and none when stopped',()=>{const parent=new T.Group(),visual=new T.Group();parent.add(visual);const rig=buildHumanoid(T,visual),gear=new T.Group();rig.rightHand.add(gear);const events=[],horse=createHorseMount(T,parent,{onHoof:e=>events.push(e.index)});horse.update({active:true,rig,visual});for(let i=0;i<104;i++)horse.update({active:true,distance:7.6/104,rig,visual});assert.equal(events.length,4);assert.equal(new Set(events).size,4);assert.equal(gear.visible,false);assert.ok(visual.position.y>.7&&visual.position.y<1.6);for(let i=0;i<20;i++)horse.update({active:true,distance:0,rig,visual});assert.equal(events.length,4);assert.ok(horse.skins.every(m=>m.geometry.attributes.position.count>100&&m.morphTargetInfluences.every(Number.isFinite)));horse.update({active:false,rig,visual});assert.equal(horse.root.visible,false);assert.equal(gear.visible,true);horse.dispose();assert.equal(parent.children.includes(horse.root),false)});
 
 import {createHumanoidAnimator} from '../animation.js';
-test('dismount restores hip width and sideways angles without overwriting fresh walk/run poses',()=>{
- for(const remote of [false,true]){const parent=new T.Group(),visual=new T.Group();parent.add(visual);const rig=buildHumanoid(T,visual),animator=createHumanoidAnimator(rig),horse=createHorseMount(T,parent),rest=[rig.leftLeg.position.x,rig.rightLeg.position.x];
-  for(let cycle=0;cycle<4;cycle++){
-   for(let frame=0;frame<15;frame++){animator.update(1/60,{locomotion:'walk'});horse.update({active:true,distance:.08,rig,visual});}
-   assert.ok(Math.abs(rig.leftLeg.rotation.z)>.29);
-   const mode=cycle%2?'run':'walk';animator.update(1/60,{locomotion:mode,distance:remote?.04:.06,speed:mode==='run'?6.4:3.2});const fresh=[rig.leftLeg.rotation.x,rig.rightLeg.rotation.x];horse.update({active:false,rig,visual});
-   for(const [i,leg]of [rig.leftLeg,rig.rightLeg].entries()){assert.equal(leg.position.x,rest[i]);assert.equal(leg.rotation.z,0);assert.equal(leg.rotation.y,0);assert.equal(leg.rotation.x,fresh[i]);}
-   for(let frame=0;frame<180;frame++)animator.update(1/60,{locomotion:'walk'});
-   for(const leg of [rig.leftLeg,rig.rightLeg])assert.ok(Math.abs(leg.rotation.x)<1e-8);
-  }
-  horse.update({active:true,rig,visual});horse.dispose();assert.equal(rig.leftLeg.position.x,rest[0]);assert.equal(rig.rightLeg.position.x,rest[1]);assert.equal(rig.leftLeg.rotation.z,0);assert.equal(rig.rightLeg.rotation.z,0);
+test('riders sit on the saddle and dismounting returns the body to the ground and the clip pose',()=>{
+ const W=o=>o.getWorldPosition(new T.Vector3());
+ for(let cycle=0;cycle<2;cycle++){const parent=new T.Group(),visual=new T.Group();parent.add(visual);const rig=buildHumanoid(T,visual),animator=createHumanoidAnimator(rig),horse=createHorseMount(T,parent);
+  for(let i=0;i<30;i++){animator.update(1/60,{mounted:true,distance:.1,speed:6});horse.update({active:true,distance:.1,rig,visual})}parent.updateMatrixWorld(true);
+  const pelvis=W(rig.bones.pelvis);assert.ok(Math.abs(pelvis.y-2.41)<.2,'hips on the saddle '+pelvis.y);
+  assert.ok(W(rig.bones.foot_l).y<pelvis.y-.4&&W(rig.bones.foot_r).y<pelvis.y-.4,'legs hang down the horse\'s sides');
+  horse.update({active:false,rig,visual});assert.deepEqual(visual.position.toArray(),[0,0,0]);assert.equal(visual.rotation.x,0);
+  // Seating is re-applied every frame on top of the clip, so nothing lingers once the clip drives the legs again.
+  const reference=buildHumanoid(T,new T.Group()),ra=createHumanoidAnimator(reference);const mode=cycle?{distance:6.4/60,speed:6.4,locomotion:'run'}:{distance:3.2/60,speed:3.2,locomotion:'walk'};
+  for(let i=0;i<240;i++){animator.update(1/60,mode);ra.update(1/60,mode)}
+  for(const bone of ['thigh_l','thigh_r'])assert.ok(rig.bones[bone].quaternion.angleTo(reference.bones[bone].quaternion)<.02,bone);
+  horse.dispose();
  }
 });
-
-test('rider legs retain their anatomical left/right side instead of crossing the saddle',()=>{const parent=new T.Group(),visual=new T.Group();parent.add(visual);const rig=buildHumanoid(T,visual),horse=createHorseMount(T,parent),sides=[Math.sign(rig.leftLeg.position.x),Math.sign(rig.rightLeg.position.x)];horse.update({active:true,rig,visual});for(const [i,leg]of [rig.leftLeg,rig.rightLeg].entries()){assert.equal(Math.sign(leg.position.x),sides[i]);assert.equal(Math.sign(leg.rotation.z),sides[i]);}horse.update({active:false,rig,visual});horse.dispose();});
+test('rider legs stay on their own side of the saddle instead of crossing',()=>{const parent=new T.Group(),visual=new T.Group();parent.add(visual);const rig=buildHumanoid(T,visual),a=createHumanoidAnimator(rig),horse=createHorseMount(T,parent);for(let i=0;i<20;i++){a.update(1/60,{mounted:true});horse.update({active:true,rig,visual})}parent.updateMatrixWorld(true);const x=b=>rig.bones[b].getWorldPosition(new T.Vector3()).x;assert.ok(x('calf_l')>.2&&x('foot_l')>.3,'left leg on the left');assert.ok(x('calf_r')<-.2&&x('foot_r')<-.3,'right leg on the right');horse.update({active:false,rig,visual});horse.dispose();});

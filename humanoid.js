@@ -75,7 +75,10 @@ export function buildHumanoid(T,root,look={}){
   // Equipment flags ({itemKey:true}) → one outfit part per slot.
   setCoverage(equipped={}){return setOutfit(equipped)},
   setHairHidden(on){hairHidden=!!on;refreshHair()},
-  setHandGrip(){},activity:null,setActivity(name){rig.activity=name||null},
+  setHandGrip(){},activity:null,activityPhase:null,
+  // Optional phase (0..1 through the clip) lets a job keep its clip in step
+  // with its own beat, e.g. chopping sounds on each axe impact.
+  setActivity(name,phase=null){rig.activity=name||null;rig.activityPhase=rig.activity&&Number.isFinite(phase)?((phase%1)+1)%1:null},
   // Two-handed IK is replaced by clips; kept so older callers stay harmless.
   solveArm(){},
   upperOffset:.295,legScale:1.38,

@@ -20,26 +20,6 @@ export function townResidents(settlements){
  });return main;
 }
 export function townPropLayout(kind){return kind==='carry'?{width:.52,height:.34,depth:.28,y:1.64,z:.50,handX:.275,handY:1.63}:kind==='read'?{width:.40,height:.055,depth:.28,y:1.70,z:.50,handX:.19,handY:1.71}:null;}
-const activityStates=new WeakMap();
-export function animateTownActivity(rig,kind,time,moving=false){
- if(!kind)return;
- if(rig.clipDriven){rig.setActivity(moving?null:kind);return}
- let state=activityStates.get(rig);if(!state){state={time,weight:0,before:[]};activityStates.set(rig,state)}const dt=Math.max(0,Math.min(.1,time-state.time));state.time=time;state.weight+=((moving?0:1)-state.weight)*(1-Math.exp(-7*dt));
- const joints=[rig.leftArm,rig.rightArm,rig.leftElbow,rig.rightElbow,rig.leftHand,rig.rightHand,rig.head,rig.torso],before=joints.map((j,i)=>{state.before[i]??=j.quaternion.clone();return state.before[i].copy(j.quaternion)});
- const beat=Math.sin(time*(kind==='smith'?4.8:1.8));
- if(kind==='carry'||kind==='read'){
-  const layout=townPropLayout(kind);
-  rig.leftArm.rotation.x=rig.rightArm.rotation.x=-.28;
-  rig.leftElbow.rotation.x=rig.rightElbow.rotation.x=-1.05;
-  if(rig.solveArm){const V=rig.root.position.constructor;for(const [side,sign] of [['left',1],['right',-1]])rig.solveArm(side,new V(sign*layout.handX,layout.handY,layout.z),new V(0,1,0),new V(0,0,1));}
-  if(kind==='read'&&!moving)rig.head.rotation.x=.12;
- }else{
-  if(kind==='smith'){rig.rightArm.rotation.x=-.7-beat*.4;rig.rightElbow.rotation.x=-.7;rig.leftArm.rotation.x=-.3;rig.leftElbow.rotation.x=-.8}
-  else if(kind==='sweep'||kind==='garden'){rig.rightArm.rotation.x=-.35+beat*.19;rig.leftArm.rotation.x=-.28+beat*.13;rig.rightElbow.rotation.x=-.55;rig.leftElbow.rotation.x=-.8;rig.torso.rotation.x=.045+beat*.025}
-  else if(kind==='read'){rig.leftArm.rotation.x=rig.rightArm.rotation.x=-.25;rig.leftElbow.rotation.x=rig.rightElbow.rotation.x=-1.1;rig.head.rotation.x=.12}
-  else{rig.rightArm.rotation.x=-.3+beat*.08;rig.rightElbow.rotation.x=-.65-beat*.15;rig.head.rotation.y=beat*.10}
- }
- const tool=rig.solveArm&&['smith','sweep','garden'].includes(kind),weight=kind==='carry'||kind==='read'?1:state.weight;for(let i=0;i<joints.length;i++){const holding=tool&&[rig.rightArm,rig.rightElbow,rig.rightHand].includes(joints[i]);joints[i].quaternion.copy(before[i].slerp(joints[i].quaternion,holding?1:weight));}
- // Carry work tools beside the body during travel instead of swinging them through the legs.
- if(tool){const arm=[rig.rightArm,rig.rightElbow,rig.rightHand],from=arm.map(j=>j.quaternion.clone()),V=rig.root.position.constructor;rig.solveArm('right',new V(-.58,1.72,.42),new V(0,1,0),new V(0,0,1));for(let i=0;i<arm.length;i++)arm[i].quaternion.copy(from[i].slerp(arm[i].quaternion,1-state.weight));}
-}
+// Every character is clip-driven: standing workers loop their job clip
+// (animation.js ACTIVITY), and travelling hands back to locomotion.
+export function animateTownActivity(rig,kind,time,moving=false){if(!kind)return;rig.setActivity?.(moving?null:kind)}
