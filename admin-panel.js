@@ -1,15 +1,15 @@
-import {questEditor} from './quests.js?v=release-20261105-maxout61';
-import {worldPresets,presetEntity} from './world-presets.js?v=release-20261105-maxout61';
-import {customItemModels,meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261105-maxout61';
-import {recipes} from './professions.js?v=release-20261105-maxout61';
-import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261105-maxout61';
-import {itemIcons} from './item-icons.js?v=release-20261105-maxout61';
-import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261105-maxout61';
-import {goods} from './economy.js?v=release-20261105-maxout61';
-import {createConsoleTabs,consoleIcons} from './admin-console.js?v=release-20261105-maxout61';
+import {questEditor} from './quests.js?v=release-20261105-cap99v62';
+import {worldPresets,presetEntity} from './world-presets.js?v=release-20261105-cap99v62';
+import {customItemModels,meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261105-cap99v62';
+import {recipes} from './professions.js?v=release-20261105-cap99v62';
+import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261105-cap99v62';
+import {itemIcons} from './item-icons.js?v=release-20261105-cap99v62';
+import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261105-cap99v62';
+import {goods} from './economy.js?v=release-20261105-cap99v62';
+import {createConsoleTabs,consoleIcons} from './admin-console.js?v=release-20261105-cap99v62';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==null)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
 export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge}){
- const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261105-maxout61';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261105-cap99v62';document.head.append(css);
  const button=el('button','♛ Game console',{id:'owner-studio-toggle',type:'button'}),panel=el('dialog',null,{id:'owner-studio'});document.body.append(button,panel);
  panel.innerHTML='<header><div><small>ELDERVALE · OWNER ACCESS</small><h2>Game console</h2><a href="/owner-guide.html" target="_blank" rel="noopener">Owner guide</a></div><button type="button" data-close aria-label="Close studio">×</button></header><nav aria-label="Owner tools"></nav><div class="studio-workspace"></div><footer role="status">Changes are saved to the server and audited.</footer>';
  const owner=snapshot.owner;let tab=owner?'Dashboard':'Players',rows=new Map(),selected=null,placing=false,selecting=false,busy=false,overview=null,current=snapshot,formData=null;

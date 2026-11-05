@@ -1,6 +1,6 @@
-import {professionRecipes,professionSkills} from './profession-data.js?v=release-20261105-maxout61';
-import {goods,quantity} from './economy.js?v=release-20261105-maxout61';
-import {skillLevel} from './combat-level.js?v=release-20261105-maxout61';
+import {professionRecipes,professionSkills} from './profession-data.js?v=release-20261105-cap99v62';
+import {goods,quantity} from './economy.js?v=release-20261105-cap99v62';
+import {skillLevel} from './combat-level.js?v=release-20261105-cap99v62';
 export const recipes={...professionRecipes};
 export function registerProfessions(data){if(data?.recipes){for(const key of Object.keys(recipes))delete recipes[key];Object.assign(recipes,data.recipes)}window.eldervaleSkillRecipes=recipes;}
 const has=(r,id)=>Object.hasOwn(r.inputs||{},id)||(r.tools||[]).includes(id)||(r.tools||[]).includes('firelighter')&&['matches','tinderbox'].includes(id);

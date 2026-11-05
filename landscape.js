@@ -1,7 +1,7 @@
-import {approachSample} from './castle-approach.js?v=release-20261105-maxout61';
-import {generatedWorld,seedNoise,biomeWeights,biomeColor} from './procedural-world.js?v=release-20261105-maxout61';
-import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261105-maxout61';
-import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261105-maxout61';
+import {approachSample} from './castle-approach.js?v=release-20261105-cap99v62';
+import {generatedWorld,seedNoise,biomeWeights,biomeColor} from './procedural-world.js?v=release-20261105-cap99v62';
+import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261105-cap99v62';
+import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261105-cap99v62';
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
 export function noise(x,z){const hash=(a,b)=>{const n=Math.sin(a*127.1+b*311.7)*43758.5453;return n-Math.floor(n)};const ix=Math.floor(x),iz=Math.floor(z),u=smooth(0,1,x-ix),v=smooth(0,1,z-iz);return (hash(ix,iz)*(1-u)+hash(ix+1,iz)*u)*(1-v)+(hash(ix,iz+1)*(1-u)+hash(ix+1,iz+1)*u)*v}
