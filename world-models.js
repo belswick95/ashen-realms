@@ -1,15 +1,15 @@
-import {campObject} from './camp-models.js?v=release-20261105-camera75';
-import {professionStationModel} from './profession-models.js?v=release-20261105-camera75';
-import {oreResources} from './profession-data.js?v=release-20261105-camera75';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261105-camera75';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261105-camera75';
-import {creatureMaterial} from './creature-material.js?v=release-20261105-camera75';
-import {dragonModel} from './monster-dragon.js?v=release-20261105-camera75';
-import {castleObject} from './castle-models.js?v=release-20261105-camera75';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261105-camera75';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-camera75';
-import {townProp,dressFountain} from './town-props.js?v=release-20261105-camera75';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261105-camera75';
+import {campObject} from './camp-models.js?v=release-20261105-tutorial76';
+import {professionStationModel} from './profession-models.js?v=release-20261105-tutorial76';
+import {oreResources} from './profession-data.js?v=release-20261105-tutorial76';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261105-tutorial76';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261105-tutorial76';
+import {creatureMaterial} from './creature-material.js?v=release-20261105-tutorial76';
+import {dragonModel} from './monster-dragon.js?v=release-20261105-tutorial76';
+import {castleObject} from './castle-models.js?v=release-20261105-tutorial76';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261105-tutorial76';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-tutorial76';
+import {townProp,dressFountain} from './town-props.js?v=release-20261105-tutorial76';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261105-tutorial76';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);
