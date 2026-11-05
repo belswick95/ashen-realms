@@ -62,6 +62,9 @@ const IDLE_LIMIT_MS=5*60*1000;
 let lastActivity=Date.now(),logoutInProgress=false,hiddenSince=document.hidden?Date.now():0;
 function recordActivity(){if(!document.hidden)lastActivity=Date.now()}
 for(const event of ['pointerdown','keydown','touchstart','wheel'])addEventListener(event,recordActivity,{passive:true});
+// Player-issued world commands (walk, attack, trade, equip, steer) also count:
+// a player can act through queued commands without fresh pointer/key events.
+window.eldervaleRecordActivity=recordActivity;
 async function autoLogout(reason){
  if(logoutInProgress||!user)return;
  logoutInProgress=true;clearTimeout(saveTimer);
