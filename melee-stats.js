@@ -1,6 +1,6 @@
-import {weaponCatalog} from './weapons.js?v=release-20261104-lowpoly54';
-import {shieldCatalog} from './shields.js?v=release-20261104-lowpoly54';
-import {outfitItems,SLOT_LABELS} from './outfits.js?v=release-20261104-lowpoly54';
+import {weaponCatalog} from './weapons.js?v=release-20261105-characters55';
+import {shieldCatalog} from './shields.js?v=release-20261105-characters55';
+import {outfitItems,SLOT_LABELS} from './outfits.js?v=release-20261105-characters55';
 // Every wearable outfit piece (outfits.js) plus the cape. `equipSlot` is the
 // machine slot; one item per slot can be worn. Legacy helm/chest/legs/boots
 // are the iron knight pieces.

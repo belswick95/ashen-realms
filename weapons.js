@@ -1,4 +1,4 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261104-lowpoly54';
+import {meshItemIcon} from './item-appearance.js?v=release-20261105-characters55';
 // Procedural low-poly iron equipment. Meshes share materials and are attached to the right hand.
 export const weaponCatalog={
  battleaxe:{name:'Iron battleaxe',kind:'weapon',damage:14,attack:16,speed:2.8,reach:2.2,desc:'A one-handed double-headed iron battleaxe.'},

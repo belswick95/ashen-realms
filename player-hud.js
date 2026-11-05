@@ -1,5 +1,5 @@
-import {cloneSpeaker} from './dialogue-portrait.js?v=release-20261104-lowpoly54';
-import {texturesSettled} from './character-assets.js?v=release-20261104-lowpoly54';
+import {cloneSpeaker} from './dialogue-portrait.js?v=release-20261105-characters55';
+import {texturesSettled} from './character-assets.js?v=release-20261105-characters55';
 // The portrait renders the actual equipped player meshes, using the existing GPU
 // context only when head equipment changes. No second animated renderer is needed.
 export function createPlayerHUD(T,renderer,model){
