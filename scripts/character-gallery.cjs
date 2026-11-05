@@ -15,7 +15,10 @@ const scene=new T.Scene();scene.background=new T.Color(0x8fa6b8);scene.add(new T
 const ground=new T.Mesh(new T.PlaneGeometry(60,30),new T.MeshStandardMaterial({color:0x5d7a4a}));ground.rotation.x=-Math.PI/2;scene.add(ground);
 const set=(o,v,pieces)=>Object.fromEntries(Object.values(outfitItems).filter(i=>i.outfit===o&&i.variant===v&&pieces.includes(i.piece)).map(i=>[i.key,true]));
 const knight=v=>set("knight",v,["Armet","Breastplate","Gauntlets","Greaves","Sabatons","RoundPauldrons"]);
-const cases=[
+const weaponMode=location.hash==="#weapons";const {weaponCatalog}=await import("/weapons.js"+V);const {shieldCatalog}=await import("/shields.js"+V);const {weaponStore}=await import("/weapon-assets.js"+V);
+const cases=weaponMode?[
+ ...["longsword","axe","battleaxe","pickaxe","spear","warhammer","scythe","claymore"].flatMap(w=>[[w,{},{weapon:w,shield:"kite"},{},30],[w+" swing",{},{weapon:w,shield:"kite"},i=>i<4?{attack:.6}:{attack:Math.max(0,.6-i/60)},20]]),
+ ["bow",{},{weapon:"woodenBow"},{},30],["bow walk",{},{weapon:"longbow"},{distance:3.2/60,speed:3.2,locomotion:"walk"},40],["bow draw",{},{weapon:"goldenBow"},i=>i<2?{attack:1}:{attack:Math.max(0,1-i/60)},38],["bow aim start",{sex:"female"},{weapon:"bloodthornBow"},i=>i<2?{attack:1}:{attack:Math.max(0,1-i/60)},14],["block round",{},{weapon:"spear",shield:"celticShield"},{block:.5},25]]:[
  ["idle armed",{},{weapon:"longsword",shield:"kite"},{},30],
  ["walk",{},{weapon:"longsword",shield:"kite"},{distance:3.2/60,speed:3.2,locomotion:"walk"},40],
  ["sprint",{sex:"female",hair:"Buns"},{},{distance:12/60,speed:12,locomotion:"run"},40],
@@ -31,22 +34,24 @@ const cases=[
  ["mounted",{},{weapon:"longsword"},{mounted:true},30]];
 await Promise.all(cases.flatMap(c=>Object.keys(c[2].armor||{}).filter(k=>outfitItems[k]).flatMap(k=>[ensurePart(outfitItems[k].male),ensurePart(outfitItems[k].female)])));
 const labels=[];let hudModel=null;
-cases.forEach(([label,look,loadout,motion,frames],i)=>{const holder=new T.Group();const row=i<7?0:1,col=row?i-7:i,count=row?cases.length-7:7;holder.position.set((col-(count-1)/2)*3.2,0,row?4:-4);scene.add(holder);
+cases.forEach(([label,look,loadout,motion,frames],i)=>{const holder=new T.Group();const per=weaponMode?9:7,row=Math.floor(i/per),col=i%per,count=Math.min(per,cases.length-row*per);holder.position.set((col-(count-1)/2)*3.2,0,(row-1)*4);scene.add(holder);
  const parent=new T.Group();holder.add(parent);const d=buildCharacterDisplay(T,parent,look,loadout);
  const horse=label==="mounted"?createHorseMount(T,holder):null;
  for(let f=0;f<frames;f++){const m=typeof motion==="function"?motion(f):motion;d.update(1/60,m);d.visual.position.y=0;horse?.update({active:true,distance:.05,rig:d.rig,visual:d.visual})}
  if(i===0)hudModel=parent;labels.push(label)});
-const camera=new T.PerspectiveCamera(30,16/9,.1,200);camera.position.set(0,9,34);camera.lookAt(0,1.2,0);renderer.setSize(1600,900,false);renderer.render(scene,camera);
+if(weaponMode){const keys=[...Object.keys(weaponStore.items)];keys.forEach((k,i)=>{const m=weaponStore.items[k].clone(true);const g=new T.Group();g.add(m);g.position.set((i-(keys.length-1)/2)*.95,1.0,9);g.rotation.y=0;scene.add(g);const ax=new T.AxesHelper(.25);g.add(ax)})}
+const camera=new T.PerspectiveCamera(30,16/9,.1,200);if(weaponMode){camera.position.set(0,7,40);camera.lookAt(0,1.2,2)}else{camera.position.set(0,9,34);camera.lookAt(0,1.2,0)}renderer.setSize(1600,900,false);renderer.render(scene,camera);
 // HUD portrait of the first character.
-window.mainLoop=setInterval(()=>renderer.render(scene,camera),200);
+window.view=(px,py,pz,tx,ty,tz,fov=30)=>{camera.position.set(px,py,pz);camera.fov=fov;camera.updateProjectionMatrix();camera.lookAt(tx,ty,tz);renderer.render(scene,camera)};window.mainLoop=setInterval(()=>renderer.render(scene,camera),200);
 const hud=createPlayerHUD(T,renderer,hudModel);hud.update({hp:100,maxHp:100,xp:0,kills:0,gold:0,helmet:null});
 window.result={labels,portrait:document.querySelector("#player-portrait").toDataURL("image/png")};
 </script>`;
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({executablePath:process.env.ELDERVALE_CHROMIUM||'/usr/bin/chromium',args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  try{const p=await browser.newPage({viewport:{width:1600,height:900}});p.on('pageerror',e=>console.error('PAGE',e.message));await p.route('**/gallery',r=>r.fulfill({contentType:'text/html',body:page}));
-  await p.goto('http://127.0.0.1:'+server.address().port+'/gallery');await p.waitForFunction(()=>window.result,null,{timeout:120000});
+  await p.goto('http://127.0.0.1:'+server.address().port+'/gallery'+(process.env.GALLERY==='weapons'?'#weapons':''));await p.waitForFunction(()=>window.result,null,{timeout:120000});
   await p.waitForTimeout(4000);await p.evaluate(()=>window.result.portrait=document.querySelector('#player-portrait').toDataURL('image/png'));
   const out=path.join(root,'test-results');fs.mkdirSync(out,{recursive:true});
-  const r=await p.evaluate(()=>window.result);fs.writeFileSync(path.join(out,'hud-portrait.png'),Buffer.from(r.portrait.split(',')[1],'base64'));
-  await p.locator('#c').screenshot({path:path.join(out,'character-gallery.png')});console.log('PASS',r.labels.join(', '));
+  const r=await p.evaluate(()=>window.result);const tag=process.env.GALLERY==='weapons'?'weapon-gallery':'character-gallery';fs.writeFileSync(path.join(out,'hud-portrait.png'),Buffer.from(r.portrait.split(',')[1],'base64'));
+  await p.locator('#c').screenshot({path:path.join(out,tag+'.png')});
+  for(const [name,v] of Object.entries(JSON.parse(process.env.VIEWS||'{}'))){await p.evaluate(v=>{clearInterval(window.mainLoop);window.view(...v)},v);await p.waitForTimeout(300);await p.locator('#c').screenshot({path:path.join(out,tag+'-'+name+'.png')})}console.log('PASS',r.labels.join(', '));
  }finally{await browser.close();server.close()}})().catch(e=>{console.error(e);process.exitCode=1});

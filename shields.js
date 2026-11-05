@@ -1,21 +1,13 @@
-// Original Eldervale low-poly off-hand shields, inspired by traditional medieval silhouettes.
+import {heldItem} from './weapon-assets.js?v=release-20261105-characters55';
+// Off-hand shields: Quaternius CC0 models (assets/weapons) in the held-item
+// frame: the fist at the origin behind the board, face toward +Z, top toward +Y.
+const S=(name,defence,buy,sell,desc)=>({name,kind:'shield',defence,buy,sell,desc});
 export const shieldCatalog={
- square:{name:'Iron square shield',kind:'shield',defence:5,desc:'A compact rectangular iron shield.'},
- kite:{name:'Iron kiteshield',kind:'shield',defence:9,desc:'A broad iron shield tapering to a pointed base.'}
+ square:S('Iron heater shield',5,40,12,'A plank heater shield with an iron rim.'),
+ kite:S('Iron kiteshield',9,40,12,'A heater shield banded with an iron cross.'),
+ woodenShield:S('Wooden buckler',3,20,6,'A small bronze-rimmed wooden shield.'),
+ roundShield:S('Wooden round shield',6,45,14,'A round plank shield with an iron rim.'),
+ quarteredShield:S('Quartered round shield',7,60,18,'A round shield painted in quarters.'),
+ celticShield:S('Gilded celtic shield',12,280,84,'A tall gilded shield set with an emerald.')
 };
-export function makeShield(T,key){
- const g=new T.Group(),kite=key==='kite';
- const outline=kite?[[-.39,.55],[.39,.55],[.43,.18],[.29,-.36],[0,-.82],[-.29,-.36],[-.43,.18]]:[[-.38,.48],[.38,.48],[.38,-.48],[-.38,-.48]];
- const shape=new T.Shape();outline.forEach(([x,y],i)=>i?shape.lineTo(x,y):shape.moveTo(x,y));shape.closePath();
- const rim=new T.MeshStandardMaterial({color:0xb9a06a,metalness:.7,roughness:.35,side:T.DoubleSide});
- const iron=new T.MeshStandardMaterial({color:0x8599a5,metalness:.72,roughness:.37,side:T.DoubleSide});
- const face=new T.Mesh(new T.ExtrudeGeometry(shape,{depth:.07,bevelEnabled:true,bevelThickness:.035,bevelSize:.025,bevelSegments:1}),rim);g.add(face);
- const inset=new T.Mesh(new T.ShapeGeometry(shape),iron);inset.scale.set(.88,.88,1);inset.position.z=.113;g.add(inset);
- const boss=new T.Mesh(new T.SphereGeometry(.105,12,8),rim);boss.scale.z=.36;boss.position.z=.15;g.add(boss);
- const grip=new T.Mesh(new T.BoxGeometry(.12,.38,.1),new T.MeshStandardMaterial({color:0x493527,roughness:.9}));grip.position.z=-.11;g.add(grip);
- // Neutral grip-space mesh. Equipment attachment controls its final side-facing
- // orientation; pre-rotating here would compound and obscure that transform.
- g.position.set(0,0,0);g.rotation.set(0,0,0);g.scale.setScalar(.94);
- g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
- return g;
-}
+export function makeShield(T,key){return heldItem(T,shieldCatalog[key]?key:'kite','shield')}

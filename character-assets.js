@@ -1,4 +1,5 @@
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {preloadWeapons} from './weapon-assets.js?v=release-20261105-characters55';
 // Loads and caches the Quaternius character assets (assets/characters, CC0).
 // Geometry is shared between every character; each character only creates
 // its own bones and lightweight SkinnedMesh wrappers.
@@ -20,6 +21,7 @@ export async function preloadCharacters(T,{read=defaultRead,parts=[]}={}){
  const jobs=[];
  for(const sex of ['male','female']){jobs.push(loadGlb(store.manifest.bodies[sex].rig).then(g=>store.rigs[sex]=g.scene),loadGlb(store.manifest.bodies[sex].head).then(g=>store.heads[sex]=g.scene))}
  for(const [id,file] of Object.entries(store.manifest.hair))jobs.push(loadGlb(file).then(g=>store.hair[id]=g.scene));
+ jobs.push(preloadWeapons(T,{read}));
  jobs.push(loadGlb('animations.glb').then(g=>{for(const c of g.animations)store.clips[c.name]=c;g.scene.updateMatrixWorld(true);store.mannequinPelvis=g.scene.getObjectByName('pelvis')?.position.clone()}));
  await Promise.all(jobs);
  await Promise.all([...defaultParts('male'),...defaultParts('female'),...parts].map(ensurePart));

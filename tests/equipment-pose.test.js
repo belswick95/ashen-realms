@@ -1,13 +1,13 @@
-import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';import {buildCharacterDisplay} from '../character-display.js';import {weaponCatalog} from '../weapons.js';
+import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';import {buildCharacterDisplay} from '../character-display.js';import {weaponCatalog,isRanged,isTwoHanded} from '../weapons.js';
 const direction=(o,v)=>v.transformDirection(o.matrixWorld);
 const MOTIONS={idle:{},walk:{distance:3.2/60,speed:3.2,locomotion:'walk'},run:{distance:6.4/60,speed:6.4,locomotion:'run'}};
-test('every weapon stays in the right fist and clear of the ground through idle, walking and running',()=>{
+test('every weapon stays in its fist (bows in the left) and clear of the ground through idle, walking and running',()=>{
  for(const weapon of Object.keys(weaponCatalog))for(const [name,motion] of Object.entries(MOTIONS)){
   const d=buildCharacterDisplay(T,new T.Group(),{},{weapon,shield:'kite'});for(let i=0;i<40;i++)d.update(1/60,motion);d.visual.updateMatrixWorld(true);
-  const held=d.rig.rightHand.children.filter(o=>o.isGroup);assert.equal(held.length,1,weapon);
-  const box=new T.Box3().setFromObject(held[0]);assert.ok(box.min.y>.8,weapon+' '+name+' stays above the knees');
+  const hand=isRanged(weapon)?d.rig.leftHand:d.rig.rightHand,held=hand.children.filter(o=>o.isGroup&&o.userData.weaponMount);assert.equal(held.length,1,weapon);
+  const box=new T.Box3().setFromObject(held[0]);assert.ok(box.min.y>(isRanged(weapon)?.05:.8),weapon+' '+name+(isRanged(weapon)?' clears the ground':' stays above the knees'));
   assert.ok(direction(held[0],new T.Vector3(0,1,0)).y>0,weapon+' '+name+' blade is not pointed at the ground');
-  if(weapon!=='twohand')assert.equal(d.rig.leftHand.children.filter(o=>o.isGroup&&o.userData.shieldMount).length,1);
+  assert.equal(d.rig.leftHand.children.filter(o=>o.isGroup&&o.userData.shieldMount).length,isTwoHanded(weapon)?0:1,weapon+' shield');
   d.dispose();
  }
 });

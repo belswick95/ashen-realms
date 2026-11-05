@@ -1,68 +1,37 @@
 import {meshItemIcon} from './item-appearance.js?v=release-20261105-characters55';
-// Procedural low-poly iron equipment. Meshes share materials and are attached to the right hand.
+import {heldItem} from './weapon-assets.js?v=release-20261105-characters55';
+// Weapons are Quaternius CC0 models (assets/weapons, scripts/build-weapons.mjs)
+// in the held-item frame: grip at the origin, blade along +Y, edge toward +X.
+// Keys are what saves, the server catalog and equipment use; the first eight
+// are the original iron weapons.
+//   twoHanded: no shield can be carried; ranged: attacks from `range` units.
+const W=(name,kind,damage,attack,speed,reach,buy,sell,desc,extra={})=>({name,kind,damage,attack,speed,reach,buy,sell,desc,...extra});
 export const weaponCatalog={
- battleaxe:{name:'Iron battleaxe',kind:'weapon',damage:14,attack:16,speed:2.8,reach:2.2,desc:'A one-handed double-headed iron battleaxe.'},
- dagger:{name:'Iron dagger',kind:'weapon',damage:5,attack:8,speed:1.4,reach:1.7,desc:'A light blade for quick thrusts.'},
- scimitar:{name:'Iron scimitar',kind:'weapon',damage:7,attack:12,speed:1.7,reach:2.4,desc:'A swift curved iron blade.'},
- longsword:{name:'Iron longsword',kind:'weapon',damage:10,attack:14,speed:2.3,reach:2.5,desc:'A balanced straight iron sword.'},
- twohand:{name:'Iron 2h sword',kind:'weapon',damage:16,attack:20,speed:3.2,reach:2.8,desc:'A heavy two-handed iron sword.'},
- shortsword:{name:'Iron shortsword',kind:'weapon',damage:6,attack:10,speed:1.6,reach:2.1,desc:'A fast close-range iron sword.'},
- pickaxe:{name:'Iron pickaxe',kind:'tool',damage:4,attack:3,speed:2.5,reach:2.1,desc:'An iron pick for mining ore.'},
- axe:{name:'Iron axe',kind:'tool',damage:5,attack:4,speed:2.4,reach:2.1,desc:'An iron axe for cutting trees.'}
+ battleaxe:W('Iron battleaxe','weapon',14,16,2.8,2.2,90,30,'A double-headed iron battleaxe.'),
+ dagger:W('Iron dagger','weapon',5,8,1.4,1.7,20,12,'A light blade for quick thrusts.'),
+ scimitar:W('Iron scimitar','weapon',7,12,1.7,2.4,45,12,'A swift curved iron blade.'),
+ longsword:W('Iron longsword','weapon',10,14,2.3,2.5,45,12,'A balanced straight iron sword.'),
+ twohand:W('Iron 2h sword','weapon',16,20,3.2,2.8,120,40,'A heavy two-handed iron sword.',{twoHanded:true}),
+ shortsword:W('Iron shortsword','weapon',6,10,1.6,2.1,45,12,'A fast close-range sword with a gilded guard.'),
+ pickaxe:W('Bronze pickaxe','tool',4,3,2.5,2.1,45,12,'A bronze pick for mining ore.'),
+ axe:W('Iron axe','tool',5,4,2.4,2.1,45,12,'An iron hatchet for cutting trees.'),
+ bronzeSword:W('Bronze sword','weapon',8,11,2.1,2.4,35,10,'A sturdy bronze blade.'),
+ bronzeAxe:W('Bronze axe','weapon',7,9,2.2,2.1,30,9,'A bronze-headed fighting axe.'),
+ waraxe:W('Iron war axe','weapon',12,14,2.5,2.4,75,24,'A long-hafted bearded war axe.'),
+ hammer:W('Iron hammer','weapon',9,10,2.3,2.0,55,16,'A blunt iron hammer that dents plate.'),
+ spear:W('Iron spear','weapon',11,15,2.4,3.2,70,22,'A long iron-tipped spear with great reach.'),
+ goldenSword:W('Gilded sword','weapon',13,18,2.2,2.6,240,72,'An ornate gilded blade.'),
+ warhammer:W('Iron warhammer','weapon',18,18,3.4,2.5,150,45,'A massive two-handed double hammer.',{twoHanded:true}),
+ scythe:W('War scythe','weapon',15,17,3.0,3.0,130,40,'A reaping blade on a long snath.',{twoHanded:true}),
+ claymore:W('Crimson claymore','weapon',18,22,3.3,2.9,300,90,'A great crimson two-handed sword.',{twoHanded:true}),
+ woodenBow:W('Wooden bow','bow',6,10,2.4,12,50,15,'A simple wooden shortbow.',{twoHanded:true,ranged:true}),
+ longbow:W('Longbow','bow',8,13,2.6,15,95,28,'A tall bow with the longest reach.',{twoHanded:true,ranged:true}),
+ goldenBow:W('Gilded bow','bow',10,16,2.4,14,220,66,'A gilded recurve bow.',{twoHanded:true,ranged:true}),
+ bloodthornBow:W('Bloodthorn bow','bow',12,18,2.5,14,320,96,'A cruel thorned recurve bow.',{twoHanded:true,ranged:true})
 };
-for(const item of Object.values(weaponCatalog))item.desc+=' Attack +'+item.attack+' · Damage +'+item.damage+' · Attack turn '+item.speed+'s.';
-export function makeWeapon(T,key){
- const group=new T.Group();
- const steel=new T.MeshStandardMaterial({color:0xaebac0,metalness:.7,roughness:.34,flatShading:true});
- const highlight=new T.MeshStandardMaterial({color:0xdce3e2,metalness:.7,roughness:.25,flatShading:true});
- const grip=new T.MeshStandardMaterial({color:0x51392b,roughness:.85});
- const brass=new T.MeshStandardMaterial({color:0xbca16b,metalness:.5,roughness:.45});
- function mesh(g,m,x,y,z){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;group.add(o);return o}
- function box(w,h,d,m,x,y,z){return mesh(new T.BoxGeometry(w,h,d),m,x,y,z)}
- function blade(length,width,curved=false){
-  // Low-poly sword blade: tapered silhouette, bevelled steel faces and a
-  // narrow central fuller. The grip is at local Y=0; the tip points +Y.
-  const shape=new T.Shape(),sweep=curved?.22:0;
-  shape.moveTo(-width*.49,0);
-  shape.lineTo(width*.49,0);
-  shape.lineTo(width*(curved?.92:.43)+sweep*.45,length*.52);
-  shape.lineTo(width*(curved?1.05:.23)+sweep*.78,length*.80);
-  shape.lineTo(sweep*1.35,length);
-  shape.lineTo(-width*.24+sweep*.65,length*.80);
-  shape.lineTo(-width*.43+sweep*.12,length*.48);
-  shape.closePath();
-  const g=new T.ExtrudeGeometry(shape,{depth:.043,bevelEnabled:true,bevelThickness:.014,bevelSize:.011,bevelSegments:1,steps:1});
-  mesh(g,steel,0,.17,-.022);
-  // A slender raised ridge reads as forged steel without the thick rectangular
-  // bar that previously obscured the sword's taper and point.
-  const ridge=new T.Mesh(new T.CylinderGeometry(.008,.012,length*.72,4),highlight);
-  ridge.position.set(sweep*.20,.17+length*.42,.038);
-  ridge.rotation.z=curved?-.075:0;ridge.castShadow=true;group.add(ridge);
- }
- const isTool=key==='pickaxe'||key==='axe'||key==='battleaxe';
- const handle=key==='twohand'? .8:isTool?.85:key==='dagger'?.30:.39;
- box(.09,handle,.095,grip,0,handle/2-.18,0);
- box(.12,.09,.12,brass,0,-.19,0);
- if(isTool){
-  box(.12,.12,.12,brass,0,handle-.23,0);
-  if(key==='battleaxe'){
-   for(const side of [-1,1]){const shape=new T.Shape();shape.moveTo(side*.04,0);shape.lineTo(side*.34,-.10);shape.lineTo(side*.46,.12);shape.lineTo(side*.36,.40);shape.lineTo(side*.04,.30);shape.closePath();const head=mesh(new T.ExtrudeGeometry(shape,{depth:.075,bevelEnabled:true,bevelSize:.014,bevelThickness:.014,bevelSegments:1}),steel,0,handle-.42,-.04);head.geometry.translate(0,-.15,0);head.position.y+=.15;head.name='axe-blade';head.rotation.y=Math.PI/2}
-  }else if(key==='axe'){
-   const shape=new T.Shape();shape.moveTo(-.04,0);shape.lineTo(.34,.13);shape.lineTo(.44,.30);shape.lineTo(.34,.48);shape.lineTo(-.04,.56);shape.closePath();
-   const head=mesh(new T.ExtrudeGeometry(shape,{depth:.075,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:1}),steel,0,handle-.51,-.04);head.geometry.translate(0,-.28,0);head.position.y+=.28;head.name='axe-blade';head.rotation.y=-Math.PI/2
-  }else{
-   const shape=new T.Shape();shape.moveTo(-.52,.04);shape.lineTo(-.22,.20);shape.lineTo(.25,.20);shape.lineTo(.53,.04);shape.lineTo(.25,.10);shape.lineTo(-.22,.10);shape.closePath();
-   const head=mesh(new T.ExtrudeGeometry(shape,{depth:.075,bevelEnabled:true,bevelSize:.01,bevelThickness:.01,bevelSegments:1}),steel,0,handle-.24,-.04);head.geometry.translate(0,-.12,0);head.position.y+=.12;head.name='pick-head';head.rotation.y=Math.PI/2
-  }
- }else{
-  box(key==='twohand'?.44:.34,.065,.13,brass,0,handle-.12,0);
-  blade(key==='dagger'?.40:key==='shortsword'?.56:key==='twohand'?1.50:key==='longsword'?1.0:.95,key==='twohand'?.21:key==='scimitar'?.20:key==='dagger'?.10:.15,key==='scimitar');
-  // blade geometry starts above the crossguard
-  group.children.slice(-2).forEach(o=>o.position.y+=handle-.25)
- }
- // Mesh geometry is authored with blade tip along local +Y and hilt at the origin.
- // Rotating it 180 degrees inverted the blade and put the point behind the hand.
- group.rotation.z=key==='twohand'?-.12:0;group.scale.setScalar(.8);
- return group
-}
+for(const item of Object.values(weaponCatalog))item.desc+=(item.ranged?' Ranged '+item.reach+' · ':' ')+'Attack +'+item.attack+' · Damage +'+item.damage+' · Attack turn '+item.speed+'s.';
+export const isTwoHanded=key=>!!weaponCatalog[key]?.twoHanded;
+export const isRanged=key=>!!weaponCatalog[key]?.ranged;
+// Held model for an item key (an empty group if the assets are not loaded).
+export function makeWeapon(T,key){return heldItem(T,weaponCatalog[key]?key:'longsword','weapon')}
 export function iconForWeapon(key){return meshItemIcon('weapon:'+key)}

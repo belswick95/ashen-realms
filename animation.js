@@ -18,18 +18,18 @@ const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_S
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
  const actions=new Map(),weights=new Map();let current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0;
- const guardLayer=createGuardLayer(rig);
+ const arms=createArmLayers(rig);let aim=0,shot=null;
  const loops={};
  function clipFor(name){const [clip,loop]=name.split('@');if(!loop)return clips[clip];if(!clips[clip])return null;return loops[name]||(loops[name]=Object.assign(clips[clip].clone(),{name}))}
  function action(name){if(!clipFor(name))name='Idle_Loop';if(!actions.has(name)){const a=mixer.clipAction(clipFor(name));a.enabled=true;a.setEffectiveWeight(0);if(ONE_SHOT.has(name)){a.setLoop(2200,1);a.clampWhenFinished=true}a.play();actions.set(name,a);weights.set(name,0)}return actions.get(name)}
  function startOneShot(name,duration){const a=action(name);a.reset();a.play();const length=clips[name]?.duration||1;a.timeScale=duration?length/duration:1;oneShot=name;oneShotLeft=duration||length;}
  action('Idle_Loop').setEffectiveWeight(1);weights.set('Idle_Loop',1);
- return {mixer,update(dt,{distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,airborne:air=false,activity=null,dead=false}={}){
+ return {mixer,update(dt,{distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,airborne:air=false,activity=null,dead=false,ranged=false}={}){
   if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);time+=dt;
   speed=Number.isFinite(speed)?Math.max(0,speed):0;distance=Number.isFinite(distance)?Math.max(0,distance):0;
   const moving=distance>1e-5&&speed>.15&&!mounted;
   // Event-driven one-shots: a new attack, a fresh hit, take-off and landing.
-  if(attack>lastAttack+.05||attack>0&&lastAttack<=0){const magic=style==='magic'||weapon==='staff';startOneShot(magic?'Spell_Simple_Shoot':armed?'Sword_Attack':(punch++%2?'Punch_Cross':'Punch_Jab'),Math.max(.35,attack))}
+  if(attack>lastAttack+.05||attack>0&&lastAttack<=0){const magic=style==='magic'||weapon==='staff';if(ranged)shot={t:0,duration:Math.max(.6,attack)};else startOneShot(magic?'Spell_Simple_Shoot':armed?'Sword_Attack':(punch++%2?'Punch_Cross':'Punch_Jab'),Math.max(.35,attack))}
   lastAttack=attack;
   const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>.5&&lastHit<=.5&&!oneShot)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
   if(air&&!airborne)startOneShot('Jump_Start',.3);else if(!air&&airborne)startOneShot('Jump_Land',.35);airborne=!!air;
@@ -39,7 +39,7 @@ export function createHumanoidAnimator(rig){
   else if(mounted)base=clips.Driving_Loop?'Driving_Loop':'Sitting_Idle_Loop';
   else if(airborne)base='Jump_Loop';
   else if(moving){const gait=locomotion==='run'?'Sprint_Loop':locomotion==='jog'?'Jog_Fwd_Loop':locomotion==='walk'||locomotion==='combat'?'Walk_Loop':speed>6.5?'Sprint_Loop':speed>2.6?'Jog_Fwd_Loop':'Walk_Loop';base=gait;}
-  else base=work||(armed||block>0?'Sword_Idle':'Idle_Loop');
+  else base=work||((armed&&!ranged)||block>0?'Sword_Idle':'Idle_Loop');
   if(base!==current){current=base;action(base).reset?.()}
   const loop=action(base);if(STRIDE[base])loop.timeScale=Math.max(.55,Math.min(1.7,speed/STRIDE[base]));else loop.timeScale=1;
   if(work&&base===work&&rig.activityPhase!=null){loop.time=rig.activityPhase*loop.getClip().duration;loop.timeScale=0}
@@ -49,25 +49,39 @@ export function createHumanoidAnimator(rig){
   for(const [name,a] of actions){const w=weights.get(name)+((name===target?1:0)-weights.get(name))*k;weights.set(name,w<.001?0:w);a.setEffectiveWeight(weights.get(name))}
   mixer.update(dt);
   // Blocking raises the shield across the chest on top of whatever clip plays.
-  guard+=((block>0&&!mounted&&!dead?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)guardLayer(guard);
+  guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
+  // Bow shot: raise and draw over 70% of the attack, release, then lower.
+  let draw=0,released=false;if(shot){shot.t+=dt;const u=shot.t/shot.duration;draw=u<.7?Math.min(1,u/.7)**.8:0;if(u>=.7&&!shot.released){shot.released=released=true}if(u>=1.25)shot=null}
+  aim+=((shot&&!mounted&&!dead?1:0)-aim)*Math.min(1,k*1.6);if(aim<.001)aim=0;if(aim)arms.aim(aim,draw);
   const run=base==='Sprint_Loop'?1:base==='Jog_Fwd_Loop'?.65:0;
-  return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard};
+  return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released};
  },dispose(){mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
 }
 
-// Shield guard: a two-bone reach (upper arm, forearm) bringing the left fist in
-// front of the chest, then a wrist turn so the shield face (socket +Z) points
-// forward. Applied after the mixer, weighted 0..1, so it fades in and out.
-function createGuardLayer(rig){
- const T=rig.T,b=rig.bones,chain=[b.lowerarm_l,b.upperarm_l],hand=b.hand_l,socket=rig.leftHand;
- const target=new T.Vector3(),forward=new T.Vector3(),a=new T.Vector3(),c=new T.Vector3(),q=new T.Quaternion(),wq=new T.Quaternion(),pq=new T.Quaternion(),id=new T.Quaternion();
+// Arm layers applied after the mixer, weighted 0..1 so they fade in and out:
+// a two-bone reach (upper arm, forearm) to a point in the character's frame,
+// then an optional wrist turn aligning the held item.
+//  guard(w):      left fist in front of the chest, shield face (socket +Z) forward.
+//  aim(w,draw):   bow arm straight ahead with the bow upright (socket +Y up, its
+//                 limbs, socket +X, toward the target); the right hand draws
+//                 the string back toward the cheek as `draw` goes 0..1.
+function createArmLayers(rig){
+ const T=rig.T,b=rig.bones;
+ const forward=new T.Vector3(),up=new T.Vector3(),left=new T.Vector3(),a=new T.Vector3(),c=new T.Vector3(),to=new T.Vector3(),target=new T.Vector3();
+ const q=new T.Quaternion(),wq=new T.Quaternion(),pq=new T.Quaternion(),id=new T.Quaternion(),rot=new T.Quaternion(),m=new T.Matrix4();
  // Rotate `bone` in world space by `rotation`, scaled by weight.
  function turn(bone,rotation,weight){q.copy(id).slerp(rotation,weight);bone.getWorldQuaternion(wq);bone.parent.getWorldQuaternion(pq);bone.quaternion.copy(pq.invert().multiply(q).multiply(wq));bone.updateMatrixWorld(true)}
- return weight=>{
-  rig.model.updateMatrixWorld(true);rig.root.getWorldQuaternion(wq);forward.set(0,0,1).applyQuaternion(wq);
-  // Target: centre-left of the chest, a forearm's length in front of it.
-  b.spine_03.getWorldPosition(target);target.addScaledVector(forward,.5);a.set(.12,0,0).applyQuaternion(wq);target.add(a);
-  for(let pass=0;pass<4;pass++)for(const bone of chain){bone.getWorldPosition(c);hand.getWorldPosition(a).sub(c).normalize();const to=target.clone().sub(c).normalize();turn(bone,new T.Quaternion().setFromUnitVectors(a,to),weight)}
-  socket.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(hand,new T.Quaternion().setFromUnitVectors(a,forward),weight);
+ function frame(){rig.model.updateMatrixWorld(true);rig.root.getWorldQuaternion(wq);forward.set(0,0,1).applyQuaternion(wq);up.set(0,1,0).applyQuaternion(wq);left.set(1,0,0).applyQuaternion(wq)}
+ function reach(side,goal,weight){const s=side==='left'?'l':'r',hand=b['hand_'+s];for(let pass=0;pass<4;pass++)for(const bone of [b['lowerarm_'+s],b['upperarm_'+s]]){bone.getWorldPosition(c);hand.getWorldPosition(a).sub(c).normalize();to.copy(goal).sub(c).normalize();turn(bone,rot.setFromUnitVectors(a,to),weight)}}
+ return {
+  guard(weight){frame();b.spine_03.getWorldPosition(target).addScaledVector(forward,.5).addScaledVector(left,.12);reach('left',target,weight);
+   rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,forward),weight)},
+  aim(weight,draw){frame();
+   // Bow arm: straight out from the left shoulder at shoulder height.
+   b.upperarm_l.getWorldPosition(target).addScaledVector(forward,.78).addScaledVector(left,-.06).addScaledVector(up,.04);reach('left',target,weight);
+   // Bow upright, limbs toward the target: socket basis (X forward, Y up, Z = X × Y).
+   c.crossVectors(forward,up);m.makeBasis(forward,up,c);const want=new T.Quaternion().setFromRotationMatrix(m);rig.leftHand.getWorldQuaternion(pq);turn(b.hand_l,want.multiply(pq.invert()),weight);
+   // String hand: from the bow grip back to the cheek.
+   b.hand_l.getWorldPosition(target).addScaledVector(forward,-.66*draw).addScaledVector(left,-.05*draw);b.upperarm_r.getWorldPosition(c);target.y=Math.max(target.y,c.y+.06*draw);reach('right',target,weight)}
  };
 }

@@ -70,7 +70,7 @@ import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-
 const landscape=createLandscape();
 import {npcAppearance} from './npc-looks.js?v=release-20261105-characters55';
 import {createCape} from './cape.js?v=release-20261105-characters55';
-import {weaponCatalog,makeWeapon,iconForWeapon} from './weapons.js?v=release-20261105-characters55';
+import {weaponCatalog,makeWeapon,iconForWeapon,isTwoHanded,isRanged} from './weapons.js?v=release-20261105-characters55';
 import {shieldCatalog,makeShield} from './shields.js?v=release-20261105-characters55';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 // Character models, outfits and animations must be ready before anyone is built.
@@ -629,13 +629,13 @@ const weaponMeshes=new Map();
 for(const key of Object.keys(weaponCatalog)){const model=makeWeapon(T,key);attachWeapon(avatar,model,key);model.visible=false;weaponMeshes.set(key,model)}
 const shieldMeshes=new Map();
 for(const key of Object.keys(shieldCatalog)){const model=makeShield(T,key);attachShield(avatar,model);model.visible=false;shieldMeshes.set(key,model)}
-if(state.equippedWeapon==='twohand')state.equippedShield=null;
+if(isTwoHanded(state.equippedWeapon))state.equippedShield=null;
 function refreshShield(){for(const [key,model] of shieldMeshes)model.visible=state.equippedShield===key}
-function equipShield(key){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('equip',{slot:'shield',key});return}if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;if(state.equippedShield&&state.equippedWeapon==='twohand'){state.equippedWeapon=null;refreshWeapon()}refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
+function equipShield(key){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('equip',{slot:'shield',key});return}if(!state.shieldsOwned.includes(key))return;state.equippedShield=state.equippedShield===key?null:key;if(state.equippedShield&&isTwoHanded(state.equippedWeapon)){state.equippedWeapon=null;refreshWeapon()}refreshShield();say(state.equippedShield?'Equipped '+shieldCatalog[key].name:'Unequipped shield');save();draw()}
 refreshShield();
 function refreshWeapon(){for(const [key,model] of weaponMeshes)model.visible=state.equippedWeapon===key}
 function equipMount(key){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('equip',{slot:'mount',key});return}if(!state.mountsOwned.includes(key))return;if(state.equippedMount===key&&inventoryUsed(state)>=16){say('Free an inventory slot before removing the mount.');return}state.equippedMount=state.equippedMount===key?null:key;save();draw()}
-function equipWeapon(key){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('equip',{slot:'weapon',key});return}if(!state.weaponsOwned.includes(key))return;state.equippedWeapon=state.equippedWeapon===key?null:key;if(state.equippedWeapon==='twohand'){state.equippedShield=null;refreshShield()}refreshWeapon();say(state.equippedWeapon?'Equipped '+weaponCatalog[key].name:'Unequipped weapon');save();draw()}
+function equipWeapon(key){if(window.eldervaleAuthority){void window.eldervaleRealm?.command('equip',{slot:'weapon',key});return}if(!state.weaponsOwned.includes(key))return;state.equippedWeapon=state.equippedWeapon===key?null:key;if(isTwoHanded(state.equippedWeapon)){state.equippedShield=null;refreshShield()}refreshWeapon();say(state.equippedWeapon?'Equipped '+weaponCatalog[key].name:'Unequipped weapon');save();draw()}
 refreshWeapon();
 if(Number.isFinite(saved.x)&&Number.isFinite(saved.z)){const p=landscape.nearestDryPoint(saved.x,saved.z);player.position.set(p.x,0,p.z);if(Math.hypot(p.x,p.z)<2.5)player.position.z=5}else player.position.set(0,0,5);
 const stats=document.querySelector('#stats'),inventory=document.querySelector('#inventory'),log=document.querySelector('#log'),equipment=document.querySelector('#equipment'),menu=document.querySelector('#contextmenu');
@@ -1223,7 +1223,7 @@ const traveled=Math.hypot(player.position.x-frameStart.x,player.position.z-frame
 if(!window.eldervaleAuthority&&!mounted){const energyStep=stepEnergy(state.runEnergy,running,traveled>.001,dt);state.runEnergy=energyStep.energy;running=energyStep.running;if(energyStep.exhausted)say('You are out of energy and slow to a walk.')}updateRunButton();
 if(!window.eldervaleAuthority)mounted=!!state.equippedMount&&mountAllowed(player.position.x,player.position.z,persistentRows.values());
 const gaitDistance=window.eldervaleAuthority?(manual?.moving?mountSpeed(mounted,running)*Math.min(1,Math.hypot(manual.x,manual.z))*movementDt:realmPlayerPose?.moving?traveled:0):locomotionDistance(traveled,manual,mountSpeed(mounted,running),dt);
-const pose=playerAnimator.update(dt,{locomotion:running?'run':(window.eldervaleAuthority?realmInCombat:combatTurns.target||action?.kind==='creature')?'combat':'jog',style:attackStyle,weapon:state.equippedWeapon,block:combat.blockAnim,distance:mounted?0:gaitDistance,speed:mounted?0:gaitDistance/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim,twoHanded:state.equippedWeapon==='twohand',shield:!!state.equippedShield,armed:!!state.equippedWeapon,airborne:!mounted&&isAirborne(localJumpAt,window.eldervaleServerTime?.()||Date.now())});
+const pose=playerAnimator.update(dt,{locomotion:running?'run':(window.eldervaleAuthority?realmInCombat:combatTurns.target||action?.kind==='creature')?'combat':'jog',style:attackStyle,weapon:state.equippedWeapon,block:combat.blockAnim,distance:mounted?0:gaitDistance,speed:mounted?0:gaitDistance/Math.max(dt,.001),attack:combat.attackAnim,hit:combat.hitAnim,twoHanded:isTwoHanded(state.equippedWeapon),shield:!!state.equippedShield,armed:!!state.equippedWeapon,airborne:!mounted&&isAirborne(localJumpAt,window.eldervaleServerTime?.()||Date.now())});
 body.rotation.y=combat.attackAnim>0?Math.sin((1-combat.attackAnim/.55)*Math.PI)*-.15:T.MathUtils.lerp(body.rotation.y,0,1-Math.exp(-10*dt));
 body.rotation.z=combat.hitAnim>0?Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12:T.MathUtils.lerp(body.rotation.z,0,1-Math.exp(-12*dt));
 body.position.y=0;if(!mounted)groundFeet(avatar,body,pose?.contacts);playerHorse.update({active:mounted,distance:gaitDistance,rig:avatar,visual:body,groundHeight:landscape.walkHeight});merchantAnimator.update(dt);
