@@ -76,8 +76,7 @@ begin
  new.level:=eldervale_private.combat_level(new.skills);
  return new;
 end $fn$;
-drop trigger if exists player_saves_vitals on public.player_saves;
-create trigger player_saves_vitals before insert or update on public.player_saves for each row execute function eldervale_private.player_vitals();
+create or replace trigger player_saves_vitals before insert or update on public.player_saves for each row execute function eldervale_private.player_vitals();
 
 -- ---------------------------------------------------------------- 4. Migration (once per player)
 update public.player_saves s set
