@@ -19,7 +19,7 @@ test('level from XP uses the table and caps at 99',()=>{
 test('hitpoints starts at 10 and max HP is ten times the hitpoints level',()=>{
  assert.equal(hitpointsLevel(0),10);assert.equal(maxHpForXp(0),100);assert.equal(maxHpForXp(xpForLevel(10)),100);assert.equal(maxHpForXp(xpForLevel(11)),110);assert.equal(maxHpForXp(xpForLevel(99)),990);
 });
-test('combat level uses the OSRS formula, caps at 99 and reaches 100 only with all five combat skills at 99',()=>{
+test('combat level is the plain, uncapped OSRS formula (3 to 126)',()=>{
  const at=l=>xpForLevel(l);
  assert.equal(combatLevel({}),3);
  assert.equal(combatLevel({hitpointsXP:at(10)}),3);
@@ -27,10 +27,11 @@ test('combat level uses the OSRS formula, caps at 99 and reaches 100 only with a
  assert.equal(combatLevel({attackXP:at(40),strengthXP:at(40),defenceXP:at(40),hitpointsXP:at(40)}),46);
  // Pure ranger: 60 ranged, 30 defence, 35 hitpoints, 20 prayer: ¼(30+35+10)+0.325·90 = 48
  assert.equal(combatLevel({rangedXP:at(60),defenceXP:at(30),hitpointsXP:at(35),prayerXP:at(20)}),48);
- // 99 melee + 99 hitpoints would be 113 in OSRS; Eldervale caps at 99.
- assert.equal(combatLevel({attackXP:at(99),strengthXP:at(99),defenceXP:at(99),hitpointsXP:at(99),rangedXP:at(99),magicXP:0}),99);
- assert.equal(combatLevel({attackXP:at(99),strengthXP:at(99),defenceXP:at(99),rangedXP:at(99),magicXP:at(99)}),100);
- assert.equal(combatLevel({attackXP:at(99),strengthXP:at(99),defenceXP:at(99),rangedXP:at(99),magicXP:at(98),hitpointsXP:at(99)}),99);
+ // Melee-only 99 Attack/Strength/Defence/Hitpoints, Prayer 1: ¼(99+99+0) + 0.325·198 = 113.85 → 113
+ assert.equal(combatLevel({attackXP:at(99),strengthXP:at(99),defenceXP:at(99),hitpointsXP:at(99)}),113);
+ // Everything 99 (Prayer 99 too) is the OSRS maximum, 126.
+ assert.equal(combatLevel(Object.fromEntries(['attackXP','strengthXP','defenceXP','hitpointsXP','prayerXP','rangedXP','magicXP'].map(k=>[k,at(99)]))),126);
+ assert.equal(combatLevel({attackXP:at(99),strengthXP:at(99),defenceXP:at(99),rangedXP:at(99),magicXP:at(99)}),91,'no special 100 rule');
 });
 test('combat XP follows OSRS rates, plus 1 Hitpoints XP per damage taken',()=>{
  assert.deepEqual(combatXp({damage:10,style:'stab'}),{attackXP:40,hitpointsXP:13});

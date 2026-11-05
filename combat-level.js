@@ -11,18 +11,19 @@ export const hitpointsLevel=xp=>Math.max(HITPOINTS_START,skillLevel(xp));
 export const maxHpForXp=xp=>10*hitpointsLevel(xp);
 // Progress inside the current level, 0..1 (1 at level 99).
 export function xpProgress(xp){const v=Math.max(0,Number(xp)||0),l=skillLevel(v);if(l>=MAX_LEVEL)return {level:l,floor:XP_TABLE[l],next:XP_TABLE[l],fraction:1,remaining:0};const floor=XP_TABLE[l],next=XP_TABLE[l+1];return {level:l,floor,next,fraction:(v-floor)/(next-floor),remaining:next-v}}
-// OSRS combat formula: base = ¼(Defence + Hitpoints + ⌊Prayer/2⌋); the best of melee
-// 0.325(Attack + Strength), ranged 0.325⌊1.5·Ranged⌋ or magic 0.325⌊1.5·Magic⌋ is added.
-// Eldervale caps it at 99; it becomes 100 only when Attack, Strength, Defence,
-// Ranged and Magic are all 99.
-export function combatLevel(skills={}){const l=k=>skillLevel(skills[k]);if(['attackXP','strengthXP','defenceXP','rangedXP','magicXP'].every(k=>l(k)>=MAX_LEVEL))return 100;
+// Plain OSRS combat level, 3–126: base = ¼(Defence + Hitpoints + ⌊Prayer/2⌋) plus the best of
+// melee 0.325(Attack + Strength), ranged 0.325⌊1.5·Ranged⌋ or magic 0.325⌊1.5·Magic⌋.
+// A fresh character (Hitpoints 10, everything else 1) is level 3; all 99s is 126.
+// Mirrors eldervale_private.combat_level in db/osrs-skills-and-food.sql.
+export const MAX_COMBAT_LEVEL=126;
+export function combatLevel(skills={}){const l=k=>skillLevel(skills[k]);
  const base=.25*(l('defenceXP')+hitpointsLevel(skills.hitpointsXP)+Math.floor(l('prayerXP')/2)),melee=.325*(l('attackXP')+l('strengthXP')),ranged=.325*Math.floor(l('rangedXP')*3/2),magic=.325*Math.floor(l('magicXP')*3/2);
- return Math.min(MAX_LEVEL,Math.max(3,Math.floor(base+Math.max(melee,ranged,magic))))}
+ return Math.floor(base+Math.max(melee,ranged,magic))}
 // One-time migration from the old curve (level = 1 + ⌊√(xp/50)⌋, 99 at 480,200 XP): the same
 // level on the OSRS curve plus the same fraction of the way to the next level. Mirrors
 // eldervale_private.osrs_xp_from_legacy. Hitpoints is raised to at least level 10.
 export function migrateLegacyXp(xp,{hitpoints=false}={}){const v=Math.max(0,Math.floor(Number(xp)||0)),old=Math.min(MAX_LEVEL,1+Math.floor(Math.sqrt(v/50)));let out;
- if(old>=MAX_LEVEL)out=XP_TABLE[MAX_LEVEL]+Math.max(0,v-480200);else{const lo=50*(old-1)**2,hi=50*old**2;out=XP_TABLE[old]+Math.floor((v-lo)/(hi-lo)*(XP_TABLE[old+1]-XP_TABLE[old]))}
+ if(old>=MAX_LEVEL)out=XP_TABLE[MAX_LEVEL]+Math.max(0,v-480200);else{const lo=50*(old-1)**2,hi=50*old**2;out=XP_TABLE[old]+Math.floor((v-lo)*(XP_TABLE[old+1]-XP_TABLE[old])/(hi-lo))}
  out=Math.min(MAX_XP,out);return hitpoints?Math.max(XP_TABLE[HITPOINTS_START],out):out}
 // Combat XP per hit, OSRS style. Melee: 4 XP per damage to the trained skill
 // (Stab = accurate → Attack, Slash = aggressive → Strength, Lunge = controlled →

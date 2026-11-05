@@ -1092,7 +1092,7 @@ const skillDefinitions=[['⚔','Attack','attackXP'],['💪','Strength','strength
 const professions=createProfessionPanel(state,{notice:say});addEventListener('keydown',e=>{if(e.code==='Escape')professions.clear()});
 const skillsPanel=document.querySelector('#skills');
 function drawSkills(){
- skillsPanel.replaceChildren();const rank=document.createElement('div');rank.className='player-combat-level';rank.innerHTML=crossedSwords;const label=document.createElement('strong');label.textContent='Player Combat Level: '+combatLevel(state)+' / 100';rank.append(label);skillsPanel.append(rank);
+ skillsPanel.replaceChildren();const rank=document.createElement('div');rank.className='player-combat-level';rank.innerHTML=crossedSwords;const label=document.createElement('strong');label.textContent='Player Combat Level: '+combatLevel(state)+' / 126';rank.append(label);skillsPanel.append(rank);
  const grid=document.createElement('div');grid.className='skills-grid';
  let total=0;
  for(const [icon,name,key] of skillDefinitions){

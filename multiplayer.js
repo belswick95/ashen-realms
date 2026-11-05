@@ -3,7 +3,7 @@ import {publicCharacter} from './character-display.js?v=release-20261105-rsclick
 const validId=value=>typeof value==='string'&&value.length>0&&value.length<160;
 function playerState(value){
  if(!value||!validId(value.id)||!validId(value.session)||!Number.isFinite(value.x)||!Number.isFinite(value.z)||Math.abs(value.x)>4500||Math.abs(value.z)>4500)return null;
- return {id:value.id,session:value.session,username:String(value.username||'Adventurer').slice(0,24),x:value.x,z:value.z,yaw:Number.isFinite(value.yaw)?value.yaw:0,combatLevel:Math.max(1,Math.min(100,Math.floor(value.combatLevel||1))),sequence:Number.isSafeInteger(value.sequence)?value.sequence:0,...publicCharacter(value.appearance,value.loadout)};
+ return {id:value.id,session:value.session,username:String(value.username||'Adventurer').slice(0,24),x:value.x,z:value.z,yaw:Number.isFinite(value.yaw)?value.yaw:0,combatLevel:Math.max(1,Math.min(126,Math.floor(value.combatLevel||1))),sequence:Number.isSafeInteger(value.sequence)?value.sequence:0,...publicCharacter(value.appearance,value.loadout)};
 }
 
 // Presence establishes membership once. Broadcast updates only that member's
