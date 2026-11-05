@@ -104,3 +104,10 @@ body.compact-layout #dialog-next{margin-top:7px}
 #environment-controls{margin:14px 0 0;padding:10px 8px;border-top:1px solid #8b754e77;font:12px Arial}#environment-controls h4{margin:0 0 8px;color:#dfc994}#environment-controls button{margin:0 0 10px}#environment-controls label{display:block;margin:4px 0}#environment-controls input{width:100%}#environment-controls small{display:block;line-height:1.5;color:#aeb6a6}#environment-controls a{display:inline-block;color:#d4bc87;margin-top:10px;font-size:11px}
 
 #game-ui #settings-tab #music-controls{display:block!important}
+
+/* Character creator: a tall preview stage with its buttons below the canvas
+   (never over the feet), sized for desktop, tablet and phone landscape. */
+.creator-preview #avatar-preview{width:min(340px,100%);height:clamp(300px,60vh,540px);display:flex;flex-direction:column}
+.creator-preview #avatar-preview canvas{flex:1;min-height:0}
+@media(max-width:650px) and (min-height:551px){.creator-preview #avatar-preview{width:min(300px,100%);height:min(46dvh,340px)}}
+@media(max-height:550px){.creator-preview #avatar-preview{width:100%;height:calc(100dvh - 84px)!important;margin:4px auto}}

@@ -1,5 +1,6 @@
 import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261105-qa68';
 import {gaitPlayback,createStrideWarp} from './gait-cadence.js?v=release-20261105-qa68';
+import {createRunStyle,runStyleWeight} from './run-style.js?v=release-20261105-qa68';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip, cross-fades, and plays gaits at a natural cadence
@@ -22,8 +23,9 @@ const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_S
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
  const actions=new Map(),weights=new Map();let current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
- const warp=createStrideWarp(rig);let stride=1;
- const arms=createArmLayers(rig);let aim=0,shot=null,cast=null;
+ const warp=createStrideWarp(rig),runStyle=createRunStyle(rig);let stride=1;
+ const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0;
+ const holding=socket=>!!socket&&socket.children.some(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);
  const loops={};
  function clipFor(name){const [clip,loop]=name.split('@');if(!loop)return clips[clip];if(!clips[clip])return null;return loops[name]||(loops[name]=Object.assign(clips[clip].clone(),{name}))}
  function action(name){if(!clipFor(name))name='Idle_Loop';if(!actions.has(name)){const a=mixer.clipAction(clipFor(name));a.enabled=true;a.setEffectiveWeight(0);if(ONE_SHOT.has(name)){a.setLoop(2200,1);a.clampWhenFinished=true}a.play();actions.set(name,a);weights.set(name,0)}return actions.get(name)}
@@ -60,8 +62,13 @@ export function createHumanoidAnimator(rig){
   mixer.update(dt);
   // Shorter strides for the gait loop, weighted by how far it has faded in.
   if(STRIDE[base]&&moving){const w=weights.get(base)||0;if(w>0)warp(loop.getClip(),1-(1-stride)*w)}
+  // Calm the run: steadier hips, head and torso, smaller arm swing (run-style.js).
+  if(moving&&!airborne&&!oneShot)runStyle.update(loop.getClip(),base,weights.get(base)||0);
   // Blocking raises the shield across the chest on top of whatever clip plays.
   guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
+  // Held weapon / shield ride steady at the side while running (gently while walking).
+  carry+=((STRIDE[base]&&moving&&!airborne&&!oneShot&&!mounted&&!dead?1:0)-carry)*k;if(carry<.001)carry=0;
+  if(carry&&!guard)for(const side of ['left','right'])if(holding(side==='left'?rig.leftHand:rig.rightHand))arms.carry(side,carry*(runStyleWeight(base,1)?.8:.45));
   // Bow shot: raise and draw over 70% of the attack, release, then lower.
   let draw=0,released=false;
   // Spell: the bolt leaves the casting (left) hand partway through the cast.
@@ -93,6 +100,13 @@ function createArmLayers(rig){
  return {
   // Hand to mouth: the right fist rises just in front of the chin.
   mouth(weight){frame();(b.Head||b.head).getWorldPosition(target).addScaledVector(forward,.13).addScaledVector(up,-.07).addScaledVector(left,-.03);reach('right',target,weight)},
+  // Running with a weapon or shield: that arm is carried low beside the hip,
+  // elbow bent, instead of pumping the item across the chest; a shield hangs
+  // with its face turned outward.
+  carry(side,weight){frame();const s=side==='left'?'l':'r',out=side==='left'?1:-1,up_=b['upperarm_'+s],fore=b['lowerarm_'+s],hand=b['hand_'+s];
+   up_.getWorldPosition(c);fore.getWorldPosition(a);const L=c.distanceTo(a)+a.distanceTo(hand.getWorldPosition(to));
+   target.copy(c).addScaledVector(up,-.68*L).addScaledVector(forward,.42*L).addScaledVector(left,out*.12*L);reach(side,target,weight);
+   if(side==='left'){rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,left),weight*.85)}},
   guard(weight){frame();b.spine_03.getWorldPosition(target).addScaledVector(forward,.5).addScaledVector(left,.12);reach('left',target,weight);
    rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,forward),weight)},
   aim(weight,draw){frame();
