@@ -70,7 +70,7 @@ begin
   end loop;
  end if;
  foreach k in array array['xpReward','goldReward'] loop
-  if d?k and jsonb_typeof(d->k)<>'null' then n:=(d->>k)::numeric;if n<>trunc(n) or n<0 or n>case when k='xpReward' then 100000 else 1000000 end then raise exception 'Invalid %',k;end if;end if;
+  if d?k and jsonb_typeof(d->k)<>'null' then n:=(d->>k)::numeric;if n<>trunc(n) or n<0 or n>(case when k='xpReward' then 100000 else 1000000 end) then raise exception 'Invalid %',k;end if;end if;
  end loop;
  if d?'behavior' and coalesce(d->>'behavior','') not in ('stationary','wander','patrol') then raise exception 'Behaviour must be stationary, wander or patrol';end if;
  if d?'patrol' and jsonb_typeof(d->'patrol')<>'null' then
