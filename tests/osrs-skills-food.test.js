@@ -1,8 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
 import {xpForLevel,skillLevel,combatLevel,hitpointsLevel,maxHpForXp,migrateLegacyXp,xpProgress,combatXp,damageTakenHitpointsXp,XP_TABLE} from '../combat-level.js';
 import {foodLadder,foodItems,foodRecipes,fishTable,fishCatch,healAmount,isFood,EAT_DELAY} from '../food.js';
-import {goods} from '../economy.js?v=release-20261105-death72';
-import {professionRecipes} from '../profession-data.js?v=release-20261105-death72';
+import {goods} from '../economy.js?v=release-20261105-trade73';
+import {professionRecipes} from '../profession-data.js?v=release-20261105-trade73';
 import {buildHumanoid} from '../humanoid.js';import {createHumanoidAnimator,eatWeight} from '../animation.js';
 import {makeWeapon} from '../weapons.js';import {makeShield} from '../shields.js';import {attachWeapon,attachShield} from '../equipment-pose.js';
 
