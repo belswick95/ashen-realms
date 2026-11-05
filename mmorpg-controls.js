@@ -4,7 +4,11 @@
 // lives on the minimap.
 export function hotkey(event){return (event.code&&event.code!=='Unidentified'?event.code:null)||({' ':'Space'}[event.key]||'')}
 // Camera keys: yaw +1 turns the view left, pitch +1 raises the camera to look down more.
-export const CAMERA_KEYS={ArrowLeft:['yaw',1],KeyA:['yaw',1],ArrowRight:['yaw',-1],KeyD:['yaw',-1],ArrowUp:['pitch',1],KeyW:['pitch',1],ArrowDown:['pitch',-1],KeyS:['pitch',-1]};
+// Camera keys, RuneScape style: Left/A swings the camera left around you (the
+// world turns the same way as when you drag it left), Right/D the other way;
+// Up/W raises the camera toward overhead, Down/S lowers it toward the horizon.
+// yaw grows counter-clockwise seen from above (camera at +sin/cos(yaw)).
+export const CAMERA_KEYS={ArrowLeft:['yaw',-1],KeyA:['yaw',-1],ArrowRight:['yaw',1],KeyD:['yaw',1],ArrowUp:['pitch',1],KeyW:['pitch',1],ArrowDown:['pitch',-1],KeyS:['pitch',-1]};
 export const CAMERA_TURN_RATE=2.2,CAMERA_PITCH_RATE=1.1; // radians per second
 export function cameraKey(event){const code=event?.code&&event.code!=='Unidentified'?event.code:({ArrowLeft:'ArrowLeft',ArrowRight:'ArrowRight',ArrowUp:'ArrowUp',ArrowDown:'ArrowDown',w:'KeyW',a:'KeyA',s:'KeyS',d:'KeyD',W:'KeyW',A:'KeyA',S:'KeyS',D:'KeyD'}[event?.key]||'');return CAMERA_KEYS[code]?code:null}
 // Held keys → {yaw,pitch} in -1..1 (opposite keys cancel).
