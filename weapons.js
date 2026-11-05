@@ -1,5 +1,5 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261105-mobile80';
-import {heldItem} from './weapon-assets.js?v=release-20261105-mobile80';
+import {meshItemIcon} from './item-appearance.js?v=release-20261105-quests81';
+import {heldItem} from './weapon-assets.js?v=release-20261105-quests81';
 // Weapons are Quaternius CC0 models (assets/weapons, scripts/build-weapons.mjs)
 // in the held-item frame: grip at the origin, blade along +Y, edge toward +X.
 // Keys are what saves, the server catalog and equipment use; the first eight

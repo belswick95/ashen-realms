@@ -32,6 +32,12 @@ export function composeJingle(kind='gathering'){
   chord(3.08,[58,62,65,70,74],1.7,'brass',.42);chord(3.08,[46,58,65],1.8,'pad',.5);
   for(let i=0;i<10;i++)notes.push(n(2.45+i*.062,46,.1,'timpani',.35+i*.05));notes.push(n(0,46,.5,'timpani',.9),n(.64,41,.5,'timpani',.7),n(3.08,46,1.6,'timpani',1),n(3.08,0,1.8,'cymbal',.45));
   notes.push(n(3.08,94,1.4,'glock',.4));
+ }else if(kind==='quest'){ // C major, triumphant (original): rising brass fanfare, harp flourish, held full chord with timpani roll.
+  for(const [t,m,d] of [[0,60,.2],[.22,64,.2],[.44,67,.35],[.84,72,.55],[1.48,71,.18],[1.68,72,.18],[1.88,74,.18],[2.08,76,.5],[2.66,74,.2],[2.88,76,.2],[3.08,79,1.7]])notes.push(n(t,m,d,'brass',.8));
+  [72,76,79,84,88].forEach((m,i)=>notes.push(n(1.0+i*.08,m,.7,'harp',.5)));
+  chord(3.08,[60,64,67,72,76],1.8,'brass',.4);chord(3.08,[48,55,64],1.9,'pad',.5);
+  notes.push(n(0,48,.5,'timpani',.85),n(.84,43,.5,'timpani',.7));for(let i=0;i<9;i++)notes.push(n(2.5+i*.065,48,.1,'timpani',.3+i*.05));
+  notes.push(n(3.08,48,1.6,'timpani',1),n(3.08,0,1.8,'cymbal',.4),n(3.08,91,1.3,'glock',.45),n(3.4,96,1,'glock',.3));
  }else{ // gathering — G major, open air: pentatonic harp and glock, horn-like brass answer.
   [67,71,74,79,83].forEach((m,i)=>notes.push(n(i*.15,m,.8,'harp',.65)));
   for(const [t,m] of [[.85,86],[1.05,83],[1.25,86],[1.45,88]])notes.push(n(t,m,.45,'glock',.5));

@@ -1,6 +1,6 @@
 // Pure rules for the castle training: mirrors the server (db/castle-tutorial.sql) so the
 // client can show the right objective, arrow and gate state without guessing.
-import {CASTLE_CENTRE,CASTLE_INNER_HALF,GATE_MESSAGE} from './tutorial-data.js?v=release-20261105-mobile80';
+import {CASTLE_CENTRE,CASTLE_INNER_HALF,GATE_MESSAGE} from './tutorial-data.js?v=release-20261105-quests81';
 
 export const insideCastle=(x,z)=>Math.abs(x-CASTLE_CENTRE.x)<=CASTLE_INNER_HALF&&Math.abs(z-CASTLE_CENTRE.z)<=CASTLE_INNER_HALF;
 // Same rule as can_step: a trainee may move anywhere except from inside the courtyard to outside it.
