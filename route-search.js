@@ -15,7 +15,9 @@ export function* searchRoute({start,goal,canTravel,heightAt=()=>0,maxNodes=30000
   for(const [dx,dz]of directions){const x=n.x+dx,z=n.z+dz,id=key(x,z);if(x<0||z<0||x>=cols||z>=rows||closed.has(id))continue;if(!pass(n.x,n.z,x,z)||dx&&dz&&(!pass(n.x,n.z,n.x+dx,n.z)||!pass(n.x,n.z,n.x,n.z+dz)))continue;const g=n.g+Math.hypot(dx,dz),old=nodes.get(id);if(!old||g<old.g)add(x,z,g,n.id)}
   if(count%8===0)yield {phase:'route',visited:count};
  }
- if(best===startId||best!==goalId&&bestH>2.5)return [];
+ // A blocked or unreachable goal walks to the closest reachable cell instead
+ // (RuneScape behaviour); only a search that never left the start gives up.
+ if(best===startId)return [];
  const path=[];let id=best;while(id!==startId&&path.length<maxNodes){const n=nodes.get(id);path.push(world(n.x,n.z));id=n.prev;if(id===null)break;if(path.length%128===0)yield {phase:'route'}}path.reverse();
  // Limit lookahead instead of checking every distant segment repeatedly.
  const smooth=[];let anchor=start;for(let i=0;i<path.length;){let far=i;for(let j=Math.min(path.length-1,i+32);j>i;j--){if(yield* clear(anchor,path[j])){far=j;break}}smooth.push(path[far]);anchor=path[far];i=far+1;yield {phase:'route'}}
