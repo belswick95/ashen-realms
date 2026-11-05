@@ -152,5 +152,6 @@ body.phone-layout:has(.tutorial-dialogue:not([hidden])) #touch-jump{visibility:h
 /* ---- Map widget buttons: 40px on every touch device (iPad included) ---- */
 html body.fantasy-hud.phone-layout #map-widget #map-toggle,html body.touch-controls.fantasy-hud #map-widget #map-toggle{width:40px!important;height:40px!important;min-height:40px!important}
 html body.touch-controls.fantasy-hud #map-controls>button{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important}
-html body.touch-controls.fantasy-hud #map-controls #run-toggle{width:auto!important;min-width:64px!important}
+html body.touch-controls.fantasy-hud:not(.phone-layout) #map-controls #run-toggle{width:auto!important;min-width:64px!important;height:40px!important;min-height:40px!important}
+html body.fantasy-hud.phone-layout #map-controls #run-toggle{min-width:40px!important;max-width:44px!important;padding:2px!important;font-size:9px!important}
 body.touch-controls #settings-tab a{display:inline-block;padding:12px 0}
