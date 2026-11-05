@@ -1,4 +1,4 @@
-import {foodRecipes} from './food.js?v=release-20261105-quests81';
+import {foodRecipes} from './food.js?v=release-20261105-light82';
 // Original Eldervale recipes inspired by OSRS resource-processing mechanics.
 // Levels and XP follow the OSRS experience table (combat-level.js); per-action XP is close to OSRS for comparable tiers.
 export const professionSkills={mining:{name:'Mining',key:'miningXP',icon:'⛏'},woodcutting:{name:'Woodcutting',key:'woodXP',icon:'🌳'},fishing:{name:'Fishing',key:'fishingXP',icon:'🎣'},firemaking:{name:'Firemaking',key:'firemakingXP',icon:'🔥'},smithing:{name:'Smithing',key:'smithingXP',icon:'🔨'},cooking:{name:'Cooking',key:'cookingXP',icon:'🍳'},crafting:{name:'Crafting',key:'craftingXP',icon:'🧵'},fletching:{name:'Fletching',key:'fletchingXP',icon:'🏹'},herblore:{name:'Herblore',key:'herbloreXP',icon:'🌿'},farming:{name:'Farming',key:'farmingXP',icon:'🌱'},runecrafting:{name:'Runecrafting',key:'runecraftingXP',icon:'✧'},construction:{name:'Construction',key:'constructionXP',icon:'🏠'},hunter:{name:'Hunter',key:'hunterXP',icon:'🪤'},agility:{name:'Agility',key:'agilityXP',icon:'🏃'},thieving:{name:'Thieving',key:'thievingXP',icon:'🗝'}};

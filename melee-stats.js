@@ -1,6 +1,6 @@
-import {weaponCatalog,isTwoHanded} from './weapons.js?v=release-20261105-quests81';
-import {shieldCatalog} from './shields.js?v=release-20261105-quests81';
-import {outfitItems,SLOT_LABELS} from './outfits.js?v=release-20261105-quests81';
+import {weaponCatalog,isTwoHanded} from './weapons.js?v=release-20261105-light82';
+import {shieldCatalog} from './shields.js?v=release-20261105-light82';
+import {outfitItems,SLOT_LABELS} from './outfits.js?v=release-20261105-light82';
 // Every wearable outfit piece (outfits.js) plus the cape. `equipSlot` is the
 // machine slot; one item per slot can be worn. Legacy helm/chest/legs/boots
 // are the iron knight pieces.

@@ -1,5 +1,5 @@
-import {worldTemplates,entityDefaults} from './world-templates.js?v=release-20261105-quests81';
-import {worldPresets,presetEntity} from './world-presets.js?v=release-20261105-quests81';
+import {worldTemplates,entityDefaults} from './world-templates.js?v=release-20261105-light82';
+import {worldPresets,presetEntity} from './world-presets.js?v=release-20261105-light82';
 // Owner console catalog: MMORPG monsters with loot, farm bundles, buildings and decorative props.
 // Pure data and geometry helpers; the server re-validates everything the console sends.
 const drop=(item,min=1,max=min,chance=1)=>({item,min,max,chance});
