@@ -4,7 +4,7 @@
 #owner-studio-toggle:hover{border-color:#ecc97a;color:#ffe5a8}
 #owner-studio{width:min(1240px,96vw);height:min(860px,92dvh);max-height:92dvh;padding:0;border:1px solid #9c855a;border-radius:14px;background:var(--c-bg);color:var(--c-text);box-shadow:0 24px 100px #000b,0 0 0 1px #0006 inset;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;overflow:hidden}
 #owner-studio[open]{display:grid;grid-template-columns:200px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto}
-#owner-studio::backdrop{background:#03080699;backdrop-filter:blur(2px)}
+#owner-studio::backdrop{background:#030806b0}
 #owner-studio header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:radial-gradient(120% 160% at 0% 0%,#34503f 0%,#182822 55%,#121d1a 100%);border-bottom:1px solid #6f6142}
 #owner-studio header small{color:#c6b98f;letter-spacing:.14em;font-size:10px}
 #owner-studio header a{color:#9fd0b6;font-size:12px;margin-left:2px}
