@@ -1,7 +1,7 @@
 import {mapDestination} from './minimap.js?v=release-20261105-houses65';
 // RuneScape-style point-and-click travel: travel pace, tap-versus-drag on the
-// world canvas, minimap clicks back to world points, ground ripples and the
-// red destination flag on the minimap.
+// world canvas, minimap clicks back to world points, the on-screen click
+// cross and the red destination flag on the minimap.
 
 // Pace. A RuneScape tile is about one character-width (~1 m); players walk one
 // tile per 0.6 s game tick and run two. Eldervale characters are Quaternius
@@ -38,23 +38,26 @@ export function flagExpired(flag,position,{moving=false,pending=false,now=0}={})
  return now-flag.at>FLAG_GRACE;
 }
 
-// RuneScape-style click feedback on the ground: a ring that grows and fades
-// (yellow for a walk, red for an interaction). The destination flag is drawn
-// on the minimap only.
-export const RIPPLE_TIME=.55,RIPPLE_COLORS={walk:0xffd83a,interact:0xe0261d};
-export function rippleFrame(age,duration=RIPPLE_TIME){
- const t=Math.max(0,age)/duration;if(!(t<1))return {scale:1.6,opacity:0,inner:0,done:true};
- const ease=1-(1-t)**2;return {scale:.35+1.25*ease,opacity:.95*(1-t)**1.2,inner:Math.max(0,.9*(1-t*1.8)),done:false};
+// RuneScape-style click feedback: a small cross drawn on screen at the exact
+// click point for under half a second (yellow = walk here, red = interact).
+// Nothing is placed in the 3D world; the destination flag lives on the minimap.
+export const CROSS_TIME=.45,CROSS_COLORS={walk:'#ffe23a',interact:'#ff2a1f'};
+export function crossFrame(age,duration=CROSS_TIME){
+ const t=Math.max(0,age)/duration;if(!(t<1))return {scale:.55,opacity:0,done:true};
+ return {scale:1.15-.6*t,opacity:t<.55?1:1-(t-.55)/.45,done:false};
 }
-export function createClickRipple(T,kind='walk'){
- const color=RIPPLE_COLORS[kind]??RIPPLE_COLORS.walk,group=new T.Group();group.name='click-ripple';
- const ringMaterial=new T.MeshBasicMaterial({color,transparent:true,opacity:.95,side:T.DoubleSide,depthWrite:false}),dotMaterial=ringMaterial.clone();
- const ring=new T.Mesh(new T.RingGeometry(.42,.52,40),ringMaterial),dot=new T.Mesh(new T.CircleGeometry(.12,20),dotMaterial);
- for(const m of [ring,dot]){m.rotation.x=-Math.PI/2;m.renderOrder=3;group.add(m)}
- let age=0;
- return {group,kind,
-  update(dt){age+=dt;const f=rippleFrame(age);ring.scale.setScalar(f.scale);ringMaterial.opacity=f.opacity;dotMaterial.opacity=f.inner;return !f.done},
-  dispose(){group.removeFromParent();for(const m of [ring,dot]){m.geometry.dispose();m.material.dispose()}}};
+export function crossColor(kind){return CROSS_COLORS[kind]??CROSS_COLORS.walk}
+// Shows the cross at client (x, y) inside `parent` (default: document.body).
+export function showClickCross(x,y,kind='walk',{doc=globalThis.document,parent=doc?.body,now=()=>performance.now(),frame=globalThis.requestAnimationFrame}={}){
+ if(!doc||!parent||!Number.isFinite(x)||!Number.isFinite(y))return null;
+ const el=doc.createElement('div');el.className='click-cross '+(kind==='interact'?'interact':'walk');el.setAttribute('aria-hidden','true');
+ const color=crossColor(kind);
+ el.innerHTML='<svg viewBox="-10 -10 20 20" width="22" height="22"><path d="M-6-6 6 6M6-6-6 6" stroke="#000a" stroke-width="5" stroke-linecap="round"/><path d="M-6-6 6 6M6-6-6 6" stroke="'+color+'" stroke-width="2.6" stroke-linecap="round"/></svg>';
+ el.style.cssText='position:fixed;left:'+x+'px;top:'+y+'px;width:22px;height:22px;margin:-11px 0 0 -11px;pointer-events:none;z-index:2147483000;will-change:transform,opacity';
+ parent.append(el);const start=now();
+ const step=()=>{const f=crossFrame((now()-start)/1000);if(f.done){el.remove();return}el.style.transform='scale('+f.scale.toFixed(3)+')';el.style.opacity=f.opacity.toFixed(3);frame?.(step)};
+ step();if(!frame)setTimeout(()=>el.remove(),CROSS_TIME*1000);
+ return el;
 }
 // Draws the same red flag on a 2D map canvas at (x, y).
 export function drawMapFlag(ctx,x,y){

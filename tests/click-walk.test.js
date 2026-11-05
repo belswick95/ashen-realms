@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
-import {WALK_SPEED,RUN_SPEED,MOUNT_SPEED,TILE,GAME_TICK,travelSpeed,isTap,dragThreshold,mapClickToWorld,flagExpired,createClickRipple,rippleFrame,RIPPLE_COLORS,approachPoint,withinReach,arrivalStatus} from '../click-walk.js';
+import {WALK_SPEED,RUN_SPEED,MOUNT_SPEED,TILE,GAME_TICK,travelSpeed,isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,crossFrame,crossColor,CROSS_TIME,approachPoint,withinReach,arrivalStatus} from '../click-walk.js';
 import {mapPoint} from '../minimap.js';import {searchRoute} from '../route-search.js';import {CHARACTER_SCALE} from '../character-assets.js';
 import {STRIDE,createHumanoidAnimator} from '../animation.js';import {gaitPlayback} from '../gait-cadence.js';import {buildHumanoid} from '../humanoid.js';import {mountSpeed} from '../mounts.js';
 
@@ -69,14 +69,19 @@ test('pathfinding is bounded: a hopeless search ends within its node budget quic
  assert.ok(performance.now()-started<3000,'took '+(performance.now()-started)+'ms');assert.ok(checks<3000*12,'edge checks '+checks);assert.ok(path.length>0);
 });
 
-test('ground clicks show a ring that grows and fades: yellow to walk, red to interact',()=>{
- let last=rippleFrame(0);assert.equal(last.done,false);assert.ok(last.opacity>.9);
- for(let age=.05;age<.55;age+=.05){const f=rippleFrame(age);assert.ok(f.scale>last.scale,'grows');assert.ok(f.opacity<last.opacity,'fades');last=f}
- assert.equal(rippleFrame(.6).done,true);assert.equal(rippleFrame(.6).opacity,0);
- const walk=createClickRipple(T,'walk'),hit=createClickRipple(T,'interact');
- assert.equal(walk.group.children[0].material.color.getHex(),RIPPLE_COLORS.walk);assert.equal(hit.group.children[0].material.color.getHex(),RIPPLE_COLORS.interact);
- assert.ok((RIPPLE_COLORS.walk>>16)>200&&(RIPPLE_COLORS.walk>>8&255)>180&&(RIPPLE_COLORS.walk&255)<120,'yellow');
- let alive=0;while(walk.update(1/60))alive++;assert.ok(alive>20&&alive<40,'about half a second');walk.dispose();hit.dispose();
+test('clicks flash a brief on-screen cross at the pointer: yellow to walk, red to interact',()=>{
+ let last=crossFrame(0);assert.equal(last.done,false);assert.equal(last.opacity,1);
+ for(let age=.05;age<CROSS_TIME;age+=.05){const f=crossFrame(age);assert.ok(f.scale<last.scale,'shrinks');assert.ok(f.opacity<=last.opacity,'fades');last=f}
+ assert.ok(CROSS_TIME>=.4&&CROSS_TIME<=.5);assert.equal(crossFrame(CROSS_TIME).done,true);
+ const hex=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));const [yr,yg,yb]=hex(crossColor('walk')),[rr,rg,rb]=hex(crossColor('interact'));
+ assert.ok(yr>200&&yg>180&&yb<120,'yellow walk');assert.ok(rr>200&&rg<80&&rb<80,'red interact');
+ // A tiny DOM stand-in: the cross is a fixed-position overlay at the click point and removes itself.
+ const made=[];const doc={createElement(){const el={className:'',style:{},setAttribute(){},removed:false,remove(){this.removed=true},innerHTML:''};made.push(el);return el}};
+ const parent={append(){}};let clock=0;const frames=[];
+ const el=showClickCross(120,80,'interact',{doc,parent,now:()=>clock,frame:f=>frames.push(f)});
+ assert.match(el.style.cssText,/position:fixed;left:120px;top:80px/);assert.match(el.style.cssText,/pointer-events:none/);assert.match(el.innerHTML,/#ff2a1f/);assert.match(el.className,/interact/);
+ while(frames.length&&!el.removed){clock+=16;frames.shift()()}assert.ok(el.removed,'gone after the animation');assert.ok(clock>=400&&clock<=520);
+ assert.equal(showClickCross(NaN,1,'walk',{doc,parent}),null);
 });
 
 test('click-to-interact walks into reach, acts only after stopping, and a newer click cancels it',()=>{

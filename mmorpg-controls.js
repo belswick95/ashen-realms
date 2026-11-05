@@ -12,18 +12,21 @@ export function cameraKeyAxes(held){const axes={yaw:0,pitch:0};for(const code of
 export function jumpHeight(timestamp,now){const t=(now-Date.parse(timestamp))/800;return t>=0&&t<=1?2.8*t*(1-t):0}
 // True while a jump that started at `timestamp` is in the air (drives the jump clips).
 export function isAirborne(timestamp,now){const t=(now-Date.parse(timestamp))/800;return t>0&&t<1}
-export function installMMOControls({element,isBlocked,onJump}){
+export function installMMOControls({element,isBlocked,onJump,isCameraBlocked=()=>false}){
+ const typingFocus=()=>!!globalThis.document?.activeElement?.closest?.('input,textarea,select,[contenteditable=true],[contenteditable=""]'),cameraBlocked=()=>typingFocus()||isCameraBlocked();
  const editing=event=>event.target?.closest?.('input,textarea,select,[contenteditable=true],[contenteditable=""],[role=dialog]');
  const held=new Set();
  addEventListener('keyup',e=>{const code=cameraKey(e);if(code)held.delete(code)});
  addEventListener('blur',()=>held.clear());
  if(element?.addEventListener){element.tabIndex=0;element.addEventListener('pointerdown',()=>element.focus?.({preventScroll:true}));}
- addEventListener('keydown',e=>{const camera=cameraKey(e);if(e.isComposing||e.metaKey||e.ctrlKey||e.altKey||editing(e)||isBlocked()){if(camera)held.delete(camera);return}
-  if(camera){e.preventDefault();held.add(camera);return}
+ addEventListener('keydown',e=>{const camera=cameraKey(e);
+  // Camera keys work whenever the player is not typing (a level-up card or an open panel does not freeze the camera).
+  if(camera){if(e.isComposing||e.metaKey||e.ctrlKey||e.altKey||editing(e)||cameraBlocked()){held.delete(camera);return}e.preventDefault();held.add(camera);return}
+  if(e.isComposing||e.metaKey||e.ctrlKey||e.altKey||editing(e)||isBlocked())return;
   if(hotkey(e)==='Space'){e.preventDefault();if(!e.repeat)onJump()}});
  // Touch devices keep a jump button; movement is tap-to-walk.
  const jump=document.createElement('button');jump.id='touch-jump';jump.type='button';jump.setAttribute('aria-label','Jump');jump.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="m9 15 7-8 7 8M16 8v16M8 26h16"/></svg><span>Jump</span>';document.body.append(jump);
  const touchProfile=()=>document.body.classList.toggle('touch-controls',matchMedia('(pointer:coarse)').matches||(navigator.maxTouchPoints>0&&!matchMedia('(hover:hover)').matches));touchProfile();addEventListener('resize',touchProfile);
  jump.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(!isBlocked())onJump()});
- return {update(){return null},cameraAxes(){if(held.size&&isBlocked())held.clear();return cameraKeyAxes(held)},get touchActive(){return false},clear(){held.clear()}};
+ return {update(){return null},cameraAxes(){if(held.size&&cameraBlocked())held.clear();return cameraKeyAxes(held)},get touchActive(){return false},clear(){held.clear()}};
 }

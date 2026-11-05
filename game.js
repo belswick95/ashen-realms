@@ -51,7 +51,7 @@ import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-2026110
 import {goods,sanitizeBank,inventoryUsed,createServicePanel} from './economy.js?v=release-20261105-houses65';
 import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261105-houses65';
 import {mapPoint} from './minimap.js?v=release-20261105-houses65';
-import {isTap,dragThreshold,mapClickToWorld,flagExpired,createClickRipple,drawMapFlag,approachPoint,withinReach,arrivalStatus} from './click-walk.js?v=release-20261105-houses65';
+import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus} from './click-walk.js?v=release-20261105-houses65';
 import {townResidents,animateTownActivity,createWorkKit,carriesWeapon} from './town-life.js?v=release-20261105-houses65';
 import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261105-houses65';
 import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261105-houses65';
@@ -418,20 +418,30 @@ function routeTo(target){
  const h=houseInteriors.find(h=>insideHouse(h,goal));
  if(h&&!insideHouse(h,player.position)){
   const door=housePoint(h,0,2.48),threshold=housePoint(h,0,1.08);
-  if(!h.open){navigationAfterDoor=target.clone();action={kind:'door',house:h};return housePoint(h,0,2.48)}
+  // A closed door is not opened for you (RuneScape style): the route search
+  // walks to the reachable point nearest the click, outside the building.
+  if(!h.open)return goal;
   // Enter through the doorway, then continue to the clicked destination.
   walkQueue=[threshold,goal];return door;
  }
  const current=houseInteriors.find(h=>insideHouse(h,player.position));
  if(current&&!insideHouse(current,goal)){
   const threshold=housePoint(current,0,1.08),door=housePoint(current,0,2.48);
-  if(!current.open){navigationAfterDoor=target.clone();action={kind:'door',house:current};return housePoint(current,0,1.08)}
+  if(!current.open)return goal;
   walkQueue=[door,goal];return threshold;
  }
  return goal;
 }
-var navigationAfterDoor=null,pendingPickup=null;let walkQueue=[],mapDestination=null;
-async function setWalkDestination(point,{flag=true}={}){
+var navigationAfterDoor=null,pendingPickup=null,walkCheck=null;let walkQueue=[],mapDestination=null;
+// Routes start where the server has the walker (advanced along its path), not
+// where a lagging or low-frame-rate render shows it; otherwise the server walks
+// back to the drawn position first.
+function routeOrigin(){
+ if(!window.eldervaleAuthority||!realmPlayerPose)return player.position.clone();
+ const p=projectPathPose(realmPlayerPose,window.eldervaleServerTime?.()||Date.now());
+ return Math.hypot(p.x-player.position.x,p.z-player.position.z)>.35?new T.Vector3(p.x,player.position.y,p.z):player.position.clone();
+}
+async function setWalkDestination(point,{flag=true,retried=false}={}){
  const generation=++navigationGeneration;routeController?.abort();const controller=new AbortController();routeController=controller;routePending=true;
  navigationAfterDoor=null;walkQueue=[];if(action?.kind!=='creature')combatTurns.cancel();
  const target=routeTo(point),stops=[target,...walkQueue],requestAction=action,showFlag=flag&&!requestAction;walkQueue=[];dest=null;mapDestination=point.clone();if(showFlag)plantWalkFlag(point);else hideWalkFlag();
@@ -440,10 +450,10 @@ async function setWalkDestination(point,{flag=true}={}){
  try{
   await window.eldervaleRegionStreamer?.idle();
   if(controller.signal.aborted)return;
-  const all=[];let current=player.position.clone();for(const stop of stops){const path=await runFrameWork(routeSteps(current,stop),{signal:controller.signal,onProgress:p=>ticket.progress(0,0,p?.visited?'Checking paths around nearby obstacles…':null)});if(!path.length&&Math.hypot(current.x-stop.x,current.z-stop.z)>.4){say('That destination is currently unreachable.');if(showFlag)hideWalkFlag();break}all.push(...path.map(p=>new T.Vector3(p.x,p.y,p.z)));current=stop;}
+  const all=[];let current=routeOrigin();for(const stop of stops){const path=await runFrameWork(routeSteps(current,stop),{signal:controller.signal,budget:10,onProgress:p=>ticket.progress(0,0,p?.visited?'Checking paths around nearby obstacles…':null)});if(!path.length&&Math.hypot(current.x-stop.x,current.z-stop.z)>.4){say('That destination is currently unreachable.');if(showFlag)hideWalkFlag();break}all.push(...path.map(p=>new T.Vector3(p.x,p.y,p.z)));current=stop;}
   clearTimeout(pauseTimer);if(pausePromise)await pausePromise;if(generation!==navigationGeneration)return;ticket.end();
   dest=all.shift()||null;walkQueue=all;mapDestination=all.at(-1)?.clone()||dest?.clone()||null;if(showFlag&&mapDestination)plantWalkFlag(mapDestination);
-  if(window.eldervaleAuthority){const route=[dest,...walkQueue].filter(Boolean).slice(0,128).map(p=>[p.x,p.z]);const target=requestAction?.realmId||requestAction?.worldEntityId||requestAction?.mob?.realmId||requestAction?.profile?.realmId||requestAction?.house?.realmId;await window.eldervaleRealm?.command('move',{path:route,target:target||null,kind:requestAction?.kind||'walk'});}
+  if(window.eldervaleAuthority){const route=[dest,...walkQueue].filter(Boolean).slice(0,128).map(p=>[p.x,p.z]);const target=requestAction?.realmId||requestAction?.worldEntityId||requestAction?.mob?.realmId||requestAction?.profile?.realmId||requestAction?.house?.realmId;await window.eldervaleRealm?.command('move',{path:route,target:target||null,kind:requestAction?.kind||'walk'});const end=route.at(-1);walkCheck=!requestAction&&end&&generation===navigationGeneration?{x:end[0],z:end[1],reach:.9,clicked:point.clone(),flag,generation,retried:retried===true,startedAt:performance.now()}:null;}
  }catch(error){if(error.name!=='AbortError'){say('The route could not be loaded. Please choose a destination again.');console.warn('Route loading:',error);}}finally{clearTimeout(pauseTimer);ticket.end();if(generation===navigationGeneration)routePending=false;}
 }
 
@@ -454,13 +464,32 @@ let pendingArrival=null;
 function arrivalPosition(){return window.eldervaleAuthority&&realmPlayerPose?realmPlayerPose:player.position}
 function approachAndAct({x,z,reach,act,label}){
  if(withinReach(arrivalPosition(),{x,z},reach)&&withinReach(player.position,{x,z},reach+.5)){pendingArrival=null;act();return}
- const goal=approachPoint(player.position,{x,z},reach);action=null;pendingPickup=null;
+ const goal=approachPoint(routeOrigin(),{x,z},reach);action=null;pendingPickup=null;
  void setWalkDestination(new T.Vector3(goal.x,0,goal.z),{flag:false});
  pendingArrival={x,z,reach,act,generation:navigationGeneration,startedAt:performance.now()};if(label)say(label);
 }
+// NPCs and creatures wander: the server only completes a talk/attack intent
+// once the walker stands within reach, so a route to where the target *was*
+// can end out of reach with nothing happening. Re-route to where it is now.
+function followActionTarget(a){
+ const at=a?.kind==='creature'?a.mob?.root?.position:a?.kind==='npc'?a.root?.position:null;if(!at)return;
+ pendingArrival={x:at.x,z:at.z,reach:a.kind==='creature'?Math.max(1.6,weaponStats(state.equippedWeapon).reach):2.8,follow:a,where:()=>a.kind==='creature'?a.mob?.root?.position:a.root?.position,tries:0,generation:navigationGeneration,startedAt:performance.now()};
+}
+// The server walks the client's waypoints and stops at the first blocked step
+// (its collision can differ slightly from ours, or it started from elsewhere).
+// If a walk ends short of its route, search again once from where the server
+// actually stopped.
+function updateWalkCheck(){
+ if(!walkCheck||!window.eldervaleAuthority)return;const status=arrivalStatus(walkCheck,realmPlayerPose,{moving:!!realmPlayerPose?.moving,routing:routePending,generation:navigationGeneration,now:performance.now()});
+ if(status==='failed'&&!walkCheck.retried){const c=walkCheck;walkCheck=null;const keep=pendingArrival;void setWalkDestination(c.clicked,{flag:c.flag,retried:true});if(keep&&!keep.follow){keep.generation=navigationGeneration;keep.activeAt=performance.now();pendingArrival=keep}}
+ else if(status!=='walking'&&status!=='waiting')walkCheck=null;
+}
 function updatePendingArrival(){
- if(!pendingArrival)return;const status=arrivalStatus(pendingArrival,arrivalPosition(),{moving:window.eldervaleAuthority?!!realmPlayerPose?.moving:!!dest||walkQueue.length>0,routing:routePending,generation:navigationGeneration,now:performance.now()});
- if(status==='arrived'){const {act,x,z}=pendingArrival;pendingArrival=null;faceTarget(player,new T.Vector3(x,player.position.y,z));act()}
+ updateWalkCheck();if(!pendingArrival)return;
+ if(pendingArrival.follow){const at=pendingArrival.where();if(!at||realmInCombat||(pendingArrival.follow.kind==='creature'&&pendingArrival.follow.mob?.alive===false)){pendingArrival=null;return}pendingArrival.x=at.x;pendingArrival.z=at.z}
+ const status=arrivalStatus(pendingArrival,arrivalPosition(),{moving:window.eldervaleAuthority?!!realmPlayerPose?.moving:!!dest||walkQueue.length>0,routing:routePending,generation:navigationGeneration,now:performance.now()});
+ if(status==='arrived'){const {act,x,z}=pendingArrival;pendingArrival=null;if(act){faceTarget(player,new T.Vector3(x,player.position.y,z));act()}}
+ else if(status==='failed'&&pendingArrival.follow&&pendingArrival.tries<3){const p=pendingArrival,at=p.where();action=p.follow;void setWalkDestination(new T.Vector3(at.x,0,at.z));p.tries++;p.generation=navigationGeneration;p.activeAt=performance.now();pendingArrival=p}
  else if(status==='cancelled')pendingArrival=null;
  else if(status==='failed'){pendingArrival=null;say("You can't reach that from here.")}
 }
@@ -829,14 +858,14 @@ for(const lake of worldLakes){
 // RuneScape-style map travel: click or tap a point on either map to walk there.
 mapCanvas.title='Map · Click to walk there';mapCanvas.style.cursor='crosshair';
 largeMap.title='World map · Click to walk there';largeMap.style.cursor='crosshair';
-function walkFromMap(e,canvas,world){const target=mapClickToWorld(e.clientX,e.clientY,canvas.getBoundingClientRect(),{player:player.position,extent:world?840:minimapExtent,width:canvas.width,height:canvas.height,world});if(!target||!Number.isFinite(target.x)||!Number.isFinite(target.z))return;e.preventDefault();closeDialog();closeMenu();action=null;pendingPickup=null;markClick(target.x,target.z,'walk');void setWalkDestination(new T.Vector3(target.x,0,target.z));}
+function walkFromMap(e,canvas,world){const target=mapClickToWorld(e.clientX,e.clientY,canvas.getBoundingClientRect(),{player:player.position,extent:world?840:minimapExtent,width:canvas.width,height:canvas.height,world});if(!target||!Number.isFinite(target.x)||!Number.isFinite(target.z))return;e.preventDefault();closeDialog();closeMenu();action=null;pendingPickup=null;markClick(e.clientX,e.clientY,'walk');void setWalkDestination(new T.Vector3(target.x,0,target.z));}
 mapCanvas.addEventListener('click',e=>walkFromMap(e,mapCanvas,false));largeMap.addEventListener('click',e=>walkFromMap(e,largeMap,true));
 document.querySelector('#map-toggle').onclick=()=>{mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)};
 document.querySelector('#map-close').onclick=()=>{mapOpen=false;mapPanel.hidden=true};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeDialog();mapOpen=false;mapPanel.hidden=true}if(!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&e.key.toLowerCase()==='m'&&!e.repeat){mapOpen=!mapOpen;mapPanel.hidden=!mapOpen;if(mapOpen)drawMap(largeCtx,largeMap,true)}});
 document.addEventListener('contextmenu',e=>{if(e.target.closest('#game-ui')||e.target===renderer.domElement)e.preventDefault()});
-// Ground-click ripples: yellow for walking and red for interactions.
-const markers=[];function markClick(x,z,kind='walk'){const ripple=createClickRipple(T,kind);ripple.group.position.set(x,landscape.walkHeight(x,z)+floorOffset(currentInterior.floor,x,z)+.06,z);scene.add(ripple.group);markers.push(ripple);while(markers.length>6)markers.shift().dispose()}
+// Click feedback: a brief on-screen cross at the pointer (yellow walk, red interact).
+function markClick(clientX,clientY,kind='walk'){showClickCross(clientX,clientY,kind)}
 // The red destination flag is drawn on the minimap only (until arrival or a new destination).
 let walkFlagState=null;
 function plantWalkFlag(p){walkFlagState={x:p.x,z:p.z,at:performance.now()}}
@@ -1107,7 +1136,7 @@ function save(){captureSave();window.eldervaleSave?.()}
 document.querySelector('#reset').onclick=()=>window.eldervaleReset?.();
 let dest=null,action=null,yaw=Math.PI,pitch=.24,zoom=10,drag=false,down=null,lastCameraDrag=0,rightSteering=false,dragDistance=0,downPointerType='mouse';const cameraWallRay=new T.Raycaster(),ray=new T.Raycaster(),pointer=new T.Vector2();
 installTouchGestures(renderer.domElement,{onPinch:ratio=>{zoom=T.MathUtils.clamp(zoom*ratio,4,28);drag=true;down=null},onHold:p=>renderer.domElement.dispatchEvent(new PointerEvent('pointerup',{clientX:p.x,clientY:p.y,button:2,pointerType:'touch',bubbles:true}))});
-const mmoControls=installMMOControls({element:renderer.domElement,isBlocked:()=>window.eldervaleWorldLoading===true||document.hidden||document.body.classList.contains('landscape-required')||document.body.classList.contains('area-loading')||!document.querySelector('#dialog').hidden||!!document.querySelector('dialog[open]')||!!document.activeElement?.closest('input,textarea,select,[contenteditable=true]'),onJump:()=>{if(window.eldervaleAuthority)void window.eldervaleRealm?.command('jump');else localJumpAt=new Date().toISOString()}});
+const mmoControls=installMMOControls({element:renderer.domElement,isBlocked:()=>window.eldervaleWorldLoading===true||document.hidden||document.body.classList.contains('landscape-required')||document.body.classList.contains('area-loading')||!document.querySelector('#dialog').hidden||!!document.querySelector('dialog[open]')||!!document.activeElement?.closest('input,textarea,select,[contenteditable=true]'),onJump:()=>{if(window.eldervaleAuthority)void window.eldervaleRealm?.command('jump');else localJumpAt=new Date().toISOString()},isCameraBlocked:()=>window.eldervaleWorldLoading===true||document.hidden||document.body.classList.contains('landscape-required')});
 let localJumpAt=null;
 renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
 // Camera drags must not select the page: block selection that starts on the
@@ -1123,7 +1152,7 @@ renderer.domElement.addEventListener('pointercancel',()=>{down=null;rightSteerin
 renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;down=null;rightSteering=false;if(drag||!isTap(dragDistance,e.pointerType||downPointerType))return;const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);const rayHits=ray.intersectObjects(targets.filter(t=>{let o=t;while(o){if(!o.visible)return false;o=o.parent}return true}),false),hits=rayHits.filter(h=>h.object.userData.kind!=='worldObject');const point=new T.Vector3();const groundHit=ray.intersectObjects(walkSurfaces.filter(o=>!o.userData.storyFloor||o.userData.storyFloor===currentInterior.floor),false)[0];const hitGround=groundHit?point.copy(groundHit.point):null;
 if(window.eldervaleBuilderClick?.({point:hitGround?{x:point.x,z:point.z}:null,entityId:rayHits[0]?.object.userData.worldEntityId||rayHits[0]?.object.userData.mob?.realmId||rayHits[0]?.object.userData.profile?.realmId,button:e.button}))return;
 const spotOf=hit=>{const a=hit.object.userData;if(Number.isFinite(a.x)&&Number.isFinite(a.z))return {x:a.x,z:a.z};const w=hit.object.getWorldPosition(new T.Vector3());return {x:w.x,z:w.z}};
-if(e.button===0){const interactive=!!hits[0];if(interactive)markClick(hits[0].point.x,hits[0].point.z,'interact');else if(hitGround)markClick(point.x,point.z,'walk')}
+if(e.button===0){const interactive=!!hits[0];if(interactive)markClick(e.clientX,e.clientY,'interact');else if(hitGround)markClick(e.clientX,e.clientY,'walk')}
 if(hits[0]?.object.userData.kind==='door'){const a=hits[0].object.userData,doorAt=housePoint(a.house,0,1.9),use=()=>approachAndAct({x:doorAt.x,z:doorAt.z,reach:5,act:()=>interactDoor(a)});if(e.button===2)showMenu(e.clientX,e.clientY,[[a.house.open?'Close door':'Open door',use],['Cancel',()=>{}]]);else use();return;}
 if(hits[0]?.object.userData.kind==='bankStand'){const stand=hits[0].object,a=stand.userData,standAt=stand.getWorldPosition(new T.Vector3()),use=()=>approachAndAct({x:standAt.x,z:standAt.z,reach:2.4,act:()=>useBankStand(a.house,stand)});if(e.button===2)showMenu(e.clientX,e.clientY,[['Use bank stand',use],['Examine bank stand',()=>say('A teller stand for depositing and withdrawing your belongings.')],['Cancel',()=>{}]]);else use();return;}
 if(hits[0]?.object.userData.kind==='profession'){const a=hits[0].object.userData,at=spotOf(hits[0]);approachAndAct({...at,reach:3.4,act:()=>professions.open({station:a.station,target:a.worldEntityId||a.realmId})});return;}
@@ -1136,10 +1165,10 @@ if(hits[0]?.object.userData.kind==='player'){const other=remotePlayers.get(hits[
 if(e.button===2){
  if(!hits.length){closeMenu();return;}
  const choices=[];
- if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?actorMenuLabel({prefix:'Attack ',name:a.mob.name,level:a.mob.config?.level||1,playerLevel:combatLevel(state)}):a.kind==='npc'?actorMenuLabel({prefix:'Talk to ',name:a.profile.name,level:a.profile.level||1,playerLevel:combatLevel(state)}):a.kind==='merchant'?actorMenuLabel({prefix:'Trade with ',name:'Traveling merchant',level:5,playerLevel:combatLevel(state)}):a.kind==='altar'?'Pray at altar':a.kind==='hearth'?'Cook and eat fish':a.kind==='castleGate'?'Open / close great gate':a.kind==='fishing'?'Fish here':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):a.kind==='castleGate'?new T.Vector3(a.x,0,a.z+(player.position.z>a.z?4:-4)):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact')}]);choices.push(['Examine '+(a.kind==='creature'?a.mob.name:a.kind==='npc'?a.profile.name:a.kind==='merchant'?'Traveling merchant':a.kind),()=>say(a.kind==='creature'?a.mob.name+' · Combat '+(a.mob.config?.level||1)+' · '+Math.max(0,a.mob.hp)+' / '+a.mob.maxHp+' HP':a.kind==='npc'?a.profile.name+' — '+a.profile.role+' · Combat '+a.profile.level+' · '+a.profile.hp+' / '+(a.profile.maxHp||a.profile.hp)+' HP':a.kind==='merchant'?'Traveling merchant · Combat 5 · 45 / 45 HP. Buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':(Date.parse(a.availableAt)>(window.eldervaleServerTime?.()||Date.now())?'This '+a.kind+' is recovering.':'A harvestable '+a.kind+'.'))])}
+ if(hits.length){const a=hits[0].object.userData;choices.push([a.kind==='creature'?actorMenuLabel({prefix:'Attack ',name:a.mob.name,level:a.mob.config?.level||1,playerLevel:combatLevel(state)}):a.kind==='npc'?actorMenuLabel({prefix:'Talk to ',name:a.profile.name,level:a.profile.level||1,playerLevel:combatLevel(state)}):a.kind==='merchant'?actorMenuLabel({prefix:'Trade with ',name:'Traveling merchant',level:5,playerLevel:combatLevel(state)}):a.kind==='altar'?'Pray at altar':a.kind==='hearth'?'Cook and eat fish':a.kind==='castleGate'?'Open / close great gate':a.kind==='fishing'?'Fish here':a.kind==='chest'?'Open armory chest':a.kind==='door'?(a.house.open?'Close door':'Open door'):'Gather '+a.kind,()=>{action=a;const goal=a.kind==='creature'?a.mob.root.position.clone():a.kind==='npc'?a.root.position.clone():a.kind==='door'?housePoint(a.house,0,2.4):a.kind==='castleGate'?new T.Vector3(a.x,0,a.z+(player.position.z>a.z?4:-4)):new T.Vector3(a.x,0,a.z);setWalkDestination(goal);followActionTarget(a);markClick(e.clientX,e.clientY,'interact')}]);choices.push(['Examine '+(a.kind==='creature'?a.mob.name:a.kind==='npc'?a.profile.name:a.kind==='merchant'?'Traveling merchant':a.kind),()=>say(a.kind==='creature'?a.mob.name+' · Combat '+(a.mob.config?.level||1)+' · '+Math.max(0,a.mob.hp)+' / '+a.mob.maxHp+' HP':a.kind==='npc'?a.profile.name+' — '+a.profile.role+' · Combat '+a.profile.level+' · '+a.profile.hp+' / '+(a.profile.maxHp||a.profile.hp)+' HP':a.kind==='merchant'?'Traveling merchant · Combat 5 · 45 / 45 HP. Buys logs and ore.':a.kind==='chest'?'A chest of iron adventuring supplies.':a.kind==='door'?'A wooden door. Click to open or close.':(Date.parse(a.availableAt)>(window.eldervaleServerTime?.()||Date.now())?'This '+a.kind+' is recovering.':'A harvestable '+a.kind+'.'))])}
  choices.push(['Cancel',()=>{}]);showMenu(e.clientX,e.clientY,choices);return;
 }
-if(hits.length){action=hits[0].object.userData;const goal=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):action.kind==='castleGate'?new T.Vector3(action.x,0,action.z+(player.position.z>action.z?4:-4)):new T.Vector3(action.x,0,action.z);setWalkDestination(goal);if(dest)markClick(dest.x,dest.z,'interact');if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){closeDialog();closeMenu();action=null;pendingPickup=null;void setWalkDestination(point.clone())}});
+if(hits.length){action=hits[0].object.userData;const goal=action.kind==='creature'?action.mob.root.position.clone():action.kind==='npc'?action.root.position.clone():action.kind==='door'?housePoint(action.house,0,2.4):action.kind==='castleGate'?new T.Vector3(action.x,0,action.z+(player.position.z>action.z?4:-4)):new T.Vector3(action.x,0,action.z);setWalkDestination(goal);followActionTarget(action);if(action.kind!=='npc')say(action.kind==='merchant'?'Walking to merchant...':'Approaching '+action.kind+'...')}else if(hitGround){closeDialog();closeMenu();action=null;pendingPickup=null;void setWalkDestination(point.clone())}});
 renderer.domElement.addEventListener('wheel',e=>{zoom=T.MathUtils.clamp(zoom+e.deltaY*.015,4,28)},{passive:true});
 // Rebuild once after every building plot has been graded. The same heightfield
 // now supplies the grass mesh, building bases, streets and actor footing.
@@ -1215,7 +1244,6 @@ if(!window.eldervaleAuthority&&dest){const delta=dest.clone().sub(player.positio
 combat.attackTimer=Math.max(0,combat.attackTimer-dt);combat.attackAnim=Math.max(0,combat.attackAnim-dt);combat.hitAnim=Math.max(0,combat.hitAnim-dt);combat.blockAnim=Math.max(0,combat.blockAnim-dt);combat.stanceTimer=Math.max(0,combat.stanceTimer-dt);playerHUD.health(combat.hp,combat.maxHp);
 for(const mob of creatures){if(window.eldervaleAuthority){const before=mob.root.position.clone();interpolateRealm(mob,dt);mob.attackAnim=Math.max(0,(mob.attackAnim||0)-dt);mob.blockAnim=Math.max(0,(mob.blockAnim||0)-dt);mob.hitAnim=Math.max(0,(mob.hitAnim||0)-dt);mob.model?.update(dt,{distance:mob.root.position.distanceTo(before),speed:mob.root.position.distanceTo(before)/dt,attack:mob.attackAnim,block:mob.blockAnim,hit:mob.hitAnim});continue}const mobBefore=mob.root.position.clone();mob.attackAnim=Math.max(0,(mob.attackAnim||0)-dt);mob.blockAnim=Math.max(0,(mob.blockAnim||0)-dt);mob.hitAnim=Math.max(0,(mob.hitAnim||0)-dt);mob.root.rotation.x=mob.attackAnim>0?-Math.sin((1-mob.attackAnim/.55)*Math.PI)*.15:0;mob.root.rotation.z=mob.blockAnim>0?.12:mob.hitAnim>0?-.10:0;if(!mob.alive){mob.respawn-=dt;if(mob.respawn<=0){mob.alive=true;mob.hp=mob.maxHp;mob.root.position.copy(mob.home);mob.root.visible=true}continue}mob.attackCooldown=Math.max(0,mob.attackCooldown-dt);mob.wait-=dt;if(mob.wait<=0){const a=mob.root.position.x*.12+performance.now()*.0002;mob.goal.set(mob.home.x+Math.cos(a)*(mob.config?.roam??5),0,mob.home.z+Math.sin(a)*(mob.config?.roam??5));mob.wait=3+Math.random()*5}const distance=mob.root.position.distanceTo(player.position);if((mob.hostile||combatTurns.target===mob)&&distance<10){mob.goal.copy(player.position);if(distance<2.5&&!combatTurns.target&&!services.isOpen){combatRng=Math.random;combatTurns.engage(mob,true)}}const meleeDistance=Math.min(1.85,weaponStats(state.equippedWeapon).reach*.9),delta=mob.goal.clone().sub(mob.root.position);delta.y=0;if(delta.length()>((mob.hostile||combatTurns.target===mob)&&distance<10?meleeDistance:.4)){delta.normalize();const step=Math.min(dt*((mob.hostile||combatTurns.target===mob)&&distance<10?1.7:.8),Math.max(0,distance-meleeDistance));const proposed=mob.root.position.clone().addScaledVector(delta,step);if(proposed.distanceToSquared(player.position)>=1.45*1.45&&!walkAllowed(mob.root.position,proposed).blocked)mob.root.position.copy(proposed);mob.root.rotation.y=Math.atan2(delta.x,delta.z)}if((mob.hostile||combatTurns.target===mob)&&distance<10)faceTarget(mob.root,player.position);if(action?.kind==='creature'&&action.mob===mob&&dest){const toward=player.position.clone().sub(mob.root.position);toward.y=0;toward.normalize();dest.copy(mob.root.position).addScaledVector(toward,weaponStats(state.equippedWeapon).reach*.85)}mob.model?.update(dt,{distance:mob.root.position.distanceTo(mobBefore),speed:mob.root.position.distanceTo(mobBefore)/dt,attack:mob.attackAnim,hit:mob.hitAnim,block:mob.blockAnim})}
 if(!window.eldervaleAuthority&&combatTurns.target){const target=combatTurns.target;combat.stanceTimer=3;const range=combatTurns.side==='player'?weaponStats(combatTurns.phase==='ready'?state.equippedWeapon:swingWeapon||state.equippedWeapon).reach:2.5;combatTurns.tick(dt,{inRange:player.position.distanceTo(target.root.position)<=range,playerAlive:combat.hp>0})}
-for(const marker of markers.slice())if(!marker.update(dt)){marker.dispose();markers.splice(markers.indexOf(marker),1)}
 ensureTownResidents();
 for(const npc of npcs){
  npc.root.visible=npc.alive!==false&&!npc.deleted&&npc.root.position.distanceToSquared(player.position)<85*85;
@@ -1350,7 +1378,7 @@ window.eldervaleRealmBridge={
  },
  event(e,selfId){if(e.type==='skill_notice'||e.type==='skill_complete'){if(e.player===selfId)say(e.text);return}if(e.type==='npc_windup'){const a=realmActor(e.attacker),b=realmActor(e.target);if(a&&b?.root.visible&&a.root.position.distanceTo(b.root.position)<4.5){a.attackAnim=.55;a.previewAttack=.55;}if(b)b.blockAnim=.75;return}if(e.type==='npc_hit'){const a=realmActor(e.target);if(a){hitNumbers.show(a.root,e.damage,e.blocked,3);if(a.root.position.distanceTo(player.position)<20)combatSound(e.blocked?'metal':'impact');}return}const actor=realmActor(e.target),root=actor?.root,isSelf=e.player===selfId,other=remotePlayers.get(e.player);if(e.type==='fishing'){if(isSelf)say('You catch a fish. +25 Fishing XP');return}if(e.type==='woodcut'){if(e.depleted)applyRealmObject({id:e.target,available_at:e.availableAt});if(isSelf)say('You receive '+e.amount+' log'+(e.amount===1?'':'s')+'. +'+(25*e.amount)+' Woodcutting XP');return}if(e.type==='gather_end'){if(isSelf&&e.text)say(e.text);return}if(e.type==='preview'){if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}return}if(e.type==='windup'){if(isSelf&&e.side==='player')combatSound(e.style||'slash');if(e.style&&isSelf)attackStyle=e.style;if(e.side==='player'){if(isSelf){combat.attackAnim=.55;combat.blockAnim=0;faceTarget(player,root?.position||player.position);combat.arrowTarget=e.ranged?root:null}else if(other){other.attackAnim=.55;other.attackStyle=e.style||'slash';other.arrowTarget=e.ranged?root:null;}if(actor)actor.blockAnim=1.1;}else{if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}if(isSelf){combat.attackAnim=0;combat.blockAnim=1.15;}else if(other)other.blockAnim=1.15;}}
   else if(e.type==='hit'){const target=e.side==='player'?root:isSelf?player:other?.root;if(target)hitNumbers.show(target,e.damage,e.blocked,e.side==='player'?1.8:2.8);if(isSelf)combatSound(e.blocked?'metal':'impact');if(actor&&e.side==='player'){actor.hitAnim=e.blocked?0:.3;actor.blockAnim=e.blocked?.65:0;}}
-  else if(e.type==='interaction'&&isSelf){const a=targets.find(t=>(t.userData.realmId||t.userData.worldEntityId||t.userData.profile?.realmId)===e.target)?.userData;if(a?.kind==='npc')talkTo(a.profile);else if(a?.kind==='merchant')services.open('shop','Market',e.target);else if(a?.kind==='altar'||a?.kind==='hearth')void window.eldervaleRealm.command(a.kind==='altar'?'pray':'cook',{target:e.target});else if(a?.kind==='fishing')void window.eldervaleRealm.command('fish',{target:e.target});action=null;}
+  else if(e.type==='interaction'&&isSelf){pendingArrival=null;const a=targets.find(t=>(t.userData.realmId||t.userData.worldEntityId||t.userData.profile?.realmId)===e.target)?.userData;if(a?.kind==='npc')talkTo(a.profile);else if(a?.kind==='merchant')services.open('shop','Market',e.target);else if(a?.kind==='altar'||a?.kind==='hearth')void window.eldervaleRealm.command(a.kind==='altar'?'pray':'cook',{target:e.target});else if(a?.kind==='fishing')void window.eldervaleRealm.command('fish',{target:e.target});action=null;}
   else if(e.type==='door'){const h=worldInstances.get(e.target)?.house||houseInteriors.find(h=>h.realmId===e.target);if(h){h.open=e.open;h.doorPivot.rotation.y=e.open?-Math.PI*.53:0;}action=null;if(isSelf&&navigationAfterDoor){const goal=navigationAfterDoor;navigationAfterDoor=null;setWalkDestination(goal);}}
   else if(e.type==='notice'&&isSelf){if(repeatingNotice(e.text))say(e.text)}else if(e.type==='death'&&isSelf){say('Defeated '+(actor?.name||'opponent')+'.');action=null;}else if(e.type==='gather'&&isSelf){say('Resource gathered. +25 XP');action=null;}else if(e.type==='player_death'&&isSelf){say('You fell in battle and returned to Oakcross.');action=null;}
  }
