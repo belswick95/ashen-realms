@@ -1,4 +1,4 @@
-import {mapDestination} from './minimap.js?v=release-20261105-inv71';
+import {mapDestination} from './minimap.js?v=release-20261105-death72';
 // RuneScape-style point-and-click travel: travel pace, tap-versus-drag on the
 // world canvas, minimap clicks back to world points, the on-screen click
 // cross and the red destination flag on the minimap.
