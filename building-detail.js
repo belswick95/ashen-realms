@@ -1,4 +1,4 @@
-import {batchStaticMeshes} from './static-batch.js?v=release-20261105-clickwalk63';
+import {batchStaticMeshes} from './static-batch.js?v=release-20261105-walkanim64';
 // Architectural detail for every town building, in the house's own frame
 // (walls ±1.91 × ±1.83, eaves 3.12, ridge 4.40, door on +Z): half-timber
 // framing or stone quoins, framed windows with sills, shutters and flower
