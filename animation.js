@@ -29,7 +29,8 @@ export function createHumanoidAnimator(rig){
  function action(name){if(!clipFor(name))name='Idle_Loop';if(!actions.has(name)){const a=mixer.clipAction(clipFor(name));a.enabled=true;a.setEffectiveWeight(0);if(ONE_SHOT.has(name)){a.setLoop(2200,1);a.clampWhenFinished=true}a.play();actions.set(name,a);weights.set(name,0)}return actions.get(name)}
  function startOneShot(name,duration){const a=action(name);a.reset();a.play();const length=clips[name]?.duration||1;a.timeScale=duration?length/duration:1;oneShot=name;oneShotLeft=duration||length;}
  action('Idle_Loop').setEffectiveWeight(1);weights.set('Idle_Loop',1);
- return {mixer,update(dt,{distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,airborne:air=false,activity=null,dead=false,ranged=false,magic=false,combat=false}={}){
+ const eating=createEatLayer(rig,arms);
+ return {mixer,update(dt,{eat=0,food=null,distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,airborne:air=false,activity=null,dead=false,ranged=false,magic=false,combat=false}={}){
   if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);time+=dt;
   speed=Number.isFinite(speed)?Math.max(0,speed):0;distance=Number.isFinite(distance)?Math.max(0,distance):0;
   const moving=distance>1e-5&&speed>.15&&!mounted;
@@ -67,9 +68,11 @@ export function createHumanoidAnimator(rig){
   if(cast){cast.t+=dt;if(cast.t>=cast.at){released=true;cast=null}}
   if(shot){shot.t+=dt;const u=shot.t/shot.duration;draw=u<.7?Math.min(1,u/.7)**.8:0;if(u>=.7&&!shot.released){shot.released=true;released=true}if(u>=1.25)shot=null}
   aim+=((shot&&!mounted&&!dead?1:0)-aim)*Math.min(1,k*1.6);if(aim<.001)aim=0;if(aim)arms.aim(aim,draw);
+  // Eating: weapon and shield are put away, the right hand brings the food to the mouth.
+  const bite=eating.update(eat,food,{mounted,dead});
   const run=base==='Sprint_Loop'?1:base==='Jog_Fwd_Loop'?.65:0;
-  return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released};
- },dispose(){mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
+  return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite};
+ },dispose(){eating.dispose();mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
 }
 
 // Arm layers applied after the mixer, weighted 0..1 so they fade in and out:
@@ -88,6 +91,8 @@ function createArmLayers(rig){
  function frame(){rig.model.updateMatrixWorld(true);rig.root.getWorldQuaternion(wq);forward.set(0,0,1).applyQuaternion(wq);up.set(0,1,0).applyQuaternion(wq);left.set(1,0,0).applyQuaternion(wq)}
  function reach(side,goal,weight){const s=side==='left'?'l':'r',hand=b['hand_'+s];for(let pass=0;pass<4;pass++)for(const bone of [b['lowerarm_'+s],b['upperarm_'+s]]){bone.getWorldPosition(c);hand.getWorldPosition(a).sub(c).normalize();to.copy(goal).sub(c).normalize();turn(bone,rot.setFromUnitVectors(a,to),weight)}}
  return {
+  // Hand to mouth: the right fist rises just in front of the chin.
+  mouth(weight){frame();(b.Head||b.head).getWorldPosition(target).addScaledVector(forward,.13).addScaledVector(up,-.07).addScaledVector(left,-.03);reach('right',target,weight)},
   guard(weight){frame();b.spine_03.getWorldPosition(target).addScaledVector(forward,.5).addScaledVector(left,.12);reach('left',target,weight);
    rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,forward),weight)},
   aim(weight,draw){frame();
@@ -98,4 +103,17 @@ function createArmLayers(rig){
    // String hand: from the bow grip back to the cheek.
    b.hand_l.getWorldPosition(target).addScaledVector(forward,-.66*draw).addScaledVector(left,-.05*draw);b.upperarm_r.getWorldPosition(c);target.y=Math.max(target.y,c.y+.06*draw);reach('right',target,weight)}
  };
+}
+
+// Eat pose, layered after the clip like guard/aim. `remaining` counts down from
+// EAT_ANIMATION (food.js, about 1.1 s): weapon and shield hide at once, the right
+// hand lifts the food to the mouth (ease in over the first 35%), holds for the
+// bite, then lowers; held items reappear when the timer ends.
+export function eatWeight(remaining,duration=1.1){if(!(remaining>0))return 0;const u=1-Math.min(1,remaining/duration);return u<.35?Math.sin(u/.35*Math.PI/2):u<.75?1:Math.cos((u-.75)/.25*Math.PI/2)}
+function createEatLayer(rig,arms){
+ const T=rig.T,hidden=new Set();let morsel=null,color=null;
+ function held(on){const sockets=[rig.rightHand,rig.leftHand].filter(Boolean);if(on){for(const socket of sockets)for(const child of socket.children)if((child.userData.weaponMount||child.userData.shieldMount)&&child.visible){child.visible=false;hidden.add(child)}}else{for(const child of hidden)child.visible=true;hidden.clear()}}
+ function food(item){const want=item?.color??0xc98d5a;if(!morsel){morsel=new T.Mesh(new T.SphereGeometry(.045,10,8),new T.MeshStandardMaterial({color:want,roughness:.75}));morsel.scale.set(1.5,.85,1);morsel.position.set(0,.03,.04);morsel.userData.eatMorsel=true;rig.rightHand?.add(morsel)}if(color!==want){morsel.material.color.setHex(want);color=want}return morsel}
+ return {update(remaining,item,{mounted=false,dead=false}={}){const active=remaining>0&&!dead;if(!active){if(hidden.size)held(false);if(morsel)morsel.visible=false;return 0}held(true);food(item).visible=true;const w=mounted?eatWeight(remaining)*.8:eatWeight(remaining);if(w>0)arms.mouth(w);return w},
+  dispose(){held(false);if(morsel){morsel.removeFromParent();morsel.geometry.dispose();morsel.material.dispose();morsel=null}}};
 }

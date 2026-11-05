@@ -5289,6 +5289,222 @@
       121,
       116
     ],
-    "sha256": "6c5d10b48ad1d8c618040ab7aefdcf80f053f677c006ae113eb5e0e5dbc4d062"
+    "sha256": "a2b51cb049092c73fdb6a4bfdb8601e073eb5636f11fcddc9f4cf998b978aa45"
+  },
+  {
+    "key": "item-sundae",
+    "id": "sundae",
+    "name": "Sundae",
+    "model": "sundae",
+    "bounds": [
+      0.3400000035762787,
+      0.5650000015646219,
+      0.3400000035762787
+    ],
+    "pixelBounds": [
+      42,
+      27,
+      102,
+      125
+    ],
+    "sha256": "53507e01a94fe25cb2373dfe1fde453c3298abf60fdfe46ac052f12e51a43bdd"
+  },
+  {
+    "key": "item-rawShrimp",
+    "id": "rawShrimp",
+    "name": "Raw shrimp",
+    "model": "shrimp",
+    "bounds": [
+      0.31200016121870633,
+      0.09000000357627869,
+      0.4804437526816955
+    ],
+    "pixelBounds": [
+      14,
+      41,
+      115,
+      99
+    ],
+    "sha256": "b10316a3bd55b16f4539555cd13ca30798ca2b439c904b1cb10e117254731c53"
+  },
+  {
+    "key": "item-trout",
+    "id": "trout",
+    "name": "Cooked trout",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "8120b6412ee65cf3b66d3dc35a207c80771f3ae284a8aa4f4ee48c1e8903f869"
+  },
+  {
+    "key": "item-rawTrout",
+    "id": "rawTrout",
+    "name": "Raw trout",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "6f07cc9e216eb7f869d692edfcd10dcb096c3f190cf20f173d5f8b5c23490dfd"
+  },
+  {
+    "key": "item-rawSalmon",
+    "id": "rawSalmon",
+    "name": "Raw salmon",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "d08783af138a169f16d8ce8ae646adf4ffd93cf1cbb07e2920bb63316983aa27"
+  },
+  {
+    "key": "item-rawLobster",
+    "id": "rawLobster",
+    "name": "Raw lobster",
+    "model": "lobster",
+    "bounds": [
+      0.7599999932944774,
+      0.14399999678134917,
+      0.5979999959468842
+    ],
+    "pixelBounds": [
+      30,
+      42,
+      131,
+      96
+    ],
+    "sha256": "767fdbcb744dc4468c9357bda86fb2593eb28fe6aff9f0cbc187c7ba1dc8caa8"
+  },
+  {
+    "key": "item-swordfish",
+    "id": "swordfish",
+    "name": "Cooked swordfish",
+    "model": "swordfish",
+    "bounds": [
+      1.2300000065565109,
+      0.2944486439228058,
+      0.2900000035762787
+    ],
+    "pixelBounds": [
+      18,
+      52,
+      129,
+      93
+    ],
+    "sha256": "96950e4eb391cbdbc6d2b8b2c947ae3050235161365259e38d3afd320411640e"
+  },
+  {
+    "key": "item-rawSwordfish",
+    "id": "rawSwordfish",
+    "name": "Raw swordfish",
+    "model": "swordfish",
+    "bounds": [
+      1.2300000065565109,
+      0.2944486439228058,
+      0.2900000035762787
+    ],
+    "pixelBounds": [
+      18,
+      52,
+      129,
+      93
+    ],
+    "sha256": "b0eed410a6cf5f4a8fa1eebe15b6184b270e9af472fc800a5207e97e57708f28"
+  },
+  {
+    "key": "item-stormfin",
+    "id": "stormfin",
+    "name": "Cooked stormfin",
+    "model": "stormfin",
+    "bounds": [
+      0.88000000461936,
+      0.4278878347933557,
+      0.2900000035762787
+    ],
+    "pixelBounds": [
+      19,
+      44,
+      127,
+      101
+    ],
+    "sha256": "26ac2e850c79c711f225be3efa8c6a8b962724199c54c64e473de61950b613a5"
+  },
+  {
+    "key": "item-rawStormfin",
+    "id": "rawStormfin",
+    "name": "Raw stormfin",
+    "model": "stormfin",
+    "bounds": [
+      0.88000000461936,
+      0.4278878347933557,
+      0.2900000035762787
+    ],
+    "pixelBounds": [
+      19,
+      44,
+      127,
+      101
+    ],
+    "sha256": "778d2e748315f5069162af3fb7c3295c334925356d42d2b9a03e2f17cb138920"
+  },
+  {
+    "key": "item-lobsterPot",
+    "id": "lobsterPot",
+    "name": "Lobster pot",
+    "model": "pot",
+    "bounds": [
+      0.42399999499320984,
+      0.21199999749660495,
+      0.41844854954631394
+    ],
+    "pixelBounds": [
+      25,
+      46,
+      119,
+      115
+    ],
+    "sha256": "f27ef6f26525b787d63168d07e9f1377025b4e5992d72d7e366680590920d680"
+  },
+  {
+    "key": "item-harpoon",
+    "id": "harpoon",
+    "name": "Harpoon",
+    "model": "harpoon",
+    "bounds": [
+      0.9553923054039478,
+      0.12089106440544128,
+      0.13072185208987738
+    ],
+    "pixelBounds": [
+      8,
+      45,
+      131,
+      91
+    ],
+    "sha256": "bba9003c54a20c729fa8af8a39bbfc76cf0c938150cf76a1992d32d488a157ff"
   }
 ]
