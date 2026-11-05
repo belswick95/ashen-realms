@@ -1,5 +1,5 @@
-import {registerProfessions} from './professions.js?v=release-20261105-living60';
-import {registerWorldItems} from './economy.js?v=release-20261105-living60';
+import {registerProfessions} from './professions.js?v=release-20261105-maxout61';
+import {registerWorldItems} from './economy.js?v=release-20261105-maxout61';
 export async function startWorld(db,user,{initial,flush,disconnect}){
  let snapshot=initial,cursor=-1,polling=false,offset=0,initialized=false,restarting=false,startedAt=Date.parse(initial?.serverTime)||Date.now(),restartSeen=null,lastAnnouncement='',panel=null,stopped=false;
  let lastSyncError=null;
@@ -27,7 +27,7 @@ export async function startWorld(db,user,{initial,flush,disconnect}){
  if(remaining===0&&!restarting){restarting=true;window.eldervaleWorldBridge.capture();void flush().then(ok=>{if(ok)location.reload();else{restarting=false;banner.textContent='Reconnecting paused — waiting for your character to save.'}})}
  }
  await refresh();if(!initialized)throw lastSyncError||Error('World access is unavailable');
- if(snapshot?.owner||snapshot?.staffRole==='moderator'){const {createAdminPanel}=await import('./admin-panel.js?v=release-20261105-living60');panel=createAdminPanel({userId:user.id,rpc,action,refresh,snapshot,bridge:window.eldervaleWorldBridge})}
+ if(snapshot?.owner||snapshot?.staffRole==='moderator'){const {createAdminPanel}=await import('./admin-panel.js?v=release-20261105-maxout61');panel=createAdminPanel({userId:user.id,rpc,action,refresh,snapshot,bridge:window.eldervaleWorldBridge})}
  const report=document.createElement('button');report.type='button';report.textContent='Report a player';report.id='world-report-button';report.style.cssText='position:fixed;bottom:4px;left:50%;transform:translateX(-50%);z-index:95;font:11px Arial;padding:4px 8px;background:#182620;color:#c8ba9a;border:1px solid #80704c;border-radius:4px';(document.body.classList.contains('phone-layout')?document.querySelector('#settings-tab')||document.body:document.body).append(report);
  report.onclick=()=>{const form=document.createElement('dialog');form.innerHTML='<form method="dialog"><h2>Report a player</h2><label>Player ID (optional)<input name="target" maxlength="36"></label><label>What happened?<textarea name="body" required minlength="5" maxlength="1000"></textarea></label><p role="status"></p><button type="submit">Send report</button><button type="button" data-close>Cancel</button></form>';document.body.append(form);form.querySelector('[data-close]').onclick=()=>form.close();form.addEventListener('close',()=>form.remove());form.querySelector('form').onsubmit=async e=>{e.preventDefault();try{await rpc('world_report',{target_id:form.querySelector('[name=target]').value.trim()||null,report_text:form.querySelector('textarea').value});form.close();window.eldervaleWorldBridge.notice('Report sent to the owner.')}catch(err){form.querySelector('[role=status]').textContent=err.message}};form.showModal()};
  const timer=setInterval(()=>void refresh(),4000),clock=setInterval(tick,250);addEventListener('pagehide',()=>{stopped=true;clearInterval(timer);clearInterval(clock)},{once:true});return {refresh,action};
