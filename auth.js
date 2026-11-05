@@ -55,6 +55,8 @@ form.onsubmit=async e=>{e.preventDefault();if(loading)return;setBusy(true);messa
 document.querySelector('#logout').onclick=async()=>{
  clearTimeout(saveTimer);window.eldervaleCaptureSave?.();
  if(!await flush()){document.querySelector('#logout').textContent='Retry logout';return}
+ // Logging out cancels a pending trade request or open trade for both players.
+ await Promise.race([window.eldervaleTradeCancel?.(),new Promise(r=>setTimeout(r,2000))]).catch(()=>{});
  const {error}=await db.auth.signOut();if(error){cloudStatus('Could not sign out — please retry',true);return}
  started=false;localStorage.removeItem('eldervale-save');localStorage.removeItem('ashen-realms-save');location.reload();
 };

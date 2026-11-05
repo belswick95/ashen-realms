@@ -33,8 +33,8 @@ export function requestOutcomeMessage(trade){
  if(trade.stage==='declined')return requester?partner+' declined the trade.':'You declined the trade request.';
  if(trade.stage!=='cancelled')return null;
  if(trade.reason==='combat')return 'Trade request cancelled: you cannot trade during combat.';
- if(trade.reason==='offline')return 'Trade request cancelled: '+(requester?partner:'the other player')+' left the world.';
- if(trade.reason==='moved')return 'Trade request cancelled: you moved too far from '+partner+'.';
+ if(trade.reason==='offline')return 'Trade request cancelled: '+partner+' left the world.';
+ if(trade.reason==='moved')return 'Trade request cancelled: you and '+partner+' are too far apart.';
  const byMe=trade.reason==='cancelled_by_'+(requester?'a':'b');
  return byMe?'You cancelled the trade request.':partner+' cancelled the trade request.';
 }

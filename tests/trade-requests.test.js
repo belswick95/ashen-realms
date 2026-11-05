@@ -31,7 +31,7 @@ test('both players are told how a request ended',()=>{
  assert.equal(asB({stage:'declined',reason:'declined'}),'You declined the trade request.');
  assert.equal(asA({stage:'cancelled',reason:'cancelled_by_a'}),'You cancelled the trade request.');
  assert.equal(asB({stage:'cancelled',reason:'cancelled_by_a'}),'Alder cancelled the trade request.');
- assert.match(asA({stage:'cancelled',reason:'moved'}),/too far from Brin/);
+ assert.equal(asA({stage:'cancelled',reason:'moved'}),'Trade request cancelled: you and Brin are too far apart.');
  assert.match(asB({stage:'cancelled',reason:'combat'}),/combat/);
  assert.match(asB({stage:'cancelled',reason:'offline'}),/left the world/);
  // Pending, open or completed trades are not request outcomes.

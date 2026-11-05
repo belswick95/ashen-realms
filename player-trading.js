@@ -1,5 +1,5 @@
 import {goods,inventoryEntries,quantity,isWorn} from './economy.js?v=release-20261105-polish70';
-import {TRADE_REQUEST_SECONDS,tradeFinished,neverOpened,tradeRoles,requestDeadline,secondsLeft,requestExpired,requestOutcomeMessage} from './trade-requests.js?v=release-20261105-polish70';
+import {TRADE_REQUEST_SECONDS,tradeFinished,neverOpened,tradeRoles,requestDeadline,secondsLeft,requestExpired,requestOutcomeMessage} from './trade-requests.js?v=release-20261105-death72';
 const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e};
 // The 10-second request popup: the target accepts or declines, the requester
 // sees "Sending trade request…". Not modal, so the world stays playable.
@@ -34,6 +34,8 @@ export function createTradePanel(state,{say}={}){
  const panel=node('dialog');panel.id='player-trade';document.body.append(panel);let current=null,signature='',dismissed=null,announced=null;
  const popup=createRequestPopup({say});
  const command=async(c,p,id)=>{if(c==='trade_join')await window.eldervaleRealm?.command('stop');return window.eldervaleRealm?.command(c,{id,...p})};
+ // Used by logout (auth.js): a pending request or open trade ends for both players.
+ window.eldervaleTradeCancel=async()=>{if(current&&!tradeFinished(current.stage))await command('trade_cancel',{},current.id)};
  const send=(c,p={})=>command(c,p,current.id);
  function button(parent,label,fn){const b=node('button',label);b.type='button';b.onclick=fn;parent.append(b);return b}
  function close(){dismissed=current?.id;panel.close()}
