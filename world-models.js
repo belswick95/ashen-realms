@@ -1,14 +1,14 @@
-import {campObject} from './camp-models.js?v=release-20261105-camera74';
-import {professionStationModel} from './profession-models.js?v=release-20261105-camera74';
-import {oreResources} from './profession-data.js?v=release-20261105-camera74';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261105-camera74';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261105-camera74';
-import {creatureMaterial} from './creature-material.js?v=release-20261105-camera74';
-import {dragonModel} from './monster-dragon.js?v=release-20261105-camera74';
-import {castleObject} from './castle-models.js?v=release-20261105-camera74';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261105-camera74';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-camera74';
-import {townProp,dressFountain} from './town-props.js?v=release-20261105-camera74';
+import {campObject} from './camp-models.js?v=release-20261105-camera75';
+import {professionStationModel} from './profession-models.js?v=release-20261105-camera75';
+import {oreResources} from './profession-data.js?v=release-20261105-camera75';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261105-camera75';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261105-camera75';
+import {creatureMaterial} from './creature-material.js?v=release-20261105-camera75';
+import {dragonModel} from './monster-dragon.js?v=release-20261105-camera75';
+import {castleObject} from './castle-models.js?v=release-20261105-camera75';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261105-camera75';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-camera75';
+import {townProp,dressFountain} from './town-props.js?v=release-20261105-camera75';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dragon')return dragonModel(T,parent,d);

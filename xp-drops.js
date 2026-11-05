@@ -1,4 +1,4 @@
-import {levelSkills} from './level-up.js?v=release-20261105-camera74';
+import {levelSkills} from './level-up.js?v=release-20261105-camera75';
 // RuneScape-style XP drops: when a skill's XP rises, a small "+N Skill" label
 // floats up near the top right and fades. Purely cosmetic; the server owns XP.
 export function xpDelta(previous,next){const out=[];if(!previous)return out;for(const s of levelSkills){const gain=Math.floor((Number(next[s.key])||0)-(Number(previous[s.key])||0));if(gain>0&&gain<5e6)out.push({key:s.key,name:s.name,gain})}return out}

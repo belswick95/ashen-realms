@@ -1,4 +1,4 @@
-import {storyScale} from './building-stories.js?v=release-20261105-camera74';
+import {storyScale} from './building-stories.js?v=release-20261105-camera75';
 // Footprints are shared by grass exclusion, foundations, and the geometry audit.
 export const isBuilding=d=>['cottage','bank','inn','forge'].includes(d?.template);
 export function localPoint(d,x,z){const a=(d.yaw||0)*Math.PI/180,c=Math.cos(a),s=Math.sin(a),dx=x-d.x,dz=z-d.z;return [dx*c-dz*s,dx*s+dz*c]}
