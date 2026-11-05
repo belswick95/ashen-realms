@@ -1,6 +1,6 @@
-import {approachPoint} from './castle-approach.js?v=release-20261105-perf77';
-import {entityDefaults} from './world-templates.js?v=release-20261105-perf77';
-import {seededRandom} from './procedural-world.js?v=release-20261105-perf77';
+import {approachPoint} from './castle-approach.js?v=release-20261105-capital78';
+import {entityDefaults} from './world-templates.js?v=release-20261105-capital78';
+import {seededRandom} from './procedural-world.js?v=release-20261105-capital78';
 export function trailCampBlueprint(seed=241916600){const r=seededRandom(seed^0x15ca7),distance=78+Math.floor(r()*15),rows=[];let serial=0;const add=(template,along,side,extra={})=>{const p=approachPoint(along,side);const d={...entityDefaults(template,p.x,p.z),yaw:p.yaw,...extra,blueprint:'castle-trail-camp-v1',blueprintKey:String(++serial)};rows.push(d);return d};
  add('campfire',distance,8,{name:'Wayfarer campfire'});add('cooking_tripod',distance,8,{name:'Travelers’ cooking pot'});
  for(const [a,side]of [[-5,13],[8,-12],[-10,-11]]){const p=approachPoint(distance+a,side);add('tent',distance+a,side,{yaw:p.yaw+(side>0?90:-90)});add('bedroll',distance+a+2,side>0?9:-8,{yaw:p.yaw+90});}
