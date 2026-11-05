@@ -9,8 +9,10 @@ import {castleObject} from './castle-models.js?v=release-20261105-camera75';
 import {buildCharacterDisplay} from './character-display.js?v=release-20261105-camera75';
 import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261105-camera75';
 import {townProp,dressFountain} from './town-props.js?v=release-20261105-camera75';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261105-camera75';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
+ if(d.species==='dummy')return trainingDummyModel(T,parent,d);
  if(d.species==='dragon')return dragonModel(T,parent,d);
  const animal=farmAnimalModel(T,parent,d);if(animal)return animal;
  if(['human','goblin','skeleton','zombie','orc'].includes(d.species)||d.kind==='npc'){
@@ -62,7 +64,7 @@ export function actorModel(T,parent,d){
 }
 export function objectModel(T,parent,id,d={}){const camp=campObject(T,parent,id,d);if(camp)return camp;const farm=farmObjectModel(T,parent,id);if(farm)return farm;
  const station=professionStationModel(T,parent,id,d);if(station)return station;
- const prop=townProp(T,parent,id,d);if(prop)return prop;
+ const prop=townProp(T,parent,id,d);if(prop)return prop;const training=tutorialObjectModel(T,parent,id,d);if(training)return training;
  const g=new T.Group();parent.add(g);const wood=0x745335,stone=0x92998e,metal=0x444b49;
  if(id.startsWith('castle_')||['altar','hearth'].includes(id)){castleObject(T,g,id,d);Object.assign(parent.userData,g.userData);return g;}
  const box=(x,y,z,w,h,l,c)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,l),new T.MeshStandardMaterial({color:c,roughness:.9}));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m};

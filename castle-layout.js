@@ -27,7 +27,7 @@ export function castleBlueprint(){
  add('innkeeper',-25,24,{name:'Cook Rowan',activity:'trade',dialogue:'Fresh fish on the hearth! Bring raw fish and use the cooking hearth.'});
  add('smith',28,25,{name:'Master Smith Torren',activity:'smith'});
  for(const [template,x,z,name,shop]of [['merchant',-18,7,'Elsa the Quartermaster',{'weapon:longsword':{buy:70,sell:35,stock:-1},'weapon:scimitar':{buy:90,sell:45,stock:-1},'shield:kite':{buy:80,sell:40,stock:-1}}],['merchant',18,7,'Bren the Provisioner',{fishingPole:{buy:35,sell:12,stock:-1},bait:{buy:2,sell:1,stock:-1},rawFish:{buy:12,sell:6,stock:1000}}]]){add('market',x,z);add(template,x,z-1,{name,shop})}
- for(const [x,z,name,activity,roam]of [[-12,17,'Perrin the Porter','carry',5],[12,-6,'Lyra the Courier','carry',8],[-9,7,'Hale the Groundskeeper','sweep',4],[10,24,'Mira the Gardener','garden',3],[0,-27,'Royal Archivist Iven','read',0]])add('villager',x,z,{name,activity,roam});
+ for(const [x,z,name,activity,roam]of [[-12,17,'Perrin the Porter','carry',5],[12,-6,'Lyra the Courier','carry',8],[-9,7,'Hale the Groundskeeper','sweep',4],[10,24,'Mira the Gardener','garden',3],[4.5,-21.5,'Royal Archivist Iven','read',0]])add('villager',x,z,{name,activity,roam});
  for(const [x,z,roam]of [[-5,65,0],[5,65,0],[-36,32,5],[36,32,5],[-32,-25,5],[32,-30,4]])add('white_knight',x,z,{roam,name:roam?'White Knight patrol':'White Knight gatekeeper'});
  return rows;
 }

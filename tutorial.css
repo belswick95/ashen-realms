@@ -1,0 +1,27 @@
+/* Castle training: objective card, chatbox dialogue, cutscene letterbox. */
+.tutorial-hud{position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:40;width:min(420px,calc(100vw - 32px));padding:9px 14px 10px;border:2px solid #5b4524;border-radius:6px;background:linear-gradient(#3b2f20f2,#2a2117f2);color:#f3e6c4;font:14px/1.35 Georgia,'Times New Roman',serif;box-shadow:0 6px 18px #0007;pointer-events:none}
+.tutorial-hud-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tutorial-hud-badge{font:700 11px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#ffd34d}
+.tutorial-hud small{font:12px system-ui,sans-serif;color:#cdb98d}
+.tutorial-hud strong{display:block;margin-top:4px;font-size:16px;color:#ffe9a8}
+.tutorial-hud-goal{margin:3px 0 0;color:#fff}
+.tutorial-hud-way{margin:2px 0 0;font:12px system-ui,sans-serif;color:#ffd34d}
+.tutorial-dialogue{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:1200;width:min(560px,calc(100vw - 32px));min-height:118px;padding:12px 18px 10px;border:3px solid #3e3020;border-radius:4px;background:#d8c9a3;color:#1d150b;font:16px/1.4 Georgia,'Times New Roman',serif;text-align:center;box-shadow:inset 0 0 0 2px #b9a47a,0 8px 22px #0009}
+.tutorial-dialogue h4{margin:0 0 6px;font-size:16px;color:#7a0b0b}
+.tutorial-dialogue[data-who=player] h4{color:#0b2a7a}
+.tutorial-dialogue[data-who=choice] h4{color:#7a0b0b}
+.tutorial-dialogue p{margin:0 0 8px}
+.tutorial-continue,.tutorial-choices button{border:0;background:none;color:#0b2a7a;font:600 15px Georgia,serif;cursor:pointer;padding:6px 8px;min-height:36px}
+.tutorial-continue:hover,.tutorial-choices button:hover,.tutorial-continue:focus-visible,.tutorial-choices button:focus-visible{color:#fff;background:#3e3020;outline:none}
+.tutorial-choices{display:grid;gap:2px}
+.tutorial-letterbox{position:fixed;inset:0;z-index:1100;pointer-events:auto;background:transparent}
+.tutorial-letterbox .bar{position:absolute;left:0;right:0;height:11vh;background:#000;transition:transform .8s ease}
+.tutorial-letterbox .bar.top{top:0}.tutorial-letterbox .bar.bottom{bottom:0}
+.tutorial-caption{position:absolute;left:50%;top:22vh;transform:translateX(-50%);text-align:center;color:#f6e7bf;text-shadow:0 2px 8px #000;opacity:0;transition:opacity .9s ease;pointer-events:none}
+.tutorial-caption.show{opacity:1}
+.tutorial-caption strong{display:block;font:700 clamp(28px,6vw,52px)/1.1 Georgia,serif;letter-spacing:.04em}
+.tutorial-caption span{display:block;margin-top:8px;font:italic clamp(15px,2.6vw,20px) Georgia,serif}
+.tutorial-skip{position:absolute;right:16px;bottom:calc(11vh + 12px);padding:8px 14px;min-height:40px;border:1px solid #f6e7bf88;border-radius:4px;background:#000a;color:#f6e7bf;font:600 14px system-ui,sans-serif;cursor:pointer}
+.tutorial-fade{position:fixed;inset:0;z-index:1150;background:#000;opacity:0;pointer-events:none}
+body.tutorial-cutscene>:not(canvas):not(.tutorial-letterbox):not(.tutorial-fade):not(.tutorial-dialogue){visibility:hidden}
+@media (max-width:600px){.tutorial-hud{top:calc(64px + env(safe-area-inset-top));font-size:13px}.tutorial-dialogue{font-size:15px;bottom:calc(10px + env(safe-area-inset-bottom))}}

@@ -15,7 +15,7 @@ export function npcAppearance(profile={},index=0){
  let equipped={},armed=false,staff=null;
  if(/guard|warden|sentinel|soldier|knight/i.test(role)){equipped=set('knight',profile.whiteArmor?1:pick([1,1,3],index),['Breastplate','Gauntlets','Greaves','Sabatons',index%2?'RoundPauldrons':'SpikedPauldrons',...(index%3===0?['Armet']:[])]);armed=true}
  else if(/mage|wizard|healer|alchemist|sage/i.test(role)){const v=pick([1,2,3],index);equipped=set('wizard',v,['RobeTop','Bracers','RobeBottom','Boots']);staff=['sapphireStaff','amethystStaff','emberStaff'][v-1]}
- else if(/banker|steward|noble|lord|lady|mayor|king|queen/i.test(role))equipped=set('noble',pick([1,2,3],index),['Coat','Sleeves','Trousers','Boots',...(index%2?['Gorget']:[])]);
+ else if(/banker|steward|noble|lord|lady|mayor|king|queen/i.test(role))equipped=set('noble',pick([1,2,3],index),['Coat','Sleeves','Trousers','Boots',...(index%2?['Gorget']:[]),...(/\bking\b|\bqueen\b/i.test(role)?['Crown','LionPauldron']:[])]);
  else if(/ranger|hunter|scout|archer|trapper/i.test(role))equipped=set('ranger',pick([1,2,3],index),['Tunic','Bracers','Trousers','Boots',...(index%2?['Hood']:['Pauldron'])]);
  else if(/smith|forge/i.test(role))equipped=set('knight',3,['Gambeson','Gauntlets']);
  // Owner overrides from the World console: body/face fields and an explicit outfit family.
