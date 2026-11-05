@@ -1,5 +1,6 @@
 import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261105-osrs67';
 import {gaitPlayback,createStrideWarp} from './gait-cadence.js?v=release-20261105-osrs67';
+import {createRunStyle} from './run-style.js?v=release-20261105-osrs67';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip, cross-fades, and plays gaits at a natural cadence
@@ -22,7 +23,7 @@ const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_S
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
  const actions=new Map(),weights=new Map();let current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
- const warp=createStrideWarp(rig);let stride=1;
+ const warp=createStrideWarp(rig),runStyle=createRunStyle(rig);let stride=1;
  const arms=createArmLayers(rig);let aim=0,shot=null,cast=null;
  const loops={};
  function clipFor(name){const [clip,loop]=name.split('@');if(!loop)return clips[clip];if(!clips[clip])return null;return loops[name]||(loops[name]=Object.assign(clips[clip].clone(),{name}))}
@@ -60,6 +61,8 @@ export function createHumanoidAnimator(rig){
   mixer.update(dt);
   // Shorter strides for the gait loop, weighted by how far it has faded in.
   if(STRIDE[base]&&moving){const w=weights.get(base)||0;if(w>0)warp(loop.getClip(),1-(1-stride)*w)}
+  // Calm the run: steadier hips, head and torso, smaller arm swing (run-style.js).
+  if(moving&&!airborne&&!oneShot)runStyle.update(loop.getClip(),base,weights.get(base)||0);
   // Blocking raises the shield across the chest on top of whatever clip plays.
   guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
   // Bow shot: raise and draw over 70% of the attack, release, then lower.
