@@ -1,7 +1,0 @@
-// Real, denoised CC0 field recordings; independent of music/settlement playback.
-export function createNatureAudio(ctx,bus,{fetcher=globalThis.fetch}={}){
- const buffers=new Map(),active=new Set();let disposed=false,plays=0,lastKind=null;
- async function preload(){if(!fetcher||!ctx.decodeAudioData)return;await Promise.all(['birds','crickets'].map(async kind=>{try{const response=await fetcher('/assets/audio/nature-'+kind+'.mp3');if(!response.ok)return;const buffer=await ctx.decodeAudioData(await response.arrayBuffer());if(!disposed)buffers.set(kind,buffer);}catch{/* Retrying the user gesture must still unlock the rest of the audio. */}}));}
- void preload();
- return {play(kind){if(disposed||ctx.state!=='running'||!buffers.has(kind))return false;const source=ctx.createBufferSource(),gain=ctx.createGain(),pan=ctx.createStereoPanner?.();source.buffer=buffers.get(kind);if(source.playbackRate)source.playbackRate.value=kind==='birds'?.94+Math.random()*.12:.98+Math.random()*.04;gain.gain.value=kind==='birds'?.35:.22;source.connect(gain);if(pan){pan.pan.value=Math.random()*1.2-.6;gain.connect(pan);pan.connect(bus)}else gain.connect(bus);active.add(source);source.onended=()=>{active.delete(source);source.disconnect();gain.disconnect();pan?.disconnect()};source.start();plays++;lastKind=kind;return true;},get ready(){return buffers.size},get plays(){return plays},get lastKind(){return lastKind},dispose(){disposed=true;for(const source of active)try{source.stop()}catch{}active.clear();buffers.clear();}};
-}

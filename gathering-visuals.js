@@ -1,6 +1,6 @@
 // Presentation follows the server's current jobs, including jobs already active
 // when another player enters the area. It never grants catches, logs, or XP.
-export function createGatheringVisuals(T,scene,{getActor,makeAxe,onChop=()=>{}}){
+export function createGatheringVisuals(T,scene,{getActor,makeAxe,onChop=()=>{},onCast=()=>{}}){
  const active=new Map();let jobs=[];
  const wood=new T.MeshStandardMaterial({color:0x8e653f,roughness:.9}),lineMat=new T.LineBasicMaterial({color:0xd6ddd2,transparent:true,opacity:.8});
  function tool(method){const g=new T.Group();g.userData.gatheringTool=true;if(method==='woodcut'){g.add(makeAxe());g.rotation.x=1.3;return g;}
@@ -13,6 +13,8 @@ export function createGatheringVisuals(T,scene,{getActor,makeAxe,onChop=()=>{}})
  function update(now){for(const job of jobs){const actor=getActor(job.player);if(!actor?.rig)continue;let a=active.get(job.player);if(a&&(a.method!==job.method||a.actor.rig!==actor.rig)){remove(job.player);a=null}if(!a){const hidden=[...actor.rig.rightHand.children,...actor.rig.leftHand.children].filter(o=>o.isGroup&&o.visible);for(const o of hidden)o.visible=false;const model=tool(job.method);actor.rig.rightHand.add(model);a={actor,tool:model,method:job.method,hidden};if(job.method==='rod'){const geo=new T.BufferGeometry().setFromPoints([new T.Vector3(),new T.Vector3()]);a.line=new T.Line(geo,lineMat);scene.add(a.line);a.bob=new T.Mesh(new T.SphereGeometry(.055,7,5),new T.MeshStandardMaterial({color:0xb34d3d}));scene.add(a.bob);}active.set(job.player,a);}
  const r=actor.rig,t=(now-Date.parse(job.startedAt))*.001,period=job.method==='woodcut'?3:job.method==='net'?4.5:job.method==='cage'?5:job.method==='harpoon'?5.4:4,u=((t%period)+period)%period/period,swing=Math.sin(u*Math.PI*2),cut=Math.pow(Math.max(0,Math.sin(u*Math.PI)),3);
  if(job.method==='woodcut'){const beat=Math.floor(t/period-.5);if(a.cutBeat!==undefined&&beat>a.cutBeat)onChop(actor.root);a.cutBeat=beat;}
+ // Fishing: the net/pot/harpoon/line meets the water 35% into each cast cycle.
+ else{const beat=Math.floor(t/period-.35);if(a.castBeat!==undefined&&beat>a.castBeat)onCast(actor.root,job);a.castBeat=beat;}
  // Woodcutting: the looping swing lands its impact (30% through the clip) on each chop beat.
  r.setActivity?.(job.method==='woodcut'?'woodcut':job.method==='net'?'net':'fish',job.method==='woodcut'?u-.5+.3:null);
  if(a.line){actor.root.updateMatrixWorld(true);const p=a.tool.userData.tip.getWorldPosition(new T.Vector3()),end=new T.Vector3(job.x,.10+Math.sin(t*2.5)*.015,job.z),v=a.line.geometry.attributes.position;v.setXYZ(0,p.x,p.y,p.z);v.setXYZ(1,end.x,end.y,end.z);v.needsUpdate=true;a.line.geometry.computeBoundingSphere();a.bob.position.copy(end);}
