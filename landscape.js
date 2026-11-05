@@ -2,6 +2,7 @@ import {approachSample} from './castle-approach.js?v=release-20261105-camera75';
 import {generatedWorld,seedNoise,biomeWeights,biomeColor} from './procedural-world.js?v=release-20261105-camera75';
 import {castle,inMoat,inCastle} from './castle-layout.js?v=release-20261105-camera75';
 import {landscapeSettlements,landscapeLakes,worldRivers,roadLines,distanceToRoad} from './geography.js?v=release-20261105-camera75';
+import {capital,capitalActive,wallDistance} from './capital-layout.js?v=release-20261105-camera75';
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
 export function noise(x,z){const hash=(a,b)=>{const n=Math.sin(a*127.1+b*311.7)*43758.5453;return n-Math.floor(n)};const ix=Math.floor(x),iz=Math.floor(z),u=smooth(0,1,x-ix),v=smooth(0,1,z-iz);return (hash(ix,iz)*(1-u)+hash(ix+1,iz)*u)*(1-v)+(hash(ix,iz+1)*(1-u)+hash(ix+1,iz+1)*u)*v}
@@ -28,7 +29,7 @@ export function createLandscape({segments=280,extent=840,approach=true}={}){
   bridges.push({...hit,yaw:Math.atan2(hit.dx,hit.dz),width:4.2,length:river.width/Math.max(.2,hit.cross)+7});
  }
  function bridgeAt(x,z){return bridges.find(b=>{const dx=x-b.x,dz=z-b.z,s=Math.sin(b.yaw),c=Math.cos(b.yaw);return Math.abs(dx*c-dz*s)<b.width/2&&Math.abs(dx*s+dz*c)<b.length/2})}
- const count=segments+1,heights=new Float32Array(count*count),step=extent/segments,buildingPlots=[];
+ const capitalOn=capitalActive(),count=segments+1,heights=new Float32Array(count*count),step=extent/segments,buildingPlots=[];
  function sculpt(x,z){
   // Broad ridges and mountain ranges instead of disconnected geometric cones.
   const peaks=[[-320,-300,54,110],[280,-330,65,120],[-350,290,39,100],[330,300,46,105]];
@@ -38,6 +39,8 @@ export function createLandscape({segments=280,extent=840,approach=true}={}){
   if(generatedWorld){const seed=generatedWorld.seed,w=biomeWeights(x,z,seed);h=(seedNoise(x/135,z/135,seed)*15+seedNoise(x/42,z/42,seed+17)*5)*(1+w.snow*1.8+w.dry*.7);h+=Math.pow(seedNoise(x/180+11,z/180-7,seed+33),3)*(35*w.snow+12*w.dry+12*w.castle);}
   h=Math.max(0,h);
   let clearance=1;for(const [sx,sz] of landscapeSettlements)clearance=Math.min(clearance,smooth(generatedWorld?42:31,generatedWorld?66:56,Math.hypot(x-sx,z-sz)));
+  // The walled capital stands on level ground out to just beyond its walls.
+  if(capitalOn&&Math.abs(x-capital.centre.x)<110&&Math.abs(z-capital.centre.z)<110)clearance=Math.min(clearance,smooth(8,30,wallDistance(x,z)));
   clearance=Math.min(clearance,smooth(4,13,distanceToRoad(x,z)));h*=clearance;
   const wet=waterAt(x,z);if(wet>0)h=-.9*Math.min(1,wet*4);else{
    // Water valleys meet the shore at water level, even near highland terrain.
