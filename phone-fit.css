@@ -123,8 +123,8 @@ body.fantasy-hud.phone-layout #inventory .slot{min-height:40px}
 body.phone-layout .tutorial-hud{left:calc(var(--phone-left,8px) + 186px)!important;right:calc(var(--phone-right,8px) + 138px)!important;width:auto!important;max-width:420px;margin:0 auto;transform:none!important;top:var(--phone-top,8px)!important;padding:5px 10px 6px!important;font-size:12px}
 body.phone-layout .tutorial-hud strong{font-size:13px;margin-top:1px}
 body.phone-layout .tutorial-hud-way{font-size:11px}
-/* While a tutorial line is up on a phone, the jump button and tabs step aside. */
-body.phone-layout:has(.tutorial-dialogue:not([hidden])) #touch-jump,body.phone-layout:has(.tutorial-dialogue:not([hidden])) #movement-pad{visibility:hidden!important}
+/* While a tutorial line is up on a phone, the jump button (which it would cover) steps aside. */
+body.phone-layout:has(.tutorial-dialogue:not([hidden])) #touch-jump{visibility:hidden!important}
 
 /* ---- Login on short landscape phones: the whole card fits without clipping the wordmark ---- */
 @media(max-height:500px) and (orientation:landscape){
@@ -140,7 +140,7 @@ body.phone-layout:has(.tutorial-dialogue:not([hidden])) #touch-jump,body.phone-l
  #auth-screen .auth-card input{min-height:42px!important;padding-top:6px!important;padding-bottom:6px!important}
  #auth-screen .login-card-foot{display:none}
 }
-body:not(.game-active) #auth-screen .login-tabs button,#auth-screen #auth-mode{min-height:44px}
+#auth-screen .login-tabs button,#auth-screen #auth-mode{min-height:44px!important}
 #auth-screen #login-sound-toggle{min-height:40px}
 #auth-screen .login-audio a{display:inline-block;padding:12px 4px}
 @media(pointer:coarse){#auth-screen .auth-card input{min-height:44px}#auth-screen #auth-password-toggle{min-width:44px;min-height:44px}}
@@ -148,3 +148,9 @@ body:not(.game-active) #auth-screen .login-tabs button,#auth-screen #auth-mode{m
 /* ---- Area loading panel respects insets and stays small on phones ---- */
 #area-loading{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 #area-loading button{min-height:44px}
+
+/* ---- Map widget buttons: 40px on every touch device (iPad included) ---- */
+html body.fantasy-hud.phone-layout #map-widget #map-toggle,html body.touch-controls.fantasy-hud #map-widget #map-toggle{width:40px!important;height:40px!important;min-height:40px!important}
+html body.touch-controls.fantasy-hud #map-controls>button{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important}
+html body.touch-controls.fantasy-hud #map-controls #run-toggle{width:auto!important;min-width:64px!important}
+body.touch-controls #settings-tab a{display:inline-block;padding:12px 0}

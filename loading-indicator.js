@@ -13,7 +13,8 @@ export const LOADING_DELAY_MS=300,LOADING_SAFETY_MS=20000;
 
 export function createLoadingIndicator({doc=globalThis.document,delay=LOADING_DELAY_MS,safety=LOADING_SAFETY_MS,now=()=>Date.now(),setTimer=(fn,ms)=>setTimeout(fn,ms),clearTimer=id=>clearTimeout(id)}={}){
  const jobs=new Map();let seq=0,showTimer=null,visible=false,chip=null,labelNode=null,boot=null;
- const latest=()=>{let pick=null;for(const job of jobs.values())if(!pick||job.priority>pick.priority||job.priority===pick.priority&&job.order>pick.order)pick=job;return pick};
+ // The label comes from the newest job already due; a job still inside its delay never steals the chip.
+ const latest=()=>{let pick=null;const t=now();for(const job of jobs.values()){const due=job.showAt<=t,pickDue=pick&&pick.showAt<=t;if(!pick||due&&!pickDue||due===pickDue&&(job.priority>pick.priority||job.priority===pick.priority&&job.order>pick.order))pick=job}return pick};
  function ensureChip(){
   if(chip||!doc?.body)return chip;
   chip=doc.createElement('div');chip.id='loading-chip';chip.setAttribute('role','status');chip.setAttribute('aria-live','polite');chip.hidden=true;
@@ -21,12 +22,15 @@ export function createLoadingIndicator({doc=globalThis.document,delay=LOADING_DE
   labelNode=chip.querySelector('.loading-chip-label');doc.body.append(chip);return chip;
  }
  function render(){
-  const job=latest();
-  if(!job){if(showTimer!==null){clearTimer(showTimer);showTimer=null}visible=false;if(chip){chip.hidden=true;chip.removeAttribute('data-kind')}doc?.body?.classList?.remove('loading-chip-visible');return}
-  if(ensureChip()){if(labelNode.textContent!==job.label)labelNode.textContent=job.label;chip.dataset.kind=job.kind||'work'}
-  const due=Math.min(...[...jobs.values()].map(j=>j.showAt));
-  if(due<=now()){if(showTimer!==null){clearTimer(showTimer);showTimer=null}visible=true;if(chip)chip.hidden=false;doc?.body?.classList?.add('loading-chip-visible')}
-  else if(showTimer===null)showTimer=setTimer(()=>{showTimer=null;render()},Math.max(0,due-now()));
+  if(showTimer!==null){clearTimer(showTimer);showTimer=null}
+  const job=latest(),t=now();
+  if(!job){visible=false;if(chip){chip.hidden=true;chip.removeAttribute('data-kind')}doc?.body?.classList?.remove('loading-chip-visible');return}
+  const dues=[...jobs.values()].map(j=>j.showAt),shown=dues.some(d=>d<=t),next=Math.min(...dues.filter(d=>d>t));
+  // Re-render when the next waiting job comes due (to show the chip, or to switch its label).
+  if(Number.isFinite(next))showTimer=setTimer(()=>{showTimer=null;render()},next-t);
+  visible=shown;
+  if(shown&&ensureChip()){if(labelNode.textContent!==job.label)labelNode.textContent=job.label;chip.dataset.kind=job.kind||'work'}
+  if(chip)chip.hidden=!shown;doc?.body?.classList?.[shown?'add':'remove']('loading-chip-visible');
  }
  function finish(id){const job=jobs.get(id);if(!job)return;clearTimer(job.safetyTimer);jobs.delete(id);render()}
  function begin(label='Loading…',{key=null,delay:wait=delay,timeout=safety,priority=0,kind}={}){

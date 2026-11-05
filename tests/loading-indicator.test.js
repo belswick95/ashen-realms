@@ -74,3 +74,10 @@ test('movement and cosmetic commands stay quiet; waited-on commands get a label'
  for(const c of ['move','stop','jump','run','steer','sync','celebrate'])assert.equal(commandLabel(c),null);
  assert.equal(commandLabel('bank'),'Banking…');assert.equal(commandLabel('trade_offer'),'Trading…');assert.equal(commandLabel('equip'),'Equipping…');assert.equal(commandLabel('stairs'),'Travelling…');assert.equal(commandLabel('skill_start'),'Working…');
 });
+
+test('a job still inside its delay does not replace the label of a job already shown',()=>{
+ const c=clock(),doc=fakeDoc(),l=createLoadingIndicator({doc,...c});
+ l.begin('Banking…');l.begin('Reconnecting…',{key:'slow',delay:4000});c.advance(400);
+ assert.equal(doc.chip().querySelector('.loading-chip-label').textContent,'Banking…');
+ c.advance(4000);assert.equal(doc.chip().querySelector('.loading-chip-label').textContent,'Reconnecting…');
+});
