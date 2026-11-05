@@ -91,3 +91,12 @@ export const ACTOR_KINDS=new Set(['creature','npc','player','merchant','groundDr
 export function actorsFirst(hits){const kind=h=>h.object?.userData?.kind;const actors=hits.filter(h=>ACTOR_KINDS.has(kind(h)));return actors.length&&!ACTOR_KINDS.has(kind(hits[0]))?[...actors,...hits.filter(h=>!ACTOR_KINDS.has(kind(h)))]:hits}
 // Every right-click menu on the world offers "Walk here", placed before Examine/Cancel.
 export function withWalkHere(choices,walk){if(!walk||choices.some(c=>c[0]==='Walk here'))return choices;const at=choices.findIndex(c=>typeof c[0]==='string'&&/^(Examine|Cancel)/.test(c[0]));const i=at<0?choices.length:at;return [...choices.slice(0,i),walk,...choices.slice(i)]}
+// Following another player (right-click → Follow). Returns where to walk next: null while already
+// close enough, 'lost' once the leader is gone or too far away to follow.
+export function followGoal(me,leader,{near=2.6,gap=1.6,far=60}={}){
+ if(!me||!leader||!Number.isFinite(leader.x)||!Number.isFinite(leader.z))return 'lost';
+ const dx=leader.x-me.x,dz=leader.z-me.z,d=Math.hypot(dx,dz);
+ if(!Number.isFinite(d)||d>far)return 'lost';
+ if(d<=near)return null;
+ return {x:leader.x-dx/d*gap,z:leader.z-dz/d*gap};
+}
