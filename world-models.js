@@ -1,18 +1,18 @@
-import {undergroundObjectModel} from './underground-models.js?v=release-20261106-pond116';
-import {exploreObjectModel} from './explore-models.js?v=release-20261106-pond116';
-import {campObject} from './camp-models.js?v=release-20261106-pond116';
-import {professionStationModel} from './profession-models.js?v=release-20261106-pond116';
-import {oreResources} from './profession-data.js?v=release-20261106-pond116';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261106-pond116';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261106-pond116';
-import {creatureMaterial} from './creature-material.js?v=release-20261106-pond116';
-import {dragonModel} from './monster-dragon.js?v=release-20261106-pond116';
-import {castleObject} from './castle-models.js?v=release-20261106-pond116';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261106-pond116';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261106-pond116';
-import {townProp,dressFountain} from './town-props.js?v=release-20261106-pond116';
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261106-pond116';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261106-pond116';
+import {undergroundObjectModel} from './underground-models.js?v=release-20261106-walk117';
+import {exploreObjectModel} from './explore-models.js?v=release-20261106-walk117';
+import {campObject} from './camp-models.js?v=release-20261106-walk117';
+import {professionStationModel} from './profession-models.js?v=release-20261106-walk117';
+import {oreResources} from './profession-data.js?v=release-20261106-walk117';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261106-walk117';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261106-walk117';
+import {creatureMaterial} from './creature-material.js?v=release-20261106-walk117';
+import {dragonModel} from './monster-dragon.js?v=release-20261106-walk117';
+import {castleObject} from './castle-models.js?v=release-20261106-walk117';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261106-walk117';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261106-walk117';
+import {townProp,dressFountain} from './town-props.js?v=release-20261106-walk117';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261106-walk117';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261106-walk117';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);

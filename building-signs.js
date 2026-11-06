@@ -7,7 +7,7 @@
 // shader. Owner overrides come from the server (db/building-signs.sql) and are keyed by entity id.
 
 // Signs swing harder in the wind (weather.js shared uniform).
-import {weatherUniforms} from './weather.js?v=release-20261106-pond116';
+import {weatherUniforms} from './weather.js?v=release-20261106-walk117';
 
 // ---------------------------------------------------------------- pure rules (tests/building-signs.test.js)
 export const SIGN_ICONS=['anvil','loaf','potion','sword','shield','bow','staff','coin','mug','bed','fish','needle','pickaxe','bell','crown','hammer'];

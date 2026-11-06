@@ -5,7 +5,7 @@
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 const {PGlite}=await import(process.env.PGLITE||'@electric-sql/pglite');
-const V='?v=release-20261106-pond116';
+const V='?v=release-20261106-walk117';
 const {dungeons,rasterize,passageObjects,createUndergroundIndex,spawnPlan,TILE}=await import('../../underground-data.js'+V);
 const {shortcuts,shortcutEnds}=await import('../../agility-data.js'+V);
 const {fullFishTable}=await import('../../fish-tiers.js'+V);
