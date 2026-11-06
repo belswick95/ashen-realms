@@ -5,7 +5,7 @@
 // Mirrors eldervale_private.fish_table / food healing in db/osrs-skills-and-food.sql and
 // db/osrs-skill-parity.sql. Burning: `burn` is the chance at the cooking level, falling to 0 at
 // `stopBurn` (the OSRS stop-burn level); burnt food gives no XP.
-import {skillingChance} from './combat-level.js?v=release-20261106-amb87';
+import {skillingChance} from './combat-level.js?v=release-20261106-gear88';
 export const EAT_DELAY=1.8,EAT_ANIMATION=1.1;
 export const foodLadder=[
  {id:'sundae',name:'Sundae',healPct:25,buy:12,model:'sundae',color:0xf1d7c4,source:'shop'},

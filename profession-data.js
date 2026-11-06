@@ -1,5 +1,5 @@
-import {foodRecipes} from './food.js?v=release-20261106-amb87';
-import {registerGearProfessions} from './gear-recipes.js?v=release-20261106-amb87';
+import {foodRecipes} from './food.js?v=release-20261106-gear88';
+import {registerGearProfessions} from './gear-recipes.js?v=release-20261106-gear88';
 // Original Eldervale recipes inspired by OSRS resource-processing mechanics.
 // Levels and XP follow the OSRS experience table (combat-level.js). Per-action XP and level requirements match the
 // closest Old School RuneScape action (fractional XP such as 17.5 or 6.25 is kept exactly; see db/osrs-skill-parity.sql).
