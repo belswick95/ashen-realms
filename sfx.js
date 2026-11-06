@@ -11,7 +11,6 @@ export const SAMPLE_SETS={
  cricket:['cricket'],birdSong:['../nature-birds'],hoof:['hoof-1','hoof-2','hoof-3','hoof-4','hoof-5','hoof-6'],
  thunderRoll:['thunder-roll'],thunderCrack:['thunder-crack']
 };
-export const BED_FILES={river:'amb-river',birds:'amb-birds',wind:'amb-wind',fire:'amb-fire',crowd:'amb-crowd',lap:'amb-lap',crickets:'cricket',rainLight:'amb-rain-light',rainHeavy:'amb-rain-heavy'};
 
 // Distance model for positional sounds: full level inside `near`, an inverse
 // roll-off to silence at `far`, a gentle low-pass (air absorption) and a pan

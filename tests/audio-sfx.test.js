@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {spatialMix,onsetOffset,SAMPLE_SETS,BED_FILES} from '../sfx.js';
-import {ambienceMix,ambienceRates} from '../ambience.js';
+import {spatialMix,onsetOffset,SAMPLE_SETS} from '../sfx.js';
+import {ambienceMix,AMBIENCE_BEDS} from '../ambience.js';
+import crypto from 'node:crypto';
 import {composeJingle,skillFamily} from '../jingles.js';
 import {createLevelTracker,levelUpText,jingleFor} from '../level-up.js';
 import {DEFAULT_VOLUMES} from '../music.js';
@@ -19,23 +20,34 @@ test('sample onsets skip encoder padding so impacts land on the frame',()=>{
  const d=new Float32Array(1000);d[400]=.9;d[401]=-.5;assert.ok(Math.abs(onsetOffset(d,1000)-.398)<1e-9);assert.equal(onsetOffset(new Float32Array(10),1000),0);
 });
 
-test('every recorded effect and ambient bed ships as a small mono file',()=>{
- const files=new Set([...Object.values(SAMPLE_SETS).flat(),...Object.values(BED_FILES)]);let total=0;
+test('every recorded effect ships as a small mono file',()=>{
+ const files=new Set(Object.values(SAMPLE_SETS).flat());let total=0;
  for(const f of files){const url=new URL('../assets/audio/sfx/'+f+'.mp3',import.meta.url),size=fs.statSync(url).size;total+=size;assert.ok(size>500&&size<260000,f+' '+size)}
  // Weather beds and thunder (about 0.37 MB) load only once it rains or storms.
  assert.ok(total<1.45e6,'total '+total);
  const credits=fs.readFileSync(new URL('../credits.html',import.meta.url),'utf8');for(const who of ['thimras','kheetor','ezduzziteh','rubberduck','starninjas','Kresiek The Furry','WuxiaScrub'])assert.ok(credits.includes(who),who);
 });
 
-test('area sounds crossfade with the day, water, towns and the Winterwatch and Emberspire biomes',()=>{
- const day=ambienceMix({day:1,forest:.8}),night=ambienceMix({day:0,forest:.8});
- assert.ok(day.birds>.3&&night.birds===0);assert.ok(night.crickets>.3&&day.crickets===0);
- assert.equal(ambienceMix({water:0}).river,0);assert.ok(ambienceMix({water:1}).river>ambienceMix({water:.4}).river);
- assert.ok(ambienceMix({town:1}).crowd>.2&&ambienceMix({town:0}).crowd===0);
- const snow=ambienceMix({snow:1,day:1});assert.ok(snow.wind>ambienceMix({day:1}).wind*2&&snow.birds<day.birds/3);
- assert.ok(ambienceMix({ember:1}).fire>.4);assert.ok(ambienceMix({indoors:1,day:1}).birds<ambienceMix({day:1}).birds);
- const r=ambienceRates({day:0,forest:1,water:1});assert.ok(r.owl>0&&!r.frog&&r.bird===0);
- const t=ambienceRates({day:1,town:1,smithy:1,chapel:1});assert.ok(t.hammer>0&&t.bell>0&&t.cart>0&&t.dog>0);
+test('area sounds: day birds and night crickets crossfade, water by rivers, wind in the snow, quiet indoors',()=>{
+ const day=ambienceMix({day:1,forest:.8}),night=ambienceMix({day:0,forest:.8}),dusk=ambienceMix({day:.5,forest:.8});
+ assert.ok(day.birds>.3&&night.birds===0);assert.ok(night.crickets>.3&&day.crickets===0);assert.ok(day.wind>.05,'a light breeze under the birds');
+ assert.ok(dusk.birds>.1&&dusk.crickets>.1,'dawn and dusk blend the two');
+ assert.equal(ambienceMix({water:0}).water,0);assert.ok(ambienceMix({water:1}).water>ambienceMix({water:.4}).water);
+ const snow=ambienceMix({snow:1,day:1});assert.ok(snow.wind>ambienceMix({day:1}).wind*2&&snow.birds<day.birds/3&&snow.wind>snow.birds);
+ const inside=ambienceMix({indoors:1,day:1,water:1});assert.ok(inside.birds<day.birds/2&&inside.water<ambienceMix({day:1,water:1}).water/2);
+ assert.deepEqual(Object.keys(ambienceMix()).sort(),['birds','crickets','water','wind']);
+});
+
+test('ambience plays only the new field-recording beds: no old files, no one-shots, no synthesis',()=>{
+ assert.deepEqual(Object.keys(AMBIENCE_BEDS).sort(),['birds','crickets','water','wind']);assert.ok(AMBIENCE_BEDS.birds&&AMBIENCE_BEDS.crickets,'day and night beds');
+ const dir=new URL('../assets/audio/ambience/',import.meta.url),credits=fs.readFileSync(new URL('CREDITS.md',dir),'utf8');
+ const hash=u=>crypto.createHash('sha256').update(fs.readFileSync(u)).digest('hex');
+ const old=new Set([...fs.readdirSync(new URL('../assets/audio/sfx/',import.meta.url)).map(f=>hash(new URL('../assets/audio/sfx/'+f,import.meta.url))),
+  ...fs.readdirSync(new URL('../assets/audio/',import.meta.url)).filter(f=>f.endsWith('.mp3')).map(f=>hash(new URL('../assets/audio/'+f,import.meta.url)))]);
+ for(const f of Object.values(AMBIENCE_BEDS)){const u=new URL(f+'.mp3',dir),size=fs.statSync(u).size;assert.ok(size>100000&&size<1.05e6,f+' '+size);assert.ok(!old.has(hash(u)),f+' reuses an old recording');assert.ok(credits.includes(f+'.mp3'),f+' credited')}
+ const src=fs.readFileSync(new URL('../ambience.js',import.meta.url),'utf8');
+ for(const name of ['amb-birds','amb-river','amb-wind','amb-fire','amb-crowd','amb-lap','amb-rain','cricket.mp3',"'cricket'",'nature-birds','nature-crickets','birdSong','dog','anvil','crackle','sheep','frog','/sfx/'])assert.ok(!src.includes(name),'old asset referenced: '+name);
+ assert.ok(!/createOscillator|OscillatorNode|createPeriodicWave|createNoise|\.proc\(|\.bird\(|sfx\.sample\('(?!thunder)/.test(src),'no synthesized or one-shot calls');
 });
 
 test('default mix keeps music well under the area sounds (RuneScape style)',()=>{

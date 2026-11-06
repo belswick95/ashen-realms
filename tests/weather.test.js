@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import {weatherHash,weatherSettings,slotWeather,publicWeather,regionWeather,weatherRegionWeights,weatherRegionAt,weatherLook,weatherAt,blendLooks,lightningAt,thunderFor,weatherLabel,weatherForecast,
  WEATHER_KINDS,REGION_IDS,DEFAULT_WEIGHTS,LOOK_FIELDS} from '../weather.js';
 import {weatherFog,soak,flashLevel,weatherTier} from '../weather-effects.js';
-import {ambienceMix,ambienceFilters,ambienceRates} from '../ambience.js';
+import {ambienceMix,ambienceFilters} from '../ambience.js';
 import {weightShares,readWeights,scheduleForm,forceForm,regionNow} from '../admin-weather.js';
 import {makeWorldPlan} from '../procedural-world.js';
 
@@ -96,13 +96,12 @@ test('effects: fog closes in, wetness soaks and dries slowly, tiers trade partic
  assert.ok(low.rain<high.rain/3&&!low.wetShading&&!low.ripples&&!low.materials&&high.wetShading&&high.ripples>0);assert.ok(classic.rain<high.rain&&!classic.materials);
 });
 
-test('weather sounds: rain beds crossfade light to heavy, muffle indoors and fall silent underground',()=>{
- const light=ambienceMix({day:1,weather:{rain:.4}}),heavy=ambienceMix({day:1,weather:{rain:1}}),dry=ambienceMix({day:1});
- assert.ok(light.rainLight>.15&&light.rainHeavy<.02);assert.ok(heavy.rainHeavy>.5&&heavy.rainHeavy>heavy.rainLight);assert.equal(dry.rainLight+dry.rainHeavy,0);
- assert.ok(heavy.birds<dry.birds/4,'birds shelter from the rain');assert.ok(ambienceMix({day:1,weather:{wind:1}}).wind>dry.wind*2,'storm wind');
- const inside=ambienceMix({day:1,indoors:1,weather:{rain:1}});assert.ok(inside.rainHeavy<heavy.rainHeavy&&inside.rainHeavy>0);assert.ok(ambienceFilters({indoors:1,weather:{rain:1}}).rainHeavy<1000,'muffled by the roof');
- const under=ambienceMix({day:1,weather:{rain:1,wind:1,underground:1}});assert.equal(under.rainLight+under.rainHeavy,0);
- assert.ok(ambienceFilters({weather:{snow:1}}).wind<4000,'snow hushes the wind');assert.ok(ambienceRates({day:1,forest:1,weather:{rain:1}}).bird<ambienceRates({day:1,forest:1}).bird/3);
+test('weather sounds: rain hushes the wildlife, storms swell the wind, snowfall muffles it, underground is silent',()=>{
+ const heavy=ambienceMix({day:1,weather:{rain:1}}),dry=ambienceMix({day:1}),night=ambienceMix({day:0,weather:{rain:1}});
+ assert.ok(heavy.birds<dry.birds/4,'birds shelter from the rain');assert.ok(night.crickets<ambienceMix({day:0}).crickets/4);assert.ok(ambienceMix({day:1,weather:{wind:1}}).wind>dry.wind*2,'storm wind');
+ assert.ok(ambienceFilters({indoors:1}).birds<1000,'muffled indoors');
+ const under=ambienceMix({day:1,water:1,weather:{rain:1,wind:1,underground:1}});assert.equal(under.birds+under.crickets+under.wind+under.water,0);
+ assert.ok(ambienceFilters({weather:{snow:1}}).wind<4000,'snow hushes the wind');
 });
 
 test('console helpers validate the weather forms',()=>{

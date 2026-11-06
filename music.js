@@ -50,8 +50,7 @@ export function startMusic({scene='world'}={}){
  function environment(){
   if(!ctx||!started||document.hidden||mode==='login'||!ambience)return;let env=null;try{env=window.eldervaleAmbientState?.()||null}catch{}
   if(!env){let pos=null;try{pos=window.eldervaleGetPlayerPosition?.()}catch{}if(!pos)return;env={position:pos,listener:pos,day:window.eldervaleWorldNight===true?0:1,water:waterProximity(pos)}}
-  // Ambient beds and one-shots are switched off (owner request, 06 Nov) until replacement recordings land; storm thunder still plays.
-  void env;sfx.update();
+  if(enabled&&environmentEnabled)ambience.update(env);sfx.update();
  }
  function tick(){if(disposed)return;const overlay=document.querySelector('#auth-screen');if(mode==='login'&&overlay?.hidden&&window.eldervaleGetPlayerPosition)mode='world';if(mode==='login'){zone=null;transition(loginMusic)}else{let pos;try{pos=window.eldervaleGetPlayerPosition?.()}catch{}zone=musicRegion(pos,zone);transition(zone)}environment()}
  function setScene(next){mode=next;zone=null;tick();notify()}
