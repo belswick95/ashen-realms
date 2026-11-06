@@ -15,7 +15,10 @@ export const POI_KINDS={
  inn:{label:'Inn',color:'#b8672e',ink:'#fbe9cf'},
  altar:{label:'Altar',color:'#6b58b8',ink:'#ffffff'},
  fishing:{label:'Fishing spot',color:'#2b7fbd',ink:'#ffffff'},
- quest:{label:'Quest',color:'#2457c4',ink:'#ffe27a'}
+ quest:{label:'Quest',color:'#2457c4',ink:'#ffe27a'},
+ // Exploration (explore.js): places the player has discovered, and hidden places / new regions found.
+ discovered:{label:'Discovered place',color:'#8a6f2f',ink:'#ffe7a3'},
+ hidden:{label:'Hidden place',color:'#3c2f57',ink:'#f2d36b'}
 };
 // Building types and world-entity templates → POI kind (null: no icon).
 const KIND_OF={bank:'bank',banker:'bank',market:'shop',store:'shop',general_store:'shop',generalstore:'shop',shop:'shop',merchant:'shop',armory:'shop',forge:'smith',anvil:'smith',smith:'smith',inn:'inn',tavern:'inn',innkeeper:'inn',chapel:'altar',altar:'altar',shrine:'altar',fishing_spot:'fishing',fishing:'fishing',dock:'fishing',quest:'quest'};
@@ -93,6 +96,7 @@ export function drawPoiIcon(ctx,kind,x,y,r=9){
  else if(kind==='inn'){ctx.fillRect(-3.8,-3.5,6,8);ctx.beginPath();ctx.arc(2.4,.5,2.3,-Math.PI/2,Math.PI/2);ctx.stroke();ctx.fillStyle=k.color;ctx.fillRect(-2.6,-2.2,1.2,5.5)}
  else if(kind==='altar'){ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(0,-5.5);ctx.lineTo(0,5.5);ctx.moveTo(-3.8,-2);ctx.lineTo(3.8,-2);ctx.stroke()}
  else if(kind==='fishing'){ctx.beginPath();ctx.ellipse(-.8,0,4.2,2.6,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(2.6,0);ctx.lineTo(5.6,-3);ctx.lineTo(5.6,3);ctx.closePath();ctx.fill();ctx.fillStyle=k.color;ctx.beginPath();ctx.arc(-3,-.6,.8,0,Math.PI*2);ctx.fill()}
+ else if(kind==='discovered'||kind==='hidden'){ctx.beginPath();ctx.moveTo(0,-5.5);ctx.lineTo(1.6,-1.6);ctx.lineTo(5.5,0);ctx.lineTo(1.6,1.6);ctx.lineTo(0,5.5);ctx.lineTo(-1.6,1.6);ctx.lineTo(-5.5,0);ctx.lineTo(-1.6,-1.6);ctx.closePath();ctx.fill()}
  else if(kind==='quest'){ctx.font='bold 12px '+SERIF;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('!',0,.5)}
  ctx.restore();
 }

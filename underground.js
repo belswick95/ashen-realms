@@ -9,12 +9,12 @@
 //   inside (prop lights go through the shared 4-light pool: every PointLight here becomes a
 //   light-proxy anchor, the scene light count never changes), draws the underground minimap,
 //   picks cave music and ambience, and plays agility crossings.
-import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261106-boss107';
-import {AGILITY_TEMPLATES,AGILITY_VERBS,failChance} from './agility-data.js?v=release-20261106-boss107';
-import {sharedMaterial,sharedGeometry} from './shared-geometry.js?v=release-20261106-boss107';
-import {lightMarker} from './underground-models.js?v=release-20261106-boss107';
-import {loading} from './loading-indicator.js?v=release-20261106-boss107';
-import {nextFrame} from './frame-work.js?v=release-20261106-boss107';
+import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261106-r3x109';
+import {AGILITY_TEMPLATES,AGILITY_VERBS,failChance} from './agility-data.js?v=release-20261106-r3x109';
+import {sharedMaterial,sharedGeometry} from './shared-geometry.js?v=release-20261106-r3x109';
+import {lightMarker} from './underground-models.js?v=release-20261106-r3x109';
+import {loading} from './loading-indicator.js?v=release-20261106-r3x109';
+import {nextFrame} from './frame-work.js?v=release-20261106-r3x109';
 
 const state={areas:dungeons.slice(),index:createUndergroundIndex(dungeons),listeners:new Set()};
 export function undergroundAreas(){return state.areas}
@@ -35,15 +35,18 @@ export function installUndergroundTerrain(landscape){
  landscape.undergroundInstalled=true;return landscape;
 }
 // Cave music per theme (existing tracks) and a damped ambience.
-const MUSIC={earth:{id:'ashen-ruins',title:'Rites'},crypt:{id:'northwatch',title:'Night Vigil'},fire:{id:'eastmarch',title:'Crusade'}};
-export function undergroundMusic(position){const at=position&&undergroundAt(position.x,position.z);if(!at)return null;const m=MUSIC[at.area.theme]||MUSIC.earth;const o=levelOrigin(at.area,at.level);return {...m,name:at.area.name,x:o.x,z:o.z,radius:400,artist:'Kevin MacLeod'}}
+const MUSIC={outdoor:{id:'eastmarch',title:'Crusade'},earth:{id:'ashen-ruins',title:'Rites'},crypt:{id:'northwatch',title:'Night Vigil'},fire:{id:'eastmarch',title:'Crusade'}};
+export function undergroundMusic(position){const at=position&&undergroundAt(position.x,position.z);if(!at)return null;const m=(at.area.outdoor?MUSIC.outdoor:MUSIC[at.area.theme])||MUSIC.earth;const o=levelOrigin(at.area,at.level);return {...m,name:at.area.name,x:o.x,z:o.z,radius:400,artist:'Kevin MacLeod'}}
 globalThis.eldervaleUndergroundMusic=undergroundMusic;
 
+// Outdoor explore areas (explore-data.js `outdoor`): sky stays, the floor is grass/sand, the edge is
+// sea (isle), trees (grove) or crags (plateau) instead of cave rock.
+export function areaTheme(area){const th=THEMES[area?.theme]||THEMES.earth,o=area?.outdoor;if(!o)return th;return {...th,floor:o.ground??th.floor,floorAlt:o.groundAlt??th.floorAlt,wall:o.wall??th.wall,wallAlt:o.wallAlt??th.wallAlt,outdoor:o.style||'plateau'}}
 // Deterministic per-tile noise for colours and rock sizes.
 const hash=(i,j,s=0)=>{let n=(Math.imul(i,374761393)^Math.imul(j,668265263)^Math.imul(s,2147483647))>>>0;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295};
 // Geometry of one level: floor quads (vertex colours) and rock / decor instances.
 export function levelMeshData(grid,theme){
- const th=THEMES[theme]||THEMES.earth,{i0,j0,w,h,mask}=grid,walk=(i,j)=>i>=i0&&j>=j0&&i<i0+w&&j<j0+h&&mask[(j-j0)*w+(i-i0)]===1;
+ const th=typeof theme==='object'&&theme?theme:THEMES[theme]||THEMES.earth,{i0,j0,w,h,mask}=grid,walk=(i,j)=>i>=i0&&j>=j0&&i<i0+w&&j<j0+h&&mask[(j-j0)*w+(i-i0)]===1;
  const pos=[],col=[],idx=[],rocks=[],decor=[];const c0=[(th.floor>>16&255)/255,(th.floor>>8&255)/255,(th.floor&255)/255],c1=[(th.floorAlt>>16&255)/255,(th.floorAlt>>8&255)/255,(th.floorAlt&255)/255];
  for(let j=j0;j<j0+h;j++)for(let i=i0;i<i0+w;i++){
   if(walk(i,j)){const x=i*TILE,z=j*TILE,t=hash(i,j),v=pos.length/3;
@@ -54,14 +57,15 @@ export function levelMeshData(grid,theme){
    continue}
   let near=0;for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++)if((di||dj)&&walk(i+di,j+dj))near=Math.max(near,di&&dj?1:2);
   let second=false;if(!near)for(let dj=-2;dj<=2&&!second;dj++)for(let di=-2;di<=2;di++)if(walk(i+di,j+dj)){second=true;break}
+  if(th.outdoor==='isle')continue;
   if(near||second&&hash(i,j,4)<.55){const t=hash(i,j,5);rocks.push({x:i*TILE+(hash(i,j,1)-.5)*.5,z:j*TILE+(hash(i,j,2)-.5)*.5,w:(near?1:1.3)+t*.4,h:(near?1.5:2.4)+hash(i,j,6)*1.4,r:t*6.28,k:hash(i,j,12)})}
  }
  return {positions:pos,colors:col,indices:idx,rocks,decor};
 }
 // Lightweight 2D image of a level for the minimap (1 px per tile).
-function levelCanvas(grid,theme){if(typeof document==='undefined')return null;const th=THEMES[theme]||THEMES.earth,c=document.createElement('canvas');c.width=grid.w;c.height=grid.h;const g=c.getContext('2d');if(!g)return null;const img=g.createImageData(grid.w,grid.h);
+function levelCanvas(grid,theme){if(typeof document==='undefined')return null;const th=typeof theme==='object'&&theme?theme:THEMES[theme]||THEMES.earth,c=document.createElement('canvas');c.width=grid.w;c.height=grid.h;const g=c.getContext('2d');if(!g)return null;const img=g.createImageData(grid.w,grid.h);
  const f=[th.floorAlt>>16&255,th.floorAlt>>8&255,th.floorAlt&255].map(v=>Math.min(255,v*1.7+30));
- for(let k=0;k<grid.w*grid.h;k++){const o=k*4;if(grid.mask[k]){img.data[o]=f[0];img.data[o+1]=f[1];img.data[o+2]=f[2];img.data[o+3]=255}else{img.data[o]=18;img.data[o+1]=15;img.data[o+2]=13;img.data[o+3]=255}}
+ for(let k=0;k<grid.w*grid.h;k++){const o=k*4;if(grid.mask[k]){img.data[o]=f[0];img.data[o+1]=f[1];img.data[o+2]=f[2];img.data[o+3]=255}else if(th.outdoor==='isle'){img.data[o]=47;img.data[o+1]=111;img.data[o+2]=143;img.data[o+3]=255}else{img.data[o]=18;img.data[o+1]=15;img.data[o+2]=13;img.data[o+3]=255}}
  g.putImageData(img,0,0);return c}
 
 export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camera,lightProxies,say=()=>{},command=(c,p)=>globalThis.eldervaleRealm?.command(c,p),yieldFrame=nextFrame,now=()=>performance.now()}){
@@ -72,18 +76,19 @@ export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camer
  const rockGeo=()=>sharedGeometry(T,'dodecahedron',.5,0);
  const decorGeo=theme=>theme==='crypt'?sharedGeometry(T,'box',.35,.12,.12):theme==='fire'?sharedGeometry(T,'cylinder',.12,.35,1.1,5):sharedGeometry(T,'cone',.28,1.3,5);
  async function buildArea(area,{onProgress=()=>{}}={}){
-  const group=new T.Group();group.name='underground:'+area.id;group.userData.underground=area.id;const th=THEMES[area.theme]||THEMES.earth,levels=[];let done=0;
-  for(const lv of area.levels){const grid=state.index.grids.find(g=>g.area.id===area.id&&g.level===lv.level);if(!grid)continue;const data=levelMeshData(grid,area.theme);
+  const group=new T.Group();group.name='underground:'+area.id;group.userData.underground=area.id;const th=areaTheme(area),levels=[];let done=0;
+  for(const lv of area.levels){const grid=state.index.grids.find(g=>g.area.id===area.id&&g.level===lv.level);if(!grid)continue;const data=levelMeshData(grid,th);
    const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(data.positions,3));geo.setAttribute('color',new T.Float32BufferAttribute(data.colors,3));geo.setIndex(data.indices);geo.computeVertexNormals();geo.computeBoundingSphere();
    const floor=new T.Mesh(geo,floorMat());floor.receiveShadow=true;floor.userData.terrainFixed=true;group.add(floor);
-   const rocks=new T.InstancedMesh(rockGeo(),rockMat(),data.rocks.length),m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),s=new T.Vector3(),p=new T.Vector3(),c=new T.Color(),wall=new T.Color(th.wall),alt=new T.Color(th.wallAlt);
-   data.rocks.forEach((r,k)=>{q.setFromEuler(e.set(0,r.r,r.k*.3));m.compose(p.set(r.x,r.h*.38,r.z),q,s.set(r.w*1.6,r.h,r.w*1.6));rocks.setMatrixAt(k,m);rocks.setColorAt(k,c.copy(wall).lerp(alt,r.k))});
+   if(th.outdoor==='isle'){const sea=new T.Mesh(sharedGeometry(T,'plane',1,1),sharedMaterial(T,'ug-sea',()=>new T.MeshStandardMaterial({color:0x2f6f8f,roughness:.25,metalness:.1})));sea.rotation.x=-Math.PI/2;sea.scale.set(grid.w*TILE+260,grid.h*TILE+260,1);sea.position.set((grid.i0+grid.w/2)*TILE,-.18,(grid.j0+grid.h/2)*TILE);sea.receiveShadow=true;group.add(sea)}
+   const rocks=new T.InstancedMesh(th.outdoor==='grove'?sharedGeometry(T,'cone',.55,1,7):rockGeo(),th.outdoor==='grove'?sharedMaterial(T,'ug-thorn',()=>new T.MeshStandardMaterial({roughness:.95,metalness:0})):rockMat(),data.rocks.length),m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),s=new T.Vector3(),p=new T.Vector3(),c=new T.Color(),wall=new T.Color(th.wall),alt=new T.Color(th.wallAlt);
+   data.rocks.forEach((r,k)=>{q.setFromEuler(e.set(0,r.r,r.k*.3));if(th.outdoor==='grove')m.compose(p.set(r.x,r.h*.9,r.z),q.identity(),s.set(r.w*1.7,r.h*1.9,r.w*1.7));else m.compose(p.set(r.x,r.h*.38,r.z),q,s.set(r.w*1.6,r.h,r.w*1.6));rocks.setMatrixAt(k,m);rocks.setColorAt(k,c.copy(wall).lerp(alt,r.k))});
    rocks.castShadow=false;rocks.receiveShadow=true;rocks.computeBoundingSphere();group.add(rocks);
    if(data.decor.length){const d=new T.InstancedMesh(decorGeo(area.theme),sharedMaterial(T,'ug-decor-'+area.theme,()=>new T.MeshStandardMaterial({color:area.theme==='crypt'?0xd8d0bd:area.theme==='fire'?0x2b201c:area.theme==='ice'?0xcfe6f2:0x6b5e50,roughness:.9,flatShading:true})),data.decor.length);
     data.decor.forEach((v,k)=>{q.setFromEuler(e.set(area.theme==='crypt'?Math.PI/2:0,v.r,0));m.compose(p.set(v.x,area.theme==='crypt'?.06:.55*v.s,v.z),q,s.set(v.s,v.s,v.s));d.setMatrixAt(k,m)});d.computeBoundingSphere();group.add(d)}
    for(const l of area.lights||[]){if(l.level!==lv.level)continue;const def=LIGHT_KINDS[l.kind]||LIGHT_KINDS.torch,o=levelOrigin(area,lv.level),marker=lightMarker(T,l.kind,l.color??def.color);marker.position.set(o.x+l.x,0,o.z+l.z);group.add(marker);
     const light=new T.PointLight(l.color??def.color,l.intensity??def.intensity,l.distance??def.distance,2);light.position.set(o.x+l.x,l.kind==='lava'?1.2:2.4,o.z+l.z);group.add(light)}
-   levels.push({level:lv.level,grid,canvas:levelCanvas(grid,area.theme)});
+   levels.push({level:lv.level,grid,canvas:levelCanvas(grid,th)});
    onProgress(++done,area.levels.length);await yieldFrame();
   }
   scene.add(group);lightProxies?.scan(now(),true);
@@ -94,14 +99,14 @@ export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camer
   if(entry){entry.ready.then(b=>{if(b)b.group.removeFromParent()});built.delete(id)}
   entry={version:state.index,ready:buildArea(area,opts).catch(e=>{console.warn('underground build',e);built.delete(id);return null})};built.set(id,entry);return entry.ready}
  state.listeners.add(()=>{for(const id of [...built.keys()])prepare(id)});
- function applyLighting(area){const th=THEMES[area.theme]||THEMES.earth;
+ function applyLighting(area){if(area.outdoor){restoreLighting();return}const th=THEMES[area.theme]||THEMES.earth;
   if(!saved)saved={bg:scene.background?.clone?.(),fog:scene.fog?{color:scene.fog.color.clone(),near:scene.fog.near,far:scene.fog.far}:null,sky:skyLight?{i:skyLight.intensity,c:skyLight.color.clone(),g:skyLight.groundColor.clone()}:null,sun:sun?.intensity};
   scene.background?.setHex?.(th.fog);if(scene.fog){scene.fog.color.setHex(th.fog);scene.fog.near=th.fogNear;scene.fog.far=th.fogFar}
   if(skyLight){skyLight.intensity=th.ambientIntensity;skyLight.color.setHex(th.ambient);skyLight.groundColor.setHex(0x1a1410)}if(sun)sun.intensity=th.sun;
  }
  function restoreLighting(){if(!saved)return;if(saved.bg&&scene.background?.copy)scene.background.copy(saved.bg);if(saved.fog&&scene.fog){scene.fog.color.copy(saved.fog.color);scene.fog.near=saved.fog.near;scene.fog.far=saved.fog.far}if(saved.sky&&skyLight){skyLight.intensity=saved.sky.i;skyLight.color.copy(saved.sky.c);skyLight.groundColor.copy(saved.sky.g)}if(sun&&Number.isFinite(saved.sun))sun.intensity=saved.sun;saved=null}
  function wrapAmbience(){if(ambientWrapped||typeof window==='undefined'||!window.eldervaleAmbientState)return;ambientWrapped=true;const base=window.eldervaleAmbientState;
-  window.eldervaleAmbientState=()=>{const s=base();if(!current)return s;return {...s,day:0,water:0,town:0,farm:0,forest:0,snow:0,chapel:0,smithy:0,indoors:1,ember:current.area.theme==='fire'?1:0,sources:[]}}}
+  window.eldervaleAmbientState=()=>{const s=base();if(!current||current.area.outdoor)return s;return {...s,day:0,water:0,town:0,farm:0,forest:0,snow:0,chapel:0,smithy:0,indoors:1,ember:current.area.theme==='fire'?1:0,sources:[]}}}
  // Every passage near the player: prebuild its target area before the click.
  function prefetch(position){for(const area of state.areas){if(built.has(area.id))continue;for(const e of area.entrances||[])if(Math.hypot(e.x-position.x,e.z-position.z)<40){prepare(area.id);break}}}
  function setTween(target,ev){const [fx,fz]=ev.from,[tx,tz]=ev.to,dur=Math.max(.6,(ev.ticks||4)*.6);return {root:target,fx,fz,tx,tz,ok:ev.ok!==false,kind:ev.kind,start:now(),dur}}
@@ -122,7 +127,7 @@ export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camer
    if(at&&(!current||current.area.id!==at.area.id||current.level!==at.level)){const area=at.area;current={area,level:at.level};window.eldervaleUndergroundArea={id:area.id,name:area.name,level:at.level};
     if(!built.has(area.id)){const ticket=loading.begin('Lighting the way into '+area.name+'…',{key:'underground-build',delay:0});prepare(area.id).finally(()=>ticket.end())}}
    else if(!at&&current){current=null;window.eldervaleUndergroundArea=null;restoreLighting()}
-   if(current)applyLighting(current.area);if(skyMesh)skyMesh.visible=!current;
+   if(current)applyLighting(current.area);if(skyMesh)skyMesh.visible=!current||!!current.area.outdoor;
    if(now()>lastScan){lastScan=now()+1000;prefetch(p);
     for(const [id,entry] of built)entry.ready.then(b=>{if(b)b.group.visible=Math.hypot(b.area.origin.x-p.x,b.area.origin.z-p.z)<1400})}
    if(tween){if(stepTween(tween,player))tween=null}
@@ -131,8 +136,8 @@ export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camer
   // Minimap: the underground level replaces the terrain atlas.
   drawMap(ctx,w,h,extent,position){const at=position&&undergroundAt(position.x,position.z);if(!at)return false;const entry=built.get(at.area.id);
    const ppu=w/extent,toX=x=>w/2+(x-position.x)*ppu,toY=z=>h/2+(z-position.z)*ppu,g=at.grid;
-   ctx.clearRect(0,0,w,h);ctx.fillStyle='#120f0d';ctx.fillRect(0,0,w,h);
-   const canvas=entry?._levels?.get(at.level)||levelCanvas(g,at.area.theme);if(entry){entry._levels??=new Map();entry._levels.set(at.level,canvas)}
+   ctx.clearRect(0,0,w,h);ctx.fillStyle=at.area.outdoor?.style==='isle'?'#2f6f8f':at.area.outdoor?'#26301f':'#120f0d';ctx.fillRect(0,0,w,h);
+   const canvas=entry?._levels?.get(at.level)||levelCanvas(g,areaTheme(at.area));if(entry){entry._levels??=new Map();entry._levels.set(at.level,canvas)}
    if(canvas){ctx.imageSmoothingEnabled=false;ctx.drawImage(canvas,toX((g.i0-.5)*TILE),toY((g.j0-.5)*TILE),g.w*TILE*ppu,g.h*TILE*ppu)}
    for(const l of at.area.lights||[]){if(l.level!==at.level)continue;const o=levelOrigin(at.area,at.level);ctx.fillStyle=l.kind==='lava'?'#ff6a2a':l.kind==='fungus'?'#6fe3c8':l.kind==='crystal'?'#9ab8ff':'#ffb35a';ctx.beginPath();ctx.arc(toX(o.x+l.x),toY(o.z+l.z),Math.max(1.5,ppu*.7),0,Math.PI*2);ctx.fill()}
    for(const p of passageObjects(at.area)){if(!undergroundAt(p.x,p.z)||undergroundAt(p.x,p.z).level!==at.level)continue;ctx.fillStyle='#f2d36b';ctx.fillRect(toX(p.x)-2.5,toY(p.z)-2.5,5,5)}

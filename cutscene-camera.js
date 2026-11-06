@@ -65,7 +65,7 @@ function* candidates(kind,A,B,o){
   for(const side of sides)for(const spread of [.55,.9,1.3])for(const da of [0,10,-10,20,-20,32])for(const lift of [0,.6,1.2]){
    const right=turn({x:-dir.z,y:0,z:dir.x},da);
    const look={x:B.head.x+(A.head.x-B.head.x)*.18,y:B.head.y-.2+(A.head.y-B.head.y)*.18,z:B.head.z+(A.head.z-B.head.z)*.18};
-   for(let back=1.1;back<=6;back+=.3)yield {eye:{x:A.head.x-dir.x*back+right.x*side*(spread+back*.1),y:A.head.y+(o.height??.35)+lift,z:A.head.z-dir.z*back+right.z*side*(spread+back*.1)},look,dist:back};
+   for(let back=1.6;back<=6.5;back+=.3)yield {eye:{x:A.head.x-dir.x*back+right.x*side*(spread+back*.1),y:A.head.y+(o.height??.35)+lift,z:A.head.z-dir.z*back+right.z*side*(spread+back*.1)},look,dist:back};
   }
  }
 }
@@ -93,7 +93,7 @@ export function frameShot(shot,{a,b,fov=55,aspect=16/9,rooms=[],clear=()=>true})
    // The near shoulder sits at the frame's edge, never across the face being spoken to.
    // and its body never hides the other subject's face or chest.
    const s=project(eye,c.look,A.head,fov,aspect),t=project(eye,c.look,B.head,fov,aspect);
-   fits=s.z>.25&&Math.abs(s.x)<1.2&&Math.abs(s.x)>.4&&Math.abs(s.x-t.x)>.55&&bodyGap(eye,B.head,A)>.65&&bodyGap(eye,B.chest,A)>.65&&clear(eye,A.chest);
+   fits=s.z>.25&&Math.abs(s.x)<1.02&&Math.abs(s.x)>.4&&Math.abs(s.x-t.x)>.55&&bodyGap(eye,B.head,A)>.65&&bodyGap(eye,B.chest,A)>.65&&clear(eye,A.chest);
   }
   if(fits)return {eye,look:c.look,ok:true,room:!!room};
  }

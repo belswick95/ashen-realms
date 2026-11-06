@@ -1,8 +1,15 @@
-import {approachSample,approachPoint} from './castle-approach.js?v=release-20261106-boss107';
-import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261106-boss107';
-import {roadLines,segmentDistance} from './geography.js?v=release-20261106-boss107';
-import {creatureMaterial} from './creature-material.js?v=release-20261106-boss107';
-import {runFrameWork} from './frame-work.js?v=release-20261106-boss107';
+<<<<<<< HEAD
+import {approachSample,approachPoint} from './castle-approach.js?v=release-20261106-r3x109';
+import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261106-r3x109';
+import {roadLines,segmentDistance} from './geography.js?v=release-20261106-r3x109';
+import {creatureMaterial} from './creature-material.js?v=release-20261106-r3x109';
+import {runFrameWork} from './frame-work.js?v=release-20261106-r3x109';
+=======
+import {approachSample,approachPoint} from './castle-approach.js?v=release-20261106-r3x109';
+import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261106-r3x109';
+import {creatureMaterial} from './creature-material.js?v=release-20261106-r3x109';
+import {runFrameWork} from './frame-work.js?v=release-20261106-r3x109';
+>>>>>>> f8cfa8b2c3316197786a03fc18cdf90fef866010
 // Small underfoot dressing is non-solid and identically seeded on every client.
 // Large, editable rocks and planted trees remain authoritative world entities.
 export const DRESSING_KINDS=['stone','shrub','fern','sapling','log'];

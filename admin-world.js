@@ -3,10 +3,10 @@
 // ug_* commands through ctx.invoke -> world_admin, owner-checked and audited on the server
 // (db/underground-3-console.sql). Dungeon edits are validated here first (validateDungeon) and
 // again on the server, then re-synced: walls, passages and spawn groups update for everyone.
-import {THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,validateDungeon,rasterize,passageObjects,toWorld,dungeons as defaultDungeons} from './underground-data.js?v=release-20261106-boss107';
-import {AGILITY_TEMPLATES,failChance} from './agility-data.js?v=release-20261106-boss107';
-import {SPOT_TYPES,SPOT_MOVE,extraLakes,extraRivers} from './water-data.js?v=release-20261106-boss107';
-import {fishingOptions} from './fish-tiers.js?v=release-20261106-boss107';
+import {THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,validateDungeon,rasterize,passageObjects,toWorld,dungeons as defaultDungeons} from './underground-data.js?v=release-20261106-r3x109';
+import {AGILITY_TEMPLATES,failChance} from './agility-data.js?v=release-20261106-r3x109';
+import {SPOT_TYPES,SPOT_MOVE,extraLakes,extraRivers} from './water-data.js?v=release-20261106-r3x109';
+import {fishingOptions} from './fish-tiers.js?v=release-20261106-r3x109';
 
 // Names of the generated water ids (scripts/build-water-seed.mjs numbering).
 export function waterName(id){if(id>=9001&&id<9010)return extraLakes[id-9001]?.name||'New lake';if(id>=9010&&id<9050){const k=Math.floor((id-9010)/10);return (extraRivers[k]?.name||'New river')+' · segment '+((id-9010)%10+1)}if(id>=9050)return 'Bridge (new water)';return 'Water body '+id}
@@ -34,7 +34,7 @@ export function createWorldTabs(ctx){
    for(const s of def.spawns||[])if(s.level===lv.level){const r=lv.rooms.find(q=>q.id===s.room);if(!r)continue;const w=toWorld(def,lv.level,r.x,r.z),[a,b]=px(w.x,w.z);x.fillStyle='#e05a4a';x.font='9px sans-serif';x.fillText(s.roster+'×'+s.count,a-12,b)}}
   const fig=el('figure');fig.append(c,el('figcaption','Level '+lv.level+' · '+(lv.name||'')+' · '+g.walkable+' tiles'));wrap.append(fig)}return wrap}
  function areaEditor(root,row){const def=structuredClone(row?.data||{...structuredClone(defaultDungeons[0]),id:'new_area',name:'New cave',origin:{x:3600,z:1200},entrances:[{...defaultDungeons[0].entrances[0],id:'mouth',x:Math.round(myPos().x),z:Math.round(myPos().z)}],spawns:[],reserved:[]});
-  const c=card((row?'Edit ':'New ')+(def.name||def.id),'Rooms are ellipses {id,x,z,rx,rz}; tunnels {width,points:[[x,z],…]}; entrances use overworld x/z, links/spawns/lights use the area’s local x/z. Origin x 1100–4200, z 1100–3200, 600 apart.');
+  const c=card((row?'Edit ':'New ')+(def.name||def.id),'Rooms are ellipses {id,x,z,rx,rz}; tunnels {width,points:[[x,z],…]}; entrances use overworld x/z, links/spawns/lights use the area’s local x/z. Origin x 1100–4200, z 1100–3200 (exploration areas: z 4250, see Exploration), 600 apart.');
   const text=field(c,'Definition (JSON)','def',JSON.stringify(def,null,1),'textarea');text.rows=22;text.classList.add('console-code');
   const enabled=field(c,'Enabled (entrances open, monsters spawned)','enabled',row?row.enabled:true,'checkbox');
   const out=el('div');c.append(out);

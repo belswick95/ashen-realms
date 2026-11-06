@@ -46,7 +46,8 @@ test('afterArrival: background work starts on time without a cutscene, and only 
 test('first 3D frame is the cutscene shot: no gameplay frame behind the prologue, no reflection pass, no minimap atlas',()=>{
  globalThis.eldervaleCutscene={active:true};assert.equal(deferReflections(),true,'any cutscene: no reflection pass');globalThis.eldervaleCutscene={active:false};assert.equal(deferReflections(),false,'a returning player\'s quest scene leaves reflections alone afterwards');
  globalThis.eldervalePrologue={active:true};assert.equal(holdRender(),true,'prologue up, scene not started: nothing drawn');
- globalThis.eldervaleCutscene={active:true,to:null,follow:null};assert.equal(holdRender(),true,'scene started, first shot not placed yet');
+ globalThis.eldervaleCutscene={active:true,boot:true,to:null,follow:null};assert.equal(holdRender(),true,'scene started, first shot not placed yet');
+ globalThis.eldervaleCutscene={active:true,boot:false,to:null};assert.equal(holdRender(),false,'a quest scene without shots still draws');globalThis.eldervaleCutscene={active:true,boot:true,to:null,follow:null};
  globalThis.eldervaleCutscene.to={eye:{}};assert.equal(holdRender(),false,'first shot placed: draw it');
  assert.equal(deferReflections(),true,'no water reflection render during the scene');
  globalThis.eldervalePrologue={active:false};globalThis.eldervaleCutscene={active:false};

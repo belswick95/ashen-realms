@@ -33,7 +33,7 @@ export function afterArrival(delay=0,{settle=4000,poll=500,busy=cutsceneBusy,tim
 // No 3D frame is drawn while the prologue still covers the screen and the arrival scene has not
 // placed its first shot: the first frames then compile only what the scene's camera sees, not the
 // gameplay view behind the black card.
-export const holdRender=()=>{const c=scene();if(c?.active)return !c.to&&!c.follow;return cutsceneBootFocus()};
+export const holdRender=()=>{const c=scene();if(c?.active)return !!c.boot&&!c.to&&!c.follow;return cutsceneBootFocus()};
 // Water reflections are a second render of the whole scene with its own shader variants: from a
 // trainee's first load the water keeps moving but reflects nothing until the shader warm-up (which
 // compiles those variants in the background after the scene, game.js) has finished.

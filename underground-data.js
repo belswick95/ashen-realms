@@ -27,9 +27,10 @@ export const THEMES={
  ice:{label:'Ice cavern',floor:0x8fa6b4,floorAlt:0xa4bccb,wall:0x7d97a8,wallAlt:0x667f90,fog:0x0b1820,fogNear:10,fogFar:60,ambient:0xa8c8e8,ambientIntensity:.42,sun:.1,music:'cave',decor:'stalagmite'}
 };
 export const LIGHT_KINDS={torch:{color:0xffa04a,intensity:5,distance:15},brazier:{color:0xff8a3a,intensity:7,distance:18},fungus:{color:0x6fe3c8,intensity:3,distance:11},crystal:{color:0x9ab8ff,intensity:3.5,distance:12},lava:{color:0xff5a1a,intensity:6.5,distance:17}};
-// Overworld entrances and the matching way out, ladders and stairs between levels.
-export const PASSAGE_TEMPLATES={cave_mouth:'Cave mouth',crypt_door:'Crypt door',mine_shaft:'Mine shaft',trapdoor:'Trapdoor',cave_exit:'Way out',ladder_down:'Ladder down',ladder_up:'Ladder up',stairs_down:'Stairs down',stairs_up:'Stairs up'};
-export const PASSAGE_VERBS={cave_mouth:'Enter',crypt_door:'Enter',mine_shaft:'Climb down',trapdoor:'Climb down',cave_exit:'Leave',ladder_down:'Climb down',ladder_up:'Climb up',stairs_down:'Walk down',stairs_up:'Walk up'};
+// Overworld entrances and the matching way out, ladders and stairs between levels (plus the
+// exploration entrances of explore-data.js: hidden places and regions).
+export const PASSAGE_TEMPLATES={cave_mouth:'Cave mouth',crypt_door:'Crypt door',mine_shaft:'Mine shaft',trapdoor:'Trapdoor',cave_exit:'Way out',ladder_down:'Ladder down',ladder_up:'Ladder up',stairs_down:'Stairs down',stairs_up:'Stairs up',waterfall_curtain:'Waterfall',thorn_thicket:'Thorn thicket',sea_cave:'Sea cave',shrine_door:'Sealed shrine door',ferry_boat:'Rowing boat',cliff_path:'Cliff path'};
+export const PASSAGE_VERBS={cave_mouth:'Enter',crypt_door:'Enter',mine_shaft:'Climb down',trapdoor:'Climb down',cave_exit:'Leave',ladder_down:'Climb down',ladder_up:'Climb up',stairs_down:'Walk down',stairs_up:'Walk up',waterfall_curtain:'Step behind',thorn_thicket:'Squeeze into',sea_cave:'Wade into',shrine_door:'Push open',ferry_boat:'Board',cliff_path:'Climb'};
 
 const room=(id,x,z,rx,rz)=>({id,x,z,rx,rz}),tunnel=(width,...points)=>({width,points});
 export const dungeons=[
@@ -137,7 +138,7 @@ export function validateDungeon(d,{others=[],roster=null}={}){
  if(!idOk(d.id))errors.push('id: lower-case letters, digits and _');
  if(!d.name||String(d.name).length>60)errors.push('name: 1–60 characters');
  if(!THEMES[d.theme])errors.push('theme: one of '+Object.keys(THEMES).join(', '));
- if(!d.origin||!num(d.origin.x)||!num(d.origin.z)||d.origin.x<UNDERGROUND_MIN+100||d.origin.z<UNDERGROUND_MIN+100||d.origin.x>4200||d.origin.z>3200)errors.push('origin: x 1100–4200, z 1100–3200');
+ if(!d.origin||!num(d.origin.x)||!num(d.origin.z)||d.origin.x<UNDERGROUND_MIN+100||d.origin.z<UNDERGROUND_MIN+100||d.origin.x>4200||d.origin.z>4300)errors.push('origin: x 1100–4200, z 1100–4300');
  for(const o of others)if(o.id!==d.id&&o.origin&&d.origin&&Math.abs(o.origin.x-d.origin.x)<600&&Math.abs(o.origin.z-d.origin.z)<600)errors.push('origin: closer than 600 to '+o.id);
  if(!Array.isArray(d.levels)||!d.levels.length||d.levels.length>4)errors.push('levels: 1–4');
  const levels=new Set();
@@ -148,7 +149,7 @@ export function validateDungeon(d,{others=[],roster=null}={}){
   if((lv.tunnels||[]).length>40)errors.push('level '+lv.level+': at most 40 tunnels')}
  const inside=(level,x,z)=>{const lv=d.levels?.find(l=>l.level===level);return !!lv&&walkableLocal(lv,x,z)};
  for(const e of d.entrances||[]){if(!idOk(e.id)||!PASSAGE_TEMPLATES[e.kind]||![e.x,e.z].every(num)||Math.abs(e.x)>420||Math.abs(e.z)>420)errors.push('entrance '+(e.id||'?')+': id, kind and overworld x/z within ±420');if(!e.to||!inside(e.to.level,e.to.x,e.to.z))errors.push('entrance '+(e.id||'?')+': arrival point must be inside a room or tunnel');}
- if(!(d.entrances||[]).length)errors.push('entrances: at least one');
+ if(!(d.entrances||[]).length&&!d.explore)errors.push('entrances: at least one');
  for(const l of d.links||[]){if(!idOk(l.id)||!['ladder','stairs'].includes(l.kind))errors.push('link '+(l.id||'?')+': id and kind ladder|stairs');if(!inside(l.level,l.x,l.z)||!l.to||!inside(l.to.level,l.to.x,l.to.z)||l.to.level===l.level)errors.push('link '+(l.id||'?')+': both ends inside, on different levels')}
  for(const s of d.spawns||[]){if(!idOk(s.id)||!Number.isInteger(s.count)||s.count<1||s.count>12)errors.push('spawn '+(s.id||'?')+': id and 1–12 monsters');if(!d.levels?.find(l=>l.level===s.level)?.rooms.find(r=>r.id===s.room))errors.push('spawn '+(s.id||'?')+': unknown room');if(roster&&!roster.has(s.roster))errors.push('spawn '+(s.id||'?')+': unknown roster monster '+s.roster)}
  for(const l of d.lights||[])if(!LIGHT_KINDS[l.kind]||!d.levels?.find(v=>v.level===l.level)||![l.x,l.z].every(num))errors.push('light: kind, level, x, z');
