@@ -92,7 +92,8 @@ test('classic look converts lit materials to pooled smooth Lambert, simplifies p
  assert.ok(a.material.isMeshLambertMaterial&&!a.material.flatShading,'smooth (Gouraud-style) shading');assert.ok(!ground.material.flatShading,'smooth terrain');
  assert.equal(rock.geometry,sculpt,'sculpted geometry is not rebuilt');assert.equal(log.geometry.type,'CylinderGeometry');assert.equal(log.geometry.parameters.radialSegments,12,'transformed geometry is not rebuilt upright');
  assert.ok(gem.material.flatShading&&rock.material.flatShading,'rocks and gems are faceted');
- assert.ok(wall.material.isMeshLambertMaterial&&wall.material.map===tex&&wall.material.customProgramCacheKey()==='classic-graded-texture','tiling textures stay, graded in the shader');assert.equal(a.material,b.material,'near-identical colours share one classic material');
+ assert.ok(wall.material.isMeshLambertMaterial&&wall.material.map===tex&&wall.material.customProgramCacheKey()==='classic-graded-texture','tiling textures stay, graded in the shader');
+ const merged=new T.Mesh(new T.BoxGeometry(),a.material);look.convert(merged);assert.equal(merged.material,a.material,'a cell batch built from classic materials is not converted twice');assert.equal(a.material,b.material,'near-identical colours share one classic material');
  assert.equal(a.castShadow,false);assert.equal(c.material,glow,'unlit materials are kept');assert.equal(a.geometry,b.geometry);assert.equal(a.geometry.parameters.widthSegments,8,'low-poly sphere');
  assert.equal(d.material,glow);assert.equal(d.geometry.parameters.widthSegments,8,'unlit meshes are simplified too');
  assert.ok(ground.material.vertexColors&&ground.geometry.attributes.color.count===25);assert.equal(hidden.layers.mask>>>0,2**31,'grass hides while classic');

@@ -1503,7 +1503,8 @@ const cellBatchRoot=new T.Group();cellBatchRoot.name='cell-batches';scene.add(ce
 // Buildings join too, minus everything that changes at run time: LOD levels,
 // the roof (hidden from inside), furnishings, doors, upper storeys and any
 // mesh gameplay tags (click targets, walk surfaces, bank stands...).
-const ownState=o=>{for(const k in o.userData)if(k!=='staticBatch'&&k!=='cellBatched')return true;return false};
+// The classic look's own bookkeeping (classicOrig, classicMaterial...) is not gameplay state.
+const ownState=o=>{for(const k in o.userData)if(k!=='staticBatch'&&k!=='cellBatched'&&!k.startsWith('classic'))return true;return false};
 const cellBatcher=createCellBatcher(T,cellBatchRoot,{skip:(o,root)=>o===root.userData.leftGate||o===root.userData.rightGate||o.isLOD||o.isPoints||root.userData.batchSkip?.has(o)||o.isMesh&&ownState(o)});let nextCellFlush=0;
 classicLook.configure({hide:()=>[...meadow.meshes,...meadow.flowers]});classicReady=true;if(classicEnabled(clientSettings,window.eldervaleGameConfig))applyGraphics();
 // Blob shadows under every drawn character (classic look only); one scratch record, no per-frame allocation.
