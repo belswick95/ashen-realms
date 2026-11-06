@@ -151,7 +151,7 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
  // options.scene: a scene object (quest cutscenes); options.record: {command,payload} that records it.
  async function playCutscene(id,options={}){const prologue=options.prologue||null;
   const sceneData=options.scene||cutscenes[id];if(!validCutscene(sceneData)||cutscene.active)return;
-  cutscene.active=true;cutscene.skip=false;cutscene.to=null;cutscene.from=null;cutscene.cam=null;cutscene.guard=null;cutscene.shown=false;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
+  cutscene.active=true;cutscene.boot=!!prologue;cutscene.skip=false;cutscene.to=null;cutscene.from=null;cutscene.cam=null;cutscene.guard=null;cutscene.shown=false;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
   window.addEventListener('keydown',blockKeys,true);fader.style.transition='none';fader.style.opacity='1';
   performance.mark?.('eldervale-cutscene-start');
   // The DOM prologue (tutorial-prologue.js) already showed the title card while the world loaded:
