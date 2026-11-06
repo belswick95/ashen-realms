@@ -25,12 +25,23 @@ export function combatLevel(skills={}){const l=k=>skillLevel(skills[k]);
 export function migrateLegacyXp(xp,{hitpoints=false}={}){const v=Math.max(0,Math.floor(Number(xp)||0)),old=Math.min(MAX_LEVEL,1+Math.floor(Math.sqrt(v/50)));let out;
  if(old>=MAX_LEVEL)out=XP_TABLE[MAX_LEVEL]+Math.max(0,v-480200);else{const lo=50*(old-1)**2,hi=50*old**2;out=XP_TABLE[old]+Math.floor((v-lo)*(XP_TABLE[old+1]-XP_TABLE[old])/(hi-lo))}
  out=Math.min(MAX_XP,out);return hitpoints?Math.max(XP_TABLE[HITPOINTS_START],out):out}
-// Combat XP per hit, OSRS style. Melee: 4 XP per damage to the trained skill
-// (Stab = accurate → Attack, Slash = aggressive → Strength, Lunge = controlled →
-// 1⅓ each to Attack, Strength and Defence); ranged 4 per damage; magic 2 per damage
-// plus the spell's base XP. Hitpoints gains 1⅓ per damage dealt and 1 per damage taken.
-export function combatXp({damage=0,style='slash',ranged=false,magic=false,baseSpellXp=6}={}){const d=Math.max(0,Math.floor(damage)),out={};const add=(k,n)=>{if(n>0)out[k]=(out[k]||0)+n};
- if(magic){add('magicXP',2*d+baseSpellXp)}else if(ranged)add('rangedXP',4*d);else if(style==='stab')add('attackXP',4*d);else if(style==='lunge'){const each=Math.round(4*d/3);add('attackXP',each);add('strengthXP',each);add('defenceXP',each)}else add('strengthXP',4*d);
- add('hitpointsXP',Math.round(4*d/3));return out}
-export const damageTakenHitpointsXp=damage=>Math.max(0,Math.floor(damage));
+// Combat XP per hit, exactly as OSRS: only damage you deal earns XP (being hit gives none).
+// Melee: 4 XP per damage to the trained skill (Stab = accurate → Attack, Slash = aggressive →
+// Strength, Lunge = controlled → 1.33 each to Attack, Strength and Defence); ranged 4 per damage;
+// magic 2 per damage plus the spell's base XP (Wind Strike 5.5), even on a splash. Hitpoints gains
+// 1.33 per damage dealt. Mirrors eldervale_private.combat_xp in db/osrs-skill-parity.sql.
+export const SPELL_BASE_XP=5.5,SHARED_XP_PER_DAMAGE=1.33;
+const xp2=n=>Math.round(n*100)/100;
+export function combatXp({damage=0,style='slash',ranged=false,magic=false,baseSpellXp=SPELL_BASE_XP}={}){const d=Math.max(0,Math.floor(damage)),out={},share=xp2(SHARED_XP_PER_DAMAGE*d);const add=(k,n)=>{if(n>0)out[k]=xp2((out[k]||0)+n)};
+ if(magic){add('magicXP',2*d+baseSpellXp)}else if(ranged)add('rangedXP',4*d);else if(style==='stab')add('attackXP',4*d);else if(style==='lunge'){add('attackXP',share);add('strengthXP',share);add('defenceXP',share)}else add('strengthXP',4*d);
+ add('hitpointsXP',share);return out}
+// OSRS skilling success for one attempt: low/high are chances out of 256 at levels 1 and 99,
+// interpolated linearly, capped at certainty. Mirrors eldervale_private.skilling_chance.
+export function skillingChance(low,high,level){const l=Math.max(1,Math.min(MAX_LEVEL,Math.floor(Number(level)||1)));return Math.min(1,(1+Math.floor(Number(low)*(99-l)/98+Number(high)*(l-1)/98+.5))/256)}
+// Cooking burn chance: the recipe's burnChance at its required level, falling linearly to 0 at the
+// OSRS stop-burn level (recipes without one stop burning 35 levels above the requirement).
+// Mirrors eldervale_private.burn_chance.
+export function burnChance(recipe={},level=1){const base=Number(recipe.burnChance)||0;if(base<=0)return 0;const req=Number(recipe.level)||1,stop=Number(recipe.stopBurn)||req+35,l=Math.floor(Number(level)||1);if(l>=stop)return 0;return Math.max(0,Math.min(1,base*(stop-l)/Math.max(1,stop-req)))}
+// XP values can carry fractions (17.5, 6.25); show them the OSRS way, with at most two decimals.
+export const formatXp=xp=>{const n=Math.round((Number(xp)||0)*100)/100;return n.toLocaleString('en-US',{maximumFractionDigits:2})};
 export const crossedSwords='<svg class="combat-swords" viewBox="0 0 32 32" aria-hidden="true"><g fill="currentColor"><path d="m5 2 6 3 14 17-3 3L5 11Z"/><path d="m27 2-6 3L7 22l3 3L27 11Z"/><path d="m3 19 2-2 10 10-2 2Zm14 8 10-10 2 2-10 10ZM2 29l6-6 2 2-6 6Zm20-4 2-2 6 6-2 2Z"/></g></svg>';

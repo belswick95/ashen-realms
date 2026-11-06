@@ -34,5 +34,7 @@ Boundaries: smithing creates the existing equippable iron equipment; high-tier
 bars also create components. Crafted shortbows/arrows, signets and runes are
 trade/recipe goods, not newly implemented ranged or magic combat systems. Custom
 item models are selected from the safe existing representative model palette.
+OSRS parity (db/osrs-skill-parity.sql): per-action XP, level requirements, gathering success
+chances, stop-burn levels and combat XP for damage dealt follow OSRS; see that file's header.
 Non-combat training is based on OSRS loops; OSRS's complete world, Sailing, minigames,
 quests and every armor tier are not cloned.
