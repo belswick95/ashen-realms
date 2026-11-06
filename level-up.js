@@ -1,6 +1,6 @@
-import {skillLevel,hitpointsLevel,combatLevel,crossedSwords} from './combat-level.js?v=release-20261106-cut106';
-import {professionSkills} from './profession-data.js?v=release-20261106-cut106';
-import {skillFamily} from './jingles.js?v=release-20261106-cut106';
+import {skillLevel,hitpointsLevel,combatLevel,crossedSwords} from './combat-level.js?v=release-20261106-boss107';
+import {professionSkills} from './profession-data.js?v=release-20261106-boss107';
+import {skillFamily} from './jingles.js?v=release-20261106-boss107';
 const combatIcons={attack:'⚔',strength:'💪',defence:'🛡',hitpoints:'❤️',ranged:'🏹',magic:'✨',prayer:'🙏'};
 export const levelSkills=[...['attack','strength','defence','hitpoints','ranged','magic','prayer'].map(id=>({name:id==='hitpoints'?'Hitpoints':id[0].toUpperCase()+id.slice(1),key:id+'XP',icon:combatIcons[id]})),...Object.values(professionSkills)];
 // Notices in RuneScape order: every skill that advanced, then the combat level.
@@ -17,7 +17,7 @@ export const jingleFor=notice=>notice.type==='combat'?'combatLevel':skillFamily(
 // the world dismisses it and shows the next notice (each skill, then combat).
 export function createLevelUpPanel({play=()=>{},onShow=()=>{},canShow=()=>true}={}){
  const tracker=createLevelTracker(),queue=[];let showing=null,account=null,shownAt=0;
- const css=document.createElement('link');css.rel='stylesheet';css.href='./level-up.css?v=release-20261106-cut106';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='./level-up.css?v=release-20261106-boss107';document.head.append(css);
  const panel=document.createElement('section');panel.id='level-up-panel';panel.hidden=true;panel.setAttribute('role','status');panel.setAttribute('aria-live','polite');
  panel.innerHTML='<div class="level-up-icon" aria-hidden="true"></div><div class="level-up-words"><strong class="level-up-title"></strong><p class="level-up-body"></p><button type="button" class="level-up-continue">Click here to continue</button></div>';document.body.append(panel);
  function next(){if(showing||!queue.length||!canShow()||document.hidden)return;showing=queue.shift();const combat=showing.type==='combat',text=levelUpText(showing);

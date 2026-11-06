@@ -148,3 +148,28 @@ Max 4 agents at a time so a usage limit pauses cleanly.
 | **R3-K Exploration** | Hidden areas, lore objects, treasure-hunt clue chains, new regions to reach. |
 
 Final: full live QA pass on a fresh account + performance check on iPad/phone sizes.
+
+## Queued after the owner's usage reset — Terrain & forests (approved 06 Nov)
+Owner dislikes the steep, unrealistic banks on both sides of every road. Cause: `landscape.js` sculpt()
+multiplies height by `smooth(4,13,distanceToRoad)`, so roads are carved to height 0 through hills (trenches).
+1. Roads follow the land: road height = smoothed (low-pass) local terrain, soft shoulders, no trenches.
+2. Flatter lowlands: roughly halve the rolling noise in the central/lowland areas; keep corner mountain ranges.
+3. Forest variety: birch, pine/spruce, willow near water, dead trees in dry areas, snowy pines north;
+   bushes, ferns, fallen logs; denser forest bands along roads.
+4. Re-check building plots, bridges, fishing spots, cave entrances, tile collision grid (rebuild), camera clearance.
+Before/after screenshots at the same spots before deploy.
+
+## Queued after reset — Phone world map (owner report 06 Nov)
+On phones the full world map doesn't fit the screen and can't be zoomed out. Fix: fit-to-screen on open
+(whole world visible), pinch-zoom + drag-pan, zoom buttons, double-tap to zoom, safe-area aware, portrait
+and landscape; verify at iPhone SE / iPhone 15 / iPad sizes with Playwright screenshots.
+
+## STATUS at usage-limit pause (06 Nov, resets 17:30 UTC)
+- Release boss107 committed + pushed to branch (NOT main, NOT deployed). Needs SQL first.
+- SQL apply agent (a49ddc71a2ca56a37) paused mid-way; partial state unknown. On resume: check which of
+  bosses-1..4 and quest-arc-0..4 applied (all idempotent → simply re-run the full ordered list), then
+  push HEAD:main, run deploy-hostinger.yml, wait for boss107, notify owner.
+- Paused agents to resume via SendMessage: cutscene a381367ac6c389213 (only screenshots left; code
+  already live in cut106), classic aa936a982633af7f1 (030094b draw-call fix + final shots; merge after),
+  R3-K exploration a3bea19ca215eefb7 (was at PGlite harness).
+- Then: terrain & forests rework agent, phone world-map fix agent, final live QA.

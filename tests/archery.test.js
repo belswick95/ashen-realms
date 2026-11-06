@@ -42,7 +42,7 @@ test('arrows fly tip-first from the bow to the target, land on time, then disapp
 });
 
 test('staffs are two-handed magic: held upright in the right hand, with a gem tip and a gem colour',()=>{
- const staffs=Object.keys(weaponCatalog).filter(isMagic);assert.deepEqual(staffs,['apprenticeStaff','sapphireStaff','amethystStaff','emberStaff']);
+ const staffs=Object.keys(weaponCatalog).filter(isMagic);assert.deepEqual(staffs.filter(k=>!weaponCatalog[k].unique),['apprenticeStaff','sapphireStaff','amethystStaff','emberStaff']);
  for(const key of staffs){const w=weaponCatalog[key];assert.ok(isRanged(key)&&isTwoHanded(key)&&!isBow(key),key);assert.ok(w.reach>=10&&Number.isInteger(w.color),key);
   const g=makeWeapon(T,key),tip=g.getObjectByName('tip');assert.ok(tip&&tip.position.y>.9,key+' tip near the gem')}
  const d=buildCharacterDisplay(T,new T.Group(),{},{weapon:'sapphireStaff',shield:'kite'});let pose;for(let i=0;i<30;i++)pose=d.update(1/60,{});

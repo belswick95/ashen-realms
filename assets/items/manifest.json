@@ -7989,7 +7989,7 @@
       110,
       113
     ],
-    "sha256": "7e95b26aee48c1b2b50e115561838d337820e1501da7cae92fbe8965f4260abf"
+    "sha256": "6b48452e4f1aea4b3a86ce38d69a8a5026254d8ea6dafe08068d72142819c607"
   },
   {
     "key": "item-armor_knightHornedHelm3",
@@ -8007,7 +8007,7 @@
       105,
       126
     ],
-    "sha256": "13af4e4fef8806e79d36ad4b02180f4afd889193b1b81b41ef0c49d0bf82a489"
+    "sha256": "a9d31266f925eb2513ca8ea1be5f4654722b2e2089be434dd3076df17e55f180"
   },
   {
     "key": "item-armor_knightBreastplate3",
@@ -8025,7 +8025,7 @@
       107,
       124
     ],
-    "sha256": "25257eaf8338e83a408ea02c1511d1755b57ad529a942a620ede5f5ab4c32121"
+    "sha256": "52b9779991daea9e19588f369d79ab4c19afcc4a77c41a51acc810bc571a6594"
   },
   {
     "key": "item-armor_knightGauntlets3",
@@ -8061,7 +8061,7 @@
       100,
       123
     ],
-    "sha256": "fbf7d44ef94bbb61ddf5ee4cdc3ca71e5ff8810610de17e0f1fdf7358846aa88"
+    "sha256": "4fab4f6d2baff5e59e7cc18f9f2f59418e62e387bd9f7f7c1215a8bc46202cef"
   },
   {
     "key": "item-armor_knightSabatons3",
@@ -8079,7 +8079,7 @@
       112,
       133
     ],
-    "sha256": "fe948a03cbaf03194299df19b0da830d95cbbd814d92ec0675c484fdf56d0101"
+    "sha256": "2ba919917096310c04a7680d2848dfb193a3e912cb39a5301bd084533be4ba41"
   },
   {
     "key": "item-armor_knightRoundPauldrons3",
@@ -8097,7 +8097,7 @@
       129,
       105
     ],
-    "sha256": "b70b550d748f6bd37b30b9976f07f05fdda4aa3bce70c9af9f54b8a8b065449f"
+    "sha256": "c8413bd197d38799cc7ecfcc9e405aee7bddebe1b4316c7bde525cc55f77f3a2"
   },
   {
     "key": "item-armor_knightSpikedPauldrons3",
@@ -8115,7 +8115,7 @@
       127,
       108
     ],
-    "sha256": "92e92508dad4c9391030044afc54e23bdfd1b3dd4bb495dc330ff86463f527c9"
+    "sha256": "7be03105ebb65117a9be7152b1c21a77c938928dfed5a1f1b75707fbb62888ad"
   },
   {
     "key": "item-bones",
@@ -8277,7 +8277,7 @@
       125,
       93
     ],
-    "sha256": "2e133187eae173d02c142b591060087b34ee3d9b9ede055e78cbc15badb9b178"
+    "sha256": "57899a3e165fc1b60f572e593729360acc5bf4ff61c556ae40c33940b40fc8cc"
   },
   {
     "key": "item-rawMudperch",
@@ -8295,7 +8295,7 @@
       125,
       93
     ],
-    "sha256": "3f5b42d172908c59e221eead776749b3b6aaff79585a6f010f7a5d5ec17ca858"
+    "sha256": "ccc1151e573b34d8fc6976791595215b81be0400b6f24132380baad98811ca37"
   },
   {
     "key": "item-silverbait",
@@ -8349,7 +8349,7 @@
       125,
       93
     ],
-    "sha256": "a19cb248148edbfbd7d4aab6f4605c07aa5844f9110f5d9febbc703e90931e1e"
+    "sha256": "3ec7046453de78dab1b6d8d2cb89e53de05c93d6e37afef1832ef8eb79f176ff"
   },
   {
     "key": "item-rawStripedMackerel",
@@ -8367,7 +8367,7 @@
       125,
       93
     ],
-    "sha256": "3be5126aba7521b45bb99dad847e9a519df56c11a154cf452815db4cd207dae9"
+    "sha256": "17f48849b1b34568dea6f915b3a3338379f519066e7e7bd8d2efc815da8038c4"
   },
   {
     "key": "item-coastCod",
@@ -8385,7 +8385,7 @@
       125,
       93
     ],
-    "sha256": "7bdff17340ddfb9bf842e5b2a2e3e15747ab31835478bfd046ed70edd436c031"
+    "sha256": "5ede59e23afe3372da3780f14f02e97f307ea92cb3d1c449985e95f4ce8024ee"
   },
   {
     "key": "item-rawCoastCod",
@@ -8403,7 +8403,7 @@
       125,
       93
     ],
-    "sha256": "68d50f0a56256283761957cbf121d7d1d3a2f8350f09d55b3150b34186ad4747"
+    "sha256": "12e8541d19341420196e51418812b34056294717558b7ea251d15c01bc03b3bf"
   },
   {
     "key": "item-reedpike",
@@ -8421,7 +8421,7 @@
       125,
       93
     ],
-    "sha256": "0fd3c3a9e8293853192189c584cfe92a7d48fa5fcb0a4727960f8b9a567eaf46"
+    "sha256": "0b78f68c4160989c8a71c02222a2a078b10cd840701e8939410d39cd012f87ab"
   },
   {
     "key": "item-rawReedpike",
@@ -8439,7 +8439,7 @@
       125,
       93
     ],
-    "sha256": "4f54c3fcf88f54896c291458650bb806c91966a312e8cba5e737d2e29451f739"
+    "sha256": "cd843dee31b9111494888f4f0f885693e083f486e0d4ed5ca5376c649cc81029"
   },
   {
     "key": "item-brightfin",
@@ -8457,7 +8457,7 @@
       129,
       93
     ],
-    "sha256": "01f5520d261ed8662f0c409f404122058e2fc522d71eb8e04f96ac3a25830502"
+    "sha256": "235212a2f8c7aaeb1f6763fba110b8992a80e1a912d91f5984f7d78c003df0a6"
   },
   {
     "key": "item-rawBrightfin",
@@ -8475,7 +8475,7 @@
       129,
       93
     ],
-    "sha256": "5ee34c38ef77c84cb345c240990d8e899af7acb9adcb561e7f395521e11e2593"
+    "sha256": "10fd50a51334721e297787dc0d9e95e98314cf464bfae63ecc97297ec4b4b7d9"
   },
   {
     "key": "item-rainbowfin",
@@ -8493,7 +8493,7 @@
       125,
       93
     ],
-    "sha256": "9dc81f3b11418709dad10d5b4d583bde97cb15d122bea62b976ee2cb766061da"
+    "sha256": "6514c85c5d6d46b1eedd88cc0ad61baf4a09fdd1522b5db4e36f8044fea7c8ca"
   },
   {
     "key": "item-rawRainbowfin",
@@ -8511,7 +8511,7 @@
       125,
       93
     ],
-    "sha256": "ee3834e5011296883efddbdf9163fc8d6601f94ca1ccdd854e79101bbd601cf8"
+    "sha256": "5d4c3081edda380830dd13da9e496608b97097ad1b72a7b1fd82a23ca7c0afe6"
   },
   {
     "key": "item-stoneBass",
@@ -8529,7 +8529,7 @@
       125,
       93
     ],
-    "sha256": "ae06b299332f5c900b9e8190d5842d15beb192b016808bdde5919049c3e3a1e2"
+    "sha256": "8293dee5d242590adb6a92c1d92596e6114aa2dd87c708e3947d8e0777bbbe76"
   },
   {
     "key": "item-rawStoneBass",
@@ -8547,7 +8547,7 @@
       125,
       93
     ],
-    "sha256": "3fdd7a0b8f6f3d56fb729a836845cb582c875f0a03640fbf50beac3b8cc0816e"
+    "sha256": "dc091fdde89a8f129c3d4e4e42f20dab4a3a226b3d36bec70b5043f56f86d744"
   },
   {
     "key": "item-deepglowAngler",
@@ -8565,7 +8565,7 @@
       127,
       101
     ],
-    "sha256": "a0678fcf73c9831eeb66865af619b167ed659d305d4edab96bea76eb3b64906c"
+    "sha256": "ac7dce82e7e0c4e9cecffc35bb6052d875b0254774cc7ecd4fa2a757b6ca1a0d"
   },
   {
     "key": "item-rawDeepglowAngler",
@@ -8583,7 +8583,7 @@
       127,
       101
     ],
-    "sha256": "707791d19c23e99d0e51cbc4b333f88464c0ffbaa12edbc41b1a15edc1d94700"
+    "sha256": "1eb4f78fbb748a2feb1cbb7d72bfea8a73ddba6a1a97dcf644eeb4db8c1fc1c7"
   },
   {
     "key": "item-flyRod",
@@ -8601,7 +8601,7 @@
       134,
       97
     ],
-    "sha256": "e2e62874ffb5c457e0a0ef13d87131f6c64525e757d49a4a8f1a0c371e258107"
+    "sha256": "6d1fccd02cb7da38270c56a2ee055ec701e9c38aa77c4537804e0ec62c6b8fb2"
   },
   {
     "key": "item-bigNet",
@@ -8620,5 +8620,383 @@
       91
     ],
     "sha256": "b4003d7863dcdff63fa3831160d0ec470cd3f30874c0bc958522171212b60826"
+  },
+  {
+    "key": "item-weapon_unbrokenCleaver",
+    "id": "weapon:unbrokenCleaver",
+    "name": "Unbroken Cleaver",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.11781221628189087
+    ],
+    "pixelBounds": [
+      51,
+      18,
+      91,
+      120
+    ],
+    "sha256": "575d4100b49d21c55400ca3ee9aebe535efed6675065550fd36bf4b6236ebdb3"
+  },
+  {
+    "key": "item-weapon_hollowScepter",
+    "id": "weapon:hollowScepter",
+    "name": "Scepter of the Hollow Court",
+    "model": "weapon",
+    "bounds": [
+      0.6578186540153254,
+      2.0033468011949034,
+      0.21543935641567258
+    ],
+    "pixelBounds": [
+      53,
+      14,
+      88,
+      124
+    ],
+    "sha256": "c12eeffcf7da0366c63b67277da2c4843967bbc2d7803171e7e40be4b37513c9"
+  },
+  {
+    "key": "item-weapon_broodfang",
+    "id": "weapon:broodfang",
+    "name": "Broodfang",
+    "model": "weapon",
+    "bounds": [
+      0.4297856785473216,
+      1.0711343208270063,
+      0.11781221628189087
+    ],
+    "pixelBounds": [
+      56,
+      26,
+      87,
+      123
+    ],
+    "sha256": "055dd8f7c00dd0cddcecaec43e6d48f3769b62ee68216642b8a97676a4e39c5d"
+  },
+  {
+    "key": "item-weapon_rimeheartSpear",
+    "id": "weapon:rimeheartSpear",
+    "name": "Rimeheart Spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.11781221628189087
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "7d31aea42043d40ea9754885e3763f60f45eae0b6a05a2b8ff7a4ab0010a1111"
+  },
+  {
+    "key": "item-weapon_cindercoreMaul",
+    "id": "weapon:cindercoreMaul",
+    "name": "Cindercore Maul",
+    "model": "weapon",
+    "bounds": [
+      0.9869364988199136,
+      1.5180213112950853,
+      0.2269600522373726
+    ],
+    "pixelBounds": [
+      56,
+      12,
+      107,
+      114
+    ],
+    "sha256": "ac2de8ed643b86553b86fc0a8d751cb7a5120973365ca88a8dc5cd4742820cd2"
+  },
+  {
+    "key": "item-weapon_twinflameGlaive",
+    "id": "weapon:twinflameGlaive",
+    "name": "Twinflame Glaive",
+    "model": "weapon",
+    "bounds": [
+      1.3230416885947986,
+      1.7428994171872723,
+      0.11956051737070084
+    ],
+    "pixelBounds": [
+      36,
+      22,
+      105,
+      112
+    ],
+    "sha256": "7633702596079811583651a82f9528623debc07770ede74ef25c07c5deffc2f9"
+  },
+  {
+    "key": "item-weapon_tidecallerStaff",
+    "id": "weapon:tidecallerStaff",
+    "name": "Tidecaller\u2019s Staff",
+    "model": "weapon",
+    "bounds": [
+      0.6578186540153254,
+      2.0033468011949034,
+      0.21543935641567258
+    ],
+    "pixelBounds": [
+      53,
+      14,
+      88,
+      124
+    ],
+    "sha256": "d8cdcd593de393b0aad61b84debd517ea620e5b888b3bf1aaa04b62d45100ae1"
+  },
+  {
+    "key": "item-shield_scalewardShield",
+    "id": "shield:scalewardShield",
+    "name": "Scaleward Shield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "9675b1805b4f8600ea13019e7f0c29efa17aaa289ea987be88b494fff8b8ddfc"
+  },
+  {
+    "key": "item-shield_wardensAegis",
+    "id": "shield:wardensAegis",
+    "name": "Aegis of the Last Warden",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.324999988079071,
+      0.3625491609691775
+    ],
+    "pixelBounds": [
+      30,
+      10,
+      106,
+      125
+    ],
+    "sha256": "e6660822259859f507a5b54b5d2ce5846aecb053c7a69a5e98c2182f9f141077"
+  },
+  {
+    "key": "item-armor_warlordTuskhelm",
+    "id": "armor:warlordTuskhelm",
+    "name": "Warlord\u2019s Tuskhelm",
+    "model": "warlordTuskhelm",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "06ca548b13714f32165a3b7c2791d7c31c2d75e65406bac3c2bad9b2fd6b51a7"
+  },
+  {
+    "key": "item-armor_hollowCrown",
+    "id": "armor:hollowCrown",
+    "name": "The Hollow Crown",
+    "model": "hollowCrown",
+    "bounds": [
+      0.85,
+      0.43274330881679735,
+      0.85
+    ],
+    "pixelBounds": [
+      26,
+      34,
+      117,
+      111
+    ],
+    "sha256": "2646d3fc341c7d24b99fb0444555178533631d353f114ea0ef0398d5ccb5e9a4"
+  },
+  {
+    "key": "item-armor_gloomsilkMantle",
+    "id": "armor:gloomsilkMantle",
+    "name": "Gloomsilk Mantle",
+    "model": "gloomsilkMantle",
+    "bounds": [
+      0.85,
+      0.49977416302987765,
+      0.7639805291909543
+    ],
+    "pixelBounds": [
+      23,
+      33,
+      115,
+      113
+    ],
+    "sha256": "6f75e4e2457a37e30d0b590fed48c4fef526aa7586c46d37c37f26121f68a687"
+  },
+  {
+    "key": "item-armor_glacierscaleGreaves",
+    "id": "armor:glacierscaleGreaves",
+    "name": "Glacierscale Greaves",
+    "model": "glacierscaleGreaves",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "7e3ee2b17706b80f5188e6554fbde5c02e2fd3213e60be6ae18f5f2b75970558"
+  },
+  {
+    "key": "item-armor_heartforgePlate",
+    "id": "armor:heartforgePlate",
+    "name": "Heartforge Breastplate",
+    "model": "heartforgePlate",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "e863430ecc5651d62b777840571c61d80a1b698694f4f06ccf61d236e81b9d09"
+  },
+  {
+    "key": "item-armor_wyrmscaleCoif",
+    "id": "armor:wyrmscaleCoif",
+    "name": "Wyrmscale coif",
+    "model": "wyrmscaleCoif",
+    "bounds": [
+      0.7587923825800348,
+      0.85,
+      0.8369258705404827
+    ],
+    "pixelBounds": [
+      38,
+      27,
+      109,
+      122
+    ],
+    "sha256": "52ba24cfe32580a51bbacf6508c9973af38723f69343d94ef37f30afd4c38f19"
+  },
+  {
+    "key": "item-armor_wyrmscaleJerkin",
+    "id": "armor:wyrmscaleJerkin",
+    "name": "Wyrmscale jerkin",
+    "model": "wyrmscaleJerkin",
+    "bounds": [
+      0.85,
+      0.85,
+      0.7242393261513107
+    ],
+    "pixelBounds": [
+      32,
+      29,
+      116,
+      120
+    ],
+    "sha256": "01f75d49b4f6d0212ccd85d11a48aaf1f2c901185371d3a35a567ac2ef225932"
+  },
+  {
+    "key": "item-armor_wyrmscaleChaps",
+    "id": "armor:wyrmscaleChaps",
+    "name": "Wyrmscale chaps",
+    "model": "wyrmscaleChaps",
+    "bounds": [
+      0.49095431379131443,
+      0.85,
+      0.30737174596392713
+    ],
+    "pixelBounds": [
+      40,
+      22,
+      105,
+      127
+    ],
+    "sha256": "3ff91cb3a19836ae4121c6b14c8669075de74f708b8c78c22ef6661b4bd1c095"
+  },
+  {
+    "key": "item-armor_wyrmscaleVambraces",
+    "id": "armor:wyrmscaleVambraces",
+    "name": "Wyrmscale vambraces",
+    "model": "wyrmscaleVambraces",
+    "bounds": [
+      0.85,
+      0.07714219469378292,
+      0.082097313769004
+    ],
+    "pixelBounds": [
+      10,
+      51,
+      134,
+      95
+    ],
+    "sha256": "d91c4d5fb56da715ccc8e559243be32a847745ac37921c94d2f3083b998257fa"
+  },
+  {
+    "key": "item-armor_crownwardenSigil",
+    "id": "armor:crownwardenSigil",
+    "name": "Crownwarden\u2019s Sigil",
+    "model": "crownwardenSigil",
+    "bounds": [
+      0.85,
+      0.5049623096407971,
+      0.7687536240730003
+    ],
+    "pixelBounds": [
+      31,
+      35,
+      125,
+      115
+    ],
+    "sha256": "a61a7b292853056320f2628fe5bf39f7e17a334d14ca7cde81b12e10538cdee2"
+  },
+  {
+    "key": "item-armor_emberOathGauntlets",
+    "id": "armor:emberOathGauntlets",
+    "name": "Gauntlets of the Ember Oath",
+    "model": "emberOathGauntlets",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "de378225f46772b5c6b67f3b5575f76615a9defc8cc37c162da8d79c672f7830"
+  },
+  {
+    "key": "item-armor_pathfinderBoots",
+    "id": "armor:pathfinderBoots",
+    "name": "Pathfinder\u2019s Boots",
+    "model": "pathfinderBoots",
+    "bounds": [
+      0.5404492324594867,
+      0.85,
+      0.511291848506119
+    ],
+    "pixelBounds": [
+      37,
+      16,
+      109,
+      132
+    ],
+    "sha256": "0d5e6e2209bb6e01c5ca2be9e3205ed38a0cd21e396a6067ef3e44672545551e"
   }
 ]

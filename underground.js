@@ -9,12 +9,12 @@
 //   inside (prop lights go through the shared 4-light pool: every PointLight here becomes a
 //   light-proxy anchor, the scene light count never changes), draws the underground minimap,
 //   picks cave music and ambience, and plays agility crossings.
-import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261106-cut106';
-import {AGILITY_TEMPLATES,AGILITY_VERBS,failChance} from './agility-data.js?v=release-20261106-cut106';
-import {sharedMaterial,sharedGeometry} from './shared-geometry.js?v=release-20261106-cut106';
-import {lightMarker} from './underground-models.js?v=release-20261106-cut106';
-import {loading} from './loading-indicator.js?v=release-20261106-cut106';
-import {nextFrame} from './frame-work.js?v=release-20261106-cut106';
+import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261106-boss107';
+import {AGILITY_TEMPLATES,AGILITY_VERBS,failChance} from './agility-data.js?v=release-20261106-boss107';
+import {sharedMaterial,sharedGeometry} from './shared-geometry.js?v=release-20261106-boss107';
+import {lightMarker} from './underground-models.js?v=release-20261106-boss107';
+import {loading} from './loading-indicator.js?v=release-20261106-boss107';
+import {nextFrame} from './frame-work.js?v=release-20261106-boss107';
 
 const state={areas:dungeons.slice(),index:createUndergroundIndex(dungeons),listeners:new Set()};
 export function undergroundAreas(){return state.areas}
@@ -79,7 +79,7 @@ export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camer
    const rocks=new T.InstancedMesh(rockGeo(),rockMat(),data.rocks.length),m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),s=new T.Vector3(),p=new T.Vector3(),c=new T.Color(),wall=new T.Color(th.wall),alt=new T.Color(th.wallAlt);
    data.rocks.forEach((r,k)=>{q.setFromEuler(e.set(0,r.r,r.k*.3));m.compose(p.set(r.x,r.h*.38,r.z),q,s.set(r.w*1.6,r.h,r.w*1.6));rocks.setMatrixAt(k,m);rocks.setColorAt(k,c.copy(wall).lerp(alt,r.k))});
    rocks.castShadow=false;rocks.receiveShadow=true;rocks.computeBoundingSphere();group.add(rocks);
-   if(data.decor.length){const d=new T.InstancedMesh(decorGeo(area.theme),sharedMaterial(T,'ug-decor-'+area.theme,()=>new T.MeshStandardMaterial({color:area.theme==='crypt'?0xd8d0bd:area.theme==='fire'?0x2b201c:0x6b5e50,roughness:.9,flatShading:true})),data.decor.length);
+   if(data.decor.length){const d=new T.InstancedMesh(decorGeo(area.theme),sharedMaterial(T,'ug-decor-'+area.theme,()=>new T.MeshStandardMaterial({color:area.theme==='crypt'?0xd8d0bd:area.theme==='fire'?0x2b201c:area.theme==='ice'?0xcfe6f2:0x6b5e50,roughness:.9,flatShading:true})),data.decor.length);
     data.decor.forEach((v,k)=>{q.setFromEuler(e.set(area.theme==='crypt'?Math.PI/2:0,v.r,0));m.compose(p.set(v.x,area.theme==='crypt'?.06:.55*v.s,v.z),q,s.set(v.s,v.s,v.s));d.setMatrixAt(k,m)});d.computeBoundingSphere();group.add(d)}
    for(const l of area.lights||[]){if(l.level!==lv.level)continue;const def=LIGHT_KINDS[l.kind]||LIGHT_KINDS.torch,o=levelOrigin(area,lv.level),marker=lightMarker(T,l.kind,l.color??def.color);marker.position.set(o.x+l.x,0,o.z+l.z);group.add(marker);
     const light=new T.PointLight(l.color??def.color,l.intensity??def.intensity,l.distance??def.distance,2);light.position.set(o.x+l.x,l.kind==='lava'?1.2:2.4,o.z+l.z);group.add(light)}
