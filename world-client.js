@@ -1,17 +1,24 @@
 import {registerProfessions} from './professions.js?v=release-20261106-perf90';
 import {registerWorldItems,registerCatalogOverrides} from './economy.js?v=release-20261106-perf90';
 import {loading} from './loading-indicator.js?v=release-20261106-perf90';
+import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261106-perf90';
 // Requests the player waits on show the loading chip; background polling does not.
 const RPC_LABELS={world_pickup:'Picking up…',world_admin:'Working…',world_report:'Sending report…'};
 export async function startWorld(db,user,{initial,flush,disconnect}){
  let snapshot=initial,cursor=-1,polling=false,offset=0,initialized=false,restarting=false,startedAt=Date.parse(initial?.serverTime)||Date.now(),restartSeen=null,lastAnnouncement='',panel=null,stopped=false;
- let lastSyncError=null;
+ let lastSyncError=null;const diet=createSyncDiet(),seen=new Map();let lean=true;
  const banner=document.createElement('output');banner.id='world-announcement';banner.setAttribute('aria-live','polite');banner.style.cssText='position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:190;max-width:min(650px,85vw);padding:10px 18px;background:#162521f2;border:1px solid #c5a366;border-radius:8px;color:#f3dba1;text-align:center;font:14px/1.5 Georgia;pointer-events:none';banner.hidden=true;document.body.append(banner);
  const rpc=async(name,args={})=>{const request=db.rpc(name,args),r=await (RPC_LABELS[name]?loading.track(request,RPC_LABELS[name]):request);if(r.error)throw Error(r.error.message);return r.data};
  async function deliver(delivery){if(window.eldervaleAuthority){await window.eldervaleRealm.refresh();return}window.eldervaleWorldBridge.grant(delivery);if(!await flush())throw Error('Delivery kept locally until the character save succeeds');await rpc('world_ack',{delivery_id:delivery.id})}
  async function refresh(){if(polling||stopped)return;polling=true;try{
-  snapshot=await rpc('world_snapshot',{cursor_revision:cursor});lastSyncError=null;loading.end('world-reconnect');offset=Date.parse(snapshot.serverTime)-Date.now();
-  registerWorldItems(snapshot.catalog);registerCatalogOverrides(snapshot.catalogOverrides);window.eldervaleGameConfig=snapshot.gameConfig||null;registerProfessions(snapshot.professions);const access=snapshot.access,now=Date.now()+offset;
+  let changed=null;
+  // world_snapshot_lean (db/sync-diet.sql) leaves out the recipe book and catalog
+  // while they are unchanged; without it, compare them here instead.
+  if(lean){const r=await db.rpc('world_snapshot_lean',{cursor_revision:cursor,have:diet.have()});if(missingRpc(r.error)){lean=false;diet.reset()}else{if(r.error)throw Error(r.error.message);({data:snapshot,changed}=diet.expand(r.data))}}
+  if(!lean)snapshot=await rpc('world_snapshot',{cursor_revision:cursor});lastSyncError=null;loading.end('world-reconnect');offset=Date.parse(snapshot.serverTime)-Date.now();
+  // Custom item icons and bank notes are redrawn only when the catalog really changed.
+  const fresh=key=>{if(changed)return changed.has(key);const text=JSON.stringify(snapshot[key]??null);if(seen.get(key)===text)return false;seen.set(key,text);return true};
+  const items=fresh('catalog'),overrides=fresh('catalogOverrides');if(items||overrides)registerWorldItems(snapshot.catalog);if(overrides){registerCatalogOverrides(snapshot.catalogOverrides);registerWorldItems(snapshot.catalog)/* notes and icons for owner-created goods */}window.eldervaleGameConfig=snapshot.gameConfig||null;if(fresh('professions'))registerProfessions(snapshot.professions);const access=snapshot.access,now=Date.now()+offset;
   if(Date.parse(access?.banned_until)>now){stopped=true;await disconnect('Access suspended: '+access.reason);return}
   if(Date.parse(access?.kicked_at)>startedAt){stopped=true;await disconnect('Removed by the owner: '+access.reason);return}
   if(snapshot.settings.maintenance&&!snapshot.owner){stopped=true;await disconnect('Eldervale is in maintenance mode. Please try again later.');return}

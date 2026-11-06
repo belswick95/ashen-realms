@@ -84,21 +84,28 @@ export function isPhone({ua='',maxTouchPoints=0,coarse=false,touch=false,width=0
 
 // Character level of detail by camera distance (metres) and quality tier:
 // animate every frame up close, `halfRate` updates a second further out,
-// 10 a second beyond that (the animator's own step limit is 0.1 s), and past
-// `draw` the character is neither drawn, shadowed nor animated. Characters cast
-// shadows only within `shadow` metres: about the sun's shadow-map radius for
-// the tier (sun-shadow.js), so the cut-off sits where shadows fade anyway.
+// `farRate` beyond that, and past `draw` the character is neither drawn,
+// shadowed nor animated. Characters cast shadows only within `shadow` metres:
+// about the sun's shadow-map radius for the tier (sun-shadow.js), so the
+// cut-off sits where shadows fade anyway.
+// The ranges are generous on purpose: a busy city (Birchford) keeps dozens of
+// townsfolk 20-60 m from the camera, and the earlier 40 m draw / 10 Hz limits
+// made them pop in and out as the camera turned and step like stop-motion.
+// Skinning is on the GPU, so a far character costs a mixer update, not a mesh.
 export const CHARACTER_LOD={
- low:{full:10,half:20,draw:40,halfRate:15,shadow:0},
- medium:{full:16,half:32,draw:58,halfRate:20,shadow:22},
- high:{full:26,half:48,draw:80,halfRate:30,shadow:32},
- ultra:{full:40,half:64,draw:95,halfRate:30,shadow:38}
+ low:{full:14,half:30,draw:70,halfRate:30,farRate:20,shadow:0},
+ medium:{full:20,half:40,draw:80,halfRate:30,farRate:20,shadow:22},
+ high:{full:30,half:55,draw:95,halfRate:30,farRate:24,shadow:32},
+ ultra:{full:40,half:70,draw:110,halfRate:30,farRate:30,shadow:38}
 };
-export function characterLod(distance,preset='high',{focus=false}={}){
+// A hidden character has to come this much nearer than `draw` to reappear, so
+// one standing on the boundary (or a camera bobbing across it) does not flicker.
+export const CHARACTER_LOD_HYSTERESIS=4;
+export function characterLod(distance,preset='high',{focus=false,hidden=false}={}){
  const t=CHARACTER_LOD[preset]||CHARACTER_LOD.high,shadow=focus||distance<=t.shadow;
  if(focus||distance<=t.full)return {draw:true,interval:0,level:0,shadow};
- if(!(distance<=t.draw))return {draw:false,interval:Infinity,level:3,shadow:false};
- return distance<=t.half?{draw:true,interval:1/t.halfRate,level:1,shadow}:{draw:true,interval:.1,level:2,shadow};
+ if(!(distance<=t.draw-(hidden?CHARACTER_LOD_HYSTERESIS:0)))return {draw:false,interval:Infinity,level:3,shadow:false};
+ return distance<=t.half?{draw:true,interval:1/t.halfRate,level:1,shadow}:{draw:true,interval:1/t.farRate,level:2,shadow};
 }
 // Frame time to advance a throttled animation this frame (0 = skip it).
 // `state.lodClock` carries the time since its last update; `phase` (0..1)
@@ -108,4 +115,18 @@ export function lodStep(state,dt,interval,phase=0){
  if(state.lodClock===undefined)state.lodClock=(((phase%1)+1)%1)*interval;
  state.lodClock+=dt;if(state.lodClock<interval*.999)return 0;
  const step=state.lodClock;state.lodClock=0;return step;
+}
+
+// Gait hold for server-driven walkers. Interpolated NPCs and monsters can stand
+// still for a frame or two between snapshots; feeding that straight to the
+// animator flips walk -> idle -> walk (restarting the walk clip, and snapping
+// procedural legs straight). While the actor moved within the last `hold`
+// seconds, keep reporting its last ground speed and a token distance so the
+// gait carries on; a real stop shows after the hold.
+export function holdGait(state,step,distance,hold=.3){
+ const speed=distance/Math.max(step,.001);
+ if(distance>1e-4){state.gaitHold=hold;state.gaitSpeed=speed;return {distance,speed}}
+ state.gaitHold=Math.max(0,(state.gaitHold||0)-step);
+ if(state.gaitHold>0&&state.gaitSpeed>.15)return {distance:Math.max(distance,2e-4),speed:state.gaitSpeed};
+ return {distance,speed};
 }

@@ -58,7 +58,9 @@ export function createHumanoidAnimator(rig){
   // Relaxed by default; the fighting stance is for an explicit combat stance or
   // a few seconds after armed melee attacks and blocks.
   else base=work||(block>0||!ranged&&time<fightUntil?'Sword_Idle':'Idle_Loop');
-  if(base!==current){current=base;const a=action(base);a.reset?.();if(dead&&base==='Death01'&&clips.Fixing_Kneeling)a.time=DEATH_JOIN}
+  // A loop that is still fading out keeps its phase when it comes back (walk ->
+  // idle -> walk within a fade): restarting it from frame 0 visibly pops the limbs.
+  if(base!==current){current=base;const a=action(base);if(dead||!((weights.get(base)||0)>.05))a.reset?.();if(dead&&base==='Death01'&&clips.Fixing_Kneeling)a.time=DEATH_JOIN}
   const loop=action(base);if(STRIDE[base]){const play=gaitPlayback(base,speed,{stride:STRIDE[base],duration:loop.getClip().duration,scale:CHARACTER_SCALE});loop.timeScale=play.timeScale;stride=play.amplitude}else{loop.timeScale=1;stride=1}
   if(work&&base===work&&rig.activityPhase!=null){loop.time=rig.activityPhase*loop.getClip().duration;loop.timeScale=0}
   if(dead&&base==='Fixing_Kneeling')loop.timeScale=loop.time>=KNEEL_HOLD?0:1;else if(dead&&base==='Death01')loop.timeScale=DEATH_FALL_SPEED;

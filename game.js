@@ -79,7 +79,7 @@ import {stabilizeSun,shadowQuality,celestialLight,installShadowEdgeFade} from '.
 import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261106-perf90';
 import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261106-perf90';
 import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261106-perf90';
-import {isTablet,isPhone,lowerTier,createFrameGovernor,createDistanceCuller,characterLod,lodStep,HIDDEN_LAYER} from './graphics-quality.js?v=release-20261106-perf90';
+import {isTablet,isPhone,lowerTier,createFrameGovernor,createDistanceCuller,characterLod,lodStep,holdGait,HIDDEN_LAYER} from './graphics-quality.js?v=release-20261106-perf90';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {preloadCharacters,setCharacterRim} from './character-assets.js?v=release-20261106-perf90';
 import {buildHumanoid} from './humanoid.js?v=release-20261106-perf90';
@@ -1470,7 +1470,7 @@ function setCharacterShadows(actor,root,cast){actor.lodShadow=cast;root.traverse
 // Eyes and eyebrows are a few pixels past the full-detail range: two draw calls saved per character.
 function setCharacterFace(actor,root,show){actor.lodFace=show;root.traverse(o=>{if(o.isSkinnedMesh&&FACE_DETAIL.test(o.name))o.layers.set(show?0:HIDDEN_LAYER)})}
 function actorLod(actor,root,focus){if(!root.userData.characterLod){root.userData.characterLod=true;pruneTinyCasters(root)}
- const lod=characterLod(root.position.distanceTo(camera.position),lodPreset,{focus});const hidden=!lod.draw,shadow=lod.shadow&&renderer.shadowMap.enabled;
+ const lod=characterLod(root.position.distanceTo(camera.position),lodPreset,{focus,hidden:actor.lodHidden===true});const hidden=!lod.draw,shadow=lod.shadow&&renderer.shadowMap.enabled;
  // Re-apply now and then: gear and outfit parts can be attached later.
  const refresh=lodFrame%30===0;
  if(actor.lodHidden!==hidden||hidden&&refresh){setCharacterLodLayer(actor,root,hidden);actor.lodFace=undefined}
@@ -1482,7 +1482,10 @@ function updateCharacterLod(){lodFrame++;const target=combatTurns.target;
  for(const other of remotePlayers.values())actorLod(other,other.root,false)}
 // Advances an actor's animation at its LOD rate. Travel since its last update
 // is carried over so walk cycles keep pace with the ground they cover.
-function lodAnimate(actor,dt,distance,update){if(actor.lodHidden){actor.lodTravel=0;return}actor.lodTravel=(actor.lodTravel||0)+distance;const step=lodStep(actor,dt,actor.lod?.interval||0,actor.lodPhase??=Math.random());if(!step)return;const travelled=actor.lodTravel;actor.lodTravel=0;update(step,travelled,travelled/Math.max(step,.001))}
+// A server-driven walker can show a still frame between snapshots (a late
+// reply, a tick that did not move it); holdGait keeps the walk cycle running
+// through such short gaps instead of snapping walk -> idle -> walk.
+function lodAnimate(actor,dt,distance,update){if(actor.lodHidden){actor.lodTravel=0;actor.gaitHold=0;return}actor.lodTravel=(actor.lodTravel||0)+distance;const step=lodStep(actor,dt,actor.lod?.interval||0,actor.lodPhase??=Math.random());if(!step)return;const travelled=actor.lodTravel;actor.lodTravel=0;const gait=holdGait(actor,step,travelled);update(step,gait.distance,gait.speed)}
 // Per-frame scratch values: the frame loop allocates no vectors for these.
 const authScreen=document.querySelector('#auth-screen'),frameStartScratch=new T.Vector3(),actorBefore=new T.Vector3(),cameraEye=new T.Vector3(),cameraVector=new T.Vector3(),combatBars=[];let cameraWalls=[],nextCameraWalls=0;
 function frame(){requestAnimationFrame(frame);if(!authScreen.hidden||window.eldervaleWorldLoading===true)return;updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();governFrame(elapsed);if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.1),movementDt=movementTime(elapsed);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}if(window.eldervaleAuthority&&realmPoseJump&&realmPlayerPose){reconcileLocalPose(player.position,realmPlayerPose,dt,{teleport:true});player.rotation.y=realmPlayerPose.yaw;cameraFocus=null;cameraObstructionDistance=null;realmPoseJump=false;}const manual=mmoControls.update(movementDt,performance.now());const cameraKeys=mmoControls.cameraAxes();if(cameraKeys.yaw||cameraKeys.pitch){yaw+=cameraKeys.yaw*CAMERA_TURN_RATE*dt;pitch=T.MathUtils.clamp(pitch+cameraKeys.pitch*CAMERA_PITCH_RATE*dt,-.10,1.15);lastCameraDrag=performance.now()}updateCompassTurn(dt);const presentedPose=window.eldervaleAuthority&&realmPlayerPose?{...realmPlayerPose,...projectPathPose(realmPlayerPose,window.eldervaleServerTime?.()||Date.now())}:null;if(window.eldervaleAuthority&&reconcileLocalPose(player.position,presentedPose,elapsed,{active:!!manual,pending:!!window.eldervaleRealm?.movementPending()})&&!realmInCombat)player.rotation.y=presentedPose.moving||!realmPlayerPose.moving?presentedPose.yaw:player.rotation.y;const frameStart=frameStartScratch.copy(player.position);

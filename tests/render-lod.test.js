@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
-import {isPhone,isTablet,characterLod,lodStep,CHARACTER_LOD,createDistanceCuller,HIDDEN_LAYER} from '../graphics-quality.js';
+import {isPhone,isTablet,characterLod,lodStep,CHARACTER_LOD,CHARACTER_LOD_HYSTERESIS,createDistanceCuller,HIDDEN_LAYER} from '../graphics-quality.js';
 import {deviceProfile,effectiveGraphics} from '../responsive.js';
 import {createCellBatcher,cellBatchable,cellKey,BATCHED_LAYER} from '../static-batch.js';
 import {castleObject} from '../castle-models.js';
@@ -31,13 +31,21 @@ test('character LOD: full rate near, throttled further out, hidden past the tier
  for(const [preset,t] of Object.entries(CHARACTER_LOD)){
   assert.deepEqual(characterLod(t.full*.5,preset),{draw:true,interval:0,level:0,shadow:t.shadow>=t.full*.5});
   const mid=characterLod((t.full+t.half)/2,preset);assert.equal(mid.level,1);assert.ok(mid.interval>0&&mid.interval<.1);
-  assert.equal(characterLod((t.half+t.draw)/2,preset).interval,.1);
+  const far=characterLod((t.half+t.draw)/2,preset);assert.equal(far.interval,1/t.farRate);assert.ok(far.interval<=1/20+1e-9,'far characters still animate at 20 Hz or more');
   assert.equal(characterLod(t.draw+1,preset).draw,false);assert.equal(characterLod(t.draw+1,preset).shadow,false);
  }
  assert.ok(CHARACTER_LOD.low.draw<CHARACTER_LOD.medium.draw&&CHARACTER_LOD.medium.draw<CHARACTER_LOD.high.draw);
  assert.equal(CHARACTER_LOD.low.shadow,0,'low has no sun shadows');
  assert.deepEqual(characterLod(500,'medium',{focus:true}),{draw:true,interval:0,level:0,shadow:true},'a combat target or conversation partner is always full detail');
  assert.equal(characterLod(Infinity,'high').draw,false);assert.equal(characterLod(NaN,'high').draw,false);
+});
+test('character LOD keeps a busy city drawn and does not flicker on the draw boundary',()=>{
+ for(const [preset,t] of Object.entries(CHARACTER_LOD)){
+  assert.ok(t.draw>=70,preset+' draws townsfolk to at least 70 m');assert.ok(t.halfRate>=30,preset+' mid range animates at 30 Hz');
+  // Standing just inside the boundary: drawn when already drawn, still hidden when it was hidden.
+  assert.equal(characterLod(t.draw-1,preset).draw,true);assert.equal(characterLod(t.draw-1,preset,{hidden:true}).draw,false);
+  assert.equal(characterLod(t.draw-CHARACTER_LOD_HYSTERESIS-.5,preset,{hidden:true}).draw,true);
+ }
 });
 test('throttled animation steps carry the skipped time and spread actors over frames',()=>{
  const a={},b={};let ta=0,na=0,first=[];
