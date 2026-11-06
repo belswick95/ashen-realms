@@ -79,7 +79,7 @@ export function createQuestTrail(T,scene,{heightAt=()=>0,player,locate=()=>null,
  const ring=new T.Mesh(ringGeo,new T.ShaderMaterial({uniforms:ringUniforms,vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:RING_FRAG,transparent:true,depthWrite:false,fog:false}));
  ring.visible=false;ring.renderOrder=12;ring.frustumCulled=false;scene.add(ring);
  const m4=new T.Matrix4();
- let step=null,settings=guidanceSettings(),enabled=true,goal=null,via=null,lastPlan=0,lastTile=NaN,lastGoalKey='',path=[],pathXZ=new Float32Array(128),pathN=0,fetching=false,feed=!!fetchTiles,hint=null,target={x:0,z:0,ok:false};
+ let step=null,settings=guidanceSettings(),enabled=true,goal=null,via=null,lastPlan=0,lastTile=NaN,lastGoalKey=NaN,path=[],pathXZ=new Float32Array(128),pathN=0,fetching=false,feed=!!fetchTiles,hint=null,target={x:0,z:0,ok:false};
  const goalPoint=()=>{if(!step?.target)return null;const t=step.target;if(typeof t==='object'&&Number.isFinite(t.x))return t;const p=locate(t);return p&&Number.isFinite(p.x)?p:null};
  function maybeFetch(p){
   if(!feed||fetching)return;const i=tileOf(p.x),j=tileOf(p.z);if(!cache.needs(i,j))return;fetching=true;
@@ -101,15 +101,16 @@ export function createQuestTrail(T,scene,{heightAt=()=>0,player,locate=()=>null,
  return {mesh,ring,cache,
   get path(){return path},get hint(){return hint},get target(){return target.ok?target:null},get settings(){return settings},
   // tracker.onTarget payload: {quest, step}
-  setStep({step:s}={}){step=s&&s.state!=='offer'?s:s?.state==='offer'?s:null;lastTile=NaN;lastGoalKey=''},
+  setStep({step:s}={}){step=s||null;lastTile=NaN;lastGoalKey=NaN;lastPlan=0},
   configure(v){settings={...guidanceSettings(owner()),...v};lastTile=NaN},
   setEnabled(on){enabled=!!on},
   frame(now=performance.now()){
    uniforms.uTime.value=now/1000;
    const p=player?.();const on=enabled&&settings.trail&&!!step&&!!p&&(floor()|0)===0;
    if(p){uniforms.uPlayer.value.set(p.x,p.z);if(on||settings.minimap)maybeFetch(p)}
-   if(p&&step){const g=goalPoint(),key=g?Math.round(g.x/TILE)+','+Math.round(g.z/TILE):'';const t=tileOf(p.x)*100003+tileOf(p.z);
-    if((t!==lastTile||key!==lastGoalKey)&&now-lastPlan>=TRAIL.replanMs){lastTile=t;lastGoalKey=key;plan(p,now)}}
+   // At most every replanMs: look the goal up and re-plan only when the walker's tile or the goal's tile changed.
+   if(p&&step&&now-lastPlan>=TRAIL.replanMs){const g=goalPoint(),key=g?Math.round(g.x/TILE)*100003+Math.round(g.z/TILE):NaN,t=tileOf(p.x)*100003+tileOf(p.z);
+    if(t!==lastTile||key!==lastGoalKey){lastTile=t;lastGoalKey=key;plan(p,now)}else lastPlan=now}
    else if(!step){mesh.count=0;pathN=0;hint=null;target.ok=false}
    // Ease opacity in/out (about a third of a second), hide the meshes when invisible.
    const want=on&&mesh.count>0?1:0,o=uniforms.uOpacity.value+(want-uniforms.uOpacity.value)*.12;uniforms.uOpacity.value=Math.abs(o-want)<.01?want:o;
