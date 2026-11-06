@@ -205,7 +205,7 @@ export const quests=[
   {type:'dialogue',id:'dialogue.frontier-hask-broken',label:'Hask will not speak to you',npc:'@frontier.hask',ifFlags:{pact_broken:true},lines:talk('Go away, bounty-walker. The caves are empty now. You made sure of that.')}]},
 
 {n:5,key:'arc-frontier-5',name:'The Pale Shepherd',questPoints:5,difficulty:'Master',length:'Very long',giver:'@frontier.vossberg',icon:'custom_qa_wardstone',
- requirements:{quests:['arc-frontier-1','arc-frontier-2','arc-frontier-3','arc-frontier-4'],qp:34,skills:{firemaking:{level:45,boostable:false},woodcutting:{level:45,boostable:false},agility:{level:40,boostable:false},prayer:{level:35,boostable:false}},combat:60},
+ requirements:{quests:['arc-frontier-1','arc-frontier-2','arc-frontier-3','arc-frontier-4'],qp:36,skills:{firemaking:{level:45,boostable:false},woodcutting:{level:45,boostable:false},agility:{level:40,boostable:false},prayer:{level:40,boostable:false}},combat:60},
  description:'The Pale Shepherd has seen the great wardfire. Every night the cold creeps further down the Rimeback. Marshal Vossberg wants it finished, in its own cave.',
  dialogue:{
   offer:talk('Frost on the inside of my windows. In my own hall. It is coming down to look at us.','Rusk says it hides in the Rimeheart Grotto, under the crags, with its frozen flock. Fire and the hearth song.','> Then I’ll bring both.','Take the braziers up with you. Pell has volunteered. Pell does not know he has volunteered yet.'),

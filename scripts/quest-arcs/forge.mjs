@@ -196,7 +196,7 @@ export const quests=[
   {type:'dialogue',id:'dialogue.forge-kessa-4',label:'Kessa keeps the camp',npc:'@forge.kessa',lines:talk('Half the Kindled went home after the camp. The other half are waiting to see what you do below. So am I.')}]},
 
 {n:5,key:'arc-forge-5',name:'The Emberwright’s Debt',questPoints:5,difficulty:'Master',length:'Very long',giver:'@forge.kade',icon:'custom_qa_ember_seal',
- requirements:{quests:['arc-forge-1','arc-forge-2','arc-forge-3','arc-forge-4'],qp:34,skills:{smithing:{level:50,boostable:false},mining:{level:45,boostable:false},firemaking:{level:45,boostable:false}},combat:65},
+ requirements:{quests:['arc-forge-1','arc-forge-2','arc-forge-3','arc-forge-4'],qp:36,skills:{smithing:{level:50,boostable:false},mining:{level:45,boostable:false},firemaking:{level:45,boostable:false}},combat:65},
  description:'Below the Kiln Door, Tamber’s Herald is ready to blow the Emberwright awake. Forgemistress Kade is going to settle a hundred-year debt one way or another.',
  dialogue:{
   offer:talk('A hundred years, and I am the forgemistress who has to pay. Fine. I would rather pay than steal.','Nix is forging quench-chains for the Herald. Mithril, he says. He is very excited. Bring him the bars.','Then go down and stop that golem before Tamber wakes the Emberwright angry.'),

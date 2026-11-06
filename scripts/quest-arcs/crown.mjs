@@ -86,7 +86,7 @@ export const quests=[
  onComplete:{cutscene:'writs'},
  journalDone:'I traced the Queen’s forged seal to wax moulds cast at Dunlow’s Chandlery and paid for in coins of the fallen House Varrow. Captain Varn of the Keep Watch is watching the Frost Gate carts.',
  journalVariants:[{ifFlags:{reported_fenn:true},text:'Fenn Dunlow confessed to the Watch.'},{ifFlags:{fenn_informant:true},text:'Fenn Dunlow kept his apron and now listens in the market for me.'}],
- gold:150,xp:{crafting:1500},lamps:[{perLevel:10,minLevel:5,label:'Chancery lamp'}],
+ gold:150,xp:{crafting:1500,thieving:800},lamps:[{perLevel:10,minLevel:5,label:'Chancery lamp'}],
  unlocks:[
   {type:'flag',id:'crown.varrow_coin_found',label:'Birchford whispers about Varrow coin'},
   {type:'dialogue',id:'dialogue.crown-odo-1',label:'Odo trusts you',npc:'@crown.odo',lines:talk('My honest candles burn beautifully. I seal everything now. Everything. My landlady is alarmed.')},
@@ -208,7 +208,7 @@ export const quests=[
   {type:'dialogue',id:'dialogue.crown-ivy-4',label:'Ivy is free of Merrow',npc:'@crown.ivy',lines:talk('I write letters for people who cannot. Honest ones. They pay in turnips. I have never been happier.')}]},
 
 {n:5,key:'arc-crown-5',name:'The Tallow Crown',questPoints:5,difficulty:'Master',length:'Very long',giver:'@crown.varn',icon:'custom_qa_tallow_signet',
- requirements:{quests:['arc-crown-1','arc-crown-2','arc-crown-3','arc-crown-4'],qp:34,skills:{crafting:{level:40,boostable:false},agility:{level:35,boostable:false},smithing:{level:30,boostable:false}},combat:55},
+ requirements:{quests:['arc-crown-1','arc-crown-2','arc-crown-3','arc-crown-4'],qp:36,skills:{crafting:{level:45,boostable:false},agility:{level:40,boostable:false},smithing:{level:40,boostable:false}},combat:55},
  description:'The Feast of Lamps has come. Lady Merrow Ashgrove means to crown a king of wax in the Undervault below Birchford Keep. Captain Varn means to stop her. So do you.',
  dialogue:{
   offer:talk('The Feast starts at dusk. Merrow will play the gracious host up here while her wax king waits below.','We light the Feast honestly, we unmask her in front of the whole court, and when she runs, we follow her down.','> Then let’s light some lamps.','Odo wants candles. Of course he does. Go on.'),

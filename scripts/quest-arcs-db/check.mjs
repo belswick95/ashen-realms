@@ -38,13 +38,19 @@ const refs=new Set();
 for(const a of ARCS){for(const r of questRows(a)){const d=r.data;for(const st of d.stages)for(const o of st.objectives||[])if(['collect','have'].includes(o.type))refs.add(o.target);
   for(const k of Object.keys({...d.items,...d.startItems}))refs.add(k);if(d.icon)refs.add(d.icon)}
  for(const e of [...a.npcs,...a.monsters])for(const k of [...Object.keys(e.data.shop||{}),...(e.data.loot||[]).map(l=>l.item)])refs.add(k)}
-const standins=[...refs].filter(k=>!own.has(k));
-await db.query(`insert into eldervale_private.realm_catalog(id,data) select 'item:'||k,jsonb_build_object('name',k) from unnest($1::text[]) k on conflict do nothing`,[standins]);
-for(let pass=1;pass<=2;pass++)for(const f of arcFiles)await run(readFileSync(repo+'db/'+f,'utf8'),f+' pass '+pass);
+const standins=[...refs].filter(k=>!own.has(k)),reserved=standins.filter(k=>k.includes(':'));
+const addItems=keys=>db.query(`insert into eldervale_private.realm_catalog(id,data) select 'item:'||k,jsonb_build_object('name',k) from unnest($1::text[]) k on conflict do nothing`,[keys]);
+await addItems(standins.filter(k=>!reserved.includes(k)));
+// Pass 1 before R3-I's reserved reward items exist: the quests are stored without them.
+for(const f of arcFiles)await run(readFileSync(repo+'db/'+f,'utf8'),f+' pass 1');
+for(const k of reserved)assert.equal((await one(`select count(*)::int n from eldervale_private.quest_definitions where data->'items' ? $1`,[k])).n,0,k+' left out while missing');
+// Pass 2 after they ship: the same files add them.
+await addItems(reserved);
+for(const f of arcFiles)await run(readFileSync(repo+'db/'+f,'utf8'),f+' pass 2');
 const rows=ARCS.flatMap(a=>questRows(a).map(r=>({...r,arc:a})));
 assert.equal((await one(`select count(*)::int n from eldervale_private.quest_definitions where data->>'chain' like 'arc-%'`)).n,rows.length,'every arc quest stored once');
 for(const r of rows)assert.deepEqual((await one(`select data from eldervale_private.quest_definitions where id=$1`,[r.id])).data,r.data,r.data.key+' stored as generated');
-ok(arcFiles.length+' arc files apply twice; '+rows.length+' quests stored exactly as generated ('+standins.length+' stand-in catalog items)');
+ok(arcFiles.length+' arc files apply twice; reserved R3-I rewards ('+reserved.join(', ')+') are left out until they exist, then added; '+rows.length+' quests stored exactly as generated');
 // Stubs for arc keys not written yet (lets an unfinished arc set be played end to end).
 const missing=allKeys().filter(k=>!rows.some(r=>r.data.key===k));
 for(const k of missing)await db.query(`insert into eldervale_private.quest_definitions(id,data) values(gen_random_uuid(),$1)`,[{key:k,name:'Stub '+k,description:'stub',giver:rows[0].data.giver,objectives:[],questPoints:2,published:false}]);
