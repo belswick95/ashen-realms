@@ -19,6 +19,7 @@ export const townMusic=[
 export const loginMusic={id:'login',name:'The gates of Eldervale',title:'Clash Defiant'};
 export function musicRegion(position,current=null){
  if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.z))return null;
+ const below=globalThis.eldervaleUndergroundMusic?.(position);if(below)return below;// caves (underground.js)
  const towns=generatedWorld?[...generatedWorld.towns.map((t,i)=>({...t,...townExtent(t,48),id:['oakcross','northwatch','suncrest'][i],title:['Lord of the Land','Night Vigil','Angevin'][i]})),townMusic.find(t=>t.id==='castle')]:townMusic;
  const distance=town=>Math.hypot(position.x-town.x,position.z-town.z);
  if(current&&towns.some(t=>t.id===current.id)&&distance(current)<current.radius+6)return current;
