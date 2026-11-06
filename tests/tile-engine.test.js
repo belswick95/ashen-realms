@@ -68,3 +68,29 @@ test('tick/tile SQL files: rules of the repo (no approval-prompt words, one tran
  assert.match(grid,/'tile_mode',false/,'tile mode starts off: applying changes no gameplay');
  assert.match(grid,/\(c\.src is null and s\.live\)/,'removed sources are rebuilt once');
 });
+
+test('remote tile walkers: tick-stamped samples glide, a repeated tick only turns the actor',async()=>{
+ const {createMotionTrack,presentPose}=await import('../motion-track.js');
+ const track=createMotionTrack({delay:600});const now0=10000;
+ track.pushTile(4200,{x:0,z:0,yaw:0,moving:false},now0,4200);
+ track.pushTile(4200,{x:0,z:0,yaw:1.2,moving:false},now0+100,4300);assert.equal(track.sample(now0+700).yaw,1.2,'facing updated without a new tick');
+ track.pushTile(9000,{x:TILE,z:0,yaw:Math.PI/2,moving:true},now0+200,9100);
+ // After a pause the walk starts from the old tile one tick earlier, not from 4.2 s ago.
+ const mid=track.sample(now0+600+(9000-4200)-300);assert.ok(mid.x>0&&mid.x<TILE,'gliding into the first tile: '+mid.x);
+ const tilePose={tile:true,x:0,z:0,yaw:0,at:0,stepTiles:1,path:[[TILE,0]]};assert.equal(presentPose(tilePose,300).x,TILE/2,'local tile walker presented per tick');
+ assert.equal(presentPose({x:0,z:0,yaw:0,at:0,speed:2,path:[[10,0]]},500).x,1,'free walker unchanged');
+});
+
+test('console: engine settings form validation and overlay drawing',async()=>{
+ const {engineSettings,engineSummary,ENGINE_TOGGLES,ENGINE_NUMBERS}=await import('../admin-engine.js');
+ assert.deepEqual(engineSettings({tile_mode:true,path_radius:'24',tick_driver:'loop'}),{tile_mode:true,path_radius:24,tick_driver:'loop'});
+ assert.throws(()=>engineSettings({path_radius:'500'}),/8 to 64/);assert.throws(()=>engineSettings({tick_driver:'warp'}),/tick driver/);
+ assert.ok(ENGINE_TOGGLES.some(([k])=>k==='tile_mode')&&ENGINE_NUMBERS.length===5);
+ assert.match(engineSummary({config:{tile_mode:true},tiles:{rows:10,blocked:4,doors:1},sources:3}),/ON.*10 grid tiles \(4 blocked, 1 at doors\) from 3/);
+ const {overlaySegments,OVERLAY_COLORS}=await import('../tile-overlay.js');
+ const segs=overlaySegments({center:[0,0],tiles:[[1,0,FLAG.BLOCK|FLAG.OBJECT,0],[2,0,FLAG.E,0],[3,0,0,FLAG.N]]},{radius:2});
+ assert.equal(segs.filter(s=>s.color===OVERLAY_COLORS.grid).length,12,'grid lines');
+ assert.equal(segs.filter(s=>s.color===OVERLAY_COLORS.block).length,2,'blocked tile cross');
+ assert.equal(segs.filter(s=>s.color===OVERLAY_COLORS.edge).length,1,'wall edge');
+ assert.equal(segs.filter(s=>s.color===OVERLAY_COLORS.door).length,1,'door edge, open or shut');
+});

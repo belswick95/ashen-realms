@@ -1,10 +1,16 @@
 import {slideStep} from './movement-collision.js?v=release-20261106-anim92';
+import {projectTilePose} from './tile-grid.js?v=release-20261106-anim92';
 // Timestamped presentation buffer: no position authority or damage is decided here.
 // When snapshots arrive later than `delay` (a slow reply on a phone or tablet
 // connection) the buffer runs dry and the actor would freeze, then jump. The
 // delay then grows by itself (presentation slows to half speed rather than
 // stopping) up to `maxExtra` ms, and shrinks back slowly once replies keep up.
-export function createMotionTrack({delay=350,maxExtra=600}={}){let frames=[],epoch=null,lastTime=-Infinity,extra=0,lastNow=null;return {get extraDelay(){return extra},push(time,pose,now=performance.now()){if(!Number.isFinite(time))return;if(epoch===null)epoch={server:time,local:now};const prev=frames.at(-1);if(prev&&Math.hypot(pose.x-prev.x,pose.z-prev.z)>12){frames=[];epoch={server:time,local:now};lastTime=-Infinity}if(prev&&time<=prev.time)return;frames.push({...pose,time});if(frames.length>32)frames.shift()},sample(now=performance.now()){if(!frames.length)return null;const step=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow));lastNow=now;const newest=frames.at(-1).time,raw=epoch.server+now-epoch.local-delay-extra;if(frames.length>1||raw>newest){if(raw>newest)extra=Math.min(maxExtra,extra+step*.5);else if(raw<newest-delay*.5)extra=Math.max(0,extra-step*.02)}const t=Math.max(lastTime,epoch.server+now-epoch.local-delay-extra);lastTime=t;while(frames.length>2&&frames[1].time<t)frames.shift();const a=frames[0],b=frames[1];if(!b||t<=a.time)return {...a};const f=Math.max(0,Math.min(1,(t-a.time)/(b.time-a.time)));const yaw=a.yaw+Math.atan2(Math.sin(b.yaw-a.yaw),Math.cos(b.yaw-a.yaw))*f;return {...b,x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f,yaw}},clear(){frames=[];epoch=null;lastTime=-Infinity;extra=0;lastNow=null}}}
+export function createMotionTrack({delay=350,maxExtra=600}={}){let frames=[],epoch=null,lastTime=-Infinity,extra=0,lastNow=null;return {get extraDelay(){return extra},push(time,pose,now=performance.now()){if(!Number.isFinite(time))return;if(epoch===null)epoch={server:time,local:now};const prev=frames.at(-1);if(prev&&Math.hypot(pose.x-prev.x,pose.z-prev.z)>12){frames=[];epoch={server:time,local:now};lastTime=-Infinity}if(prev&&time<=prev.time)return;frames.push({...pose,time});if(frames.length>32)frames.shift()},sample(now=performance.now()){if(!frames.length)return null;const step=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow));lastNow=now;const newest=frames.at(-1).time,raw=epoch.server+now-epoch.local-delay-extra;if(frames.length>1||raw>newest){if(raw>newest)extra=Math.min(maxExtra,extra+step*.5);else if(raw<newest-delay*.5)extra=Math.max(0,extra-step*.02)}const t=Math.max(lastTime,epoch.server+now-epoch.local-delay-extra);lastTime=t;while(frames.length>2&&frames[1].time<t)frames.shift();const a=frames[0],b=frames[1];if(!b||t<=a.time)return {...a};const f=Math.max(0,Math.min(1,(t-a.time)/(b.time-a.time)));const yaw=a.yaw+Math.atan2(Math.sin(b.yaw-a.yaw),Math.cos(b.yaw-a.yaw))*f;return {...b,x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f,yaw}},clear(){frames=[];epoch=null;lastTime=-Infinity;extra=0;lastNow=null},
+ // Tile walkers (tick & tile engine): `time` is the server tick at which the walker stood on this
+ // tile. A repeated tick only updates the facing (an NPC turning to talk); a walk that starts after
+ // a pause gets the previous tile one tick earlier, so the first step glides instead of jumping.
+ // `serverNow` anchors the clock on the first sample (tick times lag the reply time).
+ pushTile(time,pose,now=performance.now(),serverNow=time,tick=600){if(!Number.isFinite(time))return;if(epoch===null)epoch={server:Number.isFinite(serverNow)?serverNow:time,local:now};const prev=frames.at(-1);if(prev&&time<=prev.time){if(Math.hypot(pose.x-prev.x,pose.z-prev.z)<1e-6){prev.yaw=pose.yaw;prev.moving=pose.moving}return}if(prev&&time-prev.time>tick*1.5&&Math.hypot(pose.x-prev.x,pose.z-prev.z)>1e-6&&Math.hypot(pose.x-prev.x,pose.z-prev.z)<=12)this.push(time-tick,{...prev,yaw:pose.yaw},now);this.push(time,pose,now)}}}
 
 // The owning client predicts input immediately. Only reconcile the latest final
 // acknowledgement after its input queue drains; remote interpolation is delayed.
@@ -59,6 +65,8 @@ export function reconcileActivePose(position,target,input,dt,now,options){
 // idle). Advance the pose along its remaining path to the presentation time so
 // the local walker glides at the real ground speed and stops where the server
 // stops. Returns {x,z,yaw,moving}.
+// The local walker's presented pose: tile walkers glide tick by tick, free walkers at their speed.
+export function presentPose(pose,now){return pose?.tile?projectTilePose(pose,now):projectPathPose(pose,now)}
 export function projectPathPose(pose,now,{maxSeconds=1.5}={}){
  if(!pose)return null;
  const path=Array.isArray(pose.path)?pose.path:[];
