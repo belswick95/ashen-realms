@@ -151,3 +151,101 @@ await run(`select eldervale_private.engine_console('console_engine_set','{"confi
 for(let k=0;k<3;k++){await run(`update eldervale_private.realm_clock set tick_at=clock_timestamp()-interval '700 milliseconds'`,'stale');await one(`select eldervale_private.engine_tick_begin(eldervale_private.tick_time((eldervale_private.tick_no(clock_timestamp())/10)*10)) x`);await one(`select eldervale_private.world_tick() x`)}
 await run(`select eldervale_private.engine_console('console_engine_set','{"config":{"tile_mode":false}}')`,'tile mode off');
 console.log('ok world_tick and the grid-check tick run with the patched engine_tick_begin');
+
+// ======================================================================== part 2
+const perf2=readFileSync(repo+'db/tile-perf-2.sql','utf8');
+for(const w of ['delete','alter','drop'])assert.ok(!new RegExp('\\b'+w+'\\b','i').test(perf2),'tile-perf-2.sql avoids '+w);
+// Live reply-diet functions, verbatim.
+await run(`create table if not exists eldervale_private.sync_diet(user_id uuid primary key,states jsonb,updated_at timestamptz);
+CREATE OR REPLACE FUNCTION eldervale_private.diet_actors(uid uuid, full_reply jsonb, have jsonb)
+ RETURNS jsonb LANGUAGE plpgsql SET search_path TO ''
+AS $function$
+declare r jsonb:=full_reply;cur jsonb;base jsonb;known jsonb;changed jsonb;gone jsonb;token text;base_token text;
+begin
+ if uid is null or r is null or jsonb_typeof(r->'actors') is distinct from 'array' then return r;end if;
+ select coalesce(jsonb_object_agg(e->>'id',left(md5(e::text),12)),'{}'::jsonb) into cur from jsonb_array_elements(r->'actors') e;
+ select d.states into known from eldervale_private.sync_diet d where d.user_id=uid for update;
+ known:=coalesce(known,'{}'::jsonb);
+ base_token:=have->>'actorsToken';
+ if base_token is not null and known ? base_token then base:=known->base_token;end if;
+ token:=md5(random()::text||clock_timestamp()::text);token:=left(token,16);
+ if base is not null then
+  select coalesce(jsonb_agg(e),'[]'::jsonb) into changed from jsonb_array_elements(r->'actors') e where base->>(e->>'id') is distinct from left(md5(e::text),12);
+  select coalesce(jsonb_agg(k),'[]'::jsonb) into gone from jsonb_object_keys(base) k where k<>'_at' and not cur ? k;
+  r:=r||jsonb_build_object('actors',changed,'actorsGone',gone,'actorsBase',base_token);
+ end if;
+ known:=(select coalesce(jsonb_object_agg(s.key,s.value),'{}'::jsonb) from (select key,value from jsonb_each(known) order by (value->>'_at') desc nulls last limit 2) s)
+  ||jsonb_build_object(token,cur||jsonb_build_object('_at',to_char(clock_timestamp(),'YYYYMMDDHH24MISSUS')));
+ insert into eldervale_private.sync_diet(user_id,states,updated_at) values(uid,known,now())
+  on conflict (user_id) do update set states=excluded.states,updated_at=excluded.updated_at;
+ return r||jsonb_build_object('actorsToken',token);
+end $function$;
+CREATE OR REPLACE FUNCTION eldervale_private.diet_reply(full_reply jsonb, have jsonb, keys text[])
+ RETURNS jsonb LANGUAGE plpgsql IMMUTABLE SET search_path TO ''
+AS $function$
+declare r jsonb:=full_reply;digests jsonb:='{}'::jsonb;k text;digest text;
+begin
+ if r is null or jsonb_typeof(r)<>'object' then return r;end if;
+ if have is null or jsonb_typeof(have)<>'object' then have:='{}'::jsonb;end if;
+ foreach k in array keys loop
+  if r ? k then
+   digest:=md5((r->k)::text);digests:=digests||jsonb_build_object(k,digest);
+   if have->>k=digest then r:=r-k;end if;
+  end if;
+ end loop;
+ return r||jsonb_build_object('digests',digests);
+end $function$;`,'diet stand-ins');
+
+// Unpatched results first.
+const U='55555555-5555-4555-8555-555555555555';
+const actorsA=Array.from({length:40},(_,k)=>({id:'a'+k,x:k,z:k*2,hp:5}));
+const actorsB=actorsA.filter((_,k)=>k%7).map((a,k)=>k%5?a:{...a,x:a.x+1}).concat([{id:'new1',x:1,z:1,hp:1}]);
+const md5=async v=>(await one(`select md5($1::jsonb::text) d`,[JSON.stringify(v)])).d;
+const replyKeys=['shops','quests','tutorial','objects','gates'];
+const fullReply={time:1,shops:{m:{a:1}},quests:[{id:1,big:'x'.repeat(500)}],tutorial:{done:true},objects:[1,2],motion:{x:1}};
+const dietCases=[{},{shops:await md5(fullReply.shops)},{shops:await md5(fullReply.shops),quests:await md5(fullReply.quests),objects:'nope'},{tutorial:await md5(fullReply.tutorial),gates:'x'}];
+const diets=()=>Promise.all(dietCases.map(h=>one(`select eldervale_private.diet_reply($1::jsonb,$2::jsonb,$3::text[]) r`,[JSON.stringify(fullReply),JSON.stringify(h),replyKeys]).then(x=>x.r)));
+const actorDiet=async()=>{await run('begin','b');
+ const t=(await one(`select eldervale_private.diet_actors($1,$2::jsonb,'{}') r`,[U,JSON.stringify({actors:actorsA})])).r.actorsToken;
+ const r=(await one(`select eldervale_private.diet_actors($1,$2::jsonb,$3::jsonb) r`,[U,JSON.stringify({actors:actorsB}),JSON.stringify({actorsToken:t})])).r;
+ await run('rollback','r');return {actors:r.actors,actorsGone:r.actorsGone,base:r.actorsBase===t}};
+const pairs2=[];for(let n=0;n<3000;n++){const i=Math.round((rnd()-.5)*190),j=Math.round((rnd()-.5)*190),d=[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[0,-1],[0,0],[2,0]][n%8];pairs2.push([i,j,d[0],d[1]])}
+const moves=async()=>(await one(`select array_agg(eldervale_private.tile_can_move((v->>0)::integer,(v->>1)::integer,(v->>2)::integer,(v->>3)::integer) order by k) r from jsonb_array_elements($1::jsonb) with ordinality e(v,k)`,[JSON.stringify(pairs2)])).r;
+const movesStrictBefore=await moves();
+await run(`update eldervale_private.tick_engine set config=config||'{"corner_cutting":true}'`,'cc on');const movesCutBefore=await moves();await run(`update eldervale_private.tick_engine set config=config-'corner_cutting'`,'cc off');
+const dietsBefore=await diets(),actorDietBefore=await actorDiet();
+
+for(let pass=1;pass<=2;pass++)await run(perf2,'tile-perf-2 pass '+pass);
+const edits2=JSON.parse(perf2.match(/\$edits\$([\s\S]*?)\$edits\$/)[1]);
+for(const [fn,,nw] of edits2)assert.equal((await def(fn)).split(nw).length-1,1,fn+' patched once');
+for(const fn of ['tile_mode()','engine_config()','tile_flags_at(integer,integer)','actor_tile_json(text)','tile_step_tiles(uuid)','tile_motion_json(uuid)'])
+ assert.equal((await one(`select proconfig from pg_proc where oid=$1::regprocedure`,['eldervale_private.'+fn])).proconfig,null,fn+' inlinable');
+console.log('ok tile-perf-2 applies twice; every patch lands once; helpers inlinable');
+
+assert.deepEqual(await moves(),movesStrictBefore,'tile_can_move identical (no corner cutting)');
+await run(`update eldervale_private.tick_engine set config=config||'{"corner_cutting":true}'`,'cc on');assert.deepEqual(await moves(),movesCutBefore,'tile_can_move identical (corner cutting)');await run(`update eldervale_private.tick_engine set config=config-'corner_cutting'`,'cc off');
+assert.ok(movesStrictBefore.some(x=>!x)&&movesStrictBefore.some(x=>x),'the moves include blocked and open steps');
+assert.deepEqual(await diets(),dietsBefore,'diet_reply identical');
+assert.deepEqual(await actorDiet(),actorDietBefore,'diet_actors identical');
+assert.ok(actorDietBefore.actors.length>0&&actorDietBefore.actorsGone.length>0&&actorDietBefore.base,'the actor diet case has changes and removals');
+console.log(`ok tile_can_move (${pairs2.length} moves, both corner rules), diet_reply and diet_actors give identical results`);
+
+// Stationary NPCs at home: no rewrite every tick; a routed NPC still moves every tick.
+await run(`select eldervale_private.engine_console('console_engine_set','{"config":{"tile_mode":true}}')`,'tile mode on');
+const S0=Math.round(640/1.58),cx=i=>+(i*1.58).toFixed(3);
+await run(`update eldervale_private.realm_actors set deleted=true where not deleted;
+ insert into eldervale_private.realm_actors(id,data,x,z,hp) values
+ ('shopkeep','{"kind":"npc","name":"Shopkeep","hp":5,"x":${cx(S0+5)},"z":${cx(S0+5)}}',${cx(S0+5)},${cx(S0+5)},5),
+ ('walker','{"kind":"npc","name":"Walker","hp":5,"x":${cx(S0+8)},"z":${cx(S0+8)},"route":[{"x":${cx(S0+8)},"z":${cx(S0+8)}},{"x":${cx(S0+20)},"z":${cx(S0+8)}}]}',${cx(S0+8)},${cx(S0+8)},5)
+ on conflict (id) do update set data=excluded.data,x=excluded.x,z=excluded.z,hp=excluded.hp,deleted=false,roam_x=null,roam_z=null,roam_pause_until=null,route_step=null,target=null;
+ update eldervale_private.realm_players set x=${cx(S0)},z=${cx(S0)},last_seen=clock_timestamp(),path='[]',intent=null where user_id='22222222-2222-4222-8222-222222222222'`,'npcs');
+const tickOnce=async()=>{const into=(await one(`select (extract(epoch from clock_timestamp())*1000)::numeric%600 ms`)).ms;if(into>350)await new Promise(r=>setTimeout(r,640-into));
+ await run(`update eldervale_private.realm_clock set tick_at=eldervale_private.tick_time(eldervale_private.tick_no(clock_timestamp())-1)+interval '1 millisecond';update eldervale_private.realm_players set last_seen=clock_timestamp()`,'stale');await one(`select eldervale_private.world_tick() x`)};
+const row=async id=>(await one(`select xmin::text xm,roam_pause_until p,x ax from eldervale_private.realm_actors where id=$1`,[id]));
+await tickOnce();const k1=await row('shopkeep');await tickOnce();const k2=await row('shopkeep');
+assert.ok(k1.p,'the stationary NPC was reset once');assert.equal(k2.xm,k1.xm,'a stationary NPC at home is not rewritten while its pause runs');
+await run(`update eldervale_private.realm_actors set roam_pause_until=null where id='walker'`,'go');
+let moved=0;for(let k=0;k<6;k++){const b=await row('walker');await tickOnce();const a=await row('walker');if(a.ax!==b.ax)moved++}
+assert.ok(moved>=4,'the routed NPC walks on every tick: '+moved);
+await run(`select eldervale_private.engine_console('console_engine_set','{"config":{"tile_mode":false}}')`,'tile mode off');
+console.log(`ok stationary NPCs are not rewritten every tick; a routed NPC still steps every tick (${moved}/6)`);
