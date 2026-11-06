@@ -6,6 +6,9 @@
 // icon only; past the view range they are dropped from the instance list. Sway runs in the vertex
 // shader. Owner overrides come from the server (db/building-signs.sql) and are keyed by entity id.
 
+// Signs swing harder in the wind (weather.js shared uniform).
+import {weatherUniforms} from './weather.js?v=release-20261106-caves100';
+
 // ---------------------------------------------------------------- pure rules (tests/building-signs.test.js)
 export const SIGN_ICONS=['anvil','loaf','potion','sword','shield','bow','staff','coin','mug','bed','fish','needle','pickaxe','bell','crown','hammer'];
 export const SIGN_STYLES=['hanging','plaque','post'];
@@ -163,8 +166,8 @@ export const HANG={w:1.25,h:.47,t:.06,drop:.16},PLAQUE={w:1.7,h:.64,t:.07},ARM={
 // per-instance atlas rectangle for the painted face.
 function patch(material,{sway=false,atlas=false,time}){
  material.onBeforeCompile=s=>{
-  s.uniforms.uSignTime=time;
-  s.vertexShader=(sway?'attribute vec2 aSway;\nuniform float uSignTime;\nvec3 signSway(vec3 p){float a=aSway.x*(sin(uSignTime*1.25+aSway.y)+.35*sin(uSignTime*2.7+aSway.y*1.7));float c=cos(a),s=sin(a);return vec3(p.x,c*p.y-s*p.z,s*p.y+c*p.z);}\n':'')+(atlas?'attribute vec4 aUvRect;\n':'')+s.vertexShader;
+  s.uniforms.uSignTime=time;s.uniforms.weatherWind=weatherUniforms.weatherWind;
+  s.vertexShader=(sway?'attribute vec2 aSway;\nuniform float uSignTime,weatherWind;\nvec3 signSway(vec3 p){float a=aSway.x*(1.+weatherWind*2.2)*(sin(uSignTime*1.25+aSway.y)+.35*sin(uSignTime*2.7+aSway.y*1.7));float c=cos(a),s=sin(a);return vec3(p.x,c*p.y-s*p.z,s*p.y+c*p.z);}\n':'')+(atlas?'attribute vec4 aUvRect;\n':'')+s.vertexShader;
   if(sway){s.vertexShader=s.vertexShader.replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nobjectNormal=signSway(objectNormal);').replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed=signSway(transformed);')}
   if(atlas)s.vertexShader=s.vertexShader.replace('#include <uv_vertex>','#include <uv_vertex>\n#ifdef USE_MAP\nvMapUv=aUvRect.xy+vMapUv*aUvRect.zw;\n#endif');
  };

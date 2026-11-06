@@ -8,9 +8,10 @@ export const SAMPLE_SETS={
  chop:['chop'],treeFall:['tree-fall'],creak:['tree-creak'],rockBreak:['rock-break'],anvil:['anvil','hammer'],
  crackle:['fire-crackle'],crunch:['crunch-1','crunch-2','crunch-3'],splashCast:['splash-cast','splash-small'],
  splashCatch:['splash-catch'],ripple:['ripple','splash-small'],frog:['frog-1','frog-2'],dog:['dog'],sheep:['sheep'],
- cricket:['cricket'],birdSong:['../nature-birds'],hoof:['hoof-1','hoof-2','hoof-3','hoof-4','hoof-5','hoof-6']
+ cricket:['cricket'],birdSong:['../nature-birds'],hoof:['hoof-1','hoof-2','hoof-3','hoof-4','hoof-5','hoof-6'],
+ thunderRoll:['thunder-roll'],thunderCrack:['thunder-crack']
 };
-export const BED_FILES={river:'amb-river',birds:'amb-birds',wind:'amb-wind',fire:'amb-fire',crowd:'amb-crowd',lap:'amb-lap',crickets:'cricket'};
+export const BED_FILES={river:'amb-river',birds:'amb-birds',wind:'amb-wind',fire:'amb-fire',crowd:'amb-crowd',lap:'amb-lap',crickets:'cricket',rainLight:'amb-rain-light',rainHeavy:'amb-rain-heavy'};
 
 // Distance model for positional sounds: full level inside `near`, an inverse
 // roll-off to silence at `far`, a gentle low-pass (air absorption) and a pan
