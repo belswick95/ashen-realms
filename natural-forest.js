@@ -1,4 +1,4 @@
-import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261106-classic95';
+import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261106-mech96';
 export function buildNaturalForest(T,scene,trees,{wood,heightAt,seed=1,species=null}){
  const atlas=document.createElement('canvas');atlas.width=atlas.height=256;const c=atlas.getContext('2d'),rand=seededRandom(seed);c.clearRect(0,0,256,256);for(let i=0;i<650;i++){const a=rand()*Math.PI*2,r=Math.sqrt(rand())*116,x=128+Math.cos(a)*r,y=128+Math.sin(a)*r;c.fillStyle=['#466138','#5a7441','#789253','#314d31'][i%4];c.beginPath();c.ellipse(x,y,3+rand()*8,1.5+rand()*4,a,0,Math.PI*2);c.fill()}const map=new T.CanvasTexture(atlas);map.colorSpace=T.SRGBColorSpace;const leaves=new T.MeshStandardMaterial({map,alphaTest:.4,side:T.DoubleSide,roughness:.95,color:0xd4dfc3});
  const leafGeometry=new T.PlaneGeometry(1,1),trunkGeometry=new T.CylinderGeometry(.15,.27,1,10),branchGeometry=new T.CylinderGeometry(.45,.8,1,6),chunks=new Map(),meshes=[],dummy=new T.Object3D();

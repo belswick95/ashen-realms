@@ -1,7 +1,7 @@
 // Debug overlay for the owner: the server's tile grid around the player (Game console → World →
 // Tick & tile engine → Show tile grid). Grey lines: tile borders; red cross: blocked tile; blue
 // cross: water; orange: a blocked edge between two tiles; yellow: blocked only while a door is shut.
-import {TILE,FLAG} from './tile-grid.js?v=release-20261106-classic95';
+import {TILE,FLAG} from './tile-grid.js?v=release-20261106-mech96';
 export const OVERLAY_COLORS={grid:0x6f6a5c,block:0xe0432f,water:0x3f8fe0,edge:0xff9a1f,door:0xf3d43a};
 // Line segments (pairs of [x,z]) with a colour for one tile-view reply.
 export function overlaySegments(view,{radius=16}={}){

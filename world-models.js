@@ -1,16 +1,16 @@
-import {campObject} from './camp-models.js?v=release-20261106-classic95';
-import {professionStationModel} from './profession-models.js?v=release-20261106-classic95';
-import {oreResources} from './profession-data.js?v=release-20261106-classic95';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261106-classic95';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261106-classic95';
-import {creatureMaterial} from './creature-material.js?v=release-20261106-classic95';
-import {dragonModel} from './monster-dragon.js?v=release-20261106-classic95';
-import {castleObject} from './castle-models.js?v=release-20261106-classic95';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261106-classic95';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261106-classic95';
-import {townProp,dressFountain} from './town-props.js?v=release-20261106-classic95';
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261106-classic95';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261106-classic95';
+import {campObject} from './camp-models.js?v=release-20261106-mech96';
+import {professionStationModel} from './profession-models.js?v=release-20261106-mech96';
+import {oreResources} from './profession-data.js?v=release-20261106-mech96';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261106-mech96';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261106-mech96';
+import {creatureMaterial} from './creature-material.js?v=release-20261106-mech96';
+import {dragonModel} from './monster-dragon.js?v=release-20261106-mech96';
+import {castleObject} from './castle-models.js?v=release-20261106-mech96';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261106-mech96';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261106-mech96';
+import {townProp,dressFountain} from './town-props.js?v=release-20261106-mech96';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261106-mech96';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261106-mech96';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);

@@ -1,6 +1,6 @@
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {preloadWeapons} from './weapon-assets.js?v=release-20261106-classic95';
-import {tintOutfitMaterial} from './tier-tint.js?v=release-20261106-classic95';
+import {preloadWeapons} from './weapon-assets.js?v=release-20261106-mech96';
+import {tintOutfitMaterial} from './tier-tint.js?v=release-20261106-mech96';
 // Loads and caches the Quaternius character assets (assets/characters, CC0).
 // Geometry is shared between every character; each character only creates
 // its own bones and lightweight SkinnedMesh wrappers.
