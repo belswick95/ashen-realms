@@ -47,18 +47,20 @@ recreated. What we take is the general approach that games of that era shared.
 
 | Area | Classic treatment |
 | --- | --- |
-| Resolution | Full device resolution, same as normal mode. No pixelation. |
-| Lit materials | One shared `MeshLambertMaterial` per look (diffuse only, no environment map), pooled so the cell batcher can merge meshes. |
-| Shading | Smooth by default. Faceted for rocks, ore and polyhedral props. |
-| Textures | Large procedural textures (stone, roof, wood, cobble, thatch) are replaced by small 32 px versions: palette-snapped, lower contrast and smoothly filtered. Other surfaces use their average colour. |
-| Characters | Atlas textures are baked into per-vertex colour regions on the existing low-poly bodies. |
-| Round primitives | Spheres, cylinders, cones, rings and similar shapes are rebuilt with fewer segments. |
-| Terrain | Vertex colours from the climate weights, with small per-point variation, rock on steep slopes and snow on peaks, blended smoothly. |
-| Light | The game's sun plus a warm ambient fill. No shadow maps. |
-| Shadows | Instanced soft blob shadows under every character. |
-| Sky / weather | The normal sky dome and weather stay active. Fog starts closer. |
+| Resolution | Full device resolution, within the same per-device cap as normal mode. The automatic frame governor may trim it by up to 25 %. Nothing is pixelated. |
+| Lit materials | Shared `MeshLambertMaterial`s (diffuse only, no environment map, no specular), pooled by their final look so the cell batcher can merge meshes. Plain colours snap to a limited, slightly warm palette. |
+| Shading | Smooth (Gouraud-style) by default. Faceted for rocks, gems and other polyhedral shapes. |
+| Textures | Tiling textures (stone, roof tiles, planks, cobbles, thatch) stay on their surfaces but are graded in the shader: sampled a couple of mip levels blurrier, with contrast pulled toward the tile's average and the average moved onto the palette. Only the broad pattern remains. No pixels are read back and no textures are copied. |
+| Characters | Atlas textures are baked into per-vertex colour regions on the existing bodies. |
+| Signs, water | Their own shader hooks (sign atlas and sway, water ripples) carry over to Lambert. Water uses its cheap tier with no reflection pass. |
+| Round primitives | Spheres, cylinders, cones, rings and similar shapes are rebuilt with fewer segments. Shapes whose vertices were sculpted or transformed after creation keep their own geometry. |
+| Terrain | One smooth vertex colour per 3 m grid point, taken from the heightfield's own biome colour. Broad lush/dry patches, a small per-point light variation and darker steep slopes are added. The colour is re-baked when the game rebuilds the heightfield. |
+| Light | The game's sun plus a warm ambient fill that dims and cools at night. No shadow maps. |
+| Shadows | Soft blob shadows under every character, drawn as one instanced mesh. |
+| Sky / weather | The normal sky dome, fog colour and weather are left to the normal renderer. Fog starts closer. |
 | Grass | The instanced grass field is hidden. |
 
 Classic is cheaper than normal mode: no shadow pass, no grass field, no PBR
-or environment lighting, smaller textures and fewer triangles. It stays off
-by default.
+or environment lighting, a cheaper water tier and fewer triangles on round
+props. It stays off by default. Players switch it in Settings › Graphics, and
+the owner can set the default in the console (Economy › Classic look default).

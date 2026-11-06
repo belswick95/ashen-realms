@@ -62,7 +62,8 @@ test('classic palette is limited and warm; resolution, low-poly and terrain help
  assert.ok(grass[1]>grass[0]&&grass[1]>grass[2],'grass is green');assert.ok(snow[0]>.75&&snow[2]>.7,'snow is pale');assert.ok(Math.abs(rock[0]-rock[1])<.12,'steep slopes are grey rock');
  // Terrain is smooth, blended colour: a small per-point variation, not palette steps.
  const j=[terrainJitter(0,0),terrainJitter(3,0),terrainJitter(0,3)];assert.ok(j.every(v=>v>=-1&&v<=1));assert.notEqual(j[0],j[1]);assert.equal(terrainJitter(3,0),j[1],'deterministic');
- const g1=terrainColor([1,0,0,0],1,5,[1,1,1],-.2),g2=terrainColor([1,0,0,0],1,5,[1,1,1],.2);assert.ok(Math.abs(g1[1]-g2[1])>.005&&Math.abs(g1[1]-g2[1])<.06,'subtle variation');
+ const g1=terrainColor([1,0,0,0],1,5,null,-.2),g2=terrainColor([1,0,0,0],1,5,null,.2);assert.ok(Math.abs(g1[1]-g2[1])>.005&&Math.abs(g1[1]-g2[1])<.06,'subtle variation');
+ const own=terrainColor([1,0,0,0],1,5,[.3,.5,.2]),steep=terrainColor([1,0,0,0],.4,5,[.3,.5,.2]);assert.ok(own[1]>own[0]&&own[1]>own[2],'follows the heightfield colour');assert.ok(steep[1]<own[1]&&steep[1]>steep[0],'steep ground is darker but keeps its hue');
  // Faceted only for hard, cut shapes.
  assert.equal(facetedGeometry(new T.IcosahedronGeometry(1,1)),true);assert.equal(facetedGeometry(new T.SphereGeometry(1,8,6)),false);assert.equal(facetedGeometry(new T.BoxGeometry()),false);
  // Low-detail textures: structure detection and softening toward a palette colour.
