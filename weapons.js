@@ -1,9 +1,9 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261106-cut106';
-import {heldItem} from './weapon-assets.js?v=release-20261106-cut106';
-import {tierWeapons,weaponGear,BOWS,describeGear} from './gear-tiers.js?v=release-20261106-cut106';
-import {tintHeldItem} from './tier-tint.js?v=release-20261106-cut106';
-import {UNIQUE_ITEMS,legacyWeaponNumbers} from './unique-gear.js?v=release-20261106-cut106';
-import {accentHeldItem} from './unique-look.js?v=release-20261106-cut106';
+import {meshItemIcon} from './item-appearance.js?v=release-20261106-boss107';
+import {heldItem} from './weapon-assets.js?v=release-20261106-boss107';
+import {tierWeapons,weaponGear,BOWS,describeGear} from './gear-tiers.js?v=release-20261106-boss107';
+import {tintHeldItem} from './tier-tint.js?v=release-20261106-boss107';
+import {UNIQUE_ITEMS,legacyWeaponNumbers} from './unique-gear.js?v=release-20261106-boss107';
+import {accentHeldItem} from './unique-look.js?v=release-20261106-boss107';
 // Weapons are Quaternius CC0 models (assets/weapons, scripts/build-weapons.mjs)
 // in the held-item frame: grip at the origin, blade along +Y, edge toward +X.
 // Keys are what saves, the server catalog and equipment use; the first eight

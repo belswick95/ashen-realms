@@ -1,4 +1,4 @@
-import {generatedWorld,configureWorld} from './procedural-world.js?v=release-20261106-cut106';
+import {generatedWorld,configureWorld} from './procedural-world.js?v=release-20261106-boss107';
 // Shared world-space outlines. The 3D scene and both maps consume this data.
 export let worldRoads=generatedWorld?.roads||[[[-275,-215],[-340,-235]],[[-340,-235],[-340,-240]],[[0,0],[-60,45]],[[0,0],[75,-55]],[[0,0],[105,103]],[[-60,45],[-105,-91]],[[-60,45],[-210,145]],[[75,-55],[260,-185]],[[105,103],[225,215]],[[-105,-91],[-275,-215]]];
 export function roadPoints(a,b,segments=32){
