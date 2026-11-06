@@ -153,3 +153,5 @@ html body.touch-controls.fantasy-hud #map-controls>button{width:40px!important;m
 html body.touch-controls.fantasy-hud:not(.phone-layout) #map-controls #run-toggle{width:auto!important;min-width:64px!important;height:40px!important;min-height:40px!important}
 html body.fantasy-hud.phone-layout #map-controls #run-toggle{min-width:40px!important;max-width:44px!important;padding:2px!important;font-size:9px!important}
 body.touch-controls #settings-tab a{display:inline-block;padding:12px 0}
+/* All eight tabs share the bar on phones (QA fix113): at 40px each the Settings tab was cut off and only reachable by scrolling the tab strip. */
+html body.fantasy-hud.phone-layout #side>.tabs button{flex:1 1 0!important;min-width:34px!important;padding:5px 2px!important}
