@@ -34,7 +34,7 @@ export function createWorldTabs(ctx){
    for(const s of def.spawns||[])if(s.level===lv.level){const r=lv.rooms.find(q=>q.id===s.room);if(!r)continue;const w=toWorld(def,lv.level,r.x,r.z),[a,b]=px(w.x,w.z);x.fillStyle='#e05a4a';x.font='9px sans-serif';x.fillText(s.roster+'×'+s.count,a-12,b)}}
   const fig=el('figure');fig.append(c,el('figcaption','Level '+lv.level+' · '+(lv.name||'')+' · '+g.walkable+' tiles'));wrap.append(fig)}return wrap}
  function areaEditor(root,row){const def=structuredClone(row?.data||{...structuredClone(defaultDungeons[0]),id:'new_area',name:'New cave',origin:{x:3600,z:1200},entrances:[{...defaultDungeons[0].entrances[0],id:'mouth',x:Math.round(myPos().x),z:Math.round(myPos().z)}],spawns:[],reserved:[]});
-  const c=card((row?'Edit ':'New ')+(def.name||def.id),'Rooms are ellipses {id,x,z,rx,rz}; tunnels {width,points:[[x,z],…]}; entrances use overworld x/z, links/spawns/lights use the area’s local x/z. Origin x 1100–4200, z 1100–3200, 600 apart.');
+  const c=card((row?'Edit ':'New ')+(def.name||def.id),'Rooms are ellipses {id,x,z,rx,rz}; tunnels {width,points:[[x,z],…]}; entrances use overworld x/z, links/spawns/lights use the area’s local x/z. Origin x 1100–4200, z 1100–3200 (exploration areas: z 4250, see Exploration), 600 apart.');
   const text=field(c,'Definition (JSON)','def',JSON.stringify(def,null,1),'textarea');text.rows=22;text.classList.add('console-code');
   const enabled=field(c,'Enabled (entrances open, monsters spawned)','enabled',row?row.enabled:true,'checkbox');
   const out=el('div');c.append(out);

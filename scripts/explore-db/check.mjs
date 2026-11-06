@@ -4,7 +4,7 @@
 // talk, crate), opening caskets, clue loot, the master switch and the console commands.
 // Usage: npm i --no-save @electric-sql/pglite@0.2.17 && node scripts/explore-db/check.mjs
 // (or set PGLITE=/path/to/node_modules/@electric-sql/pglite/dist/index.js)
-import {readFileSync} from 'node:fs';
+import {readFileSync,existsSync} from 'node:fs';
 import assert from 'node:assert/strict';
 const {PGlite}=await import(process.env.PGLITE||'@electric-sql/pglite');
 const E=await import('../../explore-data.js');
@@ -27,6 +27,12 @@ await run(readFileSync(new URL('./fixture.sql',import.meta.url),'utf8'),'explore
 const roster=[...new Set(E.AREAS.flatMap(a=>a.spawns.map(s=>s.roster)).concat(['dusk_bat','hedge_brigand','cairn_skeleton']))];
 await db.query(`insert into eldervale_private.entities(id,revision,data) select md5('roster:'||k)::uuid,1,jsonb_build_object('kind','monster','name',k,'rosterKey',k,'level',10,'hp',100,'respawn',35,'roam',5,'blueprint','monster-roster-v1','x',0,'z',0) from unnest($1::text[]) k`,[roster]);
 for(const f of ['underground-1-engine','underground-2-content','underground-3-console'])await run(readFileSync(repo+'db/'+f+'.sql','utf8'),f);
+// R3-I and R3-J patch the same underground functions (other lines); apply their edits first, as on live.
+{const bosses=repo+'db/bosses-2-hooks.sql',arcs=repo+'db/quest-arc-0-core.sql';
+ if(existsSync(bosses)){const txt=readFileSync(bosses,'utf8'),list=JSON.parse(txt.slice(txt.indexOf('$edits$')+7,txt.lastIndexOf('$edits$')));
+  for(const [fn,old,neu] of list.filter(e=>/underground_/.test(e[0])))await db.query(`select eldervale_private.patch_function($1::regprocedure,array[$2,$3])`,[fn,old,neu])}
+ if(existsSync(arcs)){const txt=readFileSync(arcs,'utf8'),m=txt.match(/do \$gate\$[\s\S]*?end \$gate\$;/);if(m)await run(m[0],'R3-J gates')}
+ ok('R3-I/R3-J underground patches applied first ('+[existsSync(bosses),existsSync(arcs)].join('/')+')')}
 const files=['explore-1-core','explore-2-content','explore-3-clues','explore-4-console'];
 for(const pass of [1,2])for(const f of files)await run(readFileSync(repo+'db/'+f+'.sql','utf8'),f+' pass '+pass);
 ok('underground engine + four exploration files apply twice (idempotent)');

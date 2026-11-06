@@ -42,3 +42,6 @@ end $function$;
 -- Catalog rows for the reward items (live has them all).
 insert into eldervale_private.realm_catalog(id,data) select 'item:'||k,jsonb_build_object('name',k) from unnest(array['shrimp','trout','bread','bronzeArrows','steelArrows','ironBar','uncutGem','airRune','fireRune','oakLogs','feathers','healingPotion',
  'lobster','salmon','steelBar','mithrilBar','goldBar','moonsilverArrows','cutGem','yewLogs','shrineDraught','briskTonic','swordfish','stoneBass','runiteBar','adamantBar','tidesteelArrows','windstepBrew','serpentbaneTonic','deepglowAngler','spade','runiteBar']) k on conflict do nothing;
+-- quests v2 read helpers (live) used by the R3-I/R3-J passage gates.
+create or replace function eldervale_private.player_unlocked(uid uuid, unlock_id text) returns boolean language sql stable as $$ select coalesce((select s.game_flags->'unlocks'?unlock_id from public.player_saves s where s.user_id=uid),false) $$;
+create or replace function eldervale_private.quest_done_key(uid uuid, k text) returns boolean language sql stable as $$ select false $$;

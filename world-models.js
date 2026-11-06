@@ -1,4 +1,5 @@
 import {undergroundObjectModel} from './underground-models.js?v=release-20261106-boss107';
+import {exploreObjectModel} from './explore-models.js?v=release-20261106-boss107';
 import {campObject} from './camp-models.js?v=release-20261106-boss107';
 import {professionStationModel} from './profession-models.js?v=release-20261106-boss107';
 import {oreResources} from './profession-data.js?v=release-20261106-boss107';
@@ -85,7 +86,7 @@ function monsterAura(T,parent,d){if(!Number.isFinite(d.aura))return null;const m
 // in many places merges into one draw call per town cell (static-batch.js).
 const plainMaterials=new WeakMap();
 function plainMaterial(T,color){let cache=plainMaterials.get(T);if(!cache)plainMaterials.set(T,cache=new Map());let m=cache.get(color);if(!m){m=new T.MeshStandardMaterial({color,roughness:.9});m.userData.eldervaleShared=true;cache.set(color,m)}return m}
-export function objectModel(T,parent,id,d={}){const underground=undergroundObjectModel(T,parent,id,d);if(underground)return underground;const camp=campObject(T,parent,id,d);if(camp)return camp;const farm=farmObjectModel(T,parent,id);if(farm)return farm;
+export function objectModel(T,parent,id,d={}){const explore=exploreObjectModel(T,parent,id,d);if(explore)return explore;const underground=undergroundObjectModel(T,parent,id,d);if(underground)return underground;const camp=campObject(T,parent,id,d);if(camp)return camp;const farm=farmObjectModel(T,parent,id);if(farm)return farm;
  const station=professionStationModel(T,parent,id,d);if(station)return station;
  const prop=townProp(T,parent,id,d);if(prop)return prop;const training=tutorialObjectModel(T,parent,id,d);if(training)return training;
  const g=new T.Group();parent.add(g);const wood=0x745335,stone=0x92998e,metal=0x444b49;
