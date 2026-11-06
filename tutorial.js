@@ -2,6 +2,8 @@
 // Server state (quests + game_flags.tutorial) arrives with every realm sync; nothing here is authoritative.
 import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261106-mech96';
 import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261106-mech96';
+import {frameShot,roomFromGroup,glideClear} from './cutscene-camera.js?v=release-20261106-mech96';
+import {obstructionDistance} from './camera-obstruction.js?v=release-20261106-mech96';
 
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -10,7 +12,10 @@ const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 // npcDialogue (optional, npc-dialogue.js adapter {start(profile)->id,page,choose,close,owns}): tutor
 // conversations then use the game's one NPC conversation box instead of the cutscene chatbox.
 // actorRoot(id) (optional): an NPC's scene root, for quest cutscenes' NPC moves (quest-cutscenes.js).
-export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null,actorRoot=null}){
+// cameraOccluders() (optional): meshes a cutscene camera must not look through (camera-obstruction.js
+// collectCameraOccluders: walls, doors, furniture); rooms() (optional): building groups, so shots of
+// people indoors stay inside that room (cutscene-camera.js).
+export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null,actorRoot=null,cameraOccluders=()=>[],rooms=()=>[]}){
  document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-mech96'}));
  let quests=[],flags={},locked=false,step=null,talking=false,destroyed=false,selfName='';
  // ---- objective HUD
@@ -66,29 +71,80 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
   const a=(Number(shot.angle)||0)*Math.PI/180,dist=Number(shot.distance)||3.2,y=(p.y||heightAt(p.x,p.z))+1.5;
   return {eye:[p.x+Math.sin(a)*dist,y+(Number(shot.height)||1.6)-1.2,p.z+Math.cos(a)*dist],look:[p.x,y,p.z]};
  }
- // NPC move during a scene: walk to `to` over ms and/or turn to face `face` (presentation only;
- // the server's position takes over again when the scene ends).
- function npcStep(n){
-  const root=actorRoot?.(n.id);if(!root)return;
-  const from={x:root.position.x,z:root.position.z},to=Array.isArray(n.to)?{x:n.to[0],z:n.to[1]}:null,face=Array.isArray(n.face)?{x:n.face[0],z:n.face[1]}:null;
-  cutscene.npcs.set(n.id,{root,from,to,face,start:performance.now(),ms:Math.max(1,n.ms||900)});
+ // Line of sight against the game's camera occluders (walls, doors, furniture).
+ const ray=new T.Raycaster(),rayDir=new T.Vector3(),rayFrom=new T.Vector3();
+ function hitDistance(from,to){
+  rayFrom.set(from.x,from.y,from.z);rayDir.set(to.x-from.x,to.y-from.y,to.z-from.z);const far=rayDir.length();if(far<1e-3)return Infinity;
+  rayDir.multiplyScalar(1/far);ray.set(rayFrom,rayDir);ray.near=0;ray.far=far;let list=[];try{list=cameraOccluders()||[]}catch{}
+  const hit=list.length?ray.intersectObjects(list,false)[0]:null;return hit?hit.distance:Infinity;
  }
+ const clear=(a,b)=>{const d=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z);return hitDistance(b,a)>=d-.05};
+ // Subjects of a framed shot: 'player', an actor id, or {id,at:[x,z]} (where to look if not loaded).
+ function subject(ref){
+  if(ref==='player'){const p=playerPosition();return {x:p.x,y:p.y,z:p.z,tall:1.75}}
+  const id=typeof ref==='string'?ref:ref?.id,p=id?locate(id):null;
+  if(p)return {x:p.x,y:Number.isFinite(p.y)?p.y:heightAt(p.x,p.z),z:p.z,tall:1.75*(Number(ref?.scale)||1)};
+  if(Array.isArray(ref?.at))return {x:ref.at[0],y:heightAt(ref.at[0],ref.at[1]),z:ref.at[1],tall:1.75*(Number(ref?.scale)||1)};
+  return null;
+ }
+ // {two:{a,b,...}} / {over:{shoulder,at,...}}: resolved against the live camera (fov, aspect).
+ function frameDynamic(spec,camera){
+  const o=spec.two||spec.over,a=subject(spec.two?o.a:o.shoulder),b=subject(spec.two?o.b:o.at);if(!a||!b)return null;
+  let list=[];try{list=(rooms()||[]).map(roomFromGroup)}catch{}
+  const r=frameShot(spec,{a,b,fov:camera.fov,aspect:camera.aspect,rooms:list,clear});
+  return {eye:new T.Vector3(r.eye.x,r.eye.y,r.eye.z),look:new T.Vector3(r.look.x,r.look.y,r.look.z),aspect:camera.aspect,fov:camera.fov,ok:r.ok,subjects:[a,b]};
+ }
+ // Shots start from wherever the camera really is (a follow shot included).
  function setShot(shot,ms=0){
-  if(shot.follow){cutscene.follow=shot.follow;return}
+  if(shot.follow){cutscene.follow=shot.follow;cutscene.guard=null;return}
+  cutscene.follow=null;cutscene.from=cutscene.cam?{eye:cutscene.cam.eye.clone(),look:cutscene.cam.look.clone()}:null;cutscene.start=performance.now();cutscene.ms=Math.max(1,ms);cutscene.checked=false;cutscene.guard=null;
+  if(shot.two||shot.over){cutscene.to={spec:shot};return}
   shot=resolveShot(shot);if(!shot)return;
-  cutscene.follow=null;cutscene.from=cutscene.to?{...cutscene.to}:null;cutscene.to={eye:new T.Vector3(...shot.eye),look:new T.Vector3(...shot.look)};cutscene.start=performance.now();cutscene.ms=Math.max(1,ms);
-  if(!cutscene.from)cutscene.from=cutscene.to;
+  cutscene.to={eye:new T.Vector3(...shot.eye),look:new T.Vector3(...shot.look)};
  }
- async function walkTo(path,timeout){
+ // Places the cutscene camera: eased move between shots, cut when the glide would cross a wall,
+ // then pulled in front of anything between the subject and the lens (camera-obstruction.js).
+ function placeCamera(camera){
+  const now=performance.now(),dt=Math.min(.1,Math.max(0,(now-(cutscene.lastFrame||now))/1000));cutscene.lastFrame=now;
+  let eye,look,focus;
+  if(cutscene.follow){const p=playerPosition(),f=cutscene.follow;eye=new T.Vector3(p.x,p.y+f.up,p.z+f.back);look=new T.Vector3(p.x,p.y+1.2,p.z-f.ahead);focus=new T.Vector3(p.x,p.y+1.5,p.z)}
+  else if(cutscene.to){
+   const to=cutscene.to;
+   // Reframe when the screen changes shape or a subject is still settling (glide to the new framing).
+   const moved=to.subjects&&now-(to.checkedAt||0)>250&&(to.checkedAt=now,[subject(to.spec.two?.a??to.spec.over.shoulder),subject(to.spec.two?.b??to.spec.over.at)].some((p,i)=>p&&Math.hypot(p.x-to.subjects[i].x,p.z-to.subjects[i].z)>.6));
+   if(to.spec&&(!to.eye||to.aspect!==camera.aspect||to.fov!==camera.fov||moved)){const r=frameDynamic(to.spec,camera);if(!r)return false;
+    if(to.eye&&moved&&cutscene.cam){cutscene.from={eye:cutscene.cam.eye.clone(),look:cutscene.cam.look.clone()};cutscene.start=now;cutscene.ms=700;cutscene.checked=false}Object.assign(to,r)}
+   if(!to.eye)return false;
+   if(!cutscene.checked){cutscene.checked=true;if(!cutscene.from||!glideClear(cutscene.from.eye,to.eye,clear))cutscene.ms=1}
+   const from=cutscene.from||to,t=ease(Math.min(1,(now-cutscene.start)/cutscene.ms));
+   eye=new T.Vector3().lerpVectors(from.eye,to.eye,t);look=new T.Vector3().lerpVectors(from.look,to.look,t);focus=look;
+  }else return false;
+  const offset=eye.clone().sub(focus),want=offset.length();
+  if(want>.01){const hit=hitDistance(focus,eye);cutscene.guard=obstructionDistance(cutscene.guard,hit<want?hit-.3:want,want,dt);eye.copy(focus).addScaledVector(offset,Math.min(1,cutscene.guard/want))}
+  camera.position.copy(eye);camera.lookAt(look);cutscene.cam={eye,look};return true;
+ }
+ // Walks the player with real move commands. A walk that stalls (a shut door, a crowd) stops early
+ // instead of waiting out the timeout; with `settle` ({command,payload}: the scene's record command,
+ // which for 'arrival' makes the server place the player in front of the King) the player is then
+ // set down at the end behind a quick fade, so the scene never frames someone left outside a door.
+ async function walkTo(path,timeout,settle=null){
   await command('run',{enabled:true});await command('move',{path,target:null,kind:'walk'});
-  const end=path.at(-1),t0=performance.now();
-  while(!cutscene.skip&&performance.now()-t0<timeout){const p=playerPosition();if(Math.hypot(p.x-end[0],p.z-end[1])<1.4)break;await wait(150)}
+  const end=path.at(-1),t0=performance.now(),near=()=>{const p=playerPosition();return Math.hypot(p.x-end[0],p.z-end[1])<1.4};
+  let mark=playerPosition(),last={x:mark.x,z:mark.z},moved=t0;
+  while(!cutscene.skip&&performance.now()-t0<timeout){if(near())break;const p=playerPosition();
+   if(Math.hypot(p.x-last.x,p.z-last.z)>.3){last={x:p.x,z:p.z};moved=performance.now()}else if(performance.now()-moved>2200&&performance.now()-t0>3000)break;
+   await wait(150)}
   await command('run',{enabled:false});
+  if(settle&&!cutscene.skip&&!near()){
+   await fade(1,350);await command(settle.command,settle.payload);
+   const t1=performance.now();while(!near()&&performance.now()-t1<3500)await wait(120);
+   cutscene.cam=null;await fade(0,450);
+  }
  }
  // options.scene: a scene object (quest cutscenes); options.record: {command,payload} that records it.
  async function playCutscene(id,options={}){const prologue=options.prologue||null;
   const sceneData=options.scene||cutscenes[id];if(!validCutscene(sceneData)||cutscene.active)return;
-  cutscene.active=true;cutscene.skip=false;cutscene.to=null;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
+  cutscene.active=true;cutscene.skip=false;cutscene.to=null;cutscene.from=null;cutscene.cam=null;cutscene.guard=null;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
   window.addEventListener('keydown',blockKeys,true);fader.style.transition='none';fader.style.opacity='1';
   performance.mark?.('eldervale-cutscene-start');
   // The DOM prologue (tutorial-prologue.js) already showed the title card while the world loaded:
@@ -101,7 +157,7 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
     if(s.shot)setShot(s.shot,s.fade?0:s.ms||0);
     if(s.fade){await fade(s.fade==='in'?0:1,s.ms||800);continue}
     if(s.title){caption.replaceChildren(el('strong',null,s.title),el('span',null,s.subtitle||''));caption.classList.add('show');await wait(s.ms||2500);caption.classList.remove('show');continue}
-    if(s.walk){await walkTo(s.walk,s.timeout||20000);continue}
+    if(s.walk){await walkTo(s.walk,s.timeout||20000,s.settle?(options.record||{command:'tutorial_cutscene',payload:{id}}):null);continue}
     if(s.npc){npcStep(s.npc);if(s.npc.to)await wait(Math.max(1,s.npc.ms||900));continue}
     if(s.say){await speak(s.say);continue}
     if(s.wait||s.ms)await wait(s.wait||s.ms);
@@ -165,8 +221,7 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
     for(const m of cutscene.npcs.values()){const t=ease(Math.min(1,(performance.now()-m.start)/m.ms)),r=m.root;
      if(m.to){r.position.x=m.from.x+(m.to.x-m.from.x)*t;r.position.z=m.from.z+(m.to.z-m.from.z)*t;r.position.y=heightAt(r.position.x,r.position.z)}
      const aim=m.face||(m.to&&t<1?m.to:null);if(aim){const dx=aim.x-r.position.x,dz=aim.z-r.position.z;if(Math.abs(dx)+Math.abs(dz)>1e-3)r.rotation.y=Math.atan2(dx,dz)}}
-    if(cutscene.follow){const p=playerPosition(),f=cutscene.follow,yaw=Math.PI;camera.position.set(p.x,p.y+f.up,p.z+f.back);camera.lookAt(p.x,p.y+1.2,p.z-f.ahead);void yaw}
-    else if(cutscene.to){const t=ease(Math.min(1,(performance.now()-cutscene.start)/cutscene.ms));camera.position.lerpVectors(cutscene.from.eye,cutscene.to.eye,t);const look=new T.Vector3().lerpVectors(cutscene.from.look,cutscene.to.look,t);camera.lookAt(look)}
+    placeCamera(camera);
     return;
    }
    if(!step||step.state==='finished'){arrow.visible=false;return}
