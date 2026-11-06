@@ -1,5 +1,5 @@
 // Exploration runtime (client): lore objects (read, mote over unread ones), clue crates, the Explore
-// journal (Lore · Places · Clues · Treasure · Emotes) with an achievement counter, "Area discovered"
+// journal (Lore · Places · Clues · Treasure · Emotes · Bosses, the boss log from boss-journal.js) with an achievement counter, "Area discovered"
 // toasts, discovered places on the world map and minimap, the clue reader (riddles, bearings and a
 // drawn map fragment), emotes, digging and opening caskets. The server decides everything
 // (db/explore-1-core.sql): this module only sends commands and shows the replies/events.
@@ -13,6 +13,7 @@ import {undergroundAt,undergroundAreas} from './underground.js?v=release-2026110
 import {walkableLocal} from './underground-data.js?v=release-20261106-r3x109';
 import {animateExploreModel} from './explore-models.js?v=release-20261106-r3x109';
 import {goods} from './economy.js?v=release-20261106-r3x109';
+import {drawBossJournal,bossJournalRows,bossJournalSummary} from './boss-journal.js?v=release-20261106-r3x109';
 
 // ---------------------------------------------------------------------------- item icons + goods
 const svg=body=>'<svg viewBox="0 0 48 48" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g stroke="#342c26" stroke-width="1.5" stroke-linejoin="round">'+body+'</g></svg>';
@@ -63,9 +64,9 @@ export function drawClueMap(ctx,w,h,map,{id='',rivers=worldRivers,roads=roadLine
 // ------------------------------------------------------------------------------------------ UI
 let cssLoaded=false;
 function loadCss(doc){if(cssLoaded||!doc?.head)return;cssLoaded=true;const l=doc.createElement('link');l.rel='stylesheet';l.href='./explore.css?v=release-20261106-r3x109';doc.head.append(l)}
-export function createExplore({T=null,camera=null,player=null,say=()=>{},command=(c,p)=>globalThis.eldervaleRealm?.command(c,p),journalFetch=()=>globalThis.eldervaleExploreJournal?.()??Promise.resolve(null),doc=globalThis.document,now=()=>performance.now()}={}){
+export function createExplore({T=null,camera=null,player=null,say=()=>{},command=(c,p)=>globalThis.eldervaleRealm?.command(c,p),journalFetch=()=>globalThis.eldervaleExploreJournal?.()??Promise.resolve(null),bossFetch=()=>globalThis.eldervaleBossJournal?.()??Promise.resolve(null),doc=globalThis.document,now=()=>performance.now()}={}){
  loadCss(doc);
- let journal=null,loading=null,nextScan=0,panel=null,tab='lore',reader=null;const asked=new Map(),loreRoots=[],emotes=[];
+ let journal=null,loading=null,nextScan=0,panel=null,tab='lore',reader=null,bosses,bossLoading=null;const asked=new Map(),loreRoots=[],emotes=[];
  const el=(tag,text,attrs={})=>{const e=doc.createElement(tag);if(text!=null)e.textContent=text;for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e};
  const found=(kind,id)=>!!(kind==='lore'?journal?.lore:journal?.places)?.find(x=>x.id===id&&x.found);
  async function refresh(){if(loading)return loading;loading=Promise.resolve(journalFetch()).then(j=>{if(j)journal=j;loading=null;updateMotes();if(panel?.open)drawPanel();updateCounter();return journal}).catch(()=>{loading=null;return journal});return loading}
@@ -74,16 +75,18 @@ export function createExplore({T=null,camera=null,player=null,say=()=>{},command
  function toast(title,text='',kind=''){if(!toastBox)return say(title+(text?' — '+text:''));const t=el('div',null,{class:'explore-toast '+kind});t.append(el('strong',title));if(text)t.append(el('span',text));toastBox.append(t);setTimeout(()=>t.classList.add('out'),3800);setTimeout(()=>t.remove(),4400)}
  // HUD button beside the world-map toggle.
  let counter=null;
- if(doc?.body){const b=el('button','✦',{id:'explore-toggle',type:'button',title:'Exploration journal: lore, places, clues','aria-label':'Exploration journal'});b.onclick=()=>openPanel();const map=doc.getElementById('map-toggle');if(map?.parentNode)map.parentNode.insertBefore(b,map.nextSibling);else doc.body.append(b);counter=el('span','',{class:'explore-counter'});b.append(counter)}
+ if(doc?.body){const b=el('button','✦',{id:'explore-toggle',type:'button',title:'Journal: lore, places, clues, boss kills','aria-label':'Exploration journal'});b.onclick=()=>openPanel();const map=doc.getElementById('map-toggle');if(map?.parentNode)map.parentNode.insertBefore(b,map.nextSibling);else doc.body.append(b);counter=el('span','',{class:'explore-counter'});b.append(counter)}
  function updateCounter(){if(counter)counter.textContent=journal?' '+(journal.lore||[]).filter(l=>l.found).length+'/'+(journal.lore||[]).length:''}
  function updateMotes(){for(const r of loreRoots){const m=r.userData.exploreModel?.userData.exploreMote;if(m)m.visible=!found('lore',r.userData.exploreLore)}}
 
  // --------------------------------------------------------------------- panel (journal)
- function openPanel(which){if(!doc?.body)return;if(!panel){panel=el('dialog',null,{class:'explore-panel','aria-label':'Exploration journal'});doc.body.append(panel)}if(which)tab=which;drawPanel();if(!panel.open)panel.showModal?.();void refresh()}
- function drawPanel(){if(!panel)return;panel.replaceChildren();const head=el('header');head.append(el('h2','Exploration'),el('p',journal?counterText(journal):'Loading…',{class:'explore-count'}));
+ function openPanel(which){if(!doc?.body)return;if(!panel){panel=el('dialog',null,{class:'explore-panel','aria-label':'Exploration journal'});doc.body.append(panel)}if(which)tab=which;drawPanel();if(!panel.open)panel.showModal?.();void refresh();if(tab==='bosses')void refreshBosses()}
+ // Boss log (Bosses tab): fetched when the tab is shown, so kill counts are current.
+ function refreshBosses(){if(bossLoading)return bossLoading;bossLoading=Promise.resolve(bossFetch()).catch(()=>null).then(r=>{bosses=r??null;bossLoading=null;if(panel?.open&&tab==='bosses')drawPanel();return bosses});return bossLoading}
+ function drawPanel(){if(!panel)return;panel.replaceChildren();const head=el('header'),bossRows=tab==='bosses'&&bosses?bossJournalRows(bosses):null;head.append(el('h2',tab==='bosses'?'Boss log':'Exploration'),el('p',tab==='bosses'?(bossRows?.length?bossJournalSummary(bossRows):''):journal?counterText(journal):'Loading…',{class:'explore-count'}));
   const close=el('button','✕',{type:'button','aria-label':'Close'});close.onclick=()=>panel.close();head.append(close);panel.append(head);
   if(journal&&!journal.on)panel.append(el('p','Exploration is closed for now.',{class:'explore-muted'}));
-  const tabs=el('nav');for(const [k,label] of [['lore','Lore'],['places','Places'],['clues','Clues'],['treasure','Treasure'],['emotes','Emotes']]){const b=el('button',label,{type:'button','aria-pressed':String(tab===k)});b.onclick=()=>{tab=k;drawPanel()};tabs.append(b)}panel.append(tabs);
+  const tabs=el('nav');for(const [k,label] of [['lore','Lore'],['places','Places'],['clues','Clues'],['treasure','Treasure'],['emotes','Emotes'],['bosses','Bosses']]){const b=el('button',label,{type:'button','aria-pressed':String(tab===k)});b.onclick=()=>{tab=k;drawPanel();if(k==='bosses')void refreshBosses()};tabs.append(b)}panel.append(tabs);
   const body=el('section',null,{class:'explore-body'});panel.append(body);const j=journal||{lore:[],places:[],clues:[],stats:{clues:{},log:{},titles:[]}};
   if(tab==='lore'){let region='';for(const l of j.lore){if(l.region!==region){region=l.region;body.append(el('h3',region))}const row=el('details',null,{class:l.found?'found':'unfound'});row.append(el('summary',l.found?l.name:'??? — '+l.name.replace(/[A-Za-z]/g,(c,i)=>i%3?'·':c)));if(l.found)row.append(el('p',l.text));else row.append(el('p','Not yet read. Look for it in '+region+'.',{class:'explore-muted'}));body.append(row)}
    const next=(j.milestones?.lore||[]).find(m=>m.at>j.lore.filter(l=>l.found).length);if(next)body.append(el('p','Next lore milestone: '+next.at+' read → '+next.amount+' XP lamp'+(next.title?' and the title “'+next.title+'”':''),{class:'explore-muted'}))}
@@ -93,6 +96,7 @@ export function createExplore({T=null,camera=null,player=null,say=()=>{},command
    const done=j.stats?.clues||{};body.append(el('p','Completed: '+TIERS.map(t=>TIER_LABEL[t]+' '+(done[t]||0)).join(' · '),{class:'explore-muted'}))}
   else if(tab==='treasure'){const log=j.stats?.log||{};const grid=el('div',null,{class:'explore-log'});for(const k of KEEPSAKES){const g=goods[k]||{},n=log[k]||0,cell=el('div',null,{class:n?'got':'missing',title:(g.name||k)+(n?' ×'+n:' — not yet found')});const icon=el('span',null,{class:'item-icon'});icon.innerHTML=n?g.icon||'':'?';cell.append(icon,el('small',n?g.name:'???'));grid.append(cell)}
    body.append(el('p','Treasure log: '+KEEPSAKES.filter(k=>log[k]).length+'/'+KEEPSAKES.length+' keepsakes',{class:'explore-count'}),grid);if((j.stats?.titles||[]).length)body.append(el('p','Titles: '+j.stats.titles.join(', ')))}
+  else if(tab==='bosses')drawBossJournal(body,el,bosses);
   else if(tab==='emotes'){body.append(el('p','Some clues ask for an emote at a place.',{class:'explore-muted'}));const row=el('div',null,{class:'explore-emotes'});for(const [k,label] of Object.entries(EMOTES)){const b=el('button',label,{type:'button'});b.onclick=()=>emote(k);row.append(b)}body.append(row)}
  }
  // ------------------------------------------------------------------------- clue reader

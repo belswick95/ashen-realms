@@ -48,7 +48,7 @@ fights only in its lair arena (multi-combat, instanced-feel room, respawn ~30–
   L2 Twin roost (Vaelith). Dragon-only drops: Wyrmscale armour, wyrm scales, wyrm bones.
 
 ## Unique items (catalog ids)
-All are **never sold in shops** (`shopless: true`). Untradeable items are also kept on death.
+All gear here is **never sold in shops** (`shopless: true`); the wyrm scale and the Breathward tonic are materials/consumables and are not flagged. Untradeable items are also kept on death.
 Grant/drop ids are the loot ids below (`eldervale_private.item_change(uid, '<id>', 1)` works for every one).
 
 | Id | Name | Slot / type | Source | Rarity | Trade |
@@ -67,7 +67,7 @@ Grant/drop ids are the loot ids below (`eldervale_private.item_change(uid, '<id>
 | `armor:wyrmscaleCoif` / `armor:wyrmscaleJerkin` / `armor:wyrmscaleChaps` / `armor:wyrmscaleVambraces` | Wyrmscale armour | ranged armour, Ranged 60 | adult dragons (1/96), Vaelith | — | tradeable |
 | `wyrmScale` | Wyrm scale | material | all dragons | 1/8 | tradeable |
 | `shield:scalewardShield` | Scaleward Shield | anti-breath shield, Defence 60 | Smithing 62 at an anvil: 2 tidesteel bars + 3 wyrm scales | — | tradeable |
-| `breathwardTonic` | Breathward tonic | potion (breath ward 500 ticks) | dragons, Cindervault boss supplies | — | tradeable |
+| `breathwardTonic` | Breathward tonic | potion (breath ward 500 ticks) | dragons, Cindervault boss supplies; also sold (2,400 gold, restocking) by Sorrel the Apothecary in Birchford and the Winterwatch and Emberspire Provisioners (`db/polish-1-potion-shops.sql`) | — | tradeable, not shopless |
 
 ### Reserved for quest rewards (R3-J grants these; no drop source)
 Untradeable, kept on death, recoverable story items:
@@ -96,6 +96,7 @@ The owner can open or close any gate in the console (Bosses › Lairs › gate).
 | `lair:wyrmhold` | Wyrmhold maw |
 
 Server helpers: `eldervale_private.boss_kc(uid, boss) → integer`, `eldervale_private.boss_pb(uid, boss) → ticks`.
+Players see their own kill counts and best times in the journal (✦ button) › **Bosses** tab (`boss-journal.js`, from `public.boss_journal()`).
 A quest finale can check `boss_kc(uid,'twinflame_wyrm') > 0`.
 
 ## Underground origins used (keep other areas ≥ 600 away)
