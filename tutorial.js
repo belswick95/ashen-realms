@@ -9,7 +9,8 @@ const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 
 // npcDialogue (optional, npc-dialogue.js adapter {start(profile)->id,page,choose,close,owns}): tutor
 // conversations then use the game's one NPC conversation box instead of the cutscene chatbox.
-export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null}){
+// actorRoot(id) (optional): an NPC's scene root, for quest cutscenes' NPC moves (quest-cutscenes.js).
+export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null,actorRoot=null}){
  document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-classic95'}));
  let quests=[],flags={},locked=false,step=null,talking=false,destroyed=false,selfName='';
  // ---- objective HUD
@@ -52,15 +53,29 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
  function giverNames(){for(const q of quests){const p=locate(q.data.giver);if(p?.name)q.data.giverName=p.name}}
 
  // ---- cutscene engine (data driven, see cutscenes.js)
- const cutscene={active:false,shot:null,from:null,to:null,start:0,ms:1,follow:null,skip:false};
+ const cutscene={active:false,shot:null,from:null,to:null,start:0,ms:1,follow:null,skip:false,npcs:new Map()};
  const letterbox=el('div','tutorial-letterbox');letterbox.hidden=true;const caption=el('div','tutorial-caption'),skip=el('button','tutorial-skip','Skip ▸▸');skip.type='button';
  const fader=el('div','tutorial-fade');letterbox.append(el('i','bar top'),el('i','bar bottom'),caption,skip);document.body.append(letterbox,fader);
  // Escape skips the scene even while a line of dialogue (whose Continue button has focus) is showing.
  const blockKeys=e=>{if(!cutscene.active)return;if(e.key==='Escape'){e.stopPropagation();e.preventDefault();skip.onclick();return}if(box.contains(e.target))return;if(![' ','Enter'].includes(e.key)||!box.hidden){e.stopPropagation();e.preventDefault()}};
  skip.onclick=()=>{cutscene.skip=true;cont.click()};
  const fade=(to,ms)=>{fader.style.transition='opacity '+ms+'ms ease';fader.style.opacity=String(to);return wait(ms)};
+ // {around:actorId,distance,height,angle(deg)}: a shot framed on an NPC wherever it stands now.
+ function resolveShot(shot){
+  if(!shot.around)return shot;const p=locate(shot.around);if(!p)return null;
+  const a=(Number(shot.angle)||0)*Math.PI/180,dist=Number(shot.distance)||3.2,y=(p.y||heightAt(p.x,p.z))+1.5;
+  return {eye:[p.x+Math.sin(a)*dist,y+(Number(shot.height)||1.6)-1.2,p.z+Math.cos(a)*dist],look:[p.x,y,p.z]};
+ }
+ // NPC move during a scene: walk to `to` over ms and/or turn to face `face` (presentation only;
+ // the server's position takes over again when the scene ends).
+ function npcStep(n){
+  const root=actorRoot?.(n.id);if(!root)return;
+  const from={x:root.position.x,z:root.position.z},to=Array.isArray(n.to)?{x:n.to[0],z:n.to[1]}:null,face=Array.isArray(n.face)?{x:n.face[0],z:n.face[1]}:null;
+  cutscene.npcs.set(n.id,{root,from,to,face,start:performance.now(),ms:Math.max(1,n.ms||900)});
+ }
  function setShot(shot,ms=0){
   if(shot.follow){cutscene.follow=shot.follow;return}
+  shot=resolveShot(shot);if(!shot)return;
   cutscene.follow=null;cutscene.from=cutscene.to?{...cutscene.to}:null;cutscene.to={eye:new T.Vector3(...shot.eye),look:new T.Vector3(...shot.look)};cutscene.start=performance.now();cutscene.ms=Math.max(1,ms);
   if(!cutscene.from)cutscene.from=cutscene.to;
  }
@@ -70,8 +85,9 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
   while(!cutscene.skip&&performance.now()-t0<timeout){const p=playerPosition();if(Math.hypot(p.x-end[0],p.z-end[1])<1.4)break;await wait(150)}
   await command('run',{enabled:false});
  }
- async function playCutscene(id,{prologue=null}={}){
-  const sceneData=cutscenes[id];if(!validCutscene(sceneData)||cutscene.active)return;
+ // options.scene: a scene object (quest cutscenes); options.record: {command,payload} that records it.
+ async function playCutscene(id,options={}){const prologue=options.prologue||null;
+  const sceneData=options.scene||cutscenes[id];if(!validCutscene(sceneData)||cutscene.active)return;
   cutscene.active=true;cutscene.skip=false;cutscene.to=null;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
   window.addEventListener('keydown',blockKeys,true);fader.style.transition='none';fader.style.opacity='1';
   performance.mark?.('eldervale-cutscene-start');
@@ -86,13 +102,14 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
     if(s.fade){await fade(s.fade==='in'?0:1,s.ms||800);continue}
     if(s.title){caption.replaceChildren(el('strong',null,s.title),el('span',null,s.subtitle||''));caption.classList.add('show');await wait(s.ms||2500);caption.classList.remove('show');continue}
     if(s.walk){await walkTo(s.walk,s.timeout||20000);continue}
+    if(s.npc){npcStep(s.npc);if(s.npc.to)await wait(Math.max(1,s.npc.ms||900));continue}
     if(s.say){await speak(s.say);continue}
     if(s.wait||s.ms)await wait(s.wait||s.ms);
    }
   }finally{
    close();if(fader.style.opacity!=='1')await fade(1,500);
-   const ok=await command('tutorial_cutscene',{id});if(!ok)console.warn('Cutscene record failed:',lastError());
-   cutscene.active=false;cutscene.follow=null;cutscene.to=null;letterbox.hidden=true;caption.classList.remove('show');document.body.classList.remove('tutorial-cutscene');window.removeEventListener('keydown',blockKeys,true);
+   const ok=await command(options.record?.command||'tutorial_cutscene',options.record?.payload||{id});if(!ok)console.warn('Cutscene record failed:',lastError());
+   cutscene.active=false;cutscene.follow=null;cutscene.to=null;cutscene.npcs.clear();letterbox.hidden=true;caption.classList.remove('show');document.body.classList.remove('tutorial-cutscene');window.removeEventListener('keydown',blockKeys,true);
    await wait(350);await fade(0,900);drawHud();
    if(id==='arrival')say('Find Sergeant Brannoc in the training yard. Follow the golden arrow.');
   }
@@ -101,6 +118,8 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
 
  return {
   get active(){return locked},
+  // The castle training's current step (the quest guidance trail follows it while training).
+  currentStep:()=>step,
   gateLocked:()=>locked,
   blockWalk(point){if(cutscene.active)return true;const p=playerPosition();if(exitBlocked(locked,p,point)){say(GATE_MESSAGE);return true}return false},
   sync(data){
@@ -143,6 +162,9 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
   // Called each frame after the game camera is placed.
   frame(camera){
    if(cutscene.active){
+    for(const m of cutscene.npcs.values()){const t=ease(Math.min(1,(performance.now()-m.start)/m.ms)),r=m.root;
+     if(m.to){r.position.x=m.from.x+(m.to.x-m.from.x)*t;r.position.z=m.from.z+(m.to.z-m.from.z)*t;r.position.y=heightAt(r.position.x,r.position.z)}
+     const aim=m.face||(m.to&&t<1?m.to:null);if(aim){const dx=aim.x-r.position.x,dz=aim.z-r.position.z;if(Math.abs(dx)+Math.abs(dz)>1e-3)r.rotation.y=Math.atan2(dx,dz)}}
     if(cutscene.follow){const p=playerPosition(),f=cutscene.follow,yaw=Math.PI;camera.position.set(p.x,p.y+f.up,p.z+f.back);camera.lookAt(p.x,p.y+1.2,p.z-f.ahead);void yaw}
     else if(cutscene.to){const t=ease(Math.min(1,(performance.now()-cutscene.start)/cutscene.ms));camera.position.lerpVectors(cutscene.from.eye,cutscene.to.eye,t);const look=new T.Vector3().lerpVectors(cutscene.from.look,cutscene.to.look,t);camera.lookAt(look)}
     return;

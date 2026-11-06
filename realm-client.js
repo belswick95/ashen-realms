@@ -37,7 +37,9 @@ export async function startRealm(db,user,session){
  }
  const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued||movesPending>0,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
   // Cosmetic commands (level-up fireworks) fail silently: no chat notice.
-  quietCommand:(c,p)=>enqueue(c,p).then(r=>r??true).catch(()=>false)};window.eldervaleRealm=controller;
+  quietCommand:(c,p)=>enqueue(c,p).then(r=>r??true).catch(()=>false),
+  // Quest guidance trail: the server tile grid around a point (db/quests-v2.sql quest_guide_tiles).
+  guideTiles:args=>db.rpc('quest_guide_tiles',args).then(r=>{if(r.error)throw Error(r.error.message);return r.data})};window.eldervaleRealm=controller;
  await enqueue();const timer=setInterval(()=>{if(disposed)return;if(latestSteer)void sendSteer();else if(!pending&&!steerInFlight)void enqueue().catch(()=>{})},250);
  addEventListener('pagehide',()=>{disposed=true;clearInterval(timer)},{once:true});
  return controller;

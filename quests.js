@@ -1,5 +1,6 @@
 import {goods,quantity} from './economy.js?v=release-20261106-classic95';
 import {levelSkills} from './level-up.js?v=release-20261106-classic95';
+import {isStaged,journalEntries,requirementRows,lampLabel,lampChoices,unlockLabel} from './quest-v2.js?v=release-20261106-classic95';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!=null)n.textContent=text;for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);return n};
 const button=(parent,label,fn)=>{const n=el('button',label,{type:'button'});n.onclick=fn;parent.append(n);return n};
 function input(parent,label,value,type='text',choices=null){const wrap=el('label',label),n=el(choices?'select':type==='textarea'?'textarea':'input');if(choices){for(const [v,t]of choices)n.append(el('option',t,{value:v}));n.value=value??''}else if(type==='checkbox'){n.type=type;n.checked=!!value}else{if(type!=='textarea')n.type=type;n.value=value??''}wrap.append(n);parent.append(wrap);return n}
@@ -60,7 +61,10 @@ export function rewardEntries(data={},{points=true}={}){
  if(points&&qp)out.push({kind:'points',amount:qp,label:qp+' Quest Point'+(qp===1?'':'s')});
  for(const [skill,n]of Object.entries(data.xp||{}))if(Number(n)>0){const s=skillInfo(skill);out.push({kind:'xp',skill,amount:Number(n),icon:s.icon,label:Number(n).toLocaleString('en-GB')+' '+s.name+' XP'})}
  for(const [id,n]of Object.entries(data.items||{}))if(Number(n)>0)out.push({kind:'item',id,amount:Number(n),label:(Number(n)>1?Number(n)+' × ':'')+itemName(id)});
+ for(const l of data.lamps||[])out.push({kind:'lamp',icon:'🪔',label:lampLabel(l)});
  if(Number(data.gold)>0)out.push({kind:'coins',amount:Number(data.gold),label:Number(data.gold).toLocaleString('en-GB')+' coins'});
+ // Unlocks the player gets whatever they chose (flag-dependent ones stay a surprise).
+ for(const u of data.unlocks||[])if(!u.ifFlags&&u.type!=='flag')out.push({kind:'unlock',icon:'🔓',label:unlockLabel(u)});
  return out;
 }
 // Objective rows with progress. A completed quest shows every objective as done (players who
@@ -84,6 +88,32 @@ export const questIconHtml=data=>data?.icon==='coins'?COIN_ICON:goods[data?.icon
 const rewardIconHtml=r=>r.kind==='item'?goods[r.id]?.icon||SCROLL_ICON:r.kind==='coins'?COIN_ICON:r.kind==='points'?SCROLL_ICON:null;
 const html=(tag,markup,cls)=>{const n=el(tag,null,cls?{class:cls}:{});n.innerHTML=markup;return n};
 
+// Live per-player quest state (db/quests-v2.sql quest_state): QP, unlocks, pending lamps, flags.
+const questState=()=>globalThis.window?.eldervaleQuestState||null;
+const ctxNow=()=>globalThis.window?.eldervaleQuestContext?.()||{};
+const questViewOf=q=>{const st=(q.data.stages||[]).find(s=>s.id===q.progress?._stage)||q.data.stages?.[0];return {...q,data:{...q.data,objectives:st?.objectives||[]}}};
+// XP lamp: pick a skill (OSRS style), the server grants the XP (quest_lamp).
+export function openLampChooser(lamp,{skillLevel=()=>1,status=null}={}){
+ if(typeof document==='undefined')return null;
+ const dialog=el('dialog',null,{class:'quest-lamp-dialog','aria-labelledby':'quest-lamp-title'});
+ dialog.append(el('h3',lamp.label||'XP lamp',{id:'quest-lamp-title'}),el('p',lampLabel(lamp)+'. Choose a skill.'));
+ const grid=el('div',null,{class:'quest-lamp-grid'});
+ for(const c of lampChoices(lamp,skillLevel)){const s=skillInfo(c.skill),b=el('button',null,{type:'button',class:'quest-lamp-skill'});b.disabled=!c.allowed;b.title=c.allowed?c.xp+' XP':'Needs level '+lamp.minLevel;
+  b.append(el('span',s.icon,{'aria-hidden':'true'}),el('strong',s.name),el('small','Lv '+c.level+' · +'+c.xp.toLocaleString('en-GB')+' XP'));
+  b.onclick=async()=>{for(const x of grid.querySelectorAll('button'))x.disabled=true;const ok=await window.eldervaleRealm?.command('quest_lamp',{key:lamp.key,skill:c.skill});if(status)status.textContent=ok?'You gain '+c.xp.toLocaleString('en-GB')+' '+s.name+' XP.':window.eldervaleRealm?.lastError||'The lamp fizzles.';dialog.close()};grid.append(b)}
+ const close=el('button','Not now',{type:'button',class:'quest-lamp-close'});close.onclick=()=>dialog.close();
+ dialog.append(grid,close);document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove());
+ try{dialog.showModal()}catch{dialog.setAttribute('open','')}return dialog;
+}
+function extrasSection(list){
+ const st=questState();if(!st)return;
+ const lamps=st.lamps||[],teleports=Object.entries(st.unlocks||{}).filter(([,u])=>u?.type==='teleport');
+ if(!lamps.length&&!teleports.length)return;
+ const box=el('section',null,{class:'quest-section quest-extras'});
+ if(lamps.length){box.append(el('h4','Rewards to claim'));const a=el('div',null,{class:'quest-claims'});for(const l of lamps)button(a,'🪔 '+(l.label||'XP lamp')+(l.questName?' · '+l.questName:''),()=>openLampChooser(l,{skillLevel:ctxNow().skillLevel}));box.append(a)}
+ if(teleports.length){box.append(el('h4','Quest teleports'));const a=el('div',null,{class:'quest-claims'});for(const [id,u] of teleports)button(a,'✦ '+(u.label||id),async()=>{const ok=await window.eldervaleRealm?.command('quest_teleport',{id});if(!ok)window.eldervaleWorldBridge?.notice?.(window.eldervaleRealm?.lastError||'The teleport fails.')});box.append(a)}
+ list.append(box);
+}
 function rewardList(data,{points=true}={}){
  const ul=el('ul',null,{class:'quest-rewards'});
  for(const r of rewardEntries(data,{points})){const li=el('li',null,{'data-kind':r.kind});const icon=r.icon?el('span',r.icon,{class:'quest-reward-icon','aria-hidden':'true'}):html('span',rewardIconHtml(r),'quest-reward-icon');li.append(icon,el('span',r.label));ul.append(li)}
@@ -106,6 +136,7 @@ export function showQuestComplete(q,{totalPoints=null,jingle=true}={}){
  body.append(art,awards);
  const close=el('button','Close',{type:'button',class:'quest-scroll-close'});
  paper.append(title,body,close);
+ if(q.data.lamps?.length){const rub=el('button','🪔 Rub the lamp now',{type:'button',class:'quest-scroll-lamp'});rub.onclick=()=>{finish();setTimeout(()=>{const l=(questState()?.lamps||[]).find(x=>x.quest===q.id);if(l)openLampChooser(l,{skillLevel:ctxNow().skillLevel})},350)};paper.insertBefore(rub,close)}
  scroll.append(el('div',null,{class:'quest-scroll-rod top','aria-hidden':'true'}),paper,el('div',null,{class:'quest-scroll-rod bottom','aria-hidden':'true'}));
  const sparks=el('div',null,{class:'quest-scroll-sparks','aria-hidden':'true'});
  if(!reduced)for(let i=0;i<18;i++){const s=el('i');s.style.setProperty('--x',(Math.round(Math.random()*100))+'%');s.style.setProperty('--d',(Math.random()*1.2).toFixed(2)+'s');s.style.setProperty('--h',(40+Math.round(Math.random()*30))+'vh');sparks.append(s)}
@@ -136,11 +167,26 @@ export function createQuestJournal(state){
   button(card,'‹ All quests',()=>{selected=null;draw()}).className='quest-back';
   card.append(el('h3',q.data.name),el('p',QUEST_STATUS[st].label+(q.data.chain==='tutorial'?' · Castle Training '+(q.data.order||'')+'/'+quests.filter(x=>x.data.chain==='tutorial').length:''),{class:'quest-state'}));
   if(q.data.giverName)card.append(el('p','Start: talk to '+q.data.giverName+'.',{class:'quest-start'}));
-  card.append(el('p',q.data.description||''));
-  card.append(el('h4','Objectives'));const ol=el('ol',null,{class:'quest-objectives'});
-  for(const o of objectiveRows(q,carried)){const li=el('li',null,{class:o.done&&o.started?'done':''});li.append(el('span',o.label),el('small',o.started?Math.min(o.amount,o.count)+'/'+o.amount:'—'));ol.append(li)}
-  card.append(ol,el('h4','Rewards'),rewardList(q.data));
-  if(!q.completed&&q.data.chain!=='tutorial'){const b=button(card,q.accepted?'Hand in at quest giver':'Accept at quest giver',async()=>{if(pending)return;pending=true;b.disabled=true;try{const ok=await window.eldervaleRealm?.command(q.accepted?'quest_complete':'quest_accept',{id:q.id});status.textContent=ok?(q.accepted?'Quest completed.':'Quest accepted.'):window.eldervaleRealm?.lastError||'World connection required.'}finally{pending=false;draw()}});b.className='quest-action';b.disabled=pending}
+  const ctx=ctxNow(),reqs=requirementRows(q.data,quests,ctx);
+  if(reqs.length&&!q.completed){card.append(el('h4','Requirements'));const ul=el('ul',null,{class:'quest-requirements'});for(const r of reqs){const li=el('li',null,{class:r.met?'met':'unmet'});li.append(el('span',r.met?'✔':'✖',{'aria-hidden':'true'}),el('span',r.label+(r.met?'':' (not yet)')));ul.append(li)}card.append(ul)}
+  if(isStaged(q.data)){
+   // OSRS journal: what I have done so far (struck through), then what I should do now.
+   if(q.accepted)card.append(el('p',q.data.description||'',{class:'quest-intro'}));
+   card.append(el('h4',q.accepted?'Journal':'Story'));const box=el('div',null,{class:'quest-stages'});
+   for(const e of journalEntries(q)){const p=el('p',null,{class:e.done?'done':e.complete?'complete':'current'});p.append(e.done?el('s',e.text):el('span',e.text));box.append(p)}
+   if(q.completed)box.append(el('p','QUEST COMPLETE!',{class:'quest-complete-line'}));
+   card.append(box);
+   const rowsNow=q.accepted&&!q.completed?objectiveRows(questViewOf(q),carried):[];
+   if(rowsNow.length){const ol=el('ol',null,{class:'quest-objectives'});for(const o of rowsNow){const li=el('li',null,{class:o.done?'done':''});li.append(el('span',o.label),el('small',Math.min(o.amount,o.count)+'/'+o.amount));ol.append(li)}card.append(ol)}
+  }else{
+   card.append(el('p',q.data.description||''));
+   card.append(el('h4','Objectives'));const ol=el('ol',null,{class:'quest-objectives'});
+   for(const o of objectiveRows(q,carried)){const li=el('li',null,{class:o.done&&o.started?'done':''});li.append(el('span',o.label),el('small',o.started?Math.min(o.amount,o.count)+'/'+o.amount:'—'));ol.append(li)}
+   card.append(ol);
+  }
+  card.append(el('h4','Rewards'),rewardList(q.data));
+  const lamps=(questState()?.lamps||[]).filter(l=>l.quest===q.id);if(lamps.length){const a=el('div',null,{class:'quest-claims'});for(const l of lamps)button(a,'🪔 Rub '+(l.label||'XP lamp'),()=>openLampChooser(l,{skillLevel:ctx.skillLevel,status}));card.append(a)}
+  if(!q.completed&&q.data.chain!=='tutorial'&&!isStaged(q.data)){const b=button(card,q.accepted?'Hand in at quest giver':'Accept at quest giver',async()=>{if(pending)return;pending=true;b.disabled=true;try{const ok=await window.eldervaleRealm?.command(q.accepted?'quest_complete':'quest_accept',{id:q.id});status.textContent=ok?(q.accepted?'Quest completed.':'Quest accepted.'):window.eldervaleRealm?.lastError||'World connection required.'}finally{pending=false;draw()}});b.className='quest-action';b.disabled=pending}
   return card;
  }
  function draw(){
@@ -150,6 +196,7 @@ export function createQuestJournal(state){
   const visible=quests.filter(q=>!filter||q.data.giver===filter);
   if(filter)button(list,'Show all quests',()=>{filter=null;draw()}).className='quest-show-all';
   if(!visible.length){list.append(el('p','No quests available here yet. The owner can publish quests in World studio.'));return}
+  if(!filter)extrasSection(list);
   for(const section of journalSections(visible)){
    const box=el('section',null,{class:'quest-section'}),h=el('h4');h.append(el('span',section.title),el('small',section.complete+'/'+section.quests.length));box.append(h);
    const ul=el('ul',null,{class:'quest-names'});
@@ -164,7 +211,7 @@ export function createQuestJournal(state){
  return {open,show,draw,hasFor:npc=>quests.some(q=>q.data.giver===npc&&!q.completed&&q.data.chain!=='tutorial'),sync(rows=[]){
   // The lean world sync hands back the same array while quests are unchanged
   // (sync-diet.js): only the carried collect counts need checking then.
-  if(rows!==quests||rowsText===null){for(const q of newlyCompleted(previous,rows))showQuestComplete(q,{totalPoints:journalSummary(rows).points});
+  if(rows!==quests||rowsText===null){for(const q of newlyCompleted(previous,rows)){const totalPoints=globalThis.window?.eldervaleQuestState?.qp??journalSummary(rows).points,scene=globalThis.window?.eldervaleQuestCutscenes?.completion?.(q);if(scene)scene.then(()=>showQuestComplete(q,{totalPoints}));else showQuestComplete(q,{totalPoints})}
    previous=new Map(rows.map(q=>[q.id,questStatus(q)]));quests=rows;rowsText=JSON.stringify(rows)}
-  const next=rowsText+'|'+rows.flatMap(q=>q.data.objectives.filter(o=>o.type==='collect').map(o=>quantity(state,o.target))).join(',');if(next!==signature){signature=next;if(!pending&&(!panel||panel.open))draw()}}};
+  const next=rowsText+'|'+JSON.stringify(questState()?.lamps||[])+Object.keys(questState()?.unlocks||{}).join()+'|'+rows.flatMap(q=>(q.data.stages?q.data.stages.flatMap(s=>s.objectives||[]):q.data.objectives||[]).filter(o=>o.type==='collect').map(o=>quantity(state,o.target))).join(',');if(next!==signature){signature=next;if(!pending&&(!panel||panel.open))draw()}}};
 }

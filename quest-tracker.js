@@ -28,10 +28,10 @@ export function createQuestTracker({openJournal=()=>{},anchor=()=>document.query
   track(id){preferred=id;write({collapsed,quest:preferred});signature='';if(last)this.sync(...last)},
   sync(quests,ctx,{hidden=false}={}){
    last=[quests,ctx,{hidden}];
-   const q=hidden?null:trackedQuest(quests,ctx,preferred),s=q?trackerStep(q,ctx.carried):null;
+   const q=hidden?null:trackedQuest(quests,ctx,preferred),s=q?trackerStep(q,ctx.carried,ctx.npcName):null;
    const sig=q?q.id+'|'+s?.label+'|'+s?.count+'|'+s?.state:'';if(sig===signature)return;signature=sig;current=q;step=s;
    root.hidden=!q;if(!q){for(const fn of listeners)fn({quest:null,step:null});return}
-   title.textContent=q.data.name;goal.textContent=s.state==='ready'?'✔ '+s.label:s.label;count.textContent=s.state==='active'&&s.amount>1?s.count+'/'+s.amount:s.total>1?'Step '+Math.min(s.total,s.done+1)+' of '+s.total:'';
+   title.textContent=q.data.name;goal.textContent=s.state==='ready'?'✔ '+s.label:s.state==='report'?'➜ '+s.label:s.label;count.textContent=s.state==='active'&&s.amount>1?s.count+'/'+s.amount:s.stage?'Part '+s.stage+' of '+s.total:s.total>1?'Step '+Math.min(s.total,s.done+1)+' of '+s.total:'';
    root.dataset.state=s.state;body.setAttribute('aria-label',q.data.name+': '+goal.textContent+'. Open in quest journal');
    place();for(const fn of listeners)fn({quest:q,step:s});
   },
