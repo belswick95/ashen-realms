@@ -33,3 +33,5 @@ body.phone-layout .quest-tracker-body,body.compact-layout .quest-tracker-body{pa
 /* Short screens (phones in landscape): keep Accept/Decline in view under the offer card. */
 body.compact-layout #dialog .dialog-quest-card,body.phone-layout #dialog .dialog-quest-card{max-height:20dvh;padding:6px 10px;font-size:12px}
 body.compact-layout #dialog:has(.dialog-quest-card:not([hidden])) #dialog-portrait,body.phone-layout #dialog:has(.dialog-quest-card:not([hidden])) #dialog-portrait{display:none}
+body.compact-layout #dialog:has(.dialog-quest-card:not([hidden])) .dialog-body,body.phone-layout #dialog:has(.dialog-quest-card:not([hidden])) .dialog-body{display:block}
+body.compact-layout #dialog:has(.dialog-quest-card:not([hidden])) #dialog-text,body.phone-layout #dialog:has(.dialog-quest-card:not([hidden])) #dialog-text{margin:6px 0}
