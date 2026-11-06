@@ -124,7 +124,7 @@ const SHIELDS=(()=>{const first=new Map();for(const [k,s] of Object.entries(shie
 // Distance from the shield's attach point (the strap side of the board) to the forearm bone.
 function strapGap(rig,shield){const e=rig.bones.lowerarm_l.getWorldPosition(v()),h=rig.bones.hand_l.getWorldPosition(v()),o=shield.getWorldPosition(v()),seg=h.clone().sub(e),t=Math.max(0,Math.min(1,o.clone().sub(e).dot(seg)/seg.lengthSq()));return {gap:o.distanceTo(e.clone().addScaledVector(seg,t)),t}}
 
-test('shields are strapped to the forearm in every pose, facing out and upright (players and NPCs, every model)',()=>{
+test('shields are strapped to the forearm in every pose, upright, carried across the front (players and NPCs, every model)',()=>{
  assert.ok(SHIELDS.includes('kite')&&SHIELDS.includes('roundShield')&&SHIELDS.includes('celticShield')&&SHIELDS.length>=8);
  const POSES={idle:{},walk:{speed:WALK_REF,locomotion:'walk'},run:{speed:RUN_REF,locomotion:'jog'},sprint:{speed:6.4,locomotion:'run'},combat:{combat:true},block:{block:1},walkBlock:{speed:WALK_REF,locomotion:'combat',block:1},eat:{eat:.6},attack:{attack:.6},hit:{hit:.4}};
  for(const sex of ['male','female'])for(const key of SHIELDS)for(const [name,opts] of Object.entries(POSES)){
@@ -135,9 +135,10 @@ test('shields are strapped to the forearm in every pose, facing out and upright 
    if(i>=30&&!['attack','hit','eat'].includes(name)){const q=shield.getWorldQuaternion(new T.Quaternion()),face=v().set(0,0,1).applyQuaternion(q),up=v().set(0,1,0).applyQuaternion(q);
     assert.ok(up.y>.8,`${key} ${name}: board upright ${up.y.toFixed(2)}`);
     if(name.includes('lock'))assert.ok(face.z>.7,`${key} ${name}: raised to face forward`);
-    else{assert.ok(face.x>.85,`${key} ${name}: faces outward ${face.x.toFixed(2)}`);
-     // The board stays off the body: its inner edge outside the torso and the hips.
-     const box=new T.Box3().setFromObject(shield);assert.ok(box.min.x>.21,`${key} ${name}: inner edge ${box.min.x.toFixed(2)} clear of the body`)}}
+    else{// Classic carry: forearm across the front, board facing forward and angled out ~25 degrees.
+     assert.ok(face.z>.8&&face.x>.2&&face.x<.65,`${key} ${name}: faces forward, angled out (${face.x.toFixed(2)},${face.z.toFixed(2)})`);
+     // The board sits in front of the chest, not in it.
+     const o=shield.getWorldPosition(v()).sub(w.root.position),chest=w.rig.bones.spine_03.getWorldPosition(v()).sub(w.root.position);assert.ok(o.z>chest.z+.12,`${key} ${name}: in front of the chest ${o.z.toFixed(2)} vs ${chest.z.toFixed(2)}`)}}
   }
   w.a.dispose();
  }

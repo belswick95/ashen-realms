@@ -65,7 +65,7 @@ export const CARRY={
  heavy:{abd:.17,raise:0,swing:.3,fore:[.08,-.72,.7],knuckle:[.32,-.4,-.86]},
  staff:{abd:.26,raise:-.3,swing:.3,fore:[0,-.86,.5],knuckle:[0,.5,.86]},
  bow:{abd:.14,raise:0,swing:.35,fore:[.05,-.6,.8],knuckle:[0,.8,.6]},
- shield:{abd:.18,raise:.05,swing:.3,fore:[0,-.3,1],knuckle:[0,1,.3]},
+ shield:{abd:.24,raise:.22,swing:.1,level:true,fore:[-.88,-.05,.47],knuckle:[0,1,0]},
  // Block (left arm, absolute): forearm across the chest, knuckles up.
  guard:{upper:[.35,-.5,.8],fore:[-1,.15,.3],knuckle:[0,1,0]}
 };
