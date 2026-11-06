@@ -151,6 +151,14 @@ function createArmLayers(rig,stride){
   // kind wants them, and the whole arm swings a little with the stride.
   carry(s,kind,weight,gait,style){const pose=CARRY[kind];if(!pose||!stride)return;const o=s==='l'?1:-1;
    if(pose.shoulder)return this.shoulder(s,pose,weight,gait);
+   // Natural carry: the arm swings with the stride like a free arm, rising a
+   // little more on the forward swing; the item keeps its usual grip (the wrist
+   // straight, blade out of the thumb side). Only the blade's tilt is clamped,
+   // so it never points at the ground nor swings up at the face.
+   if(pose.natural){const run=gait.run*gait.move,c=Math.cos(2*Math.PI*(gait.phase-style.lag));
+    let swing=(s==='l'?-1:1)*style.arm*c*pose.swing*gait.move;if(swing>0)swing*=1+pose.raise;
+    const flex=pose.flex+(pose.runFlex-pose.flex)*run,tilt=Math.min(pose.maxTilt,Math.max(pose.minTilt,swing+flex));
+    stride.armSwingPose(s,swing,tilt-swing,pose.abd,stride.clavicleRS(s,cQ),weight);return}
    const run=gait.run*gait.move,share=pose.swing+((pose.runSwing??pose.swing)-pose.swing)*run;
    const swing=(s==='l'?-1:1)*style.arm*Math.cos(2*Math.PI*(gait.phase-style.lag))*share*gait.move,lift=pose.raise+(pose.runRaise||0)*run;
    cR.setFromAxisAngle(cX,-(swing+lift));

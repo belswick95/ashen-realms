@@ -100,7 +100,7 @@ test('weapons are carried clear of the head and neck standing, walking and runni
 
 // Direction of a held item's long axis (+Y) in the world.
 const axisOf=item=>v().set(0,1,0).transformDirection(item.matrixWorld);
-test('two-handed swords rest on the right shoulder; battleaxes are held out in front, tilted up about 30 degrees',()=>{
+test('two-handed swords rest on the right shoulder; one-handers and battleaxes swing naturally, clear of the ground',()=>{
  for(const key of ['twohand','claymore'])for(const [mode,speed] of [['idle',0],['walk',WALK_REF],['jog',RUN_REF]]){
   const w=walker({weapon:key}),opts={speed,locomotion:mode==='idle'?'walk':mode};for(let i=0;i<90;i++)w.step(1/60,opts);
   const blade=axisOf(w.held.weapon),grip=w.held.weapon.getWorldPosition(v()),shoulder=w.rig.bones.upperarm_r.getWorldPosition(v()).sub(w.root.position);grip.sub(w.root.position);
@@ -110,10 +110,14 @@ test('two-handed swords rest on the right shoulder; battleaxes are held out in f
   const t=(shoulder.z-grip.z)/blade.z,over=grip.clone().addScaledVector(blade,t);assert.ok(over.y>shoulder.y&&over.y<shoulder.y+.25&&Math.abs(over.x-shoulder.x)<.12,`${key} ${mode}: rests on the shoulder`);
   if(mode==='jog'){const l=w.rig.bones.hand_l.getWorldPosition(v()).sub(w.root.position),r=w.rig.bones.hand_r.getWorldPosition(v()).sub(w.root.position);assert.ok(l.distanceTo(r)<.3,'both hands on the hilt when running')}
  }
- for(const [mode,speed] of [['walk',WALK_REF],['jog',RUN_REF]]){const w=walker({weapon:'battleaxe'}),opts={speed,locomotion:mode};const angles=[];
-  for(let i=0;i<150;i++){w.step(1/60,opts);if(i>=90){const a=axisOf(w.held.weapon);angles.push(Math.atan2(a.y,Math.hypot(a.x,a.z))*180/Math.PI);assert.ok(a.z>.6,'points forward')}}
-  const mean=angles.reduce((x,y)=>x+y)/angles.length;assert.ok(mean>20&&mean<40,`battleaxe ${mode}: tilted ${mean.toFixed(1)} degrees`);
-  const grip=w.held.weapon.getWorldPosition(v()).sub(w.root.position),hip=w.rig.bones.pelvis.getWorldPosition(v()).sub(w.root.position);assert.ok(grip.z>hip.z+.3,`battleaxe ${mode}: out in front`)}
+ // One-handers and the battleaxe swing naturally with their usual grip: the
+ // item points forward and up (never at the ground) and its tip stays above the knees.
+ for(const key of ['longsword','scimitar','dagger','axe','hammer','battleaxe'])for(const [mode,speed] of [['walk',WALK_REF],['jog',RUN_REF],['run',RUN_REF*1.2]]){
+  const w=walker({weapon:key,shield:'kite'}),opts={speed,locomotion:mode};for(let i=0;i<90;i++)w.step(1/60,opts);let low=Infinity,lowUp=Infinity,high=-Infinity;const knee=.9;// standing knee height is about 0.86
+  for(let i=0;i<90;i++){w.step(1/60,opts);const a=axisOf(w.held.weapon);lowUp=Math.min(lowUp,a.y);high=Math.max(high,a.y);assert.ok(a.z>.3,`${key} ${mode}: points forward`);
+   for(const p of itemPoints(w.held.weapon))low=Math.min(low,p.y)}
+  assert.ok(lowUp>.1,`${key} ${mode}: never tips toward the ground (${lowUp.toFixed(2)})`);assert.ok(high<.85,`${key} ${mode}: never swings up past ~58 degrees`);
+  assert.ok(low>knee,`${key} ${mode}: lowest point ${low.toFixed(2)} stays above knee height ${knee.toFixed(2)}`)}
 });
 
 const SHIELDS=(()=>{const first=new Map();for(const [k,s] of Object.entries(shieldCatalog))if(!first.has(s.model||k))first.set(s.model||k,k);return [...first.values(),'scalewardShield','wardensAegis']})();

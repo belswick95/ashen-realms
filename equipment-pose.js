@@ -28,11 +28,11 @@ export function attachShield(rig,model){
  rig.leftHand.add(model);return model;
 }
 // How a held item is carried while moving (and, for shields, always):
-//  blade:  one-handers (swords, scimitars, daggers, axes, maces, tools): low at
-//          the side, tip down and back; running lifts and swings the hand a little.
+//  blade:  one-handers (swords, scimitars, daggers, axes, maces, tools): usual
+//          grip, the arm swings naturally and rises a little on the forward swing.
 //  greatsword: two-handed swords: hilt in the right hand, blade resting on the
 //          right shoulder; running takes both hands to the hilt, arms still.
-//  battleaxe: held out in front in the right hand, haft tilted up about 30 degrees.
+//  battleaxe: as a one-hander: usual grip, natural swing, haft tilted up.
 //  heavy:  war axes, spears, scythes, warhammers: low, trailing behind.
 //  staff:  upright at the side like a walking staff.
 //  bow:    low in the bow hand, limbs tilted forward.
@@ -55,9 +55,13 @@ export function carryStyle(key){
 // (from the shoulder joint: inward, up, forward), `blade` its direction
 // (outward, up, forward) and `grip` the hilt's distance below the rest point.
 export const CARRY={
- blade:{abd:.15,raise:.05,swing:.45,runRaise:.3,runSwing:.65,level:true,fore:[.08,-.8,.6],knuckle:[.38,-.7,-.6]},
+ // Natural carry (blade, battleaxe): `swing` share of the free arm's stride
+ // swing, `raise` extra on the forward swing, elbow `flex` walking / `runFlex`
+ // running; the item's tilt above level (swing + flex) stays within
+ // `minTilt`..`maxTilt` radians.
+ blade:{natural:true,abd:.15,swing:.9,raise:.35,flex:.25,runFlex:.7,minTilt:.2,maxTilt:.85},
  greatsword:{shoulder:true,rest:[-.1,.06,-.02],blade:[.3,.5,-.81],runBlade:[.3,.42,-.86],grip:.52},
- battleaxe:{abd:.22,raise:.5,swing:.3,level:true,fore:[.05,-.55,.83],knuckle:[.1,.5,.86]},
+ battleaxe:{natural:true,abd:.2,swing:.8,raise:.3,flex:.3,runFlex:.65,minTilt:.25,maxTilt:.8},
  heavy:{abd:.17,raise:0,swing:.3,fore:[.08,-.72,.7],knuckle:[.32,-.4,-.86]},
  staff:{abd:.26,raise:-.3,swing:.3,fore:[0,-.86,.5],knuckle:[0,.5,.86]},
  bow:{abd:.14,raise:0,swing:.35,fore:[.05,-.6,.8],knuckle:[0,.8,.6]},

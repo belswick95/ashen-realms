@@ -41,7 +41,7 @@ secondary wobble.
   covers two tiles per tick, so the feet hit about once per tile.
 - The head stays steady even though the body works harder.
 
-**Held items while moving.** Weapons are carried, not waved: one-handed blades
+**Held items while moving.** A quick search for OSRS weapon walk and run animations found nothing specific. The wiki pages only cover walk-animation overrides, and frame data is not public. From watching the game, a one-handed weapon stays in the hand at the angle it has when standing (forward and a little up) while the arm swings with the stride; it never drags or points down. Beyond that, weapons are carried, not waved: one-handed blades
 hang low in the hand at the side, big two-handed weapons are held low or
 shouldered so they never sweep past the face, staffs are carried upright like a
 walking stick, bows ride low in the bow hand. A shield sits on the outside of
@@ -101,9 +101,14 @@ the clip underneath keeps playing what it was (one blend from kneel to walk,
 not two at once).
 
 **Held items** (`CARRY` in `equipment-pose.js`):
-- `blade` (one-handed swords, scimitars, daggers, axes, maces, tools): low at
-  the side, tip down and back; running adds a small lift and a little more
-  stride swing, never near the head.
+- `blade` (one-handed swords, scimitars, daggers, axes, maces, tools) and
+  `battleaxe`: the weapon keeps its usual grip, pointing forward and a little up
+  out of the fist as it does standing. The arm swings with the stride like a
+  free arm and rises a little more on the forward swing; running bends the
+  elbow more. Only the blade's tilt is limited (about 11 to 49 degrees above
+  level), so it never points at the ground or swings up at the face. An
+  earlier version carried blades tip-down and the owner rejected it as
+  dragging on the floor.
 - `greatsword` (two-handed swords): hilt in the right fist in front of the
   chest, blade resting on top of the right shoulder and angled up, back and
   outward of the head, standing and walking. Running: our reading of the
@@ -112,8 +117,6 @@ not two at once).
   public, so this is an interpretation). The wrist is cocked so the blade can
   lie on the shoulder; the elbow hangs down and the crossguard points forward,
   not in at the neck.
-- `battleaxe`: held out in front in the right hand, haft tilted up about 30
-  degrees, swinging a little with the stride.
 - `heavy` (war axes, spears, scythes, warhammers): low and trailing.
 - `staff` upright at the side; `bow` low in the bow hand; `shield` on the level
   forearm, knuckles up, board upright and outward.
