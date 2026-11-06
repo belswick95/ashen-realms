@@ -73,11 +73,17 @@ const LIT=m=>m&&(m.isMeshStandardMaterial||m.isMeshPhongMaterial||m.isMeshLamber
 
 export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChange=()=>{}}){
  let enabled=false;
+ // Lambert has no image-based light, so a warm ambient fill stands in for the
+ // environment map. Ambient light is not part of any shader key: it lives in
+ // the scene from the start (dark while classic is off) and never recompiles.
+ const ambient=new T.AmbientLight(0xfff0d8,0);ambient.name='classic-ambient';scene.add(ambient);
  const classicOf=new Map();// source material -> {classic, avg, bake, source colour}
  const simpler=new WeakMap(),baked=new WeakMap(),pixels=new Map();
  const converted=new Set();
  // Texture pixels, downsampled once (64x64 tiles, 128x128 atlases).
  function texturePixels(texture,size){
+  // Procedural textures carry their base colour: no canvas read-back needed for the average.
+  if(size===64&&Number.isFinite(texture?.userData?.baseColor)){const h=texture.userData.baseColor;return {size:0,data:null,avg:[(h>>16&255)/255,(h>>8&255)/255,(h&255)/255]}}
   const image=texture?.image;if(!image||!(image.width>0)||typeof document==='undefined')return null;
   const key=texture.uuid+':'+size;let p=pixels.get(key);if(p)return p;
   try{const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(image,0,0,size,size);const data=x.getImageData(0,0,size,size).data;let r=0,g=0,b=0,n=0;for(let i=0;i<data.length;i+=4){if(data[i+3]<40)continue;r+=data[i];g+=data[i+1];b+=data[i+2];n++}n=Math.max(1,n);p={size,data,avg:[r/n/255,g/n/255,b/n/255]}}catch{p={size:0,data:null,avg:[.6,.6,.6]}}
@@ -160,19 +166,21 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
  let dome=null;
  function skyDome(){if(dome)return dome;const g=new T.SphereGeometry(400,10,6);const col=new Float32Array(g.attributes.position.count*3);g.setAttribute('color',new T.BufferAttribute(col,3));
   dome=new T.Mesh(g,new T.MeshBasicMaterial({vertexColors:true,side:T.BackSide,fog:false,depthWrite:false,toneMapped:false}));dome.renderOrder=-10;dome.frustumCulled=false;dome.userData.classicIgnore=true;dome.name='classic-sky';return dome}
+ const AMBIENT={day:1.1,night:.35};
  const SKY={day:[0x7fa6c4,0xe8d4a8],dusk:[0x4c5680,0xe39a62],night:[0x0f1526,0x2f2a44]};
  function skyColors(daylight,twilight){const top=new T.Color(SKY.night[0]).lerp(new T.Color(SKY.day[0]),daylight),horizon=new T.Color(SKY.night[1]).lerp(new T.Color(SKY.day[1]),daylight);top.lerp(new T.Color(SKY.dusk[0]),twilight*.5);horizon.lerp(new T.Color(SKY.dusk[1]),twilight*.6);return {top,horizon}}
  let lastSky={daylight:1,twilight:0};
  function applySky(daylight=lastSky.daylight,twilight=lastSky.twilight){lastSky={daylight,twilight};if(!enabled)return;const {top,horizon}=skyColors(daylight,twilight),d=skyDome(),pos=d.geometry.attributes.position,col=d.geometry.attributes.color,c=new T.Color();
   for(let i=0;i<pos.count;i++){const h=clamp(pos.getY(i)/400);c.copy(horizon).lerp(top,Math.pow(h,.6));col.setXYZ(i,c.r,c.g,c.b)}col.needsUpdate=true;
-  if(scene.background?.isColor)scene.background.copy(horizon);if(scene.fog)scene.fog.color.copy(horizon)}
+  if(scene.background?.isColor)scene.background.copy(horizon);if(scene.fog)scene.fog.color.copy(horizon);ambient.color.copy(horizon).lerp(new T.Color(0xffffff),.5);ambient.intensity=AMBIENT.night+(AMBIENT.day-AMBIENT.night)*daylight}
 
  // --- Time-sliced sweep over the scene: converts what streams in ---
  let sweep=null,sweepPending=0;
- function* walk(){const stack=[scene],seen=new Set();let pending=0;while(stack.length){const o=stack.pop();if(o.isMesh){if(!convertMesh(o))pending++;else if(o.userData.classicOrig)seen.add(o)}for(let i=o.children.length-1;i>=0;i--)stack.push(o.children[i]);yield}sweepPending=pending;converted.clear();for(const o of seen)converted.add(o);syncMaterials()}
+ let slowest={ms:0,name:''};const clock=()=>globalThis.performance?.now?.()??Date.now();
+ function* walk(){const stack=[scene],seen=new Set();let pending=0;while(stack.length){const o=stack.pop();if(o.isMesh){const t=clock();if(!convertMesh(o))pending++;else if(o.userData.classicOrig)seen.add(o);const ms=clock()-t;if(ms>slowest.ms)slowest={ms:+ms.toFixed(1),name:(o.name||o.parent?.name||o.type)+'/'+o.geometry?.type+'/'+(o.geometry?.attributes?.position?.count||0)+'/'+[].concat(o.userData.classicOrig?.material||o.material).map(m=>m.type+':'+(m.map?.image?.constructor?.name||'-')+':'+(m.map?.image?.width||0)+'x'+(m.map?.image?.height||0)).join(';')}}for(let i=o.children.length-1;i>=0;i--)stack.push(o.children[i]);yield}sweepPending=pending;converted.clear();for(const o of seen)converted.add(o);const t=clock();syncMaterials();const ms=clock()-t;if(ms>slowest.ms)slowest={ms:+ms.toFixed(1),name:'sync'}}
  function update(budget=1.5,now=()=>performance.now()){
   if(!enabled)return;if(dome){dome.position.copy(camera.position);dome.scale.setScalar(Math.min(1,(camera.far||450)*.92/400))}
-  const end=now()+budget;sweep??=walk();let i=0;while(true){if(sweep.next().done){sweep=null;break}if(++i%64===0&&now()>end)break}
+  const end=now()+budget;sweep??=walk();while(true){if(sweep.next().done){sweep=null;break}if(now()>end)break}
  }
  const hiddenLayers=new Map();
  function hide(objects,hidden){for(const o of objects){if(!o)continue;if(hidden){if(!hiddenLayers.has(o))hiddenLayers.set(o,o.layers.mask);o.layers.set(hiddenLayer)}else if(hiddenLayers.has(o)){o.layers.mask=hiddenLayers.get(o);hiddenLayers.delete(o)}}}
@@ -183,10 +191,10 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
   configure({ground:g,hide:h}={}){if(g)ground=g;if(h)hideTargets=h},
   set(on){on=!!on;if(on===enabled)return false;enabled=on;
    if(on){convertTerrain(ground);scene.add(skyDome());scene.add(blobMesh());blobs.visible=true;dome.visible=true;hide(hideTargets(),true);applySky();sweep=null;let guard=0;const it=walk();while(!it.next().done)guard++;}
-   else{for(const o of converted)restoreMesh(o);scene.traverse(o=>{if(o.userData.classicOrig)restoreMesh(o)});converted.clear();if(dome)dome.visible=false;if(blobs){blobs.visible=false;blobs.count=0}hide([...hiddenLayers.keys()],false);sweep=null}
+   else{for(const o of converted)restoreMesh(o);scene.traverse(o=>{if(o.userData.classicOrig)restoreMesh(o)});converted.clear();ambient.intensity=0;if(dome)dome.visible=false;if(blobs){blobs.visible=false;blobs.count=0}hide([...hiddenLayers.keys()],false);sweep=null}
    renderer.domElement.style.imageRendering=on?'pixelated':'';onChange(on);return true},
   // Converted materials are shared; this lists them for shader warm-up.
   materials(){return [terrainMaterial,...pool.values()]},
-  stats(){let bakedCount=0;for(const s of classicOf.values())if(s.bake)bakedCount++;return {enabled,converted:converted.size,sources:classicOf.size,materials:pool.size,baked:bakedCount,blobs:blobs?.count||0,pending:sweepPending}}
+  stats(){let bakedCount=0;for(const s of classicOf.values())if(s.bake)bakedCount++;return {enabled,converted:converted.size,sources:classicOf.size,materials:pool.size,baked:bakedCount,blobs:blobs?.count||0,pending:sweepPending,slowest}}
  };
 }

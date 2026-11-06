@@ -141,7 +141,7 @@ if(kind==='dirt'){
 }
 if(kind==='leaf'){for(let i=0;i<180;i++){const x=rnd()*128,y=rnd()*128;ctx.fillStyle=rnd()>.5?'#d6e5a124':'#122b1b30';ctx.beginPath();ctx.ellipse(x,y,1+rnd()*4,1+rnd()*2,rnd()*6,0,Math.PI*2);ctx.fill()}}
 if(kind==='roof'){for(let y=0;y<128;y+=15){ctx.strokeStyle='#160f0c44';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(128,y);ctx.stroke();for(let x=(y%30?8:0);x<128;x+=24){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+15);ctx.stroke()}}}
-const t=new T.CanvasTexture(canvas);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.magFilter=T.LinearFilter;t.minFilter=T.LinearMipmapLinearFilter;t.generateMipmaps=true;t.anisotropy=groundKind?Math.min(8,renderer.capabilities.getMaxAnisotropy()):4;textureCache.set(key,t);return t}
+const t=new T.CanvasTexture(canvas);t.userData.baseColor=base;t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.magFilter=T.LinearFilter;t.minFilter=T.LinearMipmapLinearFilter;t.generateMipmaps=true;t.anisotropy=groundKind?Math.min(8,renderer.capabilities.getMaxAnisotropy()):4;textureCache.set(key,t);return t}
 const materialCache=new Map();function material(c,kind='stone'){const key=c+kind;if(!materialCache.has(key))materialCache.set(key,new T.MeshStandardMaterial({map:texture(kind,c),bumpMap:['masonry','roof','wood','plaster','floor','thatch'].includes(kind)?texture(kind,c):null,bumpScale:kind==='masonry'?.045:.018,roughness:kind==='wood'?.86:.95,color:0xffffff}));materialCache.get(key).userData.eldervaleShared=true;return materialCache.get(key)}const targets=[];
 renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
 function box(w,h,d,c,x,y,z,p=scene,kind='stone'){const o=new T.Mesh(scaleSurfaceUV(new T.BoxGeometry(w,h,d),w,h,d),material(c,kind));o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;p.add(o);return o}
@@ -1629,12 +1629,16 @@ window.eldervaleWorldBridge={
 };
 
 // Stream persistent scenery/actors around the player rather than rendering the entire saved world.
+// Programs differ when drawn into the water reflection target (linear output, no tone mapping): warm both variants.
+let warmTarget=null;
+function compileFor(root,reflection=false,target=scene){const prev=renderer.getRenderTarget(),tone=renderer.toneMapping;if(reflection){warmTarget??=new T.WebGLRenderTarget(4,4);renderer.setRenderTarget(warmTarget);renderer.toneMapping=T.NoToneMapping}
+ try{return renderer.compileAsync?renderer.compileAsync(root,camera,target===root?null:target):renderer.compile(root,camera,target===root?null:target)}finally{if(reflection){renderer.setRenderTarget(prev);renderer.toneMapping=tone}}}
 // Shader warm-up (shader-warmup.js): compile every prop and creature program off-scene, a model per slice, soon after load.
 const shaderWarmup=new Promise(resolve=>setTimeout(resolve,2500)).then(()=>runShaderWarmup(warmupList(worldTemplates),{
  build:item=>{const root=new T.Group();root.position.set(0,-200,0);if(item.kind==='actor')root.userData.warmModel=actorModel(T,root,item.data);else objectModel(T,root,item.id,{...item.data,groundHeight:()=>0});const lights=[];root.traverse(o=>{if(o.isLight)lights.push(o)});for(const l of lights)l.removeFromParent();root.updateMatrixWorld(true);if(classicLook.enabled)classicLook.convert(root);return root},
- compile:root=>renderer.compileAsync?renderer.compileAsync(root,camera,scene):renderer.compile(root,camera,scene),
+ compile:root=>Promise.all([compileFor(root),waterSystem.reflects&&compileFor(root,true)]),
  dispose:root=>{root.userData.warmModel?.dispose?.();disposeEntityResources(root)},
- yieldTask:()=>new Promise(r=>setTimeout(r,40))})).then(r=>{window.eldervaleShaderWarmup=r;return r},()=>null);
+ yieldTask:()=>new Promise(r=>setTimeout(r,40))})).then(async r=>{if(waterSystem.reflects)await compileFor(scene,true,scene);window.eldervaleShaderWarmup=r;return r},()=>null);
 const persistentRows=new Map(),applyNearby=window.eldervaleWorldBridge.apply;let regionTicket=null,regionResume=null;
 const regionStreamer=createRegionStreamer({rows:persistentRows,loaded:worldInstances,position:()=>player.position,
  apply:row=>{applyNearby([row]);const entry=worldInstances.get(row.id);if(entry?.house)entry.root.visible=entry.root.position.distanceToSquared(player.position)<155*155;const target=targets.find(t=>t.userData.worldEntityId===row.id);if(target)realmObjectTargets.set(row.id,target);const pose=realmActorCache.get(row.id);if(pose)applyRealmActor(pose);const object=realmObjectState.get(row.id);if(object)applyRealmObject(object);},
