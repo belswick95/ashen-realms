@@ -44,7 +44,8 @@ export function createHumanoidAnimator(rig){
   // Fighting (an armed attack, a block, or the caller's combat flag) holds the
   // combat stance a few seconds, then it eases back to the relaxed idle.
   if(armed&&attack>0||block>0)fightUntil=time+FIGHT_HOLD;else if(combat)fightUntil=Math.max(fightUntil,time+COMBAT_HOLD);lastAttack=attack;
-  const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>.5&&lastHit<=.5&&!oneShot)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
+  // A fresh hit (the timer jumps up; callers start it at .3-.45 s) flinches once.
+  const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>lastHit+.05&&hitNow>.1&&!oneShot&&!dead)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
   if(air&&!airborne)startOneShot('Jump_Start',.3);else if(!air&&airborne)startOneShot('Jump_Land',.35);airborne=!!air;
   // Base loop for the current state.
   let base;const work=ACTIVITY[activity||rig.activity];

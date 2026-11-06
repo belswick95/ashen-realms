@@ -25,7 +25,7 @@ export function actorModel(T,parent,d){
   const worn=d.kind==='monster'&&Array.isArray(d.gear)?Object.fromEntries(d.gear.filter(k=>typeof k==='string').map(k=>[k,true])):armor;
   const display=buildCharacterDisplay(T,parent,appearance,{weapon:d.weapon,armor:worn,...(d.kind==='monster'&&typeof d.shield==='string'?{shield:d.shield}:{})},{trusted:true});
   const effect=serviceAttackEffect(T,display.rig,d.attackType),aura=monsterAura(T,parent,d);
-  return {update(dt,m){display.update(dt,{...m,locomotion:m.attack>0?'combat':'walk'});effect.update(m.attack||0);aura?.update(dt)},dispose:()=>{aura?.dispose();display.dispose()}};
+  return {humanoid:true,update(dt,m){display.update(dt,{...m,locomotion:m.attack>0?'combat':'walk'});effect.update(m.attack||0);aura?.update(dt)},dispose:()=>{aura?.dispose();display.dispose()}};
  }
  const group=new T.Group();parent.add(group);const parts=[],legs=[],wings=[];let tick=0,travel=0;
  const tinted=Number.isFinite(d.tint),color=tinted?d.tint:({demon:0x8f3b3e,imp:0xa65a38,ogre:0x758654,revenant:0x71808f,wolf:0x727d80,deer:0xa57a50,boar:0x665142,bear:0x62432f,rat:0x786b67,spider:0x343840,bat:0x52445d,dragon:0x7e4937,troll:0x788263,golem:0x727b7d,wraith:0x4b5776})[d.species]||0x777777,accent=Number.isFinite(d.accent)?d.accent:0xd9c9a0;
