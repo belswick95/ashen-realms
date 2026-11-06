@@ -1,7 +1,8 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
 import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-monsters89';
+const MOTION_COMMANDS=new Set(['move','stop']);
 export async function startRealm(db,user,session){
- let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
+ let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,movesPending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
  const badge=document.createElement('output');badge.id='realm-connection';badge.setAttribute('role','status');badge.style.cssText='position:fixed;top:42px;left:50%;transform:translateX(-50%);z-index:250;background:#25271d;color:#f4d899;padding:7px 12px;border-radius:5px';badge.hidden=true;document.body.append(badge);
  async function request(command='sync',payload={},id=null){
   if(disposed)throw Error('Disconnected from the world');
@@ -17,9 +18,10 @@ export async function startRealm(db,user,session){
   if(data.reset)return true;
   const serverTime=Date.parse(data.time);if(serverTime<latestSnapshotTime)return true;latestSnapshotTime=serverTime;
   const finished=Date.now(),sample=finished-started;roundtrip=clockReady?roundtrip*.8+sample*.2:sample;const clockOffset=Date.parse(data.time)-(started+finished)/2;offset=clockReady?offset*.9+clockOffset*.1:clockOffset;clockReady=true;window.eldervaleServerTime=()=>Date.now()+offset;badge.hidden=true;failures=0;
-  window.eldervaleRealmBridge.snapshot(data,user.id);if(!first)for(const event of data.events||[])if(Number(event.id)>cursor)window.eldervaleRealmBridge.event(event.data,user.id);first=false;cursor=Math.max(cursor,Number(data.eventCursor)||0);return true;
+  // A snapshot taken before a queued click-walk/stop reached the server must not cancel the local walk.
+  window.eldervaleRealmBridge.snapshot(data,user.id,{motionStale:movesPending-(MOTION_COMMANDS.has(command)?1:0)>0});if(!first)for(const event of data.events||[])if(Number(event.id)>cursor)window.eldervaleRealmBridge.event(event.data,user.id);first=false;cursor=Math.max(cursor,Number(data.eventCursor)||0);return true;
  }
- function enqueue(command='sync',payload={}){const id=command==='sync'?null:crypto.randomUUID();pending++;const result=queue.then(()=>request(command,payload,id));queue=result.catch(()=>{}).finally(()=>pending--);return result;}
+ function enqueue(command='sync',payload={}){const id=command==='sync'?null:crypto.randomUUID(),motion=MOTION_COMMANDS.has(command);pending++;if(motion)movesPending++;const result=queue.then(()=>request(command,payload,id));queue=result.catch(()=>{}).finally(()=>{pending--;if(motion)movesPending--});return result;}
  let commandError='',latestSteer=null,steerInFlight=0,issued=0,acknowledged=0;
  async function sendSteer(){
   if(!latestSteer||disposed)return;
@@ -29,7 +31,7 @@ export async function startRealm(db,user,session){
   catch{if(input.sequence===issued)latestSteer??=input}
   finally{steerInFlight--;if(succeeded&&latestSteer)void sendSteer()}
  }
- const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
+ const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued||movesPending>0,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
   // Cosmetic commands (level-up fireworks) fail silently: no chat notice.
   quietCommand:(c,p)=>enqueue(c,p).then(r=>r??true).catch(()=>false)};window.eldervaleRealm=controller;
  await enqueue();const timer=setInterval(()=>{if(disposed)return;if(latestSteer)void sendSteer();else if(!pending&&!steerInFlight)void enqueue().catch(()=>{})},250);
