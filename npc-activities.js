@@ -1,4 +1,4 @@
-import {surfaceTexture} from './surface-textures.js?v=release-20261106-fix98';
+import {surfaceTexture} from './surface-textures.js?v=release-20261106-fix99';
 // Town work that reads as work. Every job pairs a base clip (animation.js
 // ACTIVITY) with its own prop and a light procedural layer applied after the
 // mixer: hands closed on a broom handle, a hammer striking a real anvil, a
@@ -64,6 +64,15 @@ export function createWorkKit(T,rig,profile={}){
  rig.workKit=kit;rig.townRoute=Array.isArray(profile.route)&&profile.route.length>1?profile.route:null;rig.workHome=profile.activity||null;
  return g;
 }
+
+// Facing to present for a server-driven worker this frame. The realm pose
+// (interpolateRealm) rewrites root.rotation.y every frame, but the work layer
+// only runs on the character's LOD frames (every 2nd-3rd frame past ~20 m on a
+// tablet): applying the station facing only then turned the whole body (and
+// its broom/book, which live in root space) back and forth between the server
+// yaw and the station every few frames. The caller keeps the station facing on
+// every frame while the worker stands; a moving walker follows the server yaw.
+export function workFacing(rig,yaw,moved=false){const face=rig?.work?.yaw;return !moved&&Number.isFinite(face)?face:yaw}
 
 // Pose helpers (all in the character's own frame: +Z forward, +X its left).
 function poser(T){

@@ -1,5 +1,5 @@
-import {horseAsset} from './horse-asset.js?v=release-20261106-fix98';
-import {surfaceTexture} from './surface-textures.js?v=release-20261106-fix98';
+import {horseAsset} from './horse-asset.js?v=release-20261106-fix99';
+import {surfaceTexture} from './surface-textures.js?v=release-20261106-fix99';
 const caches=new WeakMap();
 // Authored anatomy, UV coat textures and baked skeletal gallop from Wildfire Games.
 // Local additions are fitted saddle, reins, blue/gold cloth and steel breast armor.

@@ -1,5 +1,5 @@
 // Local game notices and server chat share one timeline. Notices never leave this device.
-import {morphChildren} from './ui-stable.js?v=release-20261106-fix98';
+import {morphChildren} from './ui-stable.js?v=release-20261106-fix99';
 const local=[],remote=new Map();let identity=null;
 // Staff badges are bound to account UUIDs, never user-editable display names.
 const STAFF_ACCOUNT_IDS=new Set(['91c5b7f0-7018-4290-a190-c2bba0ca492d']);
