@@ -39,6 +39,10 @@ export function shortcut(arc,n,s){
  const e=shortcutEntity({margin:20,...s});e.agility.requires={unlock:s.unlock};
  return {ref:arc+'.'+s.id,id:objectId(arc,n),data:{...entityDefaults(s.template,e.x,e.z),...e,questArc:arc,blueprint:BLUEPRINT,blueprintKey:arc+':'+s.id}};
 }
+// A plain world object (profession station, prop) placed for an arc.
+export function prop(arc,n,ref,template,name,x,z,o={}){
+ return {ref:arc+'.'+ref,id:objectId(arc,n),data:{...entityDefaults(template,x,z),name,yaw:o.yaw??0,questArc:arc,blueprint:BLUEPRINT,blueprintKey:arc+':'+ref}};
+}
 // Quest keepsakes and story items: untradeable, kept on death, never sold.
 export const item=(key,name,description,icon='scroll',extra={})=>['item:'+key,{name,description,icon,custom:true,category:'Quest items',buy:0,sell:0,unique:true,tradeable:false,untradeable:true,questItem:true,keepOnDeath:true,shopless:true,...extra}];
 export const drop=(key)=>({item:key,min:1,max:1,chance:1,always:true});

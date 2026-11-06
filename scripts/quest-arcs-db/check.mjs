@@ -74,6 +74,7 @@ async function finishObjectives(st){
   else if(o.type==='event'&&o.event==='death')for(let i=0;i<o.amount;i++)await event({type:'death',target:o.targets[i%o.targets.length]});
   else if(o.type==='collect'||o.type==='have'){const have=(await one(`select eldervale_private.item_quantity($1,$2) q`,[U,o.target])).q;if(have<o.amount)await give(o.target,o.amount-have);await refresh()}
   else if(o.type==='xp'){await db.query(`select eldervale_private.skill_xp($1,$2,$3)`,[U,o.skill,o.amount]);await refresh()}
+  else if(o.type==='event')for(let i=0;i<o.amount;i++)await event({...(o.match||{}),type:o.event,target:o.targets?.[i%o.targets.length]??'any'});
   else throw Error('harness: objective type '+o.type);
  }
 }
@@ -119,9 +120,10 @@ for(let round=0;round<30&&done.size<rows.length;round++){
   assert.equal(after.game_flags.questLamps.filter(l=>l.quest===r.id).length,(d.lamps||[]).length,d.key+' lamps');
   done.add(r.id);order.push(d.key);
   // Keep the pack light between quests.
-  await db.query(`update public.player_saves set stats='{}' where user_id=$1`,[U]);
+  await db.query(`update public.player_saves set stats=coalesce((select jsonb_object_agg(key,value) from jsonb_each(stats) where key like '%XP'),'{}') where user_id=$1`,[U]);
  }
 }
+for(const r of rows)if(!done.has(r.id))console.log('missing',r.data.key,JSON.stringify((await one(`select eldervale_private.quest_v2_missing($1,$2) m`,[U,r.data])).m));
 assert.equal(done.size,rows.length,'unreachable quests: '+rows.filter(r=>!done.has(r.id)).map(r=>r.data.key).join(', '));
 ok('one character completed all '+rows.length+' arc quests in dependency order: '+order.join(' → '));
 
@@ -132,11 +134,11 @@ for(const r of rows){const choiceStages=r.data.stages.filter(s=>s.choices?.lengt
  for(const cs of choiceStages)for(const c of cs.choices.slice(1)){
   await as(OWNER);await admin('qv2_reset',{userId:U,id:r.id});await as(U);
   await goToActor(r.data.giver);await cmd('quest_accept',{id:r.id});
-  await play(r,st=>st.id===cs.id?c.id:st.choices[0].id);
+  let used=false;await play(r,st=>{if(st.id===cs.id&&!used){used=true;return c.id}return st.choices[0].id});
   const pr=await prog(r.id),g=(await save()).game_flags;assert.ok(pr.completed_at);
   for(const [k,v] of Object.entries(c.flags||{})){assert.equal(pr.progress._flags[k],v);assert.equal(g.questFlags[r.data.key+'.'+k],v,r.data.key+' world flag '+k)}
   for(const u of r.data.unlocks||[])if(u.ifFlags){const want=Object.entries(u.ifFlags).every(([k,v])=>(pr.progress._flags[k]??false)===v);assert.equal(!!g.unlocks[u.id],want,r.data.key+'/'+c.id+' unlock '+u.id)}
-  await db.query(`update public.player_saves set stats='{}' where user_id=$1`,[U]);branches++;
+  await db.query(`update public.player_saves set stats=coalesce((select jsonb_object_agg(key,value) from jsonb_each(stats) where key like '%XP'),'{}') where user_id=$1`,[U]);branches++;
  }}
 ok(branches+' alternative choices replayed: flags, world flags and flag-filtered unlocks follow the choice');
 
@@ -191,7 +193,7 @@ for(const a of areas)for(const e of a.entrances){
 }
 ok('every arena entrance refuses without its quest unlock and opens with it');
 // Gated shortcuts (copied from the arc data; the arc files are applied in part 1).
-for(const s of ARCS.flatMap(a=>a.objects||[])){
+for(const s of ARCS.flatMap(a=>a.objects||[]).filter(o=>o.data.agility)){
  await db.query(`insert into eldervale_private.entities(id,revision,data) values($1,1,$2)`,[s.id,s.data]);
  const end=s.data.agility.ends[0];
  await db.query(`update eldervale_private.realm_players set x=$2,z=$3,last_command=now()-interval '1 second' where user_id=$1`,[U,end[0],end[1]]);
