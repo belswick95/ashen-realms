@@ -23,6 +23,11 @@ export const tierIndex=id=>tierById[id]?.index??-1;
 // Eldervale's combat tick. OSRS ticks are 0.6 s; Eldervale combat alternates
 // turns, so one tick is 0.45 s (which keeps the existing weapon turn lengths).
 export const TICK_SECONDS=.45;
+// With the tick & tile engine on (db/tick-tile-engine-4-timing.sql), timers run on 600 ms game
+// ticks: a weapon's seconds round to the nearest game tick, keeping its feel (dagger 4 -> 3,
+// longsword 5 -> 4, battleaxe 6 -> 5, 2h 7 -> 5). Matches eldervale_private.engine_seconds.
+export const GAME_TICK_SECONDS=.6;
+export const gameTicks=ticks=>Math.max(1,Math.floor(ticks*TICK_SECONDS/GAME_TICK_SECONDS+.5));
 // Eldervale health is 10x OSRS (max HP = 10 x Hitpoints level), so hits are rolled
 // at 10x the OSRS resolution: OSRS max hit 1 → up to 10 damage here.
 export const HIT_SCALE=10;

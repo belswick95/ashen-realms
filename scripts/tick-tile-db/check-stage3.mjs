@@ -8,7 +8,8 @@ export default async function(ctx){
  console.log('ok stage 3 applies twice');
  await run(`select eldervale_private.engine_console('console_engine_set','{"config":{"tile_mode":true}}')`,'tile mode on');
  // One world tick: the clock last ticked one game tick ago.
- const worldTick=async()=>{await one(`update eldervale_private.realm_clock set tick_at=eldervale_private.tick_time(eldervale_private.tick_no(clock_timestamp())-1)+interval '1 millisecond'`);await one(`update eldervale_private.realm_players set motion_at=eldervale_private.tick_time(eldervale_private.tick_no(clock_timestamp())-1),last_seen=clock_timestamp() where user_id='${P}'`);await one(`select eldervale_private.world_tick() x`)};
+ // Stay clear of a tick boundary so exactly one game tick passes inside world_tick.
+ const worldTick=async()=>{const into=(await one(`select (extract(epoch from clock_timestamp())*1000)::numeric%600 ms`)).ms;if(into>350)await new Promise(r=>setTimeout(r,640-into));await one(`update eldervale_private.realm_clock set tick_at=eldervale_private.tick_time(eldervale_private.tick_no(clock_timestamp())-1)+interval '1 millisecond'`);await one(`update eldervale_private.realm_players set motion_at=eldervale_private.tick_time(eldervale_private.tick_no(clock_timestamp())-1),last_seen=clock_timestamp() where user_id='${P}'`);await one(`select eldervale_private.world_tick() x`)};
  const actor=id=>one(`select x,z,yaw,target,hp,respawn_at,phase from eldervale_private.realm_actors where id=$1`,[id]);
  const tileOf=v=>Math.round(v/T);
  // The gate: a second world_tick inside the same game tick does nothing.

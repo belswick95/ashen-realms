@@ -19,7 +19,7 @@ export default async function({db,run,one,all,ms,repo,T}){
  const tileOfMe=async()=>{const p=await me();return [Math.round(p.x/T)-X0,Math.round(p.z/T)-Z0]};
  const cmd=(command,payload={})=>one(`select eldervale_private.realm_request_base('${S}',$1,$2::jsonb,gen_random_uuid(),0) r`,[command,JSON.stringify(payload)]);
  // One game tick for this player: rewind motion_at by one tick and advance to now.
- const tick=async(n=1,uid=P)=>{for(let k=0;k<n;k++){await one(`update eldervale_private.realm_players set motion_at=eldervale_private.tick_time(eldervale_private.tick_no(clock_timestamp())-1) where user_id='${uid}'`);await one(`select eldervale_private.advance_player_motion('${uid}',clock_timestamp()) x`)}};
+ const tick=async(n=1,uid=P)=>{for(let k=0;k<n;k++){const N=(await one(`select eldervale_private.tick_no(clock_timestamp()) n`)).n;await one(`update eldervale_private.realm_players set motion_at=eldervale_private.tick_time(${N}-1) where user_id='${uid}'`);await one(`select eldervale_private.advance_player_motion('${uid}',eldervale_private.tick_time(${N})+interval '1 millisecond') x`)}};
  const at=(i,j)=>[cx(X0+i),cx(Z0+j)];
 
  // Tile mode off: the old free walker still runs (no snapping to tiles).

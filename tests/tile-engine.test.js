@@ -53,6 +53,15 @@ test('tile walker interpolation is smooth and tick-paced, diagonals included',()
  assert.equal(projectTilePose(pose,1300).yaw,Math.atan2(1,0),'faces the direction of travel');
 });
 
+test('weapon speeds in 600 ms game ticks keep their feel',async()=>{
+ const {gameTicks,TICK_SECONDS,GAME_TICK_SECONDS,WEAPON_TEMPLATES}=await import('../gear-tiers.js');
+ assert.equal(GAME_TICK_SECONDS,GAME_TICK);
+ assert.deepEqual([4,5,6,7].map(gameTicks),[3,4,5,5]);
+ for(const [k,w] of Object.entries(WEAPON_TEMPLATES||{}))assert.ok(Math.abs(gameTicks(w.ticks)*GAME_TICK_SECONDS-w.ticks*TICK_SECONDS)<=.3,k+' keeps its pace within half a tick');
+ const sql=fs.readFileSync(new URL('../db/tick-tile-engine-3-npcs.sql',import.meta.url),'utf8');
+ assert.match(sql,/greatest\(1,floor\(coalesce\(s,0\)\/0\.6\+\.5\)\)\*0\.6-\.05/,'server rounds seconds to ticks like gameTicks');
+});
+
 test('facing and tick helpers',()=>{
  assert.equal(faceYaw({x:0,z:0},{x:0,z:5}),0);assert.equal(faceYaw({x:0,z:0},{x:5,z:0}),Math.PI/2);assert.equal(faceYaw({x:1,z:1},{x:1,z:1},.7),.7);
  assert.deepEqual([ticksFor(1.8),ticksFor(2.25),ticksFor(2.7),ticksFor(.1)],[3,4,5,1]);
