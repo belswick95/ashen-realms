@@ -1,6 +1,6 @@
-import {townExtent} from './capital-layout.js?v=release-20261106-mech96';
-import {generatedWorld} from './procedural-world.js?v=release-20261106-mech96';
-import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261106-mech96';
+import {townExtent} from './capital-layout.js?v=release-20261106-boss107';
+import {generatedWorld} from './procedural-world.js?v=release-20261106-boss107';
+import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261106-boss107';
 export const townMusic=[
  {id:'oakcross',name:'Oakcross',x:0,z:0,radius:50,title:'Lord of the Land'},
  {id:'northwatch',name:'Northwatch',x:-60,z:45,radius:22,title:'Night Vigil'},
@@ -19,6 +19,7 @@ export const townMusic=[
 export const loginMusic={id:'login',name:'The gates of Eldervale',title:'Clash Defiant'};
 export function musicRegion(position,current=null){
  if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.z))return null;
+ const below=globalThis.eldervaleUndergroundMusic?.(position);if(below)return below;// caves (underground.js)
  const towns=generatedWorld?[...generatedWorld.towns.map((t,i)=>({...t,...townExtent(t,48),id:['oakcross','northwatch','suncrest'][i],title:['Lord of the Land','Night Vigil','Angevin'][i]})),townMusic.find(t=>t.id==='castle')]:townMusic;
  const distance=town=>Math.hypot(position.x-town.x,position.z-town.z);
  if(current&&towns.some(t=>t.id===current.id)&&distance(current)<current.radius+6)return current;

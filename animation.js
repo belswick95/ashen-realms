@@ -1,6 +1,6 @@
-import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261106-mech96';
-import {gaitPlayback,createStrideWarp} from './gait-cadence.js?v=release-20261106-mech96';
-import {createRunStyle,runStyleWeight} from './run-style.js?v=release-20261106-mech96';
+import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261106-boss107';
+import {gaitPlayback,createStrideWarp} from './gait-cadence.js?v=release-20261106-boss107';
+import {createRunStyle,runStyleWeight} from './run-style.js?v=release-20261106-boss107';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip, cross-fades, and plays gaits at a natural cadence
@@ -21,11 +21,12 @@ const ACTIVITY={smith:'Fixing_Kneeling',fix:'Fixing_Kneeling',garden:'Fixing_Kne
  // Town jobs (npc-activities.js layers hands and props over these).
  hammer:'Idle_Loop',broom:'Idle_Loop',haul:'Idle_Loop',ledger:'Idle_Loop',trade:'Idle_Talking_Loop',chat:'Idle_Talking_Loop',fetch:'PickUp_Table@loop',pray:'Idle_Loop',watch:'Idle_Loop',rest:'Idle_Loop',sitread:'Sitting_Idle_Loop'};
 export const ACTIVITY_CLIPS=ACTIVITY;
+const LOW_POSE=new Set(['Fixing_Kneeling','Sitting_Idle_Loop']);
 const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_Shoot','Hit_Chest','Hit_Head','Jump_Start','Jump_Land','Death01','Interact','PickUp_Table','Roll']);
 
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
- const actions=new Map(),weights=new Map();let deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
+ const actions=new Map(),weights=new Map(),mids=new Map();let settle=0,deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
  const warp=createStrideWarp(rig),runStyle=createRunStyle(rig);let stride=1;
  const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0,netting=0;
  const holding=socket=>!!socket&&socket.children.some(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);
@@ -61,7 +62,7 @@ export function createHumanoidAnimator(rig){
   else base=work||(block>0||!ranged&&time<fightUntil?'Sword_Idle':'Idle_Loop');
   // A loop that is still fading out keeps its phase when it comes back (walk ->
   // idle -> walk within a fade): restarting it from frame 0 visibly pops the limbs.
-  if(base!==current){current=base;const a=action(base);if(dead||!((weights.get(base)||0)>.05))a.reset?.();if(dead&&base==='Death01'&&clips.Fixing_Kneeling)a.time=DEATH_JOIN}
+  if(base!==current){if(LOW_POSE.has(base)||LOW_POSE.has(current))settle=.9;current=base;const a=action(base);if(dead||!((weights.get(base)||0)>.05))a.reset?.();if(dead&&base==='Death01'&&clips.Fixing_Kneeling)a.time=DEATH_JOIN}
   const loop=action(base);if(STRIDE[base]){const play=gaitPlayback(base,speed,{stride:STRIDE[base],duration:loop.getClip().duration,scale:CHARACTER_SCALE});loop.timeScale=play.timeScale;stride=play.amplitude}else{loop.timeScale=1;stride=1}
   if(work&&base===work&&rig.activityPhase!=null){loop.time=rig.activityPhase*loop.getClip().duration;loop.timeScale=0}
   // Net fishing holds the kneel (the arms and spine are posed by arms.net), so the body does not bob each loop.
@@ -70,7 +71,14 @@ export function createHumanoidAnimator(rig){
   // Cross-fade: the active one-shot (if any) takes over, then hands back.
   if(oneShot){oneShotLeft-=dt;if(oneShotLeft<=0&&!(oneShot==='Death01'))oneShot=null}
   const target=oneShot||base,k=1-Math.exp(-dt/FADE*3);
-  for(const [name,a] of actions){const w=weights.get(name)+((name===target?1:0)-weights.get(name))*k;weights.set(name,w<.001?0:w);a.setEffectiveWeight(weights.get(name))}
+  // Townsfolk (rig.smoothFade, npc-activities.js) blend loops through two
+  // cascaded smoothing stages: the fade starts gently and takes about a third
+  // of a second, so stopping to sweep, kneeling down or getting up from a
+  // bench never jumps the hips and feet a quarter of the way in one frame.
+  // Weights still sum to one (both stages are linear). One-shots stay crisp.
+  // Kneeling down, sitting and getting up again take a little longer still.
+  settle=Math.max(0,settle-dt);const soft=rig.smoothFade&&!oneShot&&!dead,k2=1-Math.exp(-dt/(settle>0?.12:.075));
+  for(const [name,a] of actions){const t=name===target?1:0;let w;if(soft){const m0=mids.get(name)??weights.get(name),m=m0+(t-m0)*k2;mids.set(name,m);w=weights.get(name)+(m-weights.get(name))*k2}else{w=weights.get(name)+(t-weights.get(name))*k;mids.set(name,w)}weights.set(name,w<.001&&t===0&&!(mids.get(name)>.001)?0:w);a.setEffectiveWeight(weights.get(name))}
   mixer.update(dt);
   // Shorter strides for the gait loop, weighted by how far it has faded in.
   if(STRIDE[base]&&moving){const w=weights.get(base)||0;if(w>0)warp(loop.getClip(),1-(1-stride)*w)}

@@ -61,7 +61,7 @@ test('first 3D frame is the cutscene shot: no gameplay frame behind the prologue
  assert.match(game,/function drawMap\(ctx,canvas,scale,view\)\{paintTerrain\(\);/);
  assert.match(game,/if\(!cutsceneBusy\(\)\)\{if\(Math\.floor\(performance\.now\(\)\/250\)!==window\._mapFrame\)/);
  // Shader compiles during the scene's first frames must not read as a slow device (resolution/tier drops).
- assert.match(game,/function governFrame\(elapsed\)\{if\(clientSettings\.preset!=='auto'\|\|document\.hidden\|\|classicLook\.enabled\|\|cutsceneBusy\(\)\)return;/);
+ assert.match(game,/function governFrame\(elapsed\)\{if\(clientSettings\.preset!=='auto'\|\|document\.hidden\|\|cutsceneBusy\(\)\)return;/);
  // Shot timings start at the shot's first rendered frame, so slow first frames never skip a shot.
  const tut=read('tutorial.js');assert.match(tut,/if\(s\.shot\)\{setShot\(s\.shot,s\.fade\?0:s\.ms\|\|0\);await shotShown\(\)\}/);
 });

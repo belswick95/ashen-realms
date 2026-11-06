@@ -1,7 +1,7 @@
-import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261106-mech96';
-import {createSfx} from './sfx.js?v=release-20261106-mech96';
-import {createAmbience} from './ambience.js?v=release-20261106-mech96';
-import {playJingle} from './jingles.js?v=release-20261106-mech96';
+import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261106-boss107';
+import {createSfx} from './sfx.js?v=release-20261106-boss107';
+import {createAmbience} from './ambience.js?v=release-20261106-boss107';
+import {playJingle} from './jingles.js?v=release-20261106-boss107';
 let singleton;
 // One audio engine spans sign-in and gameplay: ONE AudioContext and mixer with
 // three channels, as in RuneScape — Music (region tracks, mixed soft by
@@ -76,7 +76,8 @@ export function startMusic({scene='world'}={}){
  function onVisible(){if(document.hidden){decks.forEach(deck=>deck.pause());ctx?.suspend().catch(()=>{})}else if(enabled)unlock()}
  function onPageHide(event){if(event.persisted){ctx?.suspend().catch(()=>{})}else api.dispose()}
  const timer=setInterval(tick,1000);for(const type of ['pointerdown','keydown','touchend'])document.addEventListener(type,interaction,{capture:true});document.addEventListener('input',onInput);document.addEventListener('click',onClick);document.addEventListener('visibilitychange',onVisible);window.addEventListener('pagehide',onPageHide);
- const api={celebrate,hoof,duck,setScene,toggleMaster,toggleMusic,toggleEnvironment,toggleSfx,unlock,getState:state,get sfx(){return sfx},get context(){return ctx},subscribe(listener){listeners.add(listener);listener(state());return ()=>listeners.delete(listener)},dispose(){disposed=true;sfx?.dispose();ambience?.dispose();clearInterval(timer);for(const timeout of fades.values())clearTimeout(timeout);decks.forEach(deck=>{deck.pause();deck.removeAttribute('src');deck.load()});ctx?.close().catch(()=>{});for(const type of ['pointerdown','keydown','touchend'])document.removeEventListener(type,interaction,{capture:true});document.removeEventListener('input',onInput);document.removeEventListener('click',onClick);document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('pagehide',onPageHide);listeners.clear();singleton=null}};
+ function thunder(t){if(!ctx||!started||!enabled||!environmentEnabled||document.hidden||!ambience)return false;return ambience.thunder(t)}
+ const api={celebrate,hoof,duck,thunder,setScene,toggleMaster,toggleMusic,toggleEnvironment,toggleSfx,unlock,getState:state,get sfx(){return sfx},get context(){return ctx},subscribe(listener){listeners.add(listener);listener(state());return ()=>listeners.delete(listener)},dispose(){disposed=true;sfx?.dispose();ambience?.dispose();clearInterval(timer);for(const timeout of fades.values())clearTimeout(timeout);decks.forEach(deck=>{deck.pause();deck.removeAttribute('src');deck.load()});ctx?.close().catch(()=>{});for(const type of ['pointerdown','keydown','touchend'])document.removeEventListener(type,interaction,{capture:true});document.removeEventListener('input',onInput);document.removeEventListener('click',onClick);document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('pagehide',onPageHide);listeners.clear();singleton=null}};
  singleton=api;tick();notify();if(enabled)unlock();return api;
 }
 
@@ -84,5 +85,7 @@ export function playHorseHoof(options){singleton?.hoof(options);}
 // Level-up jingle for a skill family ('combat' | 'gathering' | 'artisan' | 'combatLevel').
 export function playLevelUpJingle(kind){return singleton?.celebrate(kind)||false;}
 export function duckMusic(db,hold,release){singleton?.duck(db,hold,release)}
+// Thunder after a lightning flash (weather-effects.js), on the Area sounds channel.
+export function playThunder(t){return singleton?.thunder(t)||false}
 // The shared effects player (null until the first user gesture unlocks audio).
 export function soundEffects(){return singleton?.sfx||null}

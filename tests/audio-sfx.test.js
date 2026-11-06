@@ -22,8 +22,9 @@ test('sample onsets skip encoder padding so impacts land on the frame',()=>{
 test('every recorded effect and ambient bed ships as a small mono file',()=>{
  const files=new Set([...Object.values(SAMPLE_SETS).flat(),...Object.values(BED_FILES)]);let total=0;
  for(const f of files){const url=new URL('../assets/audio/sfx/'+f+'.mp3',import.meta.url),size=fs.statSync(url).size;total+=size;assert.ok(size>500&&size<260000,f+' '+size)}
- assert.ok(total<1.2e6,'total '+total);
- const credits=fs.readFileSync(new URL('../credits.html',import.meta.url),'utf8');for(const who of ['thimras','kheetor','ezduzziteh','rubberduck','starninjas'])assert.ok(credits.includes(who),who);
+ // Weather beds and thunder (about 0.37 MB) load only once it rains or storms.
+ assert.ok(total<1.45e6,'total '+total);
+ const credits=fs.readFileSync(new URL('../credits.html',import.meta.url),'utf8');for(const who of ['thimras','kheetor','ezduzziteh','rubberduck','starninjas','Kresiek The Furry','WuxiaScrub'])assert.ok(credits.includes(who),who);
 });
 
 test('area sounds crossfade with the day, water, towns and the Winterwatch and Emberspire biomes',()=>{

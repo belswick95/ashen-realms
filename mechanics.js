@@ -216,5 +216,6 @@ export const POTIONS={
  serpentbaneTonic:{name:'Serpentbane tonic',cure:'venom',immunity:600,buy:180,text:'Cures poison and venom; immunity for 6 minutes.'},
  shrineDraught:{name:'Shrine draught',prayer:true,buy:90,text:'Restores 7 + a quarter of your Prayer level in prayer points.'},
  briskTonic:{name:'Brisk tonic',energy:1000,buy:30,text:'Restores 10% run energy.'},
- windstepBrew:{name:'Windstep brew',stamina:200,energy:2000,buy:120,text:'Restores 20% run energy; running drains 70% less for 2 minutes.'}
+ windstepBrew:{name:'Windstep brew',stamina:200,energy:2000,buy:120,text:'Restores 20% run energy; running drains 70% less for 2 minutes.'},
+ breathwardTonic:{name:'Breathward tonic',breathward:500,buy:2400,text:'Dragon breath deals 70% less damage for 5 minutes (stacks with an anti-breath shield).'}
 };

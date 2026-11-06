@@ -1,6 +1,6 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
-import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-mech96';
-import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261106-mech96';
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-boss107';
+import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261106-boss107';
 const MOTION_COMMANDS=new Set(['move','stop']);
 export async function startRealm(db,user,session){
  const diet=createSyncDiet();let lean=true;
@@ -35,7 +35,9 @@ export async function startRealm(db,user,session){
   catch{if(input.sequence===issued)latestSteer??=input}
   finally{steerInFlight--;if(succeeded&&latestSteer)void sendSteer()}
  }
- const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued||movesPending>0,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
+ // steerPending: only unacknowledged WASD input holds the local walker; a click-walk in flight
+ // does not (the walker keeps presenting its current path until the new one arrives).
+ const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued||movesPending>0,steerPending:()=>acknowledged<issued,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
   // Cosmetic commands (level-up fireworks) fail silently: no chat notice.
   quietCommand:(c,p)=>enqueue(c,p).then(r=>r??true).catch(()=>false),
   // Quest guidance trail: the server tile grid around a point (db/quests-v2.sql quest_guide_tiles).

@@ -1,7 +1,7 @@
-import {installLocalSkinning} from './local-skinning.js?v=release-20261106-mech96';
-import {characterStore as store,CHARACTER_SCALE,ensurePart,outfitMaterial,skinMaterial,hairMaterial,eyeMaterial} from './character-assets.js?v=release-20261106-mech96';
-import {outfitItems,wornOutfit,OUTFIT_SLOTS} from './outfits.js?v=release-20261106-mech96';
-import {BEARDS,SKINS,HAIRS} from './appearance.js?v=release-20261106-mech96';
+import {installLocalSkinning} from './local-skinning.js?v=release-20261106-boss107';
+import {characterStore as store,CHARACTER_SCALE,ensurePart,outfitMaterial,skinMaterial,hairMaterial,eyeMaterial} from './character-assets.js?v=release-20261106-boss107';
+import {outfitItems,wornOutfit,OUTFIT_SLOTS} from './outfits.js?v=release-20261106-boss107';
+import {BEARDS,SKINS,HAIRS} from './appearance.js?v=release-20261106-boss107';
 // Characters used to skip frustum culling (frustumCulled=false), so every
 // NPC and monster in the region was drawn twice a frame (camera + shadow map)
 // even behind the camera. Skinned vertices stay in the model's local frame
@@ -53,7 +53,7 @@ export function buildHumanoid(T,root,look={}){
  // arrives the slot keeps its previous mesh, so nobody appears half-dressed.
  let worn={};
  function remove(slot){const s=slotMeshes[slot];if(!s)return;for(const m of s.meshes){m.removeFromParent();m.skeleton.dispose();const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1)}delete slotMeshes[slot]}
- function apply(slot,key,src){const item=outfitItems[key];remove(slot);slotMeshes[slot]={key,meshes:wear(src,name=>/Regular/.test(name)?skinMaterial('body',sex,skinTint):outfitMaterial(item.outfit,item.variant,item.tint??null))};for(const m of slotMeshes[slot].meshes)m.userData.outfitSlot=slot;refreshHair()}
+ function apply(slot,key,src){const item=outfitItems[key];remove(slot);slotMeshes[slot]={key,meshes:wear(src,name=>/Regular/.test(name)?skinMaterial('body',sex,skinTint):outfitMaterial(item.outfit,item.variant,item.tint??null,item.look??null))};for(const m of slotMeshes[slot].meshes)m.userData.outfitSlot=slot;refreshHair()}
  function setSlot(slot,key){
   if(slotMeshes[slot]?.key===key)return;const part=outfitItems[key]?.[sex];if(!part){remove(slot);return}
   if(store.parts[part])apply(slot,key,store.parts[part]);else ensurePart(part).then(src=>{if(worn[slot]===key&&slotMeshes[slot]?.key!==key){apply(slot,key,src);

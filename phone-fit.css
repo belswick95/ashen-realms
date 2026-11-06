@@ -73,7 +73,7 @@ body.fantasy-hud.phone-layout #inventory .slot{min-height:40px}
 /* ---- Short landscape screens (phones): compact the big panels ---- */
 @media(max-height:500px){
  /* Merchant: drop the long help line, keep both lists scrolling. */
- #service-panel:not(.bank-mode){padding:8px 12px!important;max-height:calc(var(--visible-height,100dvh) - 12px)!important;display:flex;flex-direction:column}
+ #service-panel:not(.bank-mode){padding:8px 12px!important;max-height:calc(var(--visible-height,100dvh) - 12px)!important;flex-direction:column}
  #service-panel:not(.bank-mode)[open]{display:flex}
  #service-panel:not(.bank-mode) .service-help{display:none}
  #service-panel:not(.bank-mode) .service-head h2{font-size:18px;margin:0}
