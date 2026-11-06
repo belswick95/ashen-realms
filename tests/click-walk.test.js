@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
+import test from 'node:test';import {readFileSync} from 'node:fs';import assert from 'node:assert/strict';import * as T from 'three';
 import {WALK_SPEED,RUN_SPEED,MOUNT_SPEED,TILE,GAME_TICK,travelSpeed,isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,crossFrame,crossColor,CROSS_TIME,approachPoint,withinReach,arrivalStatus} from '../click-walk.js';
 import {mapPoint} from '../minimap.js';import {searchRoute} from '../route-search.js';import {CHARACTER_SCALE} from '../character-assets.js';
 import {STRIDE,createHumanoidAnimator} from '../animation.js';import {gaitPlayback} from '../gait-cadence.js';import {buildHumanoid} from '../humanoid.js';import {mountSpeed} from '../mounts.js';
@@ -97,6 +97,16 @@ test('click-to-interact walks into reach, acts only after stopping, and a newer 
  assert.equal(arrivalStatus(pending,{x:2,z:0},{moving:false,generation:4,now:5000}),'failed','stopped out of reach');
  assert.equal(arrivalStatus(pending,{x:8,z:0},{generation:5,now:3100}),'cancelled');
  assert.equal(arrivalStatus(null,from),'none');
+ // QA (hud115, tile mode): the tutorial pond's fishing spot is 2.8 units from the nearest free tile and
+ // fishing reach is 2.6, so clicking the ripples stopped one tile short and said "You can't reach that".
+ // With a tile of slack the action is sent and the server applies its own reach (3.6 for fishing).
+ const pond={x:-373,z:-343.5,reach:2.6,generation:1,startedAt:0},parked={x:-371.3,z:-341.28};
+ assert.equal(arrivalStatus(pond,parked,{generation:1,now:5000}),'failed');
+ assert.equal(arrivalStatus(pond,parked,{generation:1,now:5000,slack:TILE}),'arrived');
+ assert.equal(arrivalStatus(pond,{x:-366,z:-336},{generation:1,now:5000,slack:TILE}),'failed','slack is one tile, not unlimited');
+ assert.equal(arrivalStatus(pond,parked,{moving:true,generation:1,now:5000,slack:TILE}),'walking');
+ const game=readFileSync(new URL('../game.js',import.meta.url),'utf8');
+ assert.match(game,/slack:window\.eldervaleTileMode&&!pendingArrival\.follow\?TILE:0/);
 });
 
 test('fences block routes (client and the server patch agree), so walks go round to the paddock gap',async()=>{
