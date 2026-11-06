@@ -1,0 +1,37 @@
+/* Quest tracker under the minimap (quest-tracker.js) and quest pages inside the NPC conversation box (npc-dialogue.js). */
+.quest-tracker{position:fixed;top:220px;right:14px;z-index:24;width:210px;border:1px solid #9c8452;border-radius:9px;background:linear-gradient(150deg,#263329f0,#121d18f0);box-shadow:0 6px 18px #0008,inset 0 0 0 1px #1c281e;color:#f1e5c8;font:13px/1.35 Georgia,'Times New Roman',serif;overflow:hidden}
+.quest-tracker[hidden]{display:none}
+.quest-tracker button{all:unset;box-sizing:border-box;display:flex;width:100%;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.quest-tracker .quest-tracker-head{align-items:center;gap:6px;padding:6px 9px;min-height:32px;background:#0c140f80;border-bottom:1px solid #9c845255}
+.quest-tracker-badge{flex:0 0 auto;padding:1px 6px;border-radius:4px;background:#ffd23a;color:#2a1a04;font:700 10px/1.5 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.quest-tracker-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ffe9a8;font-size:13px}
+.quest-tracker-chevron{flex:0 0 auto;color:#d9c08a;transition:transform .2s}
+.quest-tracker.collapsed .quest-tracker-chevron{transform:rotate(-90deg)}
+.quest-tracker.collapsed .quest-tracker-head{border-bottom:0}
+.quest-tracker .quest-tracker-body{flex-direction:column;gap:2px;padding:7px 10px 8px;min-height:40px}
+.quest-tracker.collapsed .quest-tracker-body{display:none!important}
+.quest-tracker-step{color:#fff;overflow-wrap:anywhere}
+.quest-tracker-count{color:#cdb98d;font:12px system-ui,sans-serif}
+.quest-tracker-count:empty{display:none}
+.quest-tracker[data-state=ready] .quest-tracker-step{color:#a6e08a}
+.quest-tracker-head:focus-visible,.quest-tracker-body:focus-visible{outline:2px solid #f1d087;outline-offset:-2px}
+.quest-tracker-body:hover .quest-tracker-step{text-decoration:underline;text-decoration-color:#c9a55a}
+body.tutorial-cutscene .quest-tracker,body.compact-layout.npc-conversation .quest-tracker{opacity:0;pointer-events:none}
+body.phone-layout .quest-tracker,body.compact-layout .quest-tracker{font-size:12px}
+body.phone-layout .quest-tracker-head,body.compact-layout .quest-tracker-head{min-height:30px;padding:4px 7px}
+body.phone-layout .quest-tracker-body,body.compact-layout .quest-tracker-body{padding:5px 8px 6px;min-height:34px}
+/* Conversation: quest marks on options and the parchment offer card. */
+#dialog .dialog-mark{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:6px;border-radius:50%;background:#2a1a04;color:#ffd23a;font:900 13px/1 Georgia,serif;vertical-align:-3px;box-shadow:0 0 0 1px #ffd23a88}
+#dialog .dialog-choice-number{color:#c9b27c;margin-right:2px}
+#dialog .dialog-quest-card{margin:4px 0 8px;padding:9px 12px;border-radius:7px;background:linear-gradient(#e8d6a6,#d4be88);color:#2b1c0b;border:1px solid #7a5a2a;box-shadow:inset 0 0 0 2px #f4e6bf66;font:13px/1.4 Georgia,serif;max-height:30dvh;overflow:auto}
+#dialog .dialog-quest-card[hidden]{display:none}
+#dialog .dialog-quest-title{display:block;font-size:15px;color:#5a1408;margin-bottom:3px}
+#dialog .dialog-quest-card small{display:block;margin-top:5px;font:700 10px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#6b4b22}
+#dialog .dialog-quest-card ul{margin:2px 0 0;padding-left:18px}
+#dialog[data-who=player] #dialog-name{color:#9fc4ff}
+#dialog #dialog-choices button[data-action=accept]{border-color:#c9a55a;background:linear-gradient(#4f6a2c,#273a16)}
+/* Short screens (phones in landscape): keep Accept/Decline in view under the offer card. */
+body.compact-layout #dialog .dialog-quest-card,body.phone-layout #dialog .dialog-quest-card{max-height:20dvh;padding:6px 10px;font-size:12px}
+body.compact-layout #dialog:has(.dialog-quest-card:not([hidden])) #dialog-portrait,body.phone-layout #dialog:has(.dialog-quest-card:not([hidden])) #dialog-portrait{display:none}
+body.compact-layout #dialog:has(.dialog-quest-card:not([hidden])) .dialog-body,body.phone-layout #dialog:has(.dialog-quest-card:not([hidden])) .dialog-body{display:block}
+body.compact-layout #dialog:has(.dialog-quest-card:not([hidden])) #dialog-text,body.phone-layout #dialog:has(.dialog-quest-card:not([hidden])) #dialog-text{margin:6px 0}

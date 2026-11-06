@@ -159,7 +159,9 @@ export function createQuestJournal(state){
  }
  const shown=()=>panel?panel.open:!host.hidden&&tab.getAttribute('aria-expanded')!=='false';
  function open(npc=null){if(panel){if(!panel.open)panel.showModal()}else if(!shown()||!tab.classList.contains('selected'))tab.click();filter=npc;selected=null;const mine=npc?quests.filter(q=>q.data.giver===npc&&q.data.chain!=='tutorial'):[];if(mine.length===1)selected=mine[0].id;draw();status.textContent='Accept and hand in quests near their giver. Collected items are consumed when handed in.'}
- return {open,draw,hasFor:npc=>quests.some(q=>q.data.giver===npc&&!q.completed&&q.data.chain!=='tutorial'),sync(rows=[]){
+ // Opens the journal on one quest (the tracker under the minimap links here).
+ function show(id){open();if(quests.some(q=>q.id===id)){selected=id;draw()}}
+ return {open,show,draw,hasFor:npc=>quests.some(q=>q.data.giver===npc&&!q.completed&&q.data.chain!=='tutorial'),sync(rows=[]){
   // The lean world sync hands back the same array while quests are unchanged
   // (sync-diet.js): only the carried collect counts need checking then.
   if(rows!==quests||rowsText===null){for(const q of newlyCompleted(previous,rows))showQuestComplete(q,{totalPoints:journalSummary(rows).points});

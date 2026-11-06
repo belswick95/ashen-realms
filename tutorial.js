@@ -7,7 +7,9 @@ const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 
-export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates}){
+// npcDialogue (optional, npc-dialogue.js adapter {start(profile)->id,page,choose,close,owns}): tutor
+// conversations then use the game's one NPC conversation box instead of the cutscene chatbox.
+export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null}){
  document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-tile93'}));
  let quests=[],flags={},locked=false,step=null,talking=false,destroyed=false,selfName='';
  // ---- objective HUD
@@ -68,13 +70,18 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
   while(!cutscene.skip&&performance.now()-t0<timeout){const p=playerPosition();if(Math.hypot(p.x-end[0],p.z-end[1])<1.4)break;await wait(150)}
   await command('run',{enabled:false});
  }
- async function playCutscene(id){
+ async function playCutscene(id,{prologue=null}={}){
   const sceneData=cutscenes[id];if(!validCutscene(sceneData)||cutscene.active)return;
   cutscene.active=true;cutscene.skip=false;cutscene.to=null;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
   window.addEventListener('keydown',blockKeys,true);fader.style.transition='none';fader.style.opacity='1';
+  performance.mark?.('eldervale-cutscene-start');
+  // The DOM prologue (tutorial-prologue.js) already showed the title card while the world loaded:
+  // take over from it on a black frame and skip the repeated caption.
+  let titled=false;if(prologue){try{titled=(await prologue.handoff()).titleShown}catch{}}
   try{
    for(const s of sceneData.steps){
     if(cutscene.skip)break;
+    if(s.title&&titled){if(s.shot)setShot(s.shot,s.ms||0);continue}
     if(s.shot)setShot(s.shot,s.fade?0:s.ms||0);
     if(s.fade){await fade(s.fade==='in'?0:1,s.ms||800);continue}
     if(s.title){caption.replaceChildren(el('strong',null,s.title),el('span',null,s.subtitle||''));caption.classList.add('show');await wait(s.ms||2500);caption.classList.remove('show');continue}
@@ -103,25 +110,34 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
    if(was!==locked)refreshGates?.();
    if(was&&!locked&&next.done)say('Training complete! The Great Gate now opens for you.');
    drawHud();
-   if(needsCutscene(flags)&&!cutscene.active&&!cutscene.queued&&document.querySelector('#auth-screen')?.hidden!==false&&window.eldervaleWorldLoading!==true){cutscene.queued=true;setTimeout(()=>void playCutscene('arrival').finally(()=>{cutscene.queued=false}),900)}
+   // With the prologue already on screen there is nothing to wait for: start as soon as the world is in.
+   const prologue=globalThis.eldervalePrologue?.active?globalThis.eldervalePrologue:null;
+   if(needsCutscene(flags)&&!cutscene.active&&!cutscene.queued&&document.querySelector('#auth-screen')?.hidden!==false&&window.eldervaleWorldLoading!==true){cutscene.queued=true;setTimeout(()=>void playCutscene('arrival',{prologue}).finally(()=>{cutscene.queued=false}),prologue?0:900)}
+   else if(prologue&&!needsCutscene(flags)&&window.eldervaleWorldLoading!==true)prologue.release(0);
   },
   // Returns true when the tutorial handled the conversation.
   talk(npcId,profile){
-   if(!locked||talking||cutscene.active)return false;
+   // Busy with this tutor already: swallow the repeat (client arrival + server interaction event)
+   // instead of letting the normal NPC conversation open on top.
+   if(talking)return true;
+   if(!locked||cutscene.active)return false;
    const plan=talkPlan(quests,npcId,carried);if(!plan)return false;
    talking=true;const name=profile?.name;
+   const shared=npcDialogue?npcDialogue.start(profile):null,alive=()=>!shared||npcDialogue.owns(shared);
+   const line=l=>shared?npcDialogue.page({name,...l}):speak(l,name);
+   const pick=options=>shared?npcDialogue.choose({who:'choice',name,text:'Select an option'},options.map(([label,value])=>({label,value}))):choose(options,name);
    (async()=>{try{
-    await conversation(plan.lines,name);
+    for(const l of plan.lines){await line(l);if(!alive())return}
     if(plan.command){
      const ok=await command(plan.command,{id:plan.quest.id});
-     if(!ok){await speak({who:'npc',text:lastError()||'Come back when you are ready.'},name)}
+     if(!ok){if(alive())await line({who:'npc',text:lastError()||'Come back when you are ready.'})}
      else if(plan.command==='quest_accept')say('New objective: '+(plan.quest.data.objectives[0]?.label||plan.quest.data.name));
-     else{say('Quest complete: '+plan.quest.data.name+'!');if(plan.finishes==='tutorial'){const go=await choose([['Take the Steward\'s cart to Birchford',true],['I\'ll walk out through the gate',false]],name);if(go&&!await command('tutorial_depart',{}))say(lastError()||'The cart cannot leave right now.')}}
+     else{say('Quest complete: '+plan.quest.data.name+'!');if(plan.finishes==='tutorial'&&alive()){const go=await pick([['Take the Steward\'s cart to Birchford',true],['I\'ll walk out through the gate',false]]);if(go===true&&!await command('tutorial_depart',{}))say(lastError()||'The cart cannot leave right now.')}}
     }else if(plan.supplies){
-     const need=await choose([['I\'ll get right to it.',false],['I\'ve lost my tools. Can I have some more?',true]],name);
-     if(need){const ok=await command('tutorial_supplies',{});await speak({who:'npc',text:ok?'Here you are. Try not to lose them this time!':lastError()||'You have everything you need.'},name)}
+     const need=await pick([['I\'ll get right to it.',false],['I\'ve lost my tools. Can I have some more?',true]]);
+     if(need===true&&alive()){const ok=await command('tutorial_supplies',{});await line({who:'npc',text:ok?'Here you are. Try not to lose them this time!':lastError()||'You have everything you need.'})}
     }
-   }finally{close();talking=false;drawHud()}})();
+   }finally{if(shared){if(npcDialogue.owns(shared))npcDialogue.close()}else close();talking=false;drawHud()}})();
    return true;
   },
   // Called each frame after the game camera is placed.

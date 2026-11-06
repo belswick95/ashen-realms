@@ -37,6 +37,8 @@ export async function startWorld(db,user,{initial,flush,disconnect}){
  if(remaining===0&&!restarting){restarting=true;window.eldervaleWorldBridge.capture();void flush().then(ok=>{if(ok)location.reload();else{restarting=false;banner.textContent='Reconnecting paused — waiting for your character to save.'}})}
  }
  await refresh();if(!initialized)throw lastSyncError||Error('World access is unavailable');
+ // Owner-edited building signs (db/building-signs.sql); a server without the RPC keeps the default signs.
+ const loadSigns=()=>db.rpc('building_signs').then(r=>{if(!r.error)window.eldervaleBuildingSigns?.setOverrides(r.data||{})}).catch(()=>{});window.eldervaleReloadSigns=loadSigns;void loadSigns();
  if(snapshot?.owner||snapshot?.staffRole==='moderator'){const {createAdminPanel}=await import('./admin-panel.js?v=release-20261106-tile93');panel=createAdminPanel({userId:user.id,rpc,action,refresh,snapshot,bridge:window.eldervaleWorldBridge,storage:db.storage,auth:db.auth})}
  const report=document.createElement('button');report.type='button';report.textContent='Report a player';report.id='world-report-button';report.style.cssText='position:fixed;bottom:4px;left:50%;transform:translateX(-50%);z-index:95;font:11px Arial;padding:4px 8px;background:#182620;color:#c8ba9a;border:1px solid #80704c;border-radius:4px';(document.body.classList.contains('phone-layout')?document.querySelector('#settings-tab')||document.body:document.body).append(report);
  // Also opened from a player's right-click menu with that player already filled in.
