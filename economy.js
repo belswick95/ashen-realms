@@ -77,4 +77,9 @@ export function createServicePanel(state,{onChange,onOpen}){
 }
 
 const customIcons=Object.fromEntries(Object.entries(itemIcons).map(([key,d])=>[key,d.svg]));
+// Owner catalog edits (db/admin-full-control.sql snapshot.catalogOverrides): display fields of item:* rows
+// merge into the built-in goods; new item IDs appear once their icon key is known. Original values are
+// kept so an override that disappears restores them.
+const OVERRIDE_KEYS=['name','description','buy','sell','heal','healPct','stackable','tier','requirements','bonuses','attackSpeed','tradeable','disabled','category'];const overridden=new Map();
+export function registerCatalogOverrides(rows={}){if(!rows||typeof rows!=='object')return;const seen=new Set();for(const [cid,d] of Object.entries(rows)){if(!cid.startsWith('item:')||cid.startsWith('item:note:')||!d||typeof d!=='object')continue;const id=cid.slice(5);seen.add(id);let g=goods[id];if(!g){if(!customIcons[d.icon])continue;g=goods[id]={name:String(d.name||id),icon:customIcons[d.icon],iconKey:d.icon,custom:!!d.custom,ownerCreated:true}}if(!overridden.has(id))overridden.set(id,Object.fromEntries(OVERRIDE_KEYS.map(k=>[k,g[k]])));for(const k of OVERRIDE_KEYS){const v=k==='description'?d.description??d.desc??d.examine:d[k];if(v!==undefined)g[k]=v}}for(const [id,orig] of overridden)if(!seen.has(id)&&goods[id]){Object.assign(goods[id],orig);overridden.delete(id)}}
 export function registerWorldItems(catalog={}){for(const [id,d] of Object.entries(catalog))if(/^custom_[a-z0-9_]{2,35}$/.test(id)&&d.custom&&customIcons[d.icon])goods[id]={...d,icon:customIcons[d.icon],iconKey:d.icon};for(const [id,g]of Object.entries(goods))if(g.custom)g.icon=meshItemIcon(id,g);registerBankNotes();}

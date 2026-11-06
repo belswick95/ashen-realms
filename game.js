@@ -1414,7 +1414,8 @@ function drapeRoads(){for(const object of scene.children){if(!object.userData.dr
 function updateWorldSky(){
  const now=window.eldervaleServerTime?.()||Date.now();if(now<nextSkyUpdate)return;nextSkyUpdate=now+1500;
  const parts=Object.fromEntries(easternClock.formatToParts(new Date(now)).filter(p=>p.type!=='literal').map(p=>[p.type,Number(p.value)]));
- const hour=parts.hour+parts.minute/60+parts.second/3600;
+ const lockedHour=Number(window.eldervaleGameConfig?.timeOverride);// owner console › Economy › World clock
+ const hour=window.eldervaleGameConfig?.timeOverride!=null&&Number.isFinite(lockedHour)?lockedHour%24:parts.hour+parts.minute/60+parts.second/3600;
  const dayPhase=hour/24;
  const solar=Math.sin((dayPhase-.25)*Math.PI*2);
  const daylight=Math.max(0,Math.min(1,(solar+.16)/.65));
