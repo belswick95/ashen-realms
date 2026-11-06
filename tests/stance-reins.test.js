@@ -1,15 +1,14 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
 import {buildHumanoid} from '../humanoid.js';import {createHumanoidAnimator} from '../animation.js';import {createHorseMount} from '../horse-mount.js';
-import {gaitPlayback,stepRate} from '../gait-cadence.js';import {DOLL_LAYOUT,SILHOUETTES,loadStance,saveStance} from '../equipment-doll.js';
+import {cadence,stepLength} from '../stride-cycle.js';import {DOLL_LAYOUT,SILHOUETTES,loadStance,saveStance} from '../equipment-doll.js';
 import {characterStore} from '../character-assets.js';
 const settle=(a,frames,opts)=>{let pose;for(let i=0;i<frames;i++)pose=a.update(1/60,typeof opts==='function'?opts(i):opts);return pose};
 
-test('cadence rises with speed and jogging never plays in slow motion',()=>{
- const jog=s=>gaitPlayback('Jog_Fwd_Loop',s,{stride:9.9,duration:.933,scale:1.58});
- assert.ok(stepRate('Jog_Fwd_Loop',4)>stepRate('Jog_Fwd_Loop',3));assert.ok(stepRate('Walk_Loop',1.4)>stepRate('Walk_Loop',1));
- assert.ok(jog(6.4).timeScale>1,'quicker steps than the clip');assert.ok(jog(6.4).amplitude<.6,'shorter strides than the clip');
- // Ground covered per second = clip stride speed × cadence × stride amplitude.
- for(const s of [4,6.4,9])assert.ok(Math.abs(9.9*jog(s).timeScale*jog(s).amplitude-s)<1e-6);
+test('cadence rises with speed and running never plays in slow motion',()=>{
+ assert.ok(cadence(1,4)>cadence(1,3));assert.ok(cadence(0,1.4)>cadence(0,1));
+ assert.ok(cadence(1,6.4)>cadence(0,2.6),'running steps come quicker than walking ones');assert.ok(stepLength(1,5.27)>stepLength(0,2.63),'and are longer');
+ // Ground covered per second = step length × steps per second.
+ for(const s of [4,6.4,9])assert.ok(Math.abs(stepLength(1,s)*cadence(1,s)-s)<1e-9);
 });
 
 test('everyone idles relaxed with a weapon; fighting brings the guard up, then it eases back',()=>{
