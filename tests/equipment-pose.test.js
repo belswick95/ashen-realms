@@ -5,8 +5,13 @@ test('every weapon stays in its fist (bows in the left) and clear of the ground 
  for(const weapon of Object.keys(weaponCatalog))for(const [name,motion] of Object.entries(MOTIONS)){
   const d=buildCharacterDisplay(T,new T.Group(),{},{weapon,shield:'kite'});for(let i=0;i<40;i++)d.update(1/60,motion);d.visual.updateMatrixWorld(true);
   const hand=isBow(weapon)?d.rig.leftHand:d.rig.rightHand,held=hand.children.filter(o=>o.isGroup&&o.userData.weaponMount);assert.equal(held.length,1,weapon);
-  const box=new T.Box3().setFromObject(held[0]);assert.ok(box.min.y>(isRanged(weapon)?.05:.8),weapon+' '+name+(isRanged(weapon)?' clears the ground':' stays above the knees'));
-  assert.ok(direction(held[0],new T.Vector3(0,1,0)).y>(weaponCatalog[weapon].magic&&name==='idle'?.9:0),weapon+' '+name+(weaponCatalog[weapon].magic?' staff stands upright':' blade is not pointed at the ground'));
+  // Standing, blades point forward and up out of the fist; on the move they are
+  // carried low (tip down and back) so they never swing up at the face.
+  const box=new T.Box3().setFromObject(held[0]),moving=name!=='idle',magic=weaponCatalog[weapon].magic,up=direction(held[0],new T.Vector3(0,1,0)).y;
+  assert.ok(box.min.y>(isRanged(weapon)||moving?.05:.8),weapon+' '+name+(isRanged(weapon)||moving?' clears the ground':' stays above the knees'));
+  if(magic)assert.ok(up>(moving?.8:.9),weapon+' '+name+' staff stands upright');
+  else if(isBow(weapon)||!moving)assert.ok(up>0,weapon+' '+name+' is not pointed at the ground');
+  else assert.ok(up<0,weapon+' '+name+' is carried low, tip down');
   assert.equal(d.rig.leftHand.children.filter(o=>o.isGroup&&o.userData.shieldMount).length,isTwoHanded(weapon)?0:1,weapon+' shield');
   d.dispose();
  }
