@@ -4,8 +4,8 @@
 // layout tests. Birchford's original square, bank, lodge, workshop, chapel,
 // house and general store stay where they are; the capital grows around them.
 // Coordinates are world metres for the live seed (241916600): +x east, +z south.
-import {entityDefaults} from './world-templates.js?v=release-20261106-perf90';
-import {generatedWorld} from './procedural-world.js?v=release-20261106-perf90';
+import {entityDefaults} from './world-templates.js?v=release-20261106-smooth91';
+import {generatedWorld} from './procedural-world.js?v=release-20261106-smooth91';
 
 export const CAPITAL_BLUEPRINT='birchford-capital-v1';
 export const capital={

@@ -1,9 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {execFileSync} from 'node:child_process';
-import {initializeGeography,roadPoints,segmentDistance} from '../geography.js?v=release-20261106-perf90';
-import {makeWorldPlan} from '../procedural-world.js?v=release-20261106-perf90';
-import {createLandscape} from '../landscape.js?v=release-20261106-perf90';
-import {musicRegion} from '../audio-regions.js?v=release-20261106-perf90';
-import {capital,capitalBlueprint,capitalBuildings,capitalShops,marketStalls,capitalStreets,capitalActive,inCapital,insideWalls,inCapitalClearing,wallDistance,local,CAPITAL_BLUEPRINT} from '../capital-layout.js?v=release-20261106-perf90';
+import {initializeGeography,roadPoints,segmentDistance} from '../geography.js?v=release-20261106-smooth91';
+import {makeWorldPlan} from '../procedural-world.js?v=release-20261106-smooth91';
+import {createLandscape} from '../landscape.js?v=release-20261106-smooth91';
+import {musicRegion} from '../audio-regions.js?v=release-20261106-smooth91';
+import {capital,capitalBlueprint,capitalBuildings,capitalShops,marketStalls,capitalStreets,capitalActive,inCapital,insideWalls,inCapitalClearing,wallDistance,local,CAPITAL_BLUEPRINT} from '../capital-layout.js?v=release-20261106-smooth91';
 import {checkLayout} from './helpers/capital-check.js';
 import {walkModel,gridReach} from './helpers/capital-walk.js';
 

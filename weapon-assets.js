@@ -10,7 +10,7 @@ const defaultRead=async url=>{const r=await fetch(url);if(!r.ok)throw Error('Wea
 export function preloadWeapons(T,{read=defaultRead}={}){
  if(store.pending)return store.pending;store.T=T;
  store.pending=(async()=>{
-  const buffer=await read(new URL('weapons.glb?v=release-20261106-perf90',BASE).href);
+  const buffer=await read(new URL('weapons.glb?v=release-20261106-smooth91',BASE).href);
   const gltf=await new Promise((resolve,reject)=>new GLTFLoader().parse(buffer,'',resolve,reject));
   const textures=store.textures,browser=typeof document!=='undefined';
   const load=(file,color)=>{if(!textures.has(file)){const t=new T.TextureLoader().load(new URL(file,BASE).href);t.flipY=false;if(color)t.colorSpace=T.SRGBColorSpace;t.userData.eldervaleShared=true;textures.set(file,t)}return textures.get(file)};

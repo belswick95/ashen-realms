@@ -1,4 +1,4 @@
-import {creatureMaterial} from './creature-material.js?v=release-20261106-perf90';
+import {creatureMaterial} from './creature-material.js?v=release-20261106-smooth91';
 const ids=new Set(['tent','bedroll','log_seat','cooking_tripod','supply_wagon','trail_sign','woodpile','rope_coil','camp_lantern','wooden_table','stool','weapon_rack','campfire']);
 export function campObject(T,parent,id,d={}){
  if(!ids.has(id))return null;const g=new T.Group();parent.add(g);const wood=creatureMaterial(T,0x8c704d,'hide'),cloth=creatureMaterial(T,id==='bedroll'?0x7a8263:0xc1b18e,'hide'),iron=new T.MeshStandardMaterial({color:0x424a48,metalness:.55,roughness:.65});
