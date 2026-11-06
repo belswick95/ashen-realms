@@ -1,4 +1,5 @@
 import {foodRecipes} from './food.js?v=release-20261105-qa84';
+import {registerGearProfessions} from './gear-recipes.js?v=release-20261105-qa84';
 // Original Eldervale recipes inspired by OSRS resource-processing mechanics.
 // Levels and XP follow the OSRS experience table (combat-level.js); per-action XP is close to OSRS for comparable tiers.
 export const professionSkills={mining:{name:'Mining',key:'miningXP',icon:'⛏'},woodcutting:{name:'Woodcutting',key:'woodXP',icon:'🌳'},fishing:{name:'Fishing',key:'fishingXP',icon:'🎣'},firemaking:{name:'Firemaking',key:'firemakingXP',icon:'🔥'},smithing:{name:'Smithing',key:'smithingXP',icon:'🔨'},cooking:{name:'Cooking',key:'cookingXP',icon:'🍳'},crafting:{name:'Crafting',key:'craftingXP',icon:'🧵'},fletching:{name:'Fletching',key:'fletchingXP',icon:'🏹'},herblore:{name:'Herblore',key:'herbloreXP',icon:'🌿'},farming:{name:'Farming',key:'farmingXP',icon:'🌱'},runecrafting:{name:'Runecrafting',key:'runecraftingXP',icon:'✧'},construction:{name:'Construction',key:'constructionXP',icon:'🏠'},hunter:{name:'Hunter',key:'hunterXP',icon:'🪤'},agility:{name:'Agility',key:'agilityXP',icon:'🏃'},thieving:{name:'Thieving',key:'thievingXP',icon:'🗝'}};
@@ -30,3 +31,5 @@ export const professionStations={construction_site:'Construction work site',furn
 // Renewable foraging nodes make the processing chains obtainable through play.
 for(const [id,resource,skill,tool,level,xp,respawn]of [['herb_patch','grimyHerb','herblore',null,1,8,30],['flax_patch','flax','crafting',null,1,5,15],['wheat_patch','wheat','farming',null,1,8,20],['berry_bush','berries','farming',null,1,8,20],['essence_rock','runeEssence','mining','weapon:pickaxe',1,10,20]])recipe('gather_'+id,'Gather '+professionItems[resource].name.toLowerCase(),skill,level,xp,{}, {[resource]:1},tool?[tool]:[],id,{kind:'mine',resource,respawn});
 export const oreResources=Object.fromEntries(ores.map(([id,name,color,level])=>[id,{name,color,level}]));
+// Gear tiers: tiered bars, arrows, smithing and fletching recipes (gear-recipes.js).
+registerGearProfessions(professionItems,professionRecipes);

@@ -28,13 +28,14 @@ export function preloadWeapons(T,{read=defaultRead}={}){
 
 // A held item: an outer group (free for callers to position) around a clone of
 // the model node (which keeps its own normalising transform).
-export function heldItem(T,key,kind){
+// prepare(model): optional per-copy adjustment (gear tier recolouring), also run on late loads.
+export function heldItem(T,key,kind,prepare=null){
  const group=new T.Group();group.name=kind+'-'+key;group.userData.itemKey=key;
  const src=store.items[key];
- if(src){const model=src.clone(true);model.name='model';group.add(model)}
+ if(src){const model=src.clone(true);model.name='model';prepare?.(model);group.add(model)}
  // Where spells or projectiles leave the item (staff gems), in the held frame.
  if(src?.userData.tip){const tip=new T.Object3D();tip.name='tip';tip.position.fromArray(src.userData.tip);group.add(tip)}
- else if(store.pending)store.pending.then(()=>{if(store.items[key]&&!group.getObjectByName('model')){const model=store.items[key].clone(true);model.name='model';group.add(model)}}).catch(()=>{});
+ else if(store.pending)store.pending.then(()=>{if(store.items[key]&&!group.getObjectByName('model')){const model=store.items[key].clone(true);model.name='model';prepare?.(model);group.add(model)}}).catch(()=>{});
  return group;
 }
 // The arrow model (projectiles).

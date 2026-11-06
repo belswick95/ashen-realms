@@ -1,3 +1,4 @@
+import {GEAR_TIERS,PLATE_TIERS,PLATE_PIECES,PLATE_NAMES,TIER_PRICE,tierById,tierItemKey,outfitGear} from './gear-tiers.js?v=release-20261105-qa84';
 // Wearable outfit items built from Quaternius' Modular Character Outfits -
 // Fantasy (CC0). One item works for both bodies: each piece names its male and
 // female part. Item keys are what saves, the server catalog and equipment use.
@@ -78,6 +79,18 @@ for(const [outfit,pieces] of Object.entries(OUTFIT_PIECES))for(const piece of pi
   hidesHair:!!piece.hidesHair,hidesBeard:!!piece.hidesBeard,
   desc:`${cap(outfit)} outfit · ${variant.name.toLowerCase()} ${piece.name}.`};
 });
+// Metal tiers without their own texture (gear-tiers.js): the iron knight pieces,
+// recoloured. Keys are <tier><Piece>, e.g. moonsilverBreastplate.
+for(const tier of PLATE_TIERS)for(const piece of OUTFIT_PIECES.knight)if(PLATE_PIECES[piece.id]){
+ const t=tierById[tier],key=tierItemKey(tier,piece.id),price=Math.round(piece.price*TIER_PRICE[tier]);
+ outfitItems[key]={key,outfit:'knight',variant:1,tier,tint:t.color,piece:piece.id,slot:piece.slot,name:t.name+' '+PLATE_NAMES[piece.id],male:piece.male,female:piece.female,
+  defence:Math.max(1,Math.round(piece.defence*(.4+t.armour))),reduction:Math.max(0,Math.round(piece.reduction*(.4+t.armour))),buy:price,sell:Math.round(price*.3),
+  hidesHair:!!piece.hidesHair,hidesBeard:!!piece.hidesBeard,desc:`Knight outfit · ${t.name.toLowerCase()} ${PLATE_NAMES[piece.id]}.`};
+}
+// OSRS-style equipment bonuses and level requirements for every outfit item.
+// The blacksteel colour variant's metal also takes the blacksteel tier colour.
+for(const item of Object.values(outfitItems))if(item.outfit==='knight'&&item.variant===3&&PLATE_PIECES[item.piece])item.tint=tierById.blacksteel.color;
+for(const item of Object.values(outfitItems)){const g=outfitGear(item);item.bonuses=g.bonuses;item.req=g.req;if(g.tier&&!item.tier)item.tier=g.tier}
 export function outfitPartFor(key,sex){const item=outfitItems[key];return item?item[sex==='female'?'female':'male']:null}
 // Default clothing for unarmoured body regions, in the player's chosen colours.
 export function defaultClothing(look={}){const shirt=Math.max(1,Math.min(3,Number(look.shirtVariant)||1)),pants=Math.max(1,Math.min(3,Number(look.pantsVariant)||1));return {chest:`peasantShirt${shirt}`,arms:`peasantSleeves${shirt}`,legs:`peasantTrousers${pants}`,boots:`peasantShoes${pants}`}}
