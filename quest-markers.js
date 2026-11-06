@@ -7,7 +7,7 @@ import {giverMarkers} from './quest-guide.js?v=release-20261106-anim92';
 export const MARKER_GLYPHS=['!','?'];
 export const MARKER_MAX_DISTANCE=160;
 // Marker height over an NPC root (metres): above the head of a scaled character.
-export const markerHeight=root=>(root?.position?.y||0)+2.6*Math.min(1.6,Math.max(.85,root?.scale?.y||1));
+export const markerHeight=root=>(root?.position?.y||0)+2.9*Math.min(1.6,Math.max(.85,root?.scale?.y||1));
 // Screen-stable size: grows with distance so it stays readable far away, never below 1 (0.8 m).
 export const markerScale=distance=>Math.max(1,Math.min(4,distance/12));
 

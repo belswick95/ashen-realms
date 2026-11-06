@@ -39,5 +39,5 @@ body.tutorial-cutscene>:not(canvas):not(.tutorial-letterbox):not(.tutorial-fade)
 .tutorial-prologue-line,.tutorial-prologue-hold{position:absolute;left:50%;bottom:calc(11vh + 26px);transform:translateX(-50%);z-index:3;width:min(720px,calc(100vw - 48px));margin:0;text-align:center;font:italic clamp(16px,2.6vw,22px)/1.45 Georgia,serif;text-shadow:0 2px 8px #000;opacity:0;transition:opacity .8s ease}
 .tutorial-prologue-line.show{opacity:1}
 .tutorial-prologue-hold{font-size:clamp(14px,2vw,17px);color:#e9d39c}.tutorial-prologue-hold.show{opacity:.85}
-.tutorial-prologue .tutorial-skip{z-index:4}.tutorial-prologue.skipped .tutorial-skip{visibility:hidden}
+.tutorial-prologue .tutorial-skip{z-index:4;bottom:max(2px,calc(5.5vh - 20px));min-height:36px;padding:6px 12px}.tutorial-prologue.skipped .tutorial-skip{visibility:hidden}
 @media (prefers-reduced-motion:reduce){.tutorial-prologue,.tutorial-prologue-art,.tutorial-prologue-line,.tutorial-prologue-hold{transition:none}}

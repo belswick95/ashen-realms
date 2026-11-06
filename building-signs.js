@@ -204,13 +204,13 @@ export function createBuildingSigns(T,scene,{heightAt=()=>0,lodScale=()=>1,maxSi
   const g=h.group;if(!g.parent)return null;g.updateMatrixWorld(true);
   const id=buildingId(h),base=defaultBuildingSign({type:h.type,name:h.name}),sign=applySignOverride(base,overrides[id]);
   const r=g.rotation.y,n={x:Math.sin(r),z:Math.cos(r)},sx=g.scale.x,sy=g.scale.y,sz=g.scale.z,ground=g.position.y;
-  // Front wall face sits at local z ~1.93; the door spans local x -1.04..0 on every house.
+  // Front wall face sits at local z ~1.93; the door (hinged at local x -0.52) spans -0.52..0.52.
   const wall=(lx,lz)=>({x:g.position.x+Math.cos(r)*lx*sx+Math.sin(r)*lz*sz,z:g.position.z-Math.sin(r)*lx*sx+Math.cos(r)*lz*sz});
   const doorTop=1.75*sy;
   // Plaques sit centred over the door, clear of the windows either side of it.
-  if(sign.style==='plaque'){const k=Math.min(1.8,Math.max(1,sy*.5)),p=wall(-.52,1.94);return {id,house:h,sign,style:'plaque',x:p.x+n.x*.06,z:p.z+n.z*.06,y:ground+doorTop+.12+PLAQUE.h*k/2,yaw:r,scale:k}}
+  if(sign.style==='plaque'){const k=Math.min(1.8,Math.max(1,sy*.5)),p=wall(0,1.94);return {id,house:h,sign,style:'plaque',x:p.x+n.x*.2,z:p.z+n.z*.2,y:ground+doorTop+.3+PLAQUE.h*k/2,yaw:r,scale:k}}
   // Hanging boards grow a little with big buildings and hang from just above the door's top.
-  const k=Math.min(1.7,Math.max(1,sy*.55)),p=wall(.62,1.94);return {id,house:h,sign,style:'hanging',x:p.x,z:p.z,y:ground+Math.max(2.45,doorTop+.3*k),yaw:r-Math.PI/2,scale:k,phase:(Math.abs(p.x*7.3+p.z*3.1))%6.28};
+  const k=Math.min(1.8,Math.max(1,sy*.6)),p=wall(.8,1.94);return {id,house:h,sign,style:'hanging',x:p.x,z:p.z,y:ground+Math.max(2.45,doorTop+.3*k),yaw:r-Math.PI/2,scale:k,phase:(Math.abs(p.x*7.3+p.z*3.1))%6.28};
  }
  function postEntry(base){const sign=applySignOverride(base,overrides[base.id]);const x=sign.x??base.x,z=sign.z??base.z;return {id:base.id,base,sign,style:'post',x,z,y:heightAt(x,z),arms:(sign.arms||base.arms||[]).slice(0,3)}}
  // ---- instance writing
