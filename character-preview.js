@@ -1,8 +1,8 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {buildHumanoid} from './humanoid.js?v=release-20261106-amb123';
-import {preloadCharacters} from './character-assets.js?v=release-20261106-amb123';
-import {createHumanoidAnimator} from './animation.js?v=release-20261106-amb123';
-import {previewFraming,previewFrame} from './preview-framing.js?v=release-20261106-amb123';
+import {buildHumanoid} from './humanoid.js?v=release-20261106-osrswalk124';
+import {preloadCharacters} from './character-assets.js?v=release-20261106-osrswalk124';
+import {createHumanoidAnimator} from './animation.js?v=release-20261106-osrswalk124';
+import {previewFraming,previewFrame} from './preview-framing.js?v=release-20261106-osrswalk124';
 
 // Uses the same meshes as the player and NPCs, not a separate illustration.
 export function createCharacterPreview(host,initial){
