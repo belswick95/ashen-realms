@@ -115,3 +115,13 @@ test('console helpers summarise, locate and template every kind',()=>{
  assert.deepEqual(defPoint(E.placeById('gullwing_isle')),{x:306,z:376});
  assert.ok(read('admin-panel.js').includes("'Exploration'"));
 });
+
+// QA (map112): lore objects and clue crates were missing from worldTemplates, so game.js skipped them,
+// the region streamer re-queued them forever and click-to-walk waited on it near any of them.
+test('every template the exploration SQL places in the world is a known client world template',async()=>{
+ const {worldTemplates,validateEntity,entityDefaults}=await import('../world-templates.js?v=release-20261106-map112');
+ const used=new Set([E.CRATE_TEMPLATE,...Object.keys(E.LORE_MODELS),...E.LORE.map(l=>l.model),...Object.keys(E.ENTRANCE_MODELS),'cave_exit',
+  ...E.PLACES.flatMap(p=>[p.entrance?.model,p.exitModel]),...E.RESOURCES.map(r=>r.template),...E.SHORTCUTS.map(s=>s.template)].filter(Boolean));
+ assert.ok(used.size>15);
+ for(const id of used){assert.ok(worldTemplates[id],'missing world template '+id);assert.equal(worldTemplates[id].kind,'object',id);assert.doesNotThrow(()=>validateEntity(entityDefaults(id,1,2)),id)}
+});
