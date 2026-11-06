@@ -94,14 +94,15 @@ test('every live patch anchor appears exactly once in the PGlite stand-ins (veri
  for(const a of list){if(a.fn.includes('engine_console('))continue;assert.equal(fixture.split(a.old).length-1,1,a.file+' '+a.fn+': '+a.old.slice(0,70));assert.notEqual(a.old,a.next)}
 });
 
-test('remote tile walkers: tick-stamped samples glide, a repeated tick only turns the actor',async()=>{
+test('remote tile walkers: tiles glide at walking pace, a repeated tick only turns the actor',async()=>{
  const {createMotionTrack,presentPose}=await import('../motion-track.js');
  const track=createMotionTrack({delay:600});const now0=10000;
  track.pushTile(4200,{x:0,z:0,yaw:0,moving:false},now0,4200);
- track.pushTile(4200,{x:0,z:0,yaw:1.2,moving:false},now0+100,4300);assert.equal(track.sample(now0+700).yaw,1.2,'facing updated without a new tick');
- track.pushTile(9000,{x:TILE,z:0,yaw:Math.PI/2,moving:true},now0+200,9100);
- // After a pause the walk starts from the old tile one tick earlier, not from 4.2 s ago.
- const mid=track.sample(now0+600+(9000-4200)-300);assert.ok(mid.x>0&&mid.x<TILE,'gliding into the first tile: '+mid.x);
+ track.pushTile(4200,{x:0,z:0,yaw:1.2,moving:false},now0+100,4300);track.sample(now0+600);let yaw=0;for(let t=now0+616;t<now0+1200;t+=16)yaw=track.sample(t).yaw;assert.ok(Math.abs(yaw-1.2)<.01,'facing updated without a new tick: '+yaw);
+ track.pushTile(9000,{x:TILE,z:0,yaw:Math.PI/2,moving:true},now0+1200,9100);
+ // After a pause the walk starts from the old tile (once the short start buffer has passed) and
+ // glides; it does not jump onto the new tile.
+ let mid=null;for(let t=now0+1216;t<=now0+2300;t+=16)mid=track.sample(t);assert.ok(mid.x>0&&mid.x<TILE,'gliding into the first tile: '+mid.x);
  const tilePose={tile:true,x:0,z:0,yaw:0,at:0,stepTiles:1,path:[[TILE,0]]};assert.equal(presentPose(tilePose,300).x,TILE/2,'local tile walker presented per tick');
  assert.equal(presentPose({x:0,z:0,yaw:0,at:0,speed:2,path:[[10,0]]},500).x,1,'free walker unchanged');
 });
