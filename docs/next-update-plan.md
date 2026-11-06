@@ -199,3 +199,8 @@ Open items:
 - Tile loop driver lock redesign (follow-up). Tile-perf risks: cold cron ticks p99 ~300 ms; CPU throttling.
 - Owner: remove test account qa+1793995632@eldervale.apexfabricationco.com (aa43e880-08cf-4e93-843e-058d7e9347aa);
   sign-up email setting.
+
+## STATUS 06 Nov late (shield120 live)
+Live since last note: carry118 (weapons keep grip, natural swing), stomp119 (player walk = NPCs, no pelvis snap),
+shield120 (classic shield carry, forearm across front). Test account removed. Open items unchanged from the
+previous STATUS block (unfinished QA checks outside the castle, pond radius, iPad Report button, loop-lock follow-up).
