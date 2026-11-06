@@ -1,7 +1,7 @@
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {actorModel,objectModel} from './world-models.js?v=release-20261106-cut103';
-import {makeDroppedItemModel} from './item-models.js?v=release-20261106-cut103';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261106-cut103';
+import {actorModel,objectModel} from './world-models.js?v=release-20261106-sweep104';
+import {makeDroppedItemModel} from './item-models.js?v=release-20261106-sweep104';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261106-sweep104';
 // A single small turntable renderer for the owner console's spawn previews.
 let shared=null;
 function stage(){
