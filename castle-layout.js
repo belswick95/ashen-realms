@@ -1,5 +1,5 @@
 // Shared measurements for terrain, maps, server seed and the editable castle blueprint.
-import {entityDefaults} from './world-templates.js?v=release-20261106-anim92';
+import {entityDefaults} from './world-templates.js?v=release-20261106-tile93';
 export const castle={x:-340,z:-305,name:'Eldervale Castle',half:49,moatInner:54,moatOuter:63};
 export function inCastle(x,z,pad=0){return Math.abs(x-castle.x)<castle.moatOuter+pad&&Math.abs(z-castle.z)<castle.moatOuter+pad}
 export function inMoat(x,z){const d=Math.max(Math.abs(x-castle.x),Math.abs(z-castle.z));return d>castle.moatInner&&d<castle.moatOuter}
