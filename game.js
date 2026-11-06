@@ -562,7 +562,7 @@ async function setWalkDestination(point,{flag=true,retried=false,follow=false}={
 let pendingArrival=null;
 function arrivalPosition(){return window.eldervaleAuthority&&realmPlayerPose?realmPlayerPose:player.position}
 function approachAndAct({x,z,reach,act,label}){
- if(withinReach(arrivalPosition(),{x,z},reach)&&withinReach(player.position,{x,z},reach+.5)){pendingArrival=null;act();return}
+ const slack=window.eldervaleTileMode?TILE:0;if(withinReach(arrivalPosition(),{x,z},reach+slack)&&withinReach(player.position,{x,z},reach+slack+.5)){pendingArrival=null;act();return}
  const goal=approachPoint(routeOrigin(),{x,z},reach);action=null;pendingPickup=null;
  void setWalkDestination(new T.Vector3(goal.x,0,goal.z),{flag:false});
  pendingArrival={x,z,reach,act,generation:navigationGeneration,startedAt:performance.now()};if(label)say(label);
@@ -603,7 +603,7 @@ function updateWalkCheck(){
 function updatePendingArrival(){
  updateWalkCheck();if(!pendingArrival)return;
  if(pendingArrival.follow){const at=pendingArrival.where();if(!at||realmInCombat||(pendingArrival.follow.kind==='creature'&&pendingArrival.follow.mob?.alive===false)){pendingArrival=null;return}pendingArrival.x=at.x;pendingArrival.z=at.z}
- const status=arrivalStatus(pendingArrival,arrivalPosition(),{moving:window.eldervaleAuthority?!!realmPlayerPose?.moving:!!dest||walkQueue.length>0,routing:routePending,generation:navigationGeneration,now:performance.now()});
+ const status=arrivalStatus(pendingArrival,arrivalPosition(),{moving:window.eldervaleAuthority?!!realmPlayerPose?.moving:!!dest||walkQueue.length>0,routing:routePending,generation:navigationGeneration,now:performance.now(),slack:window.eldervaleTileMode&&!pendingArrival.follow?TILE:0});
  if(status==='arrived'){const {act,x,z}=pendingArrival;pendingArrival=null;if(act){faceTarget(player,new T.Vector3(x,player.position.y,z));act()}}
  else if(status==='failed'&&pendingArrival.follow&&pendingArrival.tries<3){const p=pendingArrival,at=p.where();action=p.follow;void setWalkDestination(new T.Vector3(at.x,0,at.z));p.tries++;p.generation=navigationGeneration;p.activeAt=performance.now();pendingArrival=p}
  else if(status==='cancelled')pendingArrival=null;

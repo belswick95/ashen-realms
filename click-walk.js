@@ -102,11 +102,15 @@ export function withinReach(position,target,reach){return !!position&&Math.hypot
 // 'arrived' (act now), 'walking', 'waiting' (stopped, waiting for the server to
 // settle), 'failed' (stopped out of reach) or 'cancelled' (a newer click).
 export const ARRIVAL_SETTLE=1200;
-export function arrivalStatus(pending,position,{moving=false,routing=false,generation,now=0,settle=ARRIVAL_SETTLE}={}){
+// `slack`: extra reach once the walker has stopped. In tile mode the server parks the player on the
+// nearest tile that reaches the target, which can be up to a tile beyond the client's reach (the
+// tutorial pond's spot is 2.8 units from the closest free tile, fishing reach 2.6); the server still
+// checks its own reach when the action arrives.
+export function arrivalStatus(pending,position,{moving=false,routing=false,generation,now=0,settle=ARRIVAL_SETTLE,slack=0}={}){
  if(!pending)return 'none';
  if(generation!==undefined&&generation!==pending.generation)return 'cancelled';
  if(routing||moving){pending.activeAt=now;return 'walking'}
- if(withinReach(position,pending,pending.reach))return 'arrived';
+ if(withinReach(position,pending,pending.reach+(slack||0)))return 'arrived';
  return now-(pending.activeAt??pending.startedAt??now)>settle?'failed':'waiting';
 }
 
