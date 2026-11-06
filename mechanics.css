@@ -23,3 +23,4 @@
 .mech-prayer-actions{display:flex;gap:6px;margin-top:8px}.mech-prayer-actions button{flex:1;min-height:34px}
 body.mech-multi #map-widget::after{content:'⚔ Multi';position:absolute;top:4px;left:6px;font:700 10px Arial,sans-serif;color:#ffd77a;text-shadow:0 1px 2px #000}
 @media (max-width:700px){.mech-orb{min-width:38px;font-size:10px;padding:2px 5px}}
+.mech-orb-row{display:flex;justify-content:center;align-items:center;gap:6px;margin:4px 0 2px;position:relative;z-index:3}.mech-orb-row:not(:has(.mech-orb:not([hidden]))){display:none}

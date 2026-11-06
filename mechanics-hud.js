@@ -18,7 +18,11 @@ export function createMechanicsHud({command=(n,p)=>window.eldervaleRealm?.comman
  const prayerOrb=h('button','mech-orb mech-prayer-orb');prayerOrb.type='button';prayerOrb.id='prayer-orb';prayerOrb.innerHTML='<span class="mech-orb-icon" aria-hidden="true">✦</span><span class="mech-orb-value">–</span>';
  const specOrb=h('button','mech-orb mech-spec-orb');specOrb.type='button';specOrb.id='spec-orb';specOrb.innerHTML='<span class="mech-orb-icon" aria-hidden="true">⚡</span><span class="mech-orb-value">100</span>';
  prayerOrb.hidden=specOrb.hidden=true;
- if(controls)controls.append(prayerOrb,specOrb);
+ // The orbs get their own row under the minimap buttons: inside #map-controls the fixed-width button
+ // rules made the row wider than the widget, pushing the spec orb off-screen and, on phones, widening
+ // the layout viewport so the whole HUD zoomed out and the tab bar was clipped.
+ const orbRow=h('div','mech-orb-row');orbRow.id='mech-orbs';orbRow.append(prayerOrb,specOrb);
+ if(controls)controls.after(orbRow);
  const weightLine=h('p','mech-weight');weightLine.hidden=true;doc.querySelector('#side')?.append(weightLine);
  async function send(name,payload={}){if(busy)return false;busy=true;try{const ok=await command(name,payload);if(ok===false&&lastError())say(lastError());return ok}catch(e){say(e?.message||String(e));return false}finally{busy=false}}
  prayerOrb.onclick=()=>{if(editingQuick)return;void send('mech_quick')};

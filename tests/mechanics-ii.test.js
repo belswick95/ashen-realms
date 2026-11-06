@@ -133,3 +133,20 @@ test('settings merge and the Game console helpers',()=>{
  const rows=adminMechanicsRows([{kind:'prayer',id:'oakskin',data:{name:'Oakskin',level:1},enabled:true},{kind:'zone',id:'z',data:{},enabled:false}],'prayer');assert.equal(rows.length,1);
  assert.deepEqual(ruleDraft('poison','type:sting','{"severity":4,"chance":0.2}'),{kind:'poison',id:'type:sting',data:{severity:4,chance:.2}});assert.throws(()=>ruleDraft('poison','x','{bad'),/JSON/);
 });
+
+// QA (fix113): the prayer/spec orbs were appended into #map-controls, whose fixed-width button rules made the
+// row wider than the minimap widget. The spec orb fell off-screen; on phones it widened the layout viewport
+// (iPhone 15 landscape reported innerWidth 888 for 852), zooming the HUD out and clipping the tab bar.
+// The journal button sat to the right of the map toggle, past the screen edge, and 8 tabs did not fit the phone bar.
+test('HUD stays inside the screen: orbs on their own row, journal button left of the map, phone tabs share the bar',()=>{
+ const hud=readFileSync(new URL('../mechanics-hud.js',import.meta.url),'utf8'),css=readFileSync(new URL('../mechanics.css',import.meta.url),'utf8');
+ assert.doesNotMatch(hud,/controls\.append\(prayerOrb,specOrb\)/);
+ assert.match(hud,/orbRow\.id='mech-orbs';orbRow\.append\(prayerOrb,specOrb\);/);assert.match(hud,/if\(controls\)controls\.after\(orbRow\)/);
+ assert.match(css,/\.mech-orb-row\{display:flex;justify-content:center/);
+ const explore=readFileSync(new URL('../explore.css',import.meta.url),'utf8');
+ assert.match(explore,/#map-toggle\+#explore-toggle\{position:absolute;top:50%;right:calc\(100% \+ 4px\)/);
+ const phone=readFileSync(new URL('../phone-fit.css',import.meta.url),'utf8');
+ assert.match(phone,/html body\.fantasy-hud\.phone-layout #side>\.tabs button\{flex:1 1 0!important;min-width:34px!important/);
+ // 8 tabs at the minimum width plus gaps and padding fit the narrowest phone bar (48vw of a 667px-wide iPhone SE).
+ assert.ok(8*34+7*3+10<=Math.floor(.48*667));
+});
