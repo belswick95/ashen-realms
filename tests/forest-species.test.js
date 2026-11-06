@@ -1,8 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';import fs from 'node:fs';
-import {initializeGeography} from '../geography.js?v=release-20261106-fix113';
+import {initializeGeography} from '../geography.js?v=release-20261106-qa114';
 const world=JSON.parse(fs.readFileSync(new URL('../db/generated-world.json',import.meta.url)));initializeGeography(world.config);
-const {buildNaturalForest,treeSpecies,shoreDistance,TREE_SPECIES}=await import('../natural-forest.js?v=release-20261106-fix113');
-const {biomeWeights,generatedTreePoints,seededRandom}=await import('../procedural-world.js?v=release-20261106-fix113');
+const {buildNaturalForest,treeSpecies,shoreDistance,TREE_SPECIES}=await import('../natural-forest.js?v=release-20261106-qa114');
+const {biomeWeights,generatedTreePoints,seededRandom}=await import('../procedural-world.js?v=release-20261106-qa114');
 globalThis.document??={createElement:()=>({width:0,height:0,getContext:()=>({clearRect(){},beginPath(){},ellipse(){},fill(){},set fillStyle(v){}})})};
 const seed=world.config.seed,trees=generatedTreePoints(seed,()=>true);
 const census=(filter)=>{const n={};for(const t of trees.filter(filter)){const k=treeSpecies(t.x,t.z,seed,seededRandom((Math.floor(t.x*131)^Math.floor(t.z*517))>>>0)());n[k]=(n[k]||0)+1}return n};

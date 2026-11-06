@@ -1,5 +1,5 @@
-import {SKINS,HAIRS} from './appearance.js?v=release-20261106-fix113';
-import {outfitItems} from './outfits.js?v=release-20261106-fix113';
+import {SKINS,HAIRS} from './appearance.js?v=release-20261106-qa114';
+import {outfitItems} from './outfits.js?v=release-20261106-qa114';
 // Deterministic NPC appearance: body, hair, skin and an outfit that matches
 // the NPC's job, varied by index so towns are not full of identical people.
 const pick=(list,i)=>list[((i%list.length)+list.length)%list.length];
