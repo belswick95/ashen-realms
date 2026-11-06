@@ -50,6 +50,19 @@ Current state (06 Nov 2026): 25 fishing spots + 1 training pond, no caves/dungeo
 10. **Exploration**: hidden areas, shortcuts (agility-gated), lore objects, treasure-hunt clues,
     new regions to reach.
 
+## Cross-cutting requirements (every wave)
+- **Deep OSRS research**: study publicly documented OSRS systems end to end (mechanics, pacing,
+  progression, skill/combat/quest design patterns, economy, boss design, area design) and write
+  the findings into `docs/mechanics-spec.md` + `docs/design-patterns.md`. Implement the *systems*
+  faithfully; all creative content (items, quests, names, dialogue, maps, art, music) is original.
+- **Dragons**: dragon lair cave, a phased dragon boss with breath attacks, an original anti-dragon
+  shield item, dragon-only drops (hide armour, unique weapon).
+- **Admin coverage is mandatory**: every new system ships with Game console tools — tick/engine
+  settings, quests (chains, requirements, unlocks), bosses (phases, mechanics, drops, kill counts),
+  caves/underground areas (entrances, instances, spawns), unique/drop-only gear flags, fishing spots,
+  NPC aggression/tolerance, prayers, special attacks, run energy, treasure hunts. Nothing ships that
+  the owner can't view, edit, spawn or disable from the console.
+
 ## Optional
 11. **Classic look mode**: low-poly, flat-shaded, retro-resolution renderer toggle (original art).
 
