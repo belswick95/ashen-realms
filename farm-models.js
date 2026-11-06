@@ -1,4 +1,5 @@
 import {creatureMaterial} from './creature-material.js?v=release-20261106-anim92';
+import {sharedGeometry} from './shared-geometry.js?v=release-20261106-anim92';
 // Original procedural farm animals and countryside props. Local +Z faces forward; the ground is y=0.
 export const farmAnimalSpecies=['cow','chicken','sheep','pig'];
 export const farmObjectIds=['farm_hut','chicken_coop','hay_bale','water_trough','scarecrow','flower_bed','stone_statue','wheelbarrow'];
@@ -6,12 +7,12 @@ function kit(T,g,surface='hide'){
  const geometries=[],mat=c=>creatureMaterial(T,c,surface);
  const add=(geo,c,x,y,z,p=g,m=null)=>{geometries.push(geo);const mesh=new T.Mesh(geo,m||mat(c));mesh.position.set(x,y,z);mesh.castShadow=mesh.receiveShadow=true;p.add(mesh);return mesh};
  return {geometries,mat,
-  ball:(x,y,z,sx,sy,sz,c,p=g)=>{const m=add(new T.SphereGeometry(1,18,12),c,x,y,z,p);m.scale.set(sx,sy,sz);return m},
-  box:(x,y,z,w,h,l,c,p=g,m)=>add(new T.BoxGeometry(w,h,l),c,x,y,z,p,m),
-  cyl:(x,y,z,r,h,c,p=g,top=r,m)=>add(new T.CylinderGeometry(top,r,h,12),c,x,y,z,p,m),
-  cone:(x,y,z,r,h,c,p=g)=>add(new T.ConeGeometry(r,h,8),c,x,y,z,p),
+  ball:(x,y,z,sx,sy,sz,c,p=g)=>{const m=add(sharedGeometry(T,'sphere',1,18,12),c,x,y,z,p);m.scale.set(sx,sy,sz);return m},
+  box:(x,y,z,w,h,l,c,p=g,m)=>add(sharedGeometry(T,'box',w,h,l),c,x,y,z,p,m),
+  cyl:(x,y,z,r,h,c,p=g,top=r,m)=>add(sharedGeometry(T,'cylinder',top,r,h,12),c,x,y,z,p,m),
+  cone:(x,y,z,r,h,c,p=g)=>add(sharedGeometry(T,'cone',r,h,8),c,x,y,z,p),
   pivot:(x,y,z,p=g)=>{const q=new T.Group();q.position.set(x,y,z);p.add(q);return q},
-  dispose:()=>{for(const geo of geometries)geo.dispose()}};
+  dispose:()=>{for(const geo of geometries)if(!geo.userData.eldervaleShared)geo.dispose()}};
 }
 // Peaceful livestock: four or two legs that swing with travel, idle grazing and a short butt/peck attack.
 export function farmAnimalModel(T,parent,d){

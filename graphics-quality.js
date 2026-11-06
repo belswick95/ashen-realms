@@ -130,3 +130,12 @@ export function holdGait(state,step,distance,hold=.3){
  if(state.gaitHold>0&&state.gaitSpeed>.15)return {distance:Math.max(distance,2e-4),speed:state.gaitSpeed};
  return {distance,speed};
 }
+
+// Frame-governor floor per device: phones may drop to half resolution before
+// asking for a lower tier, tablets (iPad) a little less, desktops least.
+export function governorOptions({phone=false,tablet=false}={}){return {target:1000/60,min:phone?.5:tablet?.6:.65}}
+// Last automatic step once the low tier still cannot hold the frame rate:
+// a shorter view distance, lower render scale and no shadows. Characters keep
+// their own LOD ranges (busy towns stay populated).
+export const LEAN={scale:.55,distance:120};
+export function leanGraphics(resolved){return {...resolved,scale:Math.min(Number(resolved.scale)||1,LEAN.scale),distance:Math.min(Number(resolved.distance)||LEAN.distance,LEAN.distance),shadows:false}}

@@ -62,7 +62,9 @@ export function createCellBatcher(T,parent,{size=40,settle=400,maxPerFlush=2,ski
  function refresh(){let sources=0,batches=0,count=0;for(const c of cells.values()){if(!c.group)continue;count++;batches+=c.group.children.length;for(const root of c.roots)root.traverse(o=>{if(o.userData.cellBatched)sources++})}stats={cells:count,sources,batches}}
  return {
   get stats(){return stats},add,remove,
-  touch(root,now=0){const c=cellOf.get(root);if(c){c.dirty=true;c.touched=now}},
+  // Mark every cell for a rebuild (the classic look swaps materials and meshes).
+ invalidateAll(now=0){for(const c of cells.values()){c.dirty=true;c.touched=now}},
+ touch(root,now=0){const c=cellOf.get(root);if(c){c.dirty=true;c.touched=now}},
   has:root=>cellOf.has(root),
   // Rebuild up to maxPerFlush quiet dirty cells; returns how many were rebuilt.
   flush(now=Infinity,force=false){let n=0;for(const c of cells.values()){if(!c.dirty||!force&&now-c.touched<settle)continue;if(!force&&n>=maxPerFlush)break;rebuild(c);n++;if(!c.roots.size){clear(c);cells.delete(c.key)}}if(n)refresh();return n}
