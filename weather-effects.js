@@ -9,7 +9,7 @@
 // (window.eldervaleUndergroundArea, set by the cave system while inside a cave): no weather at all.
 // Tiers: low draws few particles and skips wet shading and ripples; classic
 // look gets chunky, flat rain streaks and square flakes.
-import {weatherAt,weatherLook,weatherLabel,lightningAt,thunderFor,weatherUniforms,LOOK_FIELDS} from './weather.js?v=release-20261106-r3x109';
+import {weatherAt,weatherLook,weatherLabel,lightningAt,thunderFor,weatherUniforms,LOOK_FIELDS} from './weather.js?v=release-20261106-polish110';
 
 export const WEATHER_TIERS={
  low:{rain:1400,flakes:1000,ripples:0,wetShading:false,materials:false},

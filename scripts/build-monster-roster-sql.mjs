@@ -3,8 +3,8 @@
 import fs from 'node:fs';
 import {rosterBeasts,BONES,ALTAR_OFFER_MULTIPLIER} from '../monster-roster.js';
 import {monsterSpawns} from '../monster-spawns.js';
-import {bestiaryEntity} from '../bestiary.js?v=release-20261106-r3x109';
-import {professionItems} from '../profession-data.js?v=release-20261106-r3x109';
+import {bestiaryEntity} from '../bestiary.js?v=release-20261106-polish110';
+import {professionItems} from '../profession-data.js?v=release-20261106-polish110';
 const root=new URL('../',import.meta.url);
 export const BLUEPRINT='monster-roster-v1';
 const pad=(n,w=12)=>String(n).padStart(w,'0');

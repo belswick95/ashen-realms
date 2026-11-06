@@ -1,6 +1,6 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
-import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-r3x109';
-import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261106-r3x109';
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-polish110';
+import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261106-polish110';
 const MOTION_COMMANDS=new Set(['move','stop']);
 export async function startRealm(db,user,session){
  const diet=createSyncDiet();let lean=true;
