@@ -1,7 +1,7 @@
 // "What's new in Eldervale" parchment and the "Adventurers online" count on the
 // login screen. Both come from read-only, security-definer RPCs that anonymous
 // visitors may call (db/news-and-login.sql); nothing here needs a signed-in user.
-import {renderNewsMarkup,safeHttpsUrl,newsPlainText,NEWS_LIMITS} from './news-markup.js?v=release-20261106-caves100';
+import {renderNewsMarkup,safeHttpsUrl,newsPlainText,NEWS_LIMITS} from './news-markup.js?v=release-20261106-weather101';
 
 export const SUPABASE_URL='https://aojccnhmvxurrnnzteej.supabase.co';
 export const SUPABASE_PUBLISHABLE_KEY='sb_publishable_pfcppa_7V_9lvHsL1aAM8Q_px5bXnY8';

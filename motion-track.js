@@ -1,5 +1,5 @@
-import {slideStep} from './movement-collision.js?v=release-20261106-caves100';
-import {projectTilePose} from './tile-grid.js?v=release-20261106-caves100';
+import {slideStep} from './movement-collision.js?v=release-20261106-weather101';
+import {projectTilePose} from './tile-grid.js?v=release-20261106-weather101';
 // Timestamped presentation buffer: no position authority or damage is decided here.
 // When snapshots arrive later than `delay` (a slow reply on a phone or tablet
 // connection) the buffer runs dry and the actor would freeze, then jump. The

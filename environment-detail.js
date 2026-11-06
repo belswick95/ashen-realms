@@ -1,7 +1,7 @@
-import {approachSample,approachPoint} from './castle-approach.js?v=release-20261106-caves100';
-import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261106-caves100';
-import {creatureMaterial} from './creature-material.js?v=release-20261106-caves100';
-import {runFrameWork} from './frame-work.js?v=release-20261106-caves100';
+import {approachSample,approachPoint} from './castle-approach.js?v=release-20261106-weather101';
+import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261106-weather101';
+import {creatureMaterial} from './creature-material.js?v=release-20261106-weather101';
+import {runFrameWork} from './frame-work.js?v=release-20261106-weather101';
 // Small underfoot dressing is non-solid and identically seeded on every client.
 // Large, editable rocks and planted trees remain authoritative world entities.
 export function dressingCandidates(seed){const r=seededRandom(seed^0x6d2b79f5),out=[];for(let x=-408;x<409;x+=9)for(let z=-408;z<409;z+=9){const px=x+(r()-.5)*7,pz=z+(r()-.5)*7,w=biomeWeights(px,pz,seed),v=r(),dry=w.dry>.6,snow=w.snow>.6;if(v<(dry?.28:snow?.20:.22))out.push({x:px,z:pz,kind:'stone',size:.10+r()*.15,yaw:r()*6.28});else if(v<(dry?.35:snow?.25:.43))out.push({x:px,z:pz,kind:'shrub',size:.32+r()*.35,yaw:r()*6.28});}for(let along=22;along<220;along+=4)for(const side of [-24,-17,-10,10,17,24]){const p=approachPoint(along+(r()-.5)*3,side+(r()-.5)*3);if(approachSample(p.x,p.z).weight>.5)out.push({...p,kind:r()<.28?'stone':'fern',size:.24+r()*.25,yaw:r()*6.28});}return out;}

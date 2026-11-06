@@ -1,6 +1,6 @@
-import {biomeWeights,generatedWorld,seedNoise,seededRandom} from './procedural-world.js?v=release-20261106-caves100';
-import {runFrameWork} from './frame-work.js?v=release-20261106-caves100';
-import {weatherUniforms} from './weather.js?v=release-20261106-caves100';
+import {biomeWeights,generatedWorld,seedNoise,seededRandom} from './procedural-world.js?v=release-20261106-weather101';
+import {runFrameWork} from './frame-work.js?v=release-20261106-weather101';
+import {weatherUniforms} from './weather.js?v=release-20261106-weather101';
 function texture(T,kind,seed){const canvas=document.createElement('canvas');canvas.width=canvas.height=512;const c=canvas.getContext('2d'),r=seededRandom(seed),pixels=c.createImageData(512,512);for(let y=0;y<512;y++)for(let x=0;x<512;x++){const n=seedNoise(x/43,y/43,seed),grain=r(),v=kind==='snow'?224+n*23+(grain-.5)*12:kind==='sand'?185+n*44+(grain-.5)*25:kind==='rock'?145+n*75+(grain-.5)*32:190+n*38+(grain-.5)*35,i=(y*512+x)*4;pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=v;pixels.data[i+3]=255}c.putImageData(pixels,0,0);if(kind==='grass')for(let i=0;i<14000;i++){const x=r()*512,y=r()*512;c.strokeStyle=r()>.5?'#f4f0dc50':'#1e282445';c.lineWidth=.5+r();c.beginPath();c.moveTo(x,y);c.lineTo(x+(r()-.5)*5,y-2-r()*9);c.stroke()}if(kind==='rock')for(let i=0;i<170;i++){c.strokeStyle='#151b1b40';const x=r()*512,y=r()*512;c.beginPath();c.moveTo(x,y);c.lineTo(x+r()*30,y+r()*45);c.stroke()}const t=new T.CanvasTexture(canvas);t.wrapS=t.wrapT=T.RepeatWrapping;t.colorSpace=T.SRGBColorSpace;t.anisotropy=4;return t}
 export function configureBiomeTerrain(T,material,seed){
  const maps={grass:texture(T,'grass',seed),snow:texture(T,'snow',seed+1),sand:texture(T,'sand',seed+2),rock:texture(T,'rock',seed+3)};

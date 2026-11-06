@@ -1,4 +1,4 @@
-import {buildWarhorse} from './horse-model.js?v=release-20261106-caves100';
+import {buildWarhorse} from './horse-model.js?v=release-20261106-weather101';
 // Shared local/remote mount model. Hoof contacts and sounds use the same phase.
 export function createHorseMount(T,parent,{onHoof=()=>{}}={}){
  const {root,barrel,tail,legs,resources,pose,skins,setReins}=buildWarhorse(T,parent);
