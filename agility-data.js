@@ -3,7 +3,7 @@
 // server (eldervale_private.underground_command 'agility') checks the level, rolls success,
 // moves the player to the far end and grants XP. Underground ends are written in the area's
 // local coordinates ({area,level}) and resolved with underground-data.js.
-import {dungeons,toWorld} from './underground-data.js?v=release-20261106-stomp119';
+import {dungeons,toWorld} from './underground-data.js?v=release-20261106-shield120';
 export const AGILITY_TEMPLATES={log_balance:'Balancing log',rope_swing:'Rope swing',wall_climb:'Climbing wall',stepping_stones:'Stepping stones',squeeze:'Narrow crevice'};
 export const AGILITY_VERBS={log_balance:'Walk across',rope_swing:'Swing on',wall_climb:'Climb',stepping_stones:'Jump across',squeeze:'Squeeze through'};
 // OSRS-style: no failure on most shortcuts; risky ones fail less often as your level rises above the

@@ -5,7 +5,7 @@ const fs=require('fs'),http=require('http'),path=require('path'),{chromium}=requ
 const root=path.resolve(__dirname,'..'),out=path.resolve(process.env.OUT||path.join(root,'test-results/monsters'));fs.mkdirSync(out,{recursive:true});
 const types={'.js':'text/javascript','.json':'application/json','.glb':'model/gltf-binary','.webp':'image/webp','.png':'image/png','.html':'text/html'};
 const server=http.createServer((req,res)=>{const name=new URL(req.url,'http://local').pathname;try{res.setHeader('Content-Type',types[path.extname(name)]||'application/octet-stream');res.end(fs.readFileSync(path.join(root,name)))}catch{res.writeHead(404).end()}});
-const V='?v=release-20261106-stomp119';
+const V='?v=release-20261106-shield120';
 const page=`<!doctype html><meta charset="utf-8"><body style="margin:0;background:#1b2119"><script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
 <script type="module">
 import * as T from 'three';

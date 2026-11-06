@@ -1,6 +1,6 @@
-import {clipsFor} from './character-assets.js?v=release-20261106-stomp119';
-import {createStrideRig,createGaitState,advanceGait,blendWeights,mixGait} from './stride-cycle.js?v=release-20261106-stomp119';
-import {carryStyle,CARRY} from './equipment-pose.js?v=release-20261106-stomp119';
+import {clipsFor} from './character-assets.js?v=release-20261106-shield120';
+import {createStrideRig,createGaitState,advanceGait,blendWeights,mixGait} from './stride-cycle.js?v=release-20261106-shield120';
+import {carryStyle,CARRY} from './equipment-pose.js?v=release-20261106-shield120';
 // Animation for every human in Eldervale. Standing, working, fighting and
 // dying play clips (Quaternius Universal Animation Library, CC0) with
 // cross-fades; walking and running are procedural (stride-cycle.js): a
