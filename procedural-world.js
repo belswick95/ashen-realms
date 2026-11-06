@@ -1,5 +1,6 @@
 // One server-saved seed produces the same terrain, roads and settlement blueprint on every client.
 import {entityDefaults} from './world-templates.js?v=release-20261106-classic95';
+import {extraLakes,extraRivers} from './water-data.js?v=release-20261106-classic95';
 export let worldConfig=globalThis.eldervaleWorldConfig||null;
 export function seededRandom(seed){let n=seed>>>0;return ()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296}}
 const clamp=x=>Math.max(0,Math.min(1,x)),smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
@@ -26,7 +27,8 @@ export function makeWorldPlan(seed){
   for(let i=0;i<6;i++)add('villager',town.x+between(-16,16),town.z+between(-16,16),{name:pick(['Rowan','Alden','Mara','Elin','Tomas','Freya'])+' the '+pick(['Porter','Scribe','Gardener','Courier']),color:pick([0x646b55,0x737b83,0x826c57,0x74616b]),roam:3,activity:pick(['carry','sweep','read','garden'])});
   for(const angle of [0,Math.PI/2,Math.PI,Math.PI*1.5])add('lantern',town.x+Math.sin(angle)*10,town.z+Math.cos(angle)*10);
  }
- return {seed,version:2,towns,roads,rivers,lakes,entities,regions:regionDefinitions,spawn:{x:g.x+5,z:g.z+8}};
+ // New water (water-data.js) is appended after every random draw, so the seeded layout never shifts.
+ return {seed,version:2,towns,roads,rivers:[...rivers,...extraRivers.map(r=>({...r,points:r.points.map(p=>[...p])}))],lakes:[...lakes,...extraLakes.map(l=>({...l}))],entities,regions:regionDefinitions,spawn:{x:g.x+5,z:g.z+8}};
 }
 export let generatedWorld=worldConfig?.enabled?makeWorldPlan(Number(worldConfig.seed)>>>0):null;
 export function generatedTreePoints(seed,canPlant){const points=[];for(let x=-400;x<=400;x+=10)for(let z=-400;z<=400;z+=10){const r=seededRandom((seed^Math.imul(x,73856093)^Math.imul(z,19349663))>>>0),px=x+(r()-.5)*7,pz=z+(r()-.5)*7,w=biomeWeights(px,pz,seed),density=.64*w.grass+.48*w.castle+.32*w.snow+.035*w.dry;if(r()<density&&canPlant(px,pz))points.push({x:px,z:pz});}return points;}

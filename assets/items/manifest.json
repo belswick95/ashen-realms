@@ -7989,7 +7989,7 @@
       110,
       113
     ],
-    "sha256": "7e95b26aee48c1b2b50e115561838d337820e1501da7cae92fbe8965f4260abf"
+    "sha256": "6b48452e4f1aea4b3a86ce38d69a8a5026254d8ea6dafe08068d72142819c607"
   },
   {
     "key": "item-armor_knightHornedHelm3",
@@ -8007,7 +8007,7 @@
       105,
       126
     ],
-    "sha256": "13af4e4fef8806e79d36ad4b02180f4afd889193b1b81b41ef0c49d0bf82a489"
+    "sha256": "a9d31266f925eb2513ca8ea1be5f4654722b2e2089be434dd3076df17e55f180"
   },
   {
     "key": "item-armor_knightBreastplate3",
@@ -8025,7 +8025,7 @@
       107,
       124
     ],
-    "sha256": "25257eaf8338e83a408ea02c1511d1755b57ad529a942a620ede5f5ab4c32121"
+    "sha256": "52b9779991daea9e19588f369d79ab4c19afcc4a77c41a51acc810bc571a6594"
   },
   {
     "key": "item-armor_knightGauntlets3",
@@ -8061,7 +8061,7 @@
       100,
       123
     ],
-    "sha256": "fbf7d44ef94bbb61ddf5ee4cdc3ca71e5ff8810610de17e0f1fdf7358846aa88"
+    "sha256": "4fab4f6d2baff5e59e7cc18f9f2f59418e62e387bd9f7f7c1215a8bc46202cef"
   },
   {
     "key": "item-armor_knightSabatons3",
@@ -8079,7 +8079,7 @@
       112,
       133
     ],
-    "sha256": "fe948a03cbaf03194299df19b0da830d95cbbd814d92ec0675c484fdf56d0101"
+    "sha256": "2ba919917096310c04a7680d2848dfb193a3e912cb39a5301bd084533be4ba41"
   },
   {
     "key": "item-armor_knightRoundPauldrons3",
@@ -8097,7 +8097,7 @@
       129,
       105
     ],
-    "sha256": "b70b550d748f6bd37b30b9976f07f05fdda4aa3bce70c9af9f54b8a8b065449f"
+    "sha256": "c8413bd197d38799cc7ecfcc9e405aee7bddebe1b4316c7bde525cc55f77f3a2"
   },
   {
     "key": "item-armor_knightSpikedPauldrons3",
@@ -8115,7 +8115,7 @@
       127,
       108
     ],
-    "sha256": "92e92508dad4c9391030044afc54e23bdfd1b3dd4bb495dc330ff86463f527c9"
+    "sha256": "7be03105ebb65117a9be7152b1c21a77c938928dfed5a1f1b75707fbb62888ad"
   },
   {
     "key": "item-bones",
@@ -8170,5 +8170,365 @@
       105
     ],
     "sha256": "eadc8a200afcd4f38e30edef04b6a2d7defc035e1e3188df1bec45dc15767e7d"
+  },
+  {
+    "key": "item-mudperch",
+    "id": "mudperch",
+    "name": "Cooked mudperch",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "2e133187eae173d02c142b591060087b34ee3d9b9ede055e78cbc15badb9b178"
+  },
+  {
+    "key": "item-rawMudperch",
+    "id": "rawMudperch",
+    "name": "Raw mudperch",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "3f5b42d172908c59e221eead776749b3b6aaff79585a6f010f7a5d5ec17ca858"
+  },
+  {
+    "key": "item-silverbait",
+    "id": "silverbait",
+    "name": "Cooked silverbait",
+    "model": "shrimp",
+    "bounds": [
+      0.31200016121870633,
+      0.09000000357627869,
+      0.4804437526816955
+    ],
+    "pixelBounds": [
+      14,
+      41,
+      115,
+      99
+    ],
+    "sha256": "3cbee3be143a1d3c7a8361e70618aeb41c7d86310aca6c0de7c20948a5226e0e"
+  },
+  {
+    "key": "item-rawSilverbait",
+    "id": "rawSilverbait",
+    "name": "Raw silverbait",
+    "model": "shrimp",
+    "bounds": [
+      0.31200016121870633,
+      0.09000000357627869,
+      0.4804437526816955
+    ],
+    "pixelBounds": [
+      14,
+      41,
+      115,
+      99
+    ],
+    "sha256": "aa3fb172dc6c4754be09924e2f5cf61b6519dea617737f1fff3e5b0abf6674d7"
+  },
+  {
+    "key": "item-stripedMackerel",
+    "id": "stripedMackerel",
+    "name": "Cooked striped mackerel",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "a19cb248148edbfbd7d4aab6f4605c07aa5844f9110f5d9febbc703e90931e1e"
+  },
+  {
+    "key": "item-rawStripedMackerel",
+    "id": "rawStripedMackerel",
+    "name": "Raw striped mackerel",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "3be5126aba7521b45bb99dad847e9a519df56c11a154cf452815db4cd207dae9"
+  },
+  {
+    "key": "item-coastCod",
+    "id": "coastCod",
+    "name": "Cooked coast cod",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "7bdff17340ddfb9bf842e5b2a2e3e15747ab31835478bfd046ed70edd436c031"
+  },
+  {
+    "key": "item-rawCoastCod",
+    "id": "rawCoastCod",
+    "name": "Raw coast cod",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "68d50f0a56256283761957cbf121d7d1d3a2f8350f09d55b3150b34186ad4747"
+  },
+  {
+    "key": "item-reedpike",
+    "id": "reedpike",
+    "name": "Cooked reedpike",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "0fd3c3a9e8293853192189c584cfe92a7d48fa5fcb0a4727960f8b9a567eaf46"
+  },
+  {
+    "key": "item-rawReedpike",
+    "id": "rawReedpike",
+    "name": "Raw reedpike",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "4f54c3fcf88f54896c291458650bb806c91966a312e8cba5e737d2e29451f739"
+  },
+  {
+    "key": "item-brightfin",
+    "id": "brightfin",
+    "name": "Cooked brightfin",
+    "model": "swordfish",
+    "bounds": [
+      1.2300000065565109,
+      0.2944486439228058,
+      0.2900000035762787
+    ],
+    "pixelBounds": [
+      18,
+      52,
+      129,
+      93
+    ],
+    "sha256": "01f5520d261ed8662f0c409f404122058e2fc522d71eb8e04f96ac3a25830502"
+  },
+  {
+    "key": "item-rawBrightfin",
+    "id": "rawBrightfin",
+    "name": "Raw brightfin",
+    "model": "swordfish",
+    "bounds": [
+      1.2300000065565109,
+      0.2944486439228058,
+      0.2900000035762787
+    ],
+    "pixelBounds": [
+      18,
+      52,
+      129,
+      93
+    ],
+    "sha256": "5ee34c38ef77c84cb345c240990d8e899af7acb9adcb561e7f395521e11e2593"
+  },
+  {
+    "key": "item-rainbowfin",
+    "id": "rainbowfin",
+    "name": "Cooked rainbowfin",
+    "model": "salmon",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "9dc81f3b11418709dad10d5b4d583bde97cb15d122bea62b976ee2cb766061da"
+  },
+  {
+    "key": "item-rawRainbowfin",
+    "id": "rawRainbowfin",
+    "name": "Raw rainbowfin",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "ee3834e5011296883efddbdf9163fc8d6601f94ca1ccdd854e79101bbd601cf8"
+  },
+  {
+    "key": "item-stoneBass",
+    "id": "stoneBass",
+    "name": "Cooked stone bass",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "ae06b299332f5c900b9e8190d5842d15beb192b016808bdde5919049c3e3a1e2"
+  },
+  {
+    "key": "item-rawStoneBass",
+    "id": "rawStoneBass",
+    "name": "Raw stone bass",
+    "model": "fish",
+    "bounds": [
+      0.7400000059604646,
+      0.2598076164722443,
+      0.2800000078976155
+    ],
+    "pixelBounds": [
+      21,
+      49,
+      125,
+      93
+    ],
+    "sha256": "3fdd7a0b8f6f3d56fb729a836845cb582c875f0a03640fbf50beac3b8cc0816e"
+  },
+  {
+    "key": "item-deepglowAngler",
+    "id": "deepglowAngler",
+    "name": "Cooked deepglow angler",
+    "model": "stormfin",
+    "bounds": [
+      0.88000000461936,
+      0.4278878347933557,
+      0.2900000035762787
+    ],
+    "pixelBounds": [
+      19,
+      44,
+      127,
+      101
+    ],
+    "sha256": "a0678fcf73c9831eeb66865af619b167ed659d305d4edab96bea76eb3b64906c"
+  },
+  {
+    "key": "item-rawDeepglowAngler",
+    "id": "rawDeepglowAngler",
+    "name": "Raw deepglow angler",
+    "model": "stormfin",
+    "bounds": [
+      0.88000000461936,
+      0.4278878347933557,
+      0.2900000035762787
+    ],
+    "pixelBounds": [
+      19,
+      44,
+      127,
+      101
+    ],
+    "sha256": "707791d19c23e99d0e51cbc4b333f88464c0ffbaa12edbc41b1a15edc1d94700"
+  },
+  {
+    "key": "item-flyRod",
+    "id": "flyRod",
+    "name": "Fly rod",
+    "model": "rod",
+    "bounds": [
+      0.9099999666213988,
+      0.11999999731779099,
+      0.11999999731779099
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      134,
+      97
+    ],
+    "sha256": "e2e62874ffb5c457e0a0ef13d87131f6c64525e757d49a4a8f1a0c371e258107"
+  },
+  {
+    "key": "item-bigNet",
+    "id": "bigNet",
+    "name": "Big net",
+    "model": "net",
+    "bounds": [
+      0.9349999815225601,
+      0.18000000715255743,
+      0.41999998688697815
+    ],
+    "pixelBounds": [
+      20,
+      48,
+      126,
+      91
+    ],
+    "sha256": "b4003d7863dcdff63fa3831160d0ec470cd3f30874c0bc958522171212b60826"
   }
 ]
