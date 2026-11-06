@@ -9,12 +9,12 @@
 //   inside (prop lights go through the shared 4-light pool: every PointLight here becomes a
 //   light-proxy anchor, the scene light count never changes), draws the underground minimap,
 //   picks cave music and ambience, and plays agility crossings.
-import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261106-terrain111';
-import {AGILITY_TEMPLATES,AGILITY_VERBS,failChance} from './agility-data.js?v=release-20261106-terrain111';
-import {sharedMaterial,sharedGeometry} from './shared-geometry.js?v=release-20261106-terrain111';
-import {lightMarker} from './underground-models.js?v=release-20261106-terrain111';
-import {loading} from './loading-indicator.js?v=release-20261106-terrain111';
-import {nextFrame} from './frame-work.js?v=release-20261106-terrain111';
+import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261106-map112';
+import {AGILITY_TEMPLATES,AGILITY_VERBS,failChance} from './agility-data.js?v=release-20261106-map112';
+import {sharedMaterial,sharedGeometry} from './shared-geometry.js?v=release-20261106-map112';
+import {lightMarker} from './underground-models.js?v=release-20261106-map112';
+import {loading} from './loading-indicator.js?v=release-20261106-map112';
+import {nextFrame} from './frame-work.js?v=release-20261106-map112';
 
 const state={areas:dungeons.slice(),index:createUndergroundIndex(dungeons),listeners:new Set()};
 export function undergroundAreas(){return state.areas}

@@ -33,7 +33,6 @@ body.touch-controls #player-trade input,body.touch-controls .drop-quantity input
 body.touch-controls #service-panel #service-close{min-width:44px;min-height:44px}
 body.touch-controls #service-panel .service-actions button,body.touch-controls #service-panel .service-bank-settings button{min-height:40px;min-width:44px}
 body.touch-controls #map-panel #map-close{min-height:40px;min-width:64px}
-body.touch-controls #map-panel .wm-tools button{width:42px!important;height:42px!important}
 body.touch-controls .tutorial-skip{min-height:44px;min-width:64px}
 body.touch-controls #world-chat-form button{min-height:36px}
 /* Royal bank: every control reachable by thumb. */
@@ -61,8 +60,7 @@ body.fantasy-hud.phone-layout #inventory .slot{min-height:40px}
 #player-trade,.drop-quantity{max-width:min(760px,calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right)));max-height:calc(var(--visible-height,100dvh) - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
 #service-panel{max-width:calc(100vw - 16px - env(safe-area-inset-left) - env(safe-area-inset-right))}
 #service-panel.bank-mode{width:min(1080px,calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right)))!important;max-height:calc(var(--visible-height,100dvh) - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important}
-#map-panel{padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important}
-#map-panel .map-card{width:min(1180px,100%)!important;height:min(880px,100%)!important}
+/* World map: safe-area padding and fit-to-screen sizing live with the map (world-map.js STYLE). */
 .tutorial-dialogue{max-width:calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right))}
 .tutorial-skip{right:max(16px,calc(env(safe-area-inset-right) + 8px))!important}
 #level-up-panel{max-width:calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right))}
