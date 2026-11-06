@@ -5,7 +5,7 @@
 //    material per accent; they drift in the vertex shader from one shared time uniform, so
 //    animating every unique item on screen costs one uniform write per frame (tickUniqueLook);
 //  * armour: the outfit material gets the accent as a pulsing emissive on its metal texels.
-import {sharedCustomGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261106-map112';
+import {sharedCustomGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261106-fix113';
 
 export const lookTime={value:0};
 export function tickUniqueLook(seconds){lookTime.value=seconds%1000}
