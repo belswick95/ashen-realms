@@ -1,4 +1,4 @@
-import {heldItem} from './weapon-assets.js?v=release-20261106-login85';
+import {heldItem} from './weapon-assets.js?v=release-20261106-skills86';
 // Off-hand shields: Quaternius CC0 models (assets/weapons) in the held-item
 // frame: the fist at the origin behind the board, face toward +Z, top toward +Y.
 const S=(name,defence,buy,sell,desc)=>({name,kind:'shield',defence,buy,sell,desc});

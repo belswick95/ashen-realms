@@ -1,4 +1,4 @@
-import {campObstacleSizes} from './navigation-obstacles.js?v=release-20261106-login85';
+import {campObstacleSizes} from './navigation-obstacles.js?v=release-20261106-skills86';
 // Ground contact for placed structures and props on sloped terrain.
 // Walk-in buildings already get a levelled plot (landscape.levelBuildingPlot);
 // these helpers cover everything else that used to sit at the height of its

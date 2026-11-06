@@ -1,5 +1,5 @@
-import {recipes} from './professions.js?v=release-20261106-login85';
-import {makeItemModel} from './item-models.js?v=release-20261106-login85';
+import {recipes} from './professions.js?v=release-20261106-skills86';
+import {makeItemModel} from './item-models.js?v=release-20261106-skills86';
 // onStrike(root,kind) fires on each pick/hammer impact ('mine' | 'smith'), onWork(root,recipe)
 // once per second while another job runs (cooking sizzle), onFire(id,{x,z}|null) as fires appear/go.
 export function createProfessionVisuals(T,scene,landscape,targets,{getActor,getObject,makePickaxe,onStrike=()=>{},onWork=()=>{},onFire=()=>{}}){

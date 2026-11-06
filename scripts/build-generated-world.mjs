@@ -1,11 +1,11 @@
 import fs from 'node:fs';
 // Saved once in world settings; every browser and the server manifest use this exact seed.
 const seed=Number(process.argv[2]||241916600)>>>0;globalThis.eldervaleWorldConfig={enabled:true,seed,version:2};
-const {generatedWorld:plan,generatedTreePoints,seededRandom}=await import('../procedural-world.js?v=release-20261103-roam20');
-const {createLandscape}=await import('../landscape.js?v=release-20261103-roam20');
-const {distanceToRoad,landscapeSettlements,lakeOutline}=await import('../geography.js?v=release-20261103-roam20');
-const {inCastle,castle}=await import('../castle-layout.js?v=release-20261103-roam20');
-const {entityDefaults}=await import('../world-templates.js?v=release-20261103-roam20');
+const {generatedWorld:plan,generatedTreePoints,seededRandom}=await import('../procedural-world.js?v=release-20261106-skills86');
+const {createLandscape}=await import('../landscape.js?v=release-20261106-skills86');
+const {distanceToRoad,landscapeSettlements,lakeOutline}=await import('../geography.js?v=release-20261106-skills86');
+const {inCastle,castle}=await import('../castle-layout.js?v=release-20261106-skills86');
+const {entityDefaults}=await import('../world-templates.js?v=release-20261106-skills86');
 const landscape=createLandscape();
 const dry=(x,z)=>!inCastle(x,z,9)&&landscape.waterAt(x,z)<=.01&&distanceToRoad(x,z)>=5&&!landscapeSettlements.some(([sx,sz])=>Math.hypot(x-sx,z-sz)<38);
 const resources=generatedTreePoints(seed,dry).map(({x,z})=>({id:'base:tree:'+x.toFixed(1)+':'+z.toFixed(1),kind:'tree',x,z,data:{}}));

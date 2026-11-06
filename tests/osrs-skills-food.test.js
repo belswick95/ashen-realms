@@ -1,8 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
-import {xpForLevel,skillLevel,combatLevel,hitpointsLevel,maxHpForXp,migrateLegacyXp,xpProgress,combatXp,damageTakenHitpointsXp,XP_TABLE} from '../combat-level.js';
+import {xpForLevel,skillLevel,combatLevel,hitpointsLevel,maxHpForXp,migrateLegacyXp,xpProgress,combatXp,skillingChance,burnChance,formatXp,XP_TABLE} from '../combat-level.js';
 import {foodLadder,foodItems,foodRecipes,fishTable,fishCatch,healAmount,isFood,EAT_DELAY} from '../food.js';
-import {goods} from '../economy.js?v=release-20261106-login85';
-import {professionRecipes} from '../profession-data.js?v=release-20261106-login85';
+import {goods} from '../economy.js?v=release-20261106-skills86';
+import {professionRecipes} from '../profession-data.js?v=release-20261106-skills86';
 import {buildHumanoid} from '../humanoid.js';import {createHumanoidAnimator,eatWeight} from '../animation.js';
 import {makeWeapon} from '../weapons.js';import {makeShield} from '../shields.js';import {attachWeapon,attachShield} from '../equipment-pose.js';
 
@@ -33,14 +33,29 @@ test('combat level is the plain, uncapped OSRS formula (3 to 126)',()=>{
  assert.equal(combatLevel(Object.fromEntries(['attackXP','strengthXP','defenceXP','hitpointsXP','prayerXP','rangedXP','magicXP'].map(k=>[k,at(99)]))),126);
  assert.equal(combatLevel({attackXP:at(99),strengthXP:at(99),defenceXP:at(99),rangedXP:at(99),magicXP:at(99)}),91,'no special 100 rule');
 });
-test('combat XP follows OSRS rates, plus 1 Hitpoints XP per damage taken',()=>{
- assert.deepEqual(combatXp({damage:10,style:'stab'}),{attackXP:40,hitpointsXP:13});
- assert.deepEqual(combatXp({damage:10,style:'slash'}),{strengthXP:40,hitpointsXP:13});
- assert.deepEqual(combatXp({damage:3,style:'lunge'}),{attackXP:4,strengthXP:4,defenceXP:4,hitpointsXP:4});
- assert.deepEqual(combatXp({damage:5,ranged:true}),{rangedXP:20,hitpointsXP:7});
- assert.deepEqual(combatXp({damage:5,magic:true,baseSpellXp:6}),{magicXP:16,hitpointsXP:7});
+test('combat XP follows OSRS rates: only damage dealt, 1.33 Hitpoints XP per damage',()=>{
+ assert.deepEqual(combatXp({damage:10,style:'stab'}),{attackXP:40,hitpointsXP:13.3});
+ assert.deepEqual(combatXp({damage:10,style:'slash'}),{strengthXP:40,hitpointsXP:13.3});
+ assert.deepEqual(combatXp({damage:3,style:'lunge'}),{attackXP:3.99,strengthXP:3.99,defenceXP:3.99,hitpointsXP:3.99});
+ assert.deepEqual(combatXp({damage:5,ranged:true}),{rangedXP:20,hitpointsXP:6.65});
+ assert.deepEqual(combatXp({damage:5,magic:true}),{magicXP:15.5,hitpointsXP:6.65},'Wind Strike base 5.5');
+ assert.deepEqual(combatXp({damage:0,magic:true}),{magicXP:5.5},'a splash still gives the spell base XP');
  assert.deepEqual(combatXp({damage:0,style:'slash'}),{});
- assert.equal(damageTakenHitpointsXp(12),12);
+ // Arms Drill: 2 damage meets the 8 Attack/Strength objectives; 3 lunge damage meets Defence 3.
+ assert.ok(Math.floor(combatXp({damage:2,style:'stab'}).attackXP)>=8);assert.ok(Math.floor(combatXp({damage:3,style:'lunge'}).defenceXP)>=3);
+});
+test('OSRS skilling chance interpolates low/high out of 256 between levels 1 and 99',()=>{
+ assert.equal(skillingChance(64,200,1),65/256);assert.equal(skillingChance(64,200,99),201/256);
+ assert.equal(skillingChance(100,350,99),1,'capped at certainty');assert.equal(skillingChance(48,256,1),49/256);
+ for(let l=2;l<=99;l++)assert.ok(skillingChance(16,100,l)>=skillingChance(16,100,l-1));
+});
+test('cooking burn chance falls to zero at the OSRS stop-burn level',()=>{
+ const shrimp=professionRecipes.cook_shrimp;assert.equal(shrimp.stopBurn,34);
+ assert.equal(burnChance(shrimp,1),.15);assert.equal(burnChance(shrimp,34),0);assert.equal(burnChance(shrimp,99),0);assert.ok(burnChance(shrimp,20)>0&&burnChance(shrimp,20)<.15);
+ assert.equal(burnChance({burnChance:.2,level:10},45),0,'recipes without a stop level stop 35 levels above the requirement');
+ const stops={cook_shrimp:34,cook_fish:38,cook_meat:31,bake_bread:38,cook_trout:50,cook_salmon:58,cook_lobster:74,cook_swordfish:86,cook_stormfin:99};
+ for(const [id,stop]of Object.entries(stops))assert.equal(professionRecipes[id].stopBurn,stop,id);
+ assert.equal(formatXp(6.25),'6.25');assert.equal(formatXp(17.5),'17.5');assert.equal(formatXp(202.5),'202.5');assert.equal(formatXp(40),'40');
 });
 test('migration keeps every current level and the progress within it',()=>{
  const oldLevel=xp=>Math.min(99,1+Math.floor(Math.sqrt(xp/50)));
@@ -64,10 +79,14 @@ test('food ladder heals a rising share of max HP, starting with the Sundae at 25
  for(let i=2;i<foodLadder.length;i++)assert.ok(foodLadder[i].cookLevel>=foodLadder[i-1].cookLevel);
  assert.ok(goods.harpoon&&goods.lobsterPot);assert.equal(Object.keys(foodRecipes).length,6);
 });
-test('fishing catches the best eligible tier most often and never above the level',()=>{
- assert.equal(fishCatch('harpoon',49,0),null);assert.equal(fishCatch('harpoon',50,0).item,'rawSwordfish');assert.equal(fishCatch('harpoon',80,.1).item,'rawStormfin');assert.equal(fishCatch('harpoon',80,.9).item,'rawSwordfish');
- assert.equal(fishCatch('net',1,.99).item,'rawShrimp');assert.equal(fishCatch('rod',10,.5).item,'rawFish');assert.equal(fishCatch('rod',35,.1).item,'rawSalmon');assert.equal(fishCatch('rod',35,.6).item,'rawTrout');assert.equal(fishCatch('rod',35,.95).item,'rawFish');
- for(let level=1;level<=99;level+=7)for(let r=0;r<1;r+=.05)for(const m of ['net','rod','cage','harpoon']){const c=fishCatch(m,level,r);if(c)assert.ok(c.level<=level)}
+test('fishing rolls the best eligible fish first, each with its own OSRS chance',()=>{
+ const seq=(...v)=>()=>v.length?v.shift():.999;
+ assert.equal(fishCatch('harpoon',49,seq(0)),null,'level too low');
+ assert.equal(fishCatch('harpoon',80,seq(0)).item,'rawStormfin');assert.equal(fishCatch('harpoon',80,seq(.99,0)).item,'rawSwordfish');assert.deepEqual(fishCatch('harpoon',80,seq(.99,.99)),{},'nothing bites: no fish, no XP');
+ assert.equal(fishCatch('rod',35,seq(0)).item,'rawSalmon');assert.equal(fishCatch('rod',35,seq(.99,0)).item,'rawTrout');assert.equal(fishCatch('rod',35,seq(.99,.99,0)).item,'rawFish');
+ assert.equal(fishCatch('net',1,seq(.18)).item,'rawShrimp');assert.deepEqual(fishCatch('net',1,seq(.2)),{},'shrimp at Fishing 1: 49/256');
+ for(let level=1;level<=99;level+=7)for(const m of ['net','rod','cage','harpoon']){const c=fishCatch(m,level,()=>0);if(c?.item)assert.ok(c.level<=level)}
+ assert.deepEqual(fishTable.map(f=>[f.item,f.level,f.xp]),[['rawShrimp',1,10],['rawFish',1,20],['rawTrout',20,50],['rawSalmon',30,70],['rawLobster',40,90],['rawSwordfish',50,100],['rawStormfin',76,110]]);
 });
 test('eating hides the weapon and shield, lifts the right hand to the mouth, then restores them',()=>{
  const root=new T.Group(),rig=buildHumanoid(T,root),a=createHumanoidAnimator(rig);const sword=attachWeapon(rig,makeWeapon(T,'longsword'),'longsword'),shield=attachShield(rig,makeShield(T,'kite'));
