@@ -2,7 +2,7 @@
 // Per 600 ms tick: running drains floor((60 + 67 x min(weight,64)/64) x (1 - agility/300)) units,
 // walking or standing regenerates floor(agility/10) + 15. The server (mech_energy) is
 // authoritative; this is the offline fallback and the client prediction.
-import {runDrain,runRegen,TICK} from './mechanics.js?v=release-20261106-osrswalk124';
+import {runDrain,runRegen,TICK} from './mechanics.js?v=release-20261106-clips125';
 export function stepEnergy(energy,enabled,moving,dt,{weight=0,agility=1,stamina=false}={}){
  const ticks=(Number.isFinite(dt)?Math.max(0,Math.min(dt,1)):0)/TICK;
  const value=Number.isFinite(energy)?Math.max(0,Math.min(100,energy)):100;

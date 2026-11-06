@@ -4,7 +4,7 @@
 // lore/place/clue progress (give clue items, reset a clue) and a casket roll preview.
 // Reads and writes go through world_admin -> admin_action ('ex_*', owner-checked and audited:
 // db/explore-4-console.sql). A saved row is marked "edited" and survives re-running the content SQL.
-import {LORE_MODELS,STEP_TYPES,TIERS,EMOTES,ENTRANCE_MODELS,ITEMS,areaById} from './explore-data.js?v=release-20261106-osrswalk124';
+import {LORE_MODELS,STEP_TYPES,TIERS,EMOTES,ENTRANCE_MODELS,ITEMS,areaById} from './explore-data.js?v=release-20261106-clips125';
 
 export const EXPLORE_KINDS=[['lore','Lore objects'],['place','Places'],['step','Clue steps'],['crate','Crates'],['reward','Rewards'],['shortcut','Shortcuts'],['resource','Resources']];
 // One-line summary of a definition for the list.
