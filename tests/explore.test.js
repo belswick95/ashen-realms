@@ -6,7 +6,7 @@ import {dungeons,walkableLocal,rasterize,validateDungeon,PASSAGE_TEMPLATES,PASSA
 import {levelMeshData,areaTheme} from '../underground.js';
 import {exploreObjectModel,EXPLORE_MODEL_TEMPLATES} from '../explore-models.js';
 import {createExplore,placeAt,counterText,drawClueMap,tierOfItem,EXPLORE_ICONS} from '../explore.js';
-import {goods} from '../economy.js?v=release-20261106-boss107';
+import {goods} from '../economy.js?v=release-20261106-boss108';
 import {defSummary,defPoint,newDef,EXPLORE_KINDS} from '../admin-explore.js';
 import {POI_KINDS} from '../world-map.js';
 const root=new URL('../',import.meta.url),read=f=>fs.readFileSync(new URL(f,root),'utf8');

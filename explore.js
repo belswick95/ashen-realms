@@ -7,12 +7,12 @@
 // game.js wiring: createExplore({...}) once; tagHit/click for world objects, talk() when an NPC
 // dialogue opens, useItem/itemChoices for inventory items, event() for realm events, frame() each
 // frame, mapPois() for the world map and drawMinimap() for the minimap.
-import {ITEMS,CLUE_ITEM,CASKET_ITEM,TIERS,TIER_LABEL,EMOTES,PLACES,LORE,KEEPSAKES,TOTALS,areaById,LORE_MODELS} from './explore-data.js?v=release-20261106-boss107';
-import {worldRivers,roadLines,landscapeLakes} from './geography.js?v=release-20261106-boss107';
-import {undergroundAt,undergroundAreas} from './underground.js?v=release-20261106-boss107';
-import {walkableLocal} from './underground-data.js?v=release-20261106-boss107';
-import {animateExploreModel} from './explore-models.js?v=release-20261106-boss107';
-import {goods} from './economy.js?v=release-20261106-boss107';
+import {ITEMS,CLUE_ITEM,CASKET_ITEM,TIERS,TIER_LABEL,EMOTES,PLACES,LORE,KEEPSAKES,TOTALS,areaById,LORE_MODELS} from './explore-data.js?v=release-20261106-boss108';
+import {worldRivers,roadLines,landscapeLakes} from './geography.js?v=release-20261106-boss108';
+import {undergroundAt,undergroundAreas} from './underground.js?v=release-20261106-boss108';
+import {walkableLocal} from './underground-data.js?v=release-20261106-boss108';
+import {animateExploreModel} from './explore-models.js?v=release-20261106-boss108';
+import {goods} from './economy.js?v=release-20261106-boss108';
 
 // ---------------------------------------------------------------------------- item icons + goods
 const svg=body=>'<svg viewBox="0 0 48 48" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g stroke="#342c26" stroke-width="1.5" stroke-linejoin="round">'+body+'</g></svg>';
@@ -62,7 +62,7 @@ export function drawClueMap(ctx,w,h,map,{id='',rivers=worldRivers,roads=roadLine
 
 // ------------------------------------------------------------------------------------------ UI
 let cssLoaded=false;
-function loadCss(doc){if(cssLoaded||!doc?.head)return;cssLoaded=true;const l=doc.createElement('link');l.rel='stylesheet';l.href='./explore.css?v=release-20261106-boss107';doc.head.append(l)}
+function loadCss(doc){if(cssLoaded||!doc?.head)return;cssLoaded=true;const l=doc.createElement('link');l.rel='stylesheet';l.href='./explore.css?v=release-20261106-boss108';doc.head.append(l)}
 export function createExplore({T=null,camera=null,player=null,say=()=>{},command=(c,p)=>globalThis.eldervaleRealm?.command(c,p),journalFetch=()=>globalThis.eldervaleExploreJournal?.()??Promise.resolve(null),doc=globalThis.document,now=()=>performance.now()}={}){
  loadCss(doc);
  let journal=null,loading=null,nextScan=0,panel=null,tab='lore',reader=null;const asked=new Map(),loreRoots=[],emotes=[];

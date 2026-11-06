@@ -1,9 +1,9 @@
 // Castle training client: objective HUD, guide arrow, tutor dialogue, gate lock and the arrival cutscene.
 // Server state (quests + game_flags.tutorial) arrives with every realm sync; nothing here is authoritative.
-import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261106-boss107';
-import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261106-boss107';
-import {frameShot,roomFromGroup,glideClear} from './cutscene-camera.js?v=release-20261106-boss107';
-import {obstructionDistance} from './camera-obstruction.js?v=release-20261106-boss107';
+import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261106-boss108';
+import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261106-boss108';
+import {frameShot,roomFromGroup,glideClear} from './cutscene-camera.js?v=release-20261106-boss108';
+import {obstructionDistance} from './camera-obstruction.js?v=release-20261106-boss108';
 
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -17,7 +17,7 @@ const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 // people indoors stay inside that room (cutscene-camera.js). prewarm(eye,look) (optional): draws a
 // shot off-screen so its shaders compile while the prologue still covers the canvas (cutscene-boot.js).
 export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null,actorRoot=null,cameraOccluders=()=>[],rooms=()=>[],prewarm=null}){
- document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-boss107'}));
+ document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-boss108'}));
  let quests=[],flags={},locked=false,step=null,talking=false,destroyed=false,selfName='';
  // ---- objective HUD
  const hud=el('section','tutorial-hud');hud.hidden=true;hud.setAttribute('aria-live','polite');
@@ -151,7 +151,7 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
  // options.scene: a scene object (quest cutscenes); options.record: {command,payload} that records it.
  async function playCutscene(id,options={}){const prologue=options.prologue||null;
   const sceneData=options.scene||cutscenes[id];if(!validCutscene(sceneData)||cutscene.active)return;
-  cutscene.active=true;cutscene.skip=false;cutscene.to=null;cutscene.from=null;cutscene.cam=null;cutscene.guard=null;cutscene.shown=false;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
+  cutscene.active=true;cutscene.boot=!!prologue;cutscene.skip=false;cutscene.to=null;cutscene.from=null;cutscene.cam=null;cutscene.guard=null;cutscene.shown=false;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
   window.addEventListener('keydown',blockKeys,true);fader.style.transition='none';fader.style.opacity='1';
   performance.mark?.('eldervale-cutscene-start');
   // The DOM prologue (tutorial-prologue.js) already showed the title card while the world loaded:
