@@ -45,21 +45,34 @@ begin
  return null;
 end $fn$;
 
--- Only the fields tile_shapes() reads (position, kind, template, scale, yaw, scaleX/Z, floor) count:
--- door opening, resource respawn and logsRemaining do not dirty the grid. Row triggers, so the
--- frequent zero-row upserts (insert ... on conflict do nothing) do not count either.
+-- Could this realm_objects row be a tile_shapes() source? (Same kinds and templates as tile_shapes:
+-- camp props, profession props, trees/rocks, stations, doors, tutorial pond/throne.) Moving fishing
+-- spots, NPC-like objects and markers are not, so their constant moves do not dirty the grid.
+create or replace function eldervale_private.tile_source_object(kind text, d jsonb) returns boolean language sql immutable as $fn$
+ select kind in('tree','rock','door') or d->>'template' in('tent','bedroll','log_seat','cooking_tripod','supply_wagon','trail_sign','woodpile','rope_coil','camp_lantern','wooden_table','stool','weapon_rack','campfire','farm_hut','chicken_coop','hay_bale','water_trough','stone_statue','wheelbarrow','scarecrow','flower_bed','fence',
+  'tree','pine','rock','crate','barrel','fountain','well','market','bench',
+  'furnace','anvil','workbench','spinning_wheel','tanning_rack','mill','rune_altar','thieving_stall','practice_chest','essence_rock','construction_site',
+  'training_pond','throne')
+$fn$;
+
+-- Only sources, and only the fields tile_shapes() reads (position, kind, template, scale, yaw,
+-- scaleX/Z, floor) count: door opening, resource respawn and logsRemaining do not dirty the grid.
+-- Row triggers, so the frequent zero-row upserts (insert ... on conflict do nothing) do not count.
 create or replace trigger tile_dirty_objects_ins after insert on eldervale_private.realm_objects
- for each row execute function eldervale_private.tile_dirty_mark();
+ for each row when (eldervale_private.tile_source_object(new.kind,new.data)) execute function eldervale_private.tile_dirty_mark();
 create or replace trigger tile_dirty_objects_upd after update on eldervale_private.realm_objects
- for each row when (old.x is distinct from new.x or old.z is distinct from new.z or old.kind is distinct from new.kind or old.id is distinct from new.id
+ for each row when ((eldervale_private.tile_source_object(old.kind,old.data) or eldervale_private.tile_source_object(new.kind,new.data))
+  and (old.x is distinct from new.x or old.z is distinct from new.z or old.kind is distinct from new.kind or old.id is distinct from new.id
   or old.data->'template' is distinct from new.data->'template' or old.data->'scale' is distinct from new.data->'scale'
   or old.data->'yaw' is distinct from new.data->'yaw' or old.data->'scaleX' is distinct from new.data->'scaleX'
-  or old.data->'scaleZ' is distinct from new.data->'scaleZ' or old.data->'floor' is distinct from new.data->'floor')
+  or old.data->'scaleZ' is distinct from new.data->'scaleZ' or old.data->'floor' is distinct from new.data->'floor'))
  execute function eldervale_private.tile_dirty_mark();
+-- Entities are sources only as castle walls, gates and towers.
 create or replace trigger tile_dirty_entities_ins after insert on eldervale_private.entities
- for each row execute function eldervale_private.tile_dirty_mark();
+ for each row when (new.data->>'template' in('castle_wall','castle_gate','castle_tower')) execute function eldervale_private.tile_dirty_mark();
 create or replace trigger tile_dirty_entities_upd after update on eldervale_private.entities
- for each row when (old.data is distinct from new.data or old.deleted is distinct from new.deleted)
+ for each row when ((old.data->>'template' in('castle_wall','castle_gate','castle_tower') or new.data->>'template' in('castle_wall','castle_gate','castle_tower'))
+  and (old.data is distinct from new.data or old.deleted is distinct from new.deleted))
  execute function eldervale_private.tile_dirty_mark();
 create or replace trigger tile_dirty_water_ins after insert on eldervale_private.realm_water
  for each row execute function eldervale_private.tile_dirty_mark();
