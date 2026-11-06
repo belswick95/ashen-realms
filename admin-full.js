@@ -87,7 +87,7 @@ export function createFullControlTabs(ctx){
    const hour=field(wf,'Hour (0–24, empty = real time)','timeOverride',cfg.world?.timeOverride??'','number');hour.min=0;hour.max=24;hour.step='0.5';
    btn('Apply time',async()=>{const v=validateTimeOverride(hour.value);await invoke('fc_settings_save',{key:'world',value:{timeOverride:v,classicLook:!!cfg.world?.classicLook}});cfg.world={...(cfg.world||{}),timeOverride:v};note(v===null?'Sky follows the real clock.':'Sky locked to '+v+':00.')},wf);
    const qa=actions(world);for(const [label,h] of [['Dawn',6],['Noon',12],['Dusk',19],['Midnight',0]])btn(label,()=>{hour.value=h},qa);btn('Real time',()=>{hour.value=''},qa);
-   world.append(el('p','Weather: Eldervale has no weather system yet, so there is nothing to override.',{class:'console-muted'}));
+   world.append(el('p','Weather: see Game › Weather to force, schedule or turn off rain, storms, fog and snow.',{class:'console-muted'}));
    // Graphics default (classic-look.js): players who never touched Settings › Classic look follow this.
    const look=section('Classic look default',box),lf=el('form',null,{class:'console-inline'});lf.onsubmit=e=>e.preventDefault();look.append(el('p','Low-poly, flat-shaded retro renderer (faster on iPad and phones). Players can still switch it in Settings › Graphics; their own choice wins.',{class:'console-muted'}),lf);
    const classicBox=el('input',null,{type:'checkbox','aria-label':'Classic look by default'});classicBox.checked=cfg.world?.classicLook===true;const classicLabel=el('label',' Classic look by default');classicLabel.prepend(classicBox);lf.append(classicLabel);

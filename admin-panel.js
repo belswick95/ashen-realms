@@ -8,6 +8,7 @@ import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-
 import {goods} from './economy.js?v=release-20261106-classic95';
 import {createConsoleTabs,consoleIcons} from './admin-console.js?v=release-20261106-classic95';
 import {createFullControlTabs,playerInspector} from './admin-full.js?v=release-20261106-classic95';
+import {createWeatherTab} from './admin-weather.js?v=release-20261106-classic95';
 import {createSignTabs} from './admin-signs.js?v=release-20261106-classic95';
 import {parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261106-classic95';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==null)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
@@ -23,7 +24,7 @@ export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge,stor
  const btn=(label,fn,parent=workspace)=>{const b=el('button',label,{type:'button'});b.onclick=()=>run(fn);parent.append(b);return b};
  const field=(parent,label,key,value,type='text',options=null)=>{const wrap=el('label',label);let input;if(options){input=el('select',null,{name:key});for(const [v,t] of options)input.append(el('option',t,{value:v}));input.value=value}else{input=el(type==='textarea'?'textarea':'input',null,{name:key});if(type!=='textarea')input.type=type;if(type==='checkbox')input.checked=!!value;else input.value=value??''}wrap.append(input);parent.append(wrap);return input};
  function draw(){workspace.replaceChildren();panel.dataset.tab=tab;for(const n of panel.querySelectorAll('nav button'))n.setAttribute('aria-selected',String(n.textContent===tab));if(owner&&consoleTabs[tab])consoleTabs[tab]();else if(tab==='Editor')world();else if(tab==='Reports')void players();else if(tab==='Actors')void actors();else if(tab==='Items')items();else if(tab==='Recipes')recipeEditor();else if(tab==='Quests'){const root=el('section');workspace.append(root);void questEditor(root,{rpc,action:invoke,note});}else if(tab==='News'){const root=el('section');workspace.append(root);void import('./admin-news.js?v=release-20261106-classic95').then(m=>m.newsEditor(root,{rpc,note,storage})).catch(e=>note(e.message,true))}else if(tab==='Server')server();else if(tab==='Players')void players();else if(tab==='Audit')void audit();else consoleView()}
- const navGroups=owner?[['Live',['Dashboard','Players','Reports']],['Build',['Spawn','Placed','Editor','Signs']],['Population',['NPCs','Monsters','Actors']],['Game',['Catalog','Items','Recipes','Economy','Quests','News']],['Server',['World','Backup','Audit','Terminal']]]:[['Moderation',['Players','Terminal']]];
+ const navGroups=owner?[['Live',['Dashboard','Players','Reports']],['Build',['Spawn','Placed','Editor','Signs']],['Population',['NPCs','Monsters','Actors']],['Game',['Catalog','Items','Recipes','Economy','Weather','Quests','News']],['Server',['World','Backup','Audit','Terminal']]]:[['Moderation',['Players','Terminal']]];
  // Tab finder: typing filters the tab list; Enter opens the first match.
  if(owner){const nav=panel.querySelector('nav'),find=el('input',null,{type:'search',class:'console-nav-search',placeholder:'Find a tool…','aria-label':'Find a console tab'});nav.append(find);find.oninput=()=>{const q=find.value.trim().toLowerCase();for(const b of nav.querySelectorAll('button'))b.hidden=!!q&&!b.textContent.toLowerCase().includes(q);for(const g of nav.querySelectorAll('.console-nav-group'))g.hidden=!!q};find.onkeydown=e=>{if(e.key==='Enter'){const b=[...nav.querySelectorAll('button')].find(b=>!b.hidden);if(b)b.click()}}}
  for(const [group,names] of navGroups){const nav=panel.querySelector('nav');nav.append(el('small',group,{class:'console-nav-group'}));for(const name of names){const b=btn(name,()=>{tab=name;draw();workspace.scrollTop=0},nav);const i=el('span',null,{class:'console-nav-icon'});i.innerHTML=consoleIcons[name]||consoleIcons.Reports||consoleIcons.Audit;b.prepend(i)}}
@@ -188,7 +189,7 @@ resolve_report reportID | delete_chat messageID`;
  else if(cmd!=='cancel_restart')throw Error('Unknown command. Type help.');
  const result=await invoke(cmd,p);output.textContent=JSON.stringify(result,null,2);input.value='';})};}
  const ctx={get workspace(){return workspace},el,btn,field,invoke,rpc,bridge,rows,note,pick,selectInWorld,userId,auth,run,tab:()=>tab,current:()=>current,show:name=>{tab=name;open()},redraw:()=>draw(),openEditor:id=>{selected=id;formData=null;tab='Editor';open()},inspector:(parent,player)=>playerInspector(ctx,parent,player)};
- const consoleTabs=owner?{...createConsoleTabs(ctx),...createFullControlTabs(ctx),...createSignTabs(ctx)}:{};
+ const consoleTabs=owner?{...createConsoleTabs(ctx),...createFullControlTabs(ctx),...createSignTabs(ctx),...createWeatherTab(ctx)}:{};
  function sync(s){current=s;const access=s.owner||s.staffRole==='moderator';button.hidden=!access;if(!access&&panel.open)panel.close();for(const r of s.entities||[])rows.set(r.id,r)}sync(snapshot);
  return {sync,connection:msg=>note('World sync unavailable: '+msg,true)};
 }
