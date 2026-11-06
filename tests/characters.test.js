@@ -105,10 +105,9 @@ test('running leans the head ahead of the hips toward +Z',()=>{
 });
 
 test('step rate follows travel speed so feet do not slide, within sane limits',()=>{
- // Steps per second = speed / step length reported by the animator.
+ // The gait clips follow a distance-driven stride: steps per second = speed / step length.
  const rate=(speed,mode='walk')=>{const r=character(),{pose}=run(r,20,{distance:speed/60,speed,locomotion:mode});return speed/pose.step};
  assert.ok(rate(2)>rate(1.2));assert.ok(rate(20,'run')<=9);assert.ok(rate(.2)>=.2);
- // Jogging at the normal 6.4 travel speed takes quick steps, not slow-motion strides.
  assert.ok(rate(6.4,'jog')>3,'jog cadence '+rate(6.4,'jog'));
 });
 
@@ -123,8 +122,8 @@ test('the planted foot moves backward at the travel speed: short quick strides, 
 });
 
 test('frame rate does not change the pose after the same time',()=>{
- // Fades are exact exponentials; the stride cycle integrates distance / stride
- // frame by frame while the walk -> run blend changes the stride, so allow a few mm.
+ // Fades are exact exponentials; the stride integrates distance / step frame by frame
+ // while the walk -> run blend changes the step, so allow a centimetre.
  const pose=hz=>{const r=character(),a=createHumanoidAnimator(r);for(let i=0;i<hz;i++)a.update(1/hz,{distance:5/hz,speed:5});r.root.updateMatrixWorld(true);return world(r.rightHand)};
  assert.ok(pose(30).distanceTo(pose(120))<.01);
 });

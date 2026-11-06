@@ -155,6 +155,8 @@ export function createStrideRig(rig){
  // Write a bone's local rotation for a wanted root-space rotation under a
  // parent root-space rotation, blended in by w.
  function put(bone,parentRS,wantRS,w){loc.copy(inv.copy(parentRS).invert()).multiply(wantRS);if(w>=.999)bone.quaternion.copy(loc);else bone.quaternion.slerp(loc,w)}
+ // Rotate a bone by root-space rotation R, given its parent's root-space rotation P: local' = P^-1 R P local.
+ function turnLocal(bone,P,R){inv.copy(P).invert();loc.copy(P).premultiply(R).premultiply(inv);bone.quaternion.premultiply(loc)}
  function rootRS(){return rootQ.copy(model.quaternion).multiply(armature.quaternion).multiply(b.root.quaternion)}
  // Two-bone leg: thigh and shin rotations putting the ankle at `goal`, knee
  // bending forward in the leg's own plane.
@@ -256,6 +258,15 @@ export function createStrideRig(rig){
    for(let i=0;i<24;i++){const a=i/24*2*Math.PI,v=elbowScore(a);if(v<best){best=v;bestA=a}}
    for(let i=-5;i<=5;i++){const a=bestA+i*Math.PI/120,v=elbowScore(a);if(v<best){best=v;bestA=a}}
    elbowScore(bestA);v1.copy(el).sub(sh);arm(s,v1,rf,bk,this.clavicleRS(s,qr),w)},
+  // Ease the torso to a forward lean of `angle` (radians from vertical, hips to
+  // neck) by turning the lower spine, and turn the head back by most of the
+  // change so the gaze stays level. Weighted by w.
+  leanTo(angle,w){if(!(w>0))return;b.neck_01.updateWorldMatrix(true,false);invRoot.copy(rig.root.matrixWorld).invert();
+   sh.setFromMatrixPosition(b.pelvis.matrixWorld).applyMatrix4(invRoot);el.setFromMatrixPosition(b.neck_01.matrixWorld).applyMatrix4(invRoot);
+   // A modest correction only (a kneeling or bowing clip is left to the clip).
+   const now=Math.atan2(el.z-sh.z,el.y-sh.y),delta=clamp(angle-now,-.5,.5)*w;if(Math.abs(delta)<1e-4)return;
+   rootRS();qr.copy(rootQ).multiply(b.pelvis.quaternion);rot(X,delta,q1);turnLocal(b.spine_01,qr,q1);
+   qr.multiply(b.spine_01.quaternion).multiply(b.spine_02.quaternion).multiply(b.spine_03.quaternion).multiply(b.neck_01.quaternion);rot(X,-delta*.8,q1);turnLocal(b.Head,qr,q1)},
   // Wrist straight in line with the forearm (as in the bind pose).
   straightWrist(s){S[s].hand.quaternion.copy(wrist[s])},
   // Root-space rotation of a clavicle in the live pose.

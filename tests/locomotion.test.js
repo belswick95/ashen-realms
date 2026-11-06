@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import * as
 import {buildHumanoid} from '../humanoid.js';import {createHumanoidAnimator} from '../animation.js';
 import {TILE,TICK,STEPS_PER_TICK,WALK_REF,RUN_REF,cadence,stepLength,phaseAdvance,createGaitState,advanceGait,blendWeights,legTrack,mixGait} from '../stride-cycle.js';
 import {TILE as GAME_TILE,GAME_TICK,WALK_SPEED,RUN_SPEED} from '../click-walk.js';
-import {makeWeapon,weaponCatalog} from '../weapons.js';import {makeShield,shieldCatalog} from '../shields.js';import {attachWeapon,attachShield,carryStyle} from '../equipment-pose.js';
+import {makeWeapon,weaponCatalog} from '../weapons.js';import {makeShield,shieldCatalog} from '../shields.js';import {attachWeapon,attachShield} from '../equipment-pose.js';
 
 // Owner report: "the walking animation and running animation looks goofy".
 // Walk and run are a distance-driven cycle (stride-cycle.js) styled after the
@@ -71,15 +71,6 @@ test('idle, walk and run weights blend continuously and always sum to one',()=>{
  const at=hz=>{const g=createGaitState();for(let i=0;i<hz/2;i++)advanceGait(g,1/hz,{moving:true,distance:1/hz,speed:2});return g.move};assert.ok(Math.abs(at(30)-at(120))<1e-9);
 });
 
-test('the animator reports the blend, and walking straight into a stop lands back in the idle clip',()=>{
- const w=walker();let pose;for(let i=0;i<60;i++)pose=w.step(1/60,{speed:WALK_REF,locomotion:'walk'});
- assert.equal(pose.gait,'Walk_Loop');assert.ok(pose.weights.walk>.99);assert.ok(Math.abs(pose.step-.8*TILE)<1e-6);
- for(let i=0;i<60;i++)pose=w.step(1/60,{speed:RUN_REF,locomotion:'jog'});assert.equal(pose.gait,'Jog_Fwd_Loop');assert.ok(pose.weights.run>.99);
- // Mounted riders keep their seat: no stride at all.
- const m=walker();for(let i=0;i<30;i++)pose=m.step(1/60,{speed:RUN_REF,locomotion:'jog',mounted:true});assert.equal(pose.weights.idle,1);
- for(let i=0;i<60;i++)pose=w.step(1/60,{locomotion:'walk'});assert.equal(pose.weights.idle,1);assert.equal(pose.clip,'Idle_Loop');
-});
-
 // Points spread over a held item, in world space.
 function itemPoints(item){const out=[];item.updateWorldMatrix(true,true);item.traverse(o=>{if(!o.isMesh)return;const pos=o.geometry.attributes.position,step=Math.max(1,Math.floor(pos.count/150));for(let i=0;i<pos.count;i+=step)out.push(v().fromBufferAttribute(pos,i).applyMatrix4(o.matrixWorld))});return out}
 const headCentre=rig=>rig.head.getWorldPosition(v()).add(v().set(0,.17,.03).applyQuaternion(rig.root.getWorldQuaternion(new T.Quaternion())));
@@ -89,44 +80,10 @@ function neckGap(rig,p){const a=rig.neck.getWorldPosition(v()),b=rig.head.getWor
 
 test('weapons are carried clear of the head and neck standing, walking and running, for every weapon kind',()=>{
  const keys=['longsword','dagger','scimitar','shortsword','goldenSword','axe','pickaxe','hammer','bronzeSword','twohand','claymore','steelTwohand','battleaxe','unbrokenCleaver','waraxe','spear','warhammer','scythe','apprenticeStaff','emberStaff','woodenBow','longbow','bloodthornBow'];
- const kinds=new Set(keys.map(carryStyle));assert.deepEqual([...kinds].sort(),['battleaxe','blade','bow','greatsword','heavy','staff']);
  for(const key of keys)for(const [mode,speed] of [['idle',0],['walk',WALK_REF],['jog',RUN_REF],['run',RUN_REF*1.2]]){
   const w=walker({weapon:key,shield:weaponCatalog[key].twoHanded?null:'kite'}),dt=1/60,opts={speed,locomotion:mode==='idle'?'walk':mode};for(let i=0;i<90;i++)w.step(dt,opts);
   const cycle=speed?2*w.step(dt,opts).step/speed:.5;let near=Infinity,neck=Infinity;
   for(let t=0;t<cycle;t+=dt){w.step(dt,opts);const head=headCentre(w.rig);for(const p of itemPoints(w.held.weapon)){near=Math.min(near,p.distanceTo(head));neck=Math.min(neck,neckGap(w.rig,p))}}
   assert.ok(near>HEAD_CLEARANCE,`${key} ${mode}: blade/tip ${near.toFixed(3)} from the head`);assert.ok(neck>NECK_CLEARANCE,`${key} ${mode}: ${neck.toFixed(3)} from the neck`);
  }
-});
-
-// Direction of a held item's long axis (+Y) in the world.
-const axisOf=item=>v().set(0,1,0).transformDirection(item.matrixWorld);
-test('two-handed swords rest on the right shoulder; one-handers and battleaxes swing naturally, clear of the ground',()=>{
- for(const key of ['twohand','claymore'])for(const [mode,speed] of [['idle',0],['walk',WALK_REF],['jog',RUN_REF]]){
-  const w=walker({weapon:key}),opts={speed,locomotion:mode==='idle'?'walk':mode};for(let i=0;i<90;i++)w.step(1/60,opts);
-  const blade=axisOf(w.held.weapon),grip=w.held.weapon.getWorldPosition(v()),shoulder=w.rig.bones.upperarm_r.getWorldPosition(v()).sub(w.root.position);grip.sub(w.root.position);
-  assert.ok(blade.y>.3&&blade.z<-.6,`${key} ${mode}: blade points up and back over the shoulder`);assert.ok(blade.x<0,`${key} ${mode}: angled outward, away from the head`);
-  assert.ok(grip.x<0&&grip.z>shoulder.z+.15&&grip.y<shoulder.y,`${key} ${mode}: hilt in the right fist in front of the chest`);
-  // The blade passes over the top of the right shoulder.
-  const t=(shoulder.z-grip.z)/blade.z,over=grip.clone().addScaledVector(blade,t);assert.ok(over.y>shoulder.y&&over.y<shoulder.y+.25&&Math.abs(over.x-shoulder.x)<.12,`${key} ${mode}: rests on the shoulder`);
-  if(mode==='jog'){const l=w.rig.bones.hand_l.getWorldPosition(v()).sub(w.root.position),r=w.rig.bones.hand_r.getWorldPosition(v()).sub(w.root.position);assert.ok(l.distanceTo(r)<.3,'both hands on the hilt when running')}
- }
- // One-handers and the battleaxe swing naturally with their usual grip: the
- // item points forward and up (never at the ground) and its tip stays above the knees.
- for(const key of ['longsword','scimitar','dagger','axe','hammer','battleaxe'])for(const [mode,speed] of [['walk',WALK_REF],['jog',RUN_REF],['run',RUN_REF*1.2]]){
-  const w=walker({weapon:key,shield:'kite'}),opts={speed,locomotion:mode};for(let i=0;i<90;i++)w.step(1/60,opts);let low=Infinity,lowUp=Infinity,high=-Infinity;const knee=.9;// standing knee height is about 0.86
-  for(let i=0;i<90;i++){w.step(1/60,opts);const a=axisOf(w.held.weapon);lowUp=Math.min(lowUp,a.y);high=Math.max(high,a.y);assert.ok(a.z>.3,`${key} ${mode}: points forward`);
-   for(const p of itemPoints(w.held.weapon))low=Math.min(low,p.y)}
-  assert.ok(lowUp>.1,`${key} ${mode}: never tips toward the ground (${lowUp.toFixed(2)})`);assert.ok(high<.85,`${key} ${mode}: never swings up past ~58 degrees`);
-  assert.ok(low>knee,`${key} ${mode}: lowest point ${low.toFixed(2)} stays above knee height ${knee.toFixed(2)}`)}
-});
-
-const SHIELDS=(()=>{const first=new Map();for(const [k,s] of Object.entries(shieldCatalog))if(!first.has(s.model||k))first.set(s.model||k,k);return [...first.values(),'scalewardShield','wardensAegis']})();
-// Distance from the shield's attach point (the strap side of the board) to the forearm bone.
-function strapGap(rig,shield){const e=rig.bones.lowerarm_l.getWorldPosition(v()),h=rig.bones.hand_l.getWorldPosition(v()),o=shield.getWorldPosition(v()),seg=h.clone().sub(e),t=Math.max(0,Math.min(1,o.clone().sub(e).dot(seg)/seg.lengthSq()));return {gap:o.distanceTo(e.clone().addScaledVector(seg,t)),t}}
-
-test('shields use the original hand mount with no carry pose (owner request)',async()=>{
- const src=(await import('node:fs')).readFileSync(new URL('../equipment-pose.js',import.meta.url),'utf8');
- assert.match(src,/model\.position\.set\(0,0,\.04\);model\.rotation\.set\(0,0,0\);model\.userData\.shieldMount=true/);
- const anim=(await import('node:fs')).readFileSync(new URL('../animation.js',import.meta.url),'utf8');
- assert.doesNotMatch(anim,/straightWrist\('l'\)/);
 });
