@@ -28,7 +28,7 @@ export function startPrologue({lines=PROLOGUE_LINES,title=PROLOGUE_TITLE,linger=
  root.append(art,el('i','bar top'),el('i','bar bottom'),caption,narration,holdLine,skip);document.body.append(root);
  globalThis.performance?.mark?.('eldervale-prologue-visible');
  requestAnimationFrame(()=>root.classList.add('show'));
- let skipped=false,hurry=false,finished=false,ready=null;const state={titleShown:false};
+ let skipped=false,hurry=false,finished=false,ready=null;const state={titleShown:false,narrating:true};
  skip.onclick=()=>{skipped=true;root.classList.add('skipped')};
  // Wall-clock waits: heavy loading (game.js, the first world build) can starve timers, so each beat
  // ends at its deadline however late the timer fires. Once the world is ready (hurry) the current
@@ -39,6 +39,7 @@ export function startPrologue({lines=PROLOGUE_LINES,title=PROLOGUE_TITLE,linger=
   await hold(3200,1400);caption.classList.remove('show');
   for(const text of lines){if(skipped||hurry)break;narration.textContent=text;narration.classList.add('show');await hold(linger,1400);narration.classList.remove('show');if(!skipped)await wait(450)}
   if(!finished&&!hurry){holdLine.textContent='The castle gates draw near…';holdLine.classList.add('show')}
+  state.narrating=false;
  })();
  function finish(){if(finished)return;finished=true;skipped=true;root.classList.add('leaving');setTimeout(()=>root.remove(),900)}
  const controller={root,state,
