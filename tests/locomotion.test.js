@@ -83,17 +83,37 @@ test('the animator reports the blend, and walking straight into a stop lands bac
 // Points spread over a held item, in world space.
 function itemPoints(item){const out=[];item.updateWorldMatrix(true,true);item.traverse(o=>{if(!o.isMesh)return;const pos=o.geometry.attributes.position,step=Math.max(1,Math.floor(pos.count/150));for(let i=0;i<pos.count;i+=step)out.push(v().fromBufferAttribute(pos,i).applyMatrix4(o.matrixWorld))});return out}
 const headCentre=rig=>rig.head.getWorldPosition(v()).add(v().set(0,.17,.03).applyQuaternion(rig.root.getWorldQuaternion(new T.Quaternion())));
-export const HEAD_CLEARANCE=.42;
+export const HEAD_CLEARANCE=.35,NECK_CLEARANCE=.12;
+// Distance from p to the neck (neck bone to head bone).
+function neckGap(rig,p){const a=rig.neck.getWorldPosition(v()),b=rig.head.getWorldPosition(v()),d=b.clone().sub(a),t=Math.max(0,Math.min(1,p.clone().sub(a).dot(d)/d.lengthSq()));return p.distanceTo(a.addScaledVector(d,t))}
 
-test('weapons are carried clear of the head through whole walk and run cycles, for every weapon kind',()=>{
- const keys=['longsword','dagger','scimitar','shortsword','goldenSword','axe','pickaxe','hammer','bronzeSword','twohand','claymore','battleaxe','waraxe','spear','warhammer','scythe','apprenticeStaff','emberStaff','woodenBow','longbow','bloodthornBow'];
- const kinds=new Set(keys.map(carryStyle));assert.deepEqual([...kinds].sort(),['blade','bow','heavy','staff']);
- for(const key of keys)for(const [mode,speed] of [['walk',WALK_REF],['jog',RUN_REF],['run',RUN_REF*1.2]]){
-  const w=walker({weapon:key,shield:weaponCatalog[key].twoHanded?null:'kite'}),dt=1/60;for(let i=0;i<90;i++)w.step(dt,{speed,locomotion:mode});
-  const cycle=2*w.step(dt,{speed,locomotion:mode}).step/speed;let near=Infinity;
-  for(let t=0;t<cycle;t+=dt){w.step(dt,{speed,locomotion:mode});const head=headCentre(w.rig);for(const p of itemPoints(w.held.weapon))near=Math.min(near,p.distanceTo(head))}
-  assert.ok(near>HEAD_CLEARANCE,`${key} ${mode}: blade/tip ${near.toFixed(3)} from the head`);
+test('weapons are carried clear of the head and neck standing, walking and running, for every weapon kind',()=>{
+ const keys=['longsword','dagger','scimitar','shortsword','goldenSword','axe','pickaxe','hammer','bronzeSword','twohand','claymore','steelTwohand','battleaxe','unbrokenCleaver','waraxe','spear','warhammer','scythe','apprenticeStaff','emberStaff','woodenBow','longbow','bloodthornBow'];
+ const kinds=new Set(keys.map(carryStyle));assert.deepEqual([...kinds].sort(),['battleaxe','blade','bow','greatsword','heavy','staff']);
+ for(const key of keys)for(const [mode,speed] of [['idle',0],['walk',WALK_REF],['jog',RUN_REF],['run',RUN_REF*1.2]]){
+  const w=walker({weapon:key,shield:weaponCatalog[key].twoHanded?null:'kite'}),dt=1/60,opts={speed,locomotion:mode==='idle'?'walk':mode};for(let i=0;i<90;i++)w.step(dt,opts);
+  const cycle=speed?2*w.step(dt,opts).step/speed:.5;let near=Infinity,neck=Infinity;
+  for(let t=0;t<cycle;t+=dt){w.step(dt,opts);const head=headCentre(w.rig);for(const p of itemPoints(w.held.weapon)){near=Math.min(near,p.distanceTo(head));neck=Math.min(neck,neckGap(w.rig,p))}}
+  assert.ok(near>HEAD_CLEARANCE,`${key} ${mode}: blade/tip ${near.toFixed(3)} from the head`);assert.ok(neck>NECK_CLEARANCE,`${key} ${mode}: ${neck.toFixed(3)} from the neck`);
  }
+});
+
+// Direction of a held item's long axis (+Y) in the world.
+const axisOf=item=>v().set(0,1,0).transformDirection(item.matrixWorld);
+test('two-handed swords rest on the right shoulder; battleaxes are held out in front, tilted up about 30 degrees',()=>{
+ for(const key of ['twohand','claymore'])for(const [mode,speed] of [['idle',0],['walk',WALK_REF],['jog',RUN_REF]]){
+  const w=walker({weapon:key}),opts={speed,locomotion:mode==='idle'?'walk':mode};for(let i=0;i<90;i++)w.step(1/60,opts);
+  const blade=axisOf(w.held.weapon),grip=w.held.weapon.getWorldPosition(v()),shoulder=w.rig.bones.upperarm_r.getWorldPosition(v()).sub(w.root.position);grip.sub(w.root.position);
+  assert.ok(blade.y>.3&&blade.z<-.6,`${key} ${mode}: blade points up and back over the shoulder`);assert.ok(blade.x<0,`${key} ${mode}: angled outward, away from the head`);
+  assert.ok(grip.x<0&&grip.z>shoulder.z+.15&&grip.y<shoulder.y,`${key} ${mode}: hilt in the right fist in front of the chest`);
+  // The blade passes over the top of the right shoulder.
+  const t=(shoulder.z-grip.z)/blade.z,over=grip.clone().addScaledVector(blade,t);assert.ok(over.y>shoulder.y&&over.y<shoulder.y+.25&&Math.abs(over.x-shoulder.x)<.12,`${key} ${mode}: rests on the shoulder`);
+  if(mode==='jog'){const l=w.rig.bones.hand_l.getWorldPosition(v()).sub(w.root.position),r=w.rig.bones.hand_r.getWorldPosition(v()).sub(w.root.position);assert.ok(l.distanceTo(r)<.3,'both hands on the hilt when running')}
+ }
+ for(const [mode,speed] of [['walk',WALK_REF],['jog',RUN_REF]]){const w=walker({weapon:'battleaxe'}),opts={speed,locomotion:mode};const angles=[];
+  for(let i=0;i<150;i++){w.step(1/60,opts);if(i>=90){const a=axisOf(w.held.weapon);angles.push(Math.atan2(a.y,Math.hypot(a.x,a.z))*180/Math.PI);assert.ok(a.z>.6,'points forward')}}
+  const mean=angles.reduce((x,y)=>x+y)/angles.length;assert.ok(mean>20&&mean<40,`battleaxe ${mode}: tilted ${mean.toFixed(1)} degrees`);
+  const grip=w.held.weapon.getWorldPosition(v()).sub(w.root.position),hip=w.rig.bones.pelvis.getWorldPosition(v()).sub(w.root.position);assert.ok(grip.z>hip.z+.3,`battleaxe ${mode}: out in front`)}
 });
 
 const SHIELDS=(()=>{const first=new Map();for(const [k,s] of Object.entries(shieldCatalog))if(!first.has(s.model||k))first.set(s.model||k,k);return [...first.values(),'scalewardShield','wardensAegis']})();

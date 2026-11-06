@@ -100,14 +100,26 @@ and keeps the gait style, so a run winds down as a run. While the gait fades in,
 the clip underneath keeps playing what it was (one blend from kneel to walk,
 not two at once).
 
-**Held items** (`CARRY` in `equipment-pose.js`): `blade` low at the side, tip
-down and back; `heavy` (two-handers, battleaxes, war axes, spears, scythes,
-warhammers) low and trailing; `staff` upright at the side; `bow` low in the bow
-hand; `shield` on the level forearm, knuckles up, board upright and outward. The
-item's arm keeps only part of the stride swing. Attacks take the attacking arm
-back to the attack clip. Over whole walk and run cycles the closest any weapon
-comes to the head is now about 0.5 u (staff) to 1 u (blades); before, a
-longsword or warhammer passed within a few centimetres of the face at a run.
+**Held items** (`CARRY` in `equipment-pose.js`):
+- `blade` (one-handed swords, scimitars, daggers, axes, maces, tools): low at
+  the side, tip down and back; running adds a small lift and a little more
+  stride swing, never near the head.
+- `greatsword` (two-handed swords): hilt in the right fist in front of the
+  chest, blade resting on top of the right shoulder and angled up, back and
+  outward of the head, standing and walking. Running: our reading of the
+  classic two-hander run is a braced carry, the left hand joins the hilt and
+  both arms hold still while the legs run (frame data for the original is not
+  public, so this is an interpretation). The wrist is cocked so the blade can
+  lie on the shoulder; the elbow hangs down and the crossguard points forward,
+  not in at the neck.
+- `battleaxe`: held out in front in the right hand, haft tilted up about 30
+  degrees, swinging a little with the stride.
+- `heavy` (war axes, spears, scythes, warhammers): low and trailing.
+- `staff` upright at the side; `bow` low in the bow hand; `shield` on the level
+  forearm, knuckles up, board upright and outward.
+Attacks take the attacking arm back to the attack clip. Every weapon stays at
+least 0.35 u from the head centre and 0.12 u from the neck through idle, walk
+and run (tests/locomotion.test.js).
 
 **Shields** are parented to the left-hand socket (hand bone). The board's top
 runs along the knuckle line and its centre sits about half way up the forearm,
