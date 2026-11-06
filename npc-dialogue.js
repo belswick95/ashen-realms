@@ -59,13 +59,17 @@ export function createNpcDialogue({dialog,nameEl,textEl,nextEl,choicesEl,portrai
 // Parchment summary shown before Accept/Decline: objectives then rewards.
 export function questCard(q,carried){
  const nodes=[el('strong','dialog-quest-title',q.data.name)];
+ if(q.data.stages?.length)nodes.push(el('small',null,'A quest in '+q.data.stages.length+' parts'));
  const objectives=q.data.objectives||[];if(objectives.length){const ul=el('ul','dialog-quest-objectives');for(const o of objectives)ul.append(el('li',null,(o.label||o.type+' '+(o.target||''))+(o.amount>1?' × '+o.amount:'')));nodes.push(el('small',null,'Objectives'),ul)}
  const rewards=rewardEntries(q.data);if(rewards.length){const ul=el('ul','dialog-quest-rewards');for(const r of rewards)ul.append(el('li',null,r.label));nodes.push(el('small',null,'Rewards'),ul)}
  void carried;return nodes;
 }
 
 // The whole conversation with one NPC. ctx(): {trainee,carried,skillLevel}; quests(): snapshot rows.
-export async function converse(dialogue,{profile,npcId,root,quests,ctx,command,lastError=()=>'',services=()=>{},say=()=>{},onQuestAccepted=()=>{}}){
+// ctx().npcLines(npcId) (optional): lines unlocked by a finished quest replace the NPC's own.
+// onStage(q) runs after a stage report or choice; onQuestCompleted(q) after a hand-in.
+export async function converse(dialogue,{profile,npcId,root,quests,ctx,command,lastError=()=>'',services=()=>{},say=()=>{},onQuestAccepted=()=>{},onStage=()=>{},onQuestCompleted=()=>{}}){
+ const unlocked=ctx().npcLines?.(npcId);if(unlocked?.length)profile={...profile,lines:unlocked.map(l=>typeof l==='string'?l:l.text)};
  const name=npcDisplayName(profile),id=dialogue.open(profile,root,name);
  const gone=v=>v===CLOSED||!dialogue.owns(id);
  let prompt={who:'npc',name,text:npcGreeting(profile)};
@@ -92,7 +96,19 @@ export async function converse(dialogue,{profile,npcId,root,quests,ctx,command,l
    if(plan.then==='complete'){
     const ok=await command('quest_complete',{id:q.id});if(!dialogue.owns(id))return;
     if(!ok){prompt={who:'npc',name,text:lastError()||'You are not quite finished yet.'};continue}
-    dialogue.close();return;
+    dialogue.close();onQuestCompleted(q);return;
+   }
+   if(plan.then==='advance'){
+    const ok=await command('quest_advance',{id:q.id});if(!dialogue.owns(id))return;
+    if(!ok){prompt={who:'npc',name,text:lastError()||'Not yet.'};continue}
+    onStage(q);prompt={who:'npc',name,text:'Off you go, then.'};continue;
+   }
+   if(plan.then==='choose'){
+    const pick2=await dialogue.choose({who:'choice',name,text:'Select an option'},plan.choices.map(c=>({label:c.label,value:c,action:'choice'})));if(gone(pick2))return;
+    const ok=await command('quest_choice',{id:q.id,choice:pick2.value});if(!dialogue.owns(id))return;
+    if(!ok){prompt={who:'npc',name,text:lastError()||'Think it over.'};continue}
+    for(const line of pick2.dialogue||[])if(gone(await dialogue.page({name,...(typeof line==='string'?{who:'npc',text:line}:line)})))return;
+    onStage(q);prompt={who:'npc',name,text:'Anything else?'};continue;
    }
    prompt={who:'npc',name,text:'Anything else?'};continue;
   }

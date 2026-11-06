@@ -8,6 +8,8 @@
 //   {walk:[[x,z],...],timeout}                walk the player with real move commands; waits until arrival
 //   {say:{who,name,text},shot}                RuneScape-style dialogue line; click or wait to continue
 //   {wait:ms}
+//   {npc:{id,to:[x,z],face:[x,z],ms}}             move/turn an NPC for the scene (quest cutscenes)
+//   shot:{around:actorId,distance,height,angle}   a camera shot framed on an NPC
 export const cutscenes={
  arrival:{
   name:'An audience with the King',
@@ -32,9 +34,10 @@ export function validCutscene(scene){
  if(!scene||!Array.isArray(scene.steps)||!scene.steps.length)return false;
  const point=(p,n)=>Array.isArray(p)&&p.length===n&&p.every(Number.isFinite);
  return scene.steps.every(s=>{
-  if(s.shot&&!(s.shot.follow||point(s.shot.eye,3)&&point(s.shot.look,3)))return false;
+  if(s.shot&&!(s.shot.follow||typeof s.shot.around==='string'||point(s.shot.eye,3)&&point(s.shot.look,3)))return false;
+  if(s.npc&&!(typeof s.npc.id==='string'&&(!s.npc.to||point(s.npc.to,2))&&(!s.npc.face||point(s.npc.face,2))))return false;
   if(s.walk&&!(Array.isArray(s.walk)&&s.walk.every(p=>point(p,2))))return false;
   if(s.say&&!(typeof s.say.text==='string'&&s.say.text.length))return false;
-  return 'fade' in s||'title' in s||'shot' in s||'walk' in s||'say' in s||'wait' in s;
+  return 'fade' in s||'title' in s||'shot' in s||'walk' in s||'say' in s||'wait' in s||'npc' in s;
  });
 }

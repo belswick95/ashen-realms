@@ -5,8 +5,9 @@ import {goods} from './economy.js?v=release-20261106-classic95';
 import {SKILLS,skillLabel,xpKey,statsXpKey,levelForXp,CATALOG_GROUPS,catalogForm,buildCatalogData,validateCatalogDraft,catalogKind,catalogMatches,duplicateId,
  normalizeMultipliers,effectiveXp,validateTimeOverride,MULTIPLIER_LIMITS,OBJECTIVE_TYPES,QUEST_EVENTS,DIALOGUE_STAGES,validateQuestDraft,questPreview,objectiveText,
  auditLine,backupStats,MODERATION_PRESETS} from './admin-full-data.js?v=release-20261106-classic95';
+import {questV2Sections,questSimulator,questPlayerTools,V2_KEYS,cleanV2,validateV2Draft} from './admin-quest-v2.js?v=release-20261106-classic95';
 
-const QUEST_KEYS=['name','description','giver','key','chain','order','requires','questPoints','icon','finishes','published','hint','objectives','gold','items','startItems','xp','dialogue'];
+const QUEST_KEYS=['name','description','giver','key','chain','order','requires','questPoints','icon','finishes','published','hint','objectives','gold','items','startItems','xp','dialogue',...V2_KEYS];
 const download=(name,data)=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 const itemName=id=>goods[id]?.name||id;
 const originalItems=()=>Object.entries(goods).filter(([,g])=>!g.noteOf);
@@ -103,13 +104,14 @@ export function createFullControlTabs(ctx){
   search(left,'Search quests…',qs.query,v=>{qs.query=v;draw()});
   const list=el('div',null,{class:'console-list'});left.append(list);
   const a=actions(left);btn('New quest',()=>{qs.selected=null;qs.draft=blank();editor();focus()},a);
+  const tools=el('div');left.append(tools);let toolsDrawn=false;const drawTools=()=>{if(toolsDrawn||!qs.rows)return;toolsDrawn=true;questPlayerTools(tools,{el,btn,field,invoke,note,quests:()=>qs.rows||[]})};
   const blank=()=>({name:'',description:'',giver:qs.actors.find(x=>x.kind==='npc')?.id||'',published:false,questPoints:1,objectives:[{type:'talk',target:'',amount:1}],gold:0,items:{},xp:{},startItems:{},dialogue:{offer:[],progress:[],complete:[]}});
   const names=()=>Object.fromEntries([...qs.actors.map(x=>[x.id,x.name]),...Object.entries(goods).map(([k,g])=>[k,g.name])]);
   const draw=()=>{list.replaceChildren();if(!qs.rows){list.append(el('p','Loading quests…',{class:'console-muted'}));return}
    const found=qs.rows.filter(q=>(q.data.name+' '+(q.data.key||'')+' '+(q.data.chain||'')).toLowerCase().includes(qs.query.toLowerCase())).sort((a,b)=>(a.data.chain||'~').localeCompare(b.data.chain||'~')||(a.data.order||0)-(b.data.order||0));
    for(const q of found){const b=el('button',null,{type:'button',class:'console-row'+(qs.selected===q.id?' selected':'')});b.append(el('span',null,{class:'console-dot '+(q.data.published?'on':'off'),title:q.data.published?'Published':'Draft'}),el('span',null,{class:'console-row-text'}));b.lastChild.append(el('strong',q.data.name),el('small',(q.data.chain?q.data.chain+' #'+(q.data.order??0)+' · ':'')+(q.data.objectives?.length||0)+' objectives · v'+q.version+(q.data.published?'':' · draft')));b.onclick=()=>{qs.selected=q.id;qs.draft=structuredClone(q.data);draw();editor();focus()};list.append(b)}
    if(!found.length)list.append(el('p','No quests yet.',{class:'console-muted'}))};
-  async function load(){try{const [rows,world]=await Promise.all([read('quest_list'),ctx.rpc('world_admin_overview')]);qs.rows=rows;qs.actors=(world.actors||[]).filter(x=>!x.deleted).map(x=>({id:x.id,name:x.data?.name||x.id,kind:x.data?.kind,attackable:x.data?.attackable??x.data?.kind==='monster'}))}catch(e){note(e.message,true);qs.rows=qs.rows||[]}if(active('Quests')){draw();editor()}}
+  async function load(){try{const [rows,world]=await Promise.all([read('quest_list'),ctx.rpc('world_admin_overview')]);qs.rows=rows;qs.actors=(world.actors||[]).filter(x=>!x.deleted).map(x=>({id:x.id,name:x.data?.name||x.id,kind:x.data?.kind,attackable:x.data?.attackable??x.data?.kind==='monster'}))}catch(e){note(e.message,true);qs.rows=qs.rows||[]}if(active('Quests')){draw();editor();drawTools()}}
   function picker(parent,label,value,choices,onchange){const s=field(parent,label,'qp'+Math.random().toString(36).slice(2),value??'','text',choices);s.onchange=()=>onchange(s.value);return s}
   function editor(){right.replaceChildren();const d=qs.draft;if(!d){right.append(el('h3','Select a quest'),el('p','Build data-driven quests: talk, kill, collect, events, XP, carry, equip, bank and visit objectives, with rewards, quest points, chains and dialogue.',{class:'console-muted'}));return}
    const npcs=qs.actors.filter(x=>x.kind==='npc'),enemies=qs.actors.filter(x=>x.attackable),items=originalItems(),keys=new Set(qs.rows.filter(q=>q.id!==qs.selected).map(q=>q.data.key).filter(Boolean));
@@ -122,9 +124,10 @@ export function createFullControlTabs(ctx){
    picker(bf,'Completing it',d.finishes||'',[['','Just completes'],['tutorial','Finishes castle training']],v=>{if(v)d.finishes=v;else delete d.finishes});t('Published (players can accept)','published','checkbox');
    const desc=field(basics,'Description / journal text','q_description',d.description,'textarea');desc.oninput=()=>d.description=desc.value;
    // objectives
-   const obj=section('Objectives',right,'console-subcard'),olist=el('div');obj.append(olist);
-   const paintObjectives=()=>{olist.replaceChildren();d.objectives.forEach((o,i)=>{const row=el('div',null,{class:'console-objective'}),g=el('div',null,{class:'console-form-grid'});row.append(el('strong',(i+1)+'. '+objectiveText(o,names())),g);
-    picker(g,'Type',o.type,Object.entries(OBJECTIVE_TYPES).map(([k,v])=>[k,v.label]),v=>{d.objectives[i]={type:v,amount:1};paintObjectives()});
+   // One objective list editor, used for a classic quest and for every stage of a v2 quest.
+   const objectivesUI=(host,list)=>{const olist=el('div');host.append(olist);
+   const paintObjectives=()=>{olist.replaceChildren();list.forEach((o,i)=>{const row=el('div',null,{class:'console-objective'}),g=el('div',null,{class:'console-form-grid'});row.append(el('strong',(i+1)+'. '+objectiveText(o,names())),g);
+    picker(g,'Type',o.type,Object.entries(OBJECTIVE_TYPES).map(([k,v])=>[k,v.label]),v=>{list[i]={type:v,amount:1};paintObjectives()});
     const num=(label,key,step=1)=>{const n=field(g,label,'o'+i+key,o[key]??'','number');n.step=step;n.oninput=()=>{o[key]=n.value===''?undefined:Number(n.value)};return n};
     num('Amount','amount');
     if(o.type==='talk')picker(g,'NPC',o.target,[['','Choose'],...npcs.map(x=>[x.id,x.name])],v=>o.target=v);
@@ -136,12 +139,15 @@ export function createFullControlTabs(ctx){
     if(o.type==='event'){picker(g,'Event',o.event,[['','Choose'],...QUEST_EVENTS.map(s=>[s,s])],v=>o.event=v);const m=field(g,'Match (JSON, optional)','o'+i+'match',o.match?JSON.stringify(o.match):'');m.oninput=()=>{try{if(m.value.trim())o.match=JSON.parse(m.value);else delete o.match;m.setCustomValidity('')}catch{m.setCustomValidity('Invalid JSON')}};const tg=field(g,'Target IDs (comma separated, optional)','o'+i+'targets',(o.targets||[]).join(','));tg.oninput=()=>{const v=tg.value.split(',').map(s=>s.trim()).filter(Boolean);if(v.length)o.targets=v;else delete o.targets}}
     if(o.type==='visit'){num('X','x',.1);num('Z','z',.1);num('Radius (m)','radius',.1);num('Floor (0–2)','floor');btn('Use my position',()=>{const p=ctx.bridge.position();o.x=Math.round(p.x*10)/10;o.z=Math.round(p.z*10)/10;o.radius??=3;paintObjectives()},g)}
     const label=field(g,'Journal label (optional)','o'+i+'label',o.label||'');label.oninput=()=>{if(label.value)o.label=label.value;else delete o.label};
-    const tools=actions(row);if(i)btn('↑ Move up',()=>{[d.objectives[i-1],d.objectives[i]]=[d.objectives[i],d.objectives[i-1]];paintObjectives()},tools);btn('Remove',()=>{d.objectives.splice(i,1);paintObjectives()},tools);olist.append(row)})};
-   paintObjectives();btn('Add objective',()=>{if(d.objectives.length>=12)throw Error('Up to 12 objectives');d.objectives.push({type:'collect',target:'',amount:1});paintObjectives()},obj);
+    const tools=actions(row);if(i)btn('↑ Move up',()=>{[list[i-1],list[i]]=[list[i],list[i-1]];paintObjectives()},tools);btn('Remove',()=>{list.splice(i,1);paintObjectives()},tools);olist.append(row)})};
+   paintObjectives();btn('Add objective',()=>{if(list.length>=12)throw Error('Up to 12 objectives');list.push({type:'collect',target:'',amount:1});paintObjectives()},host)};
+   const obj=section('Objectives',right,'console-subcard');
+   if(Array.isArray(d.stages)&&d.stages.length)obj.append(el('p','This quest uses stages: each stage below has its own objectives.',{class:'console-muted'}));else objectivesUI(obj,d.objectives??=[]);
    // rewards
    const rw=section('Rewards',right,'console-subcard'),gold=field(rw,'Gold coins','q_gold',d.gold||0,'number');gold.oninput=()=>d.gold=Number(gold.value)||0;
    const mapEditor=(title,key,choices,lo,hi)=>{const box=el('div',null,{class:'console-map-editor'});box.append(el('h4',title));rw.append(box);d[key]??={};const paint=()=>{box.querySelectorAll('.console-map-row').forEach(n=>n.remove());for(const [k,v] of Object.entries(d[key])){const row=el('div',null,{class:'console-map-row'}),s=el('select',null,{'aria-label':title});for(const [id,label] of choices)s.append(el('option',label,{value:id}));s.value=k;const n=el('input',null,{type:'number',min:String(lo),max:String(hi),'aria-label':'Amount'});n.value=v;s.onchange=()=>{const val=d[key][k];delete d[key][k];d[key][s.value]=val;paint()};n.oninput=()=>d[key][s.value]=Number(n.value);row.append(s,n);btn('✕',()=>{delete d[key][k];paint()},row);box.insertBefore(row,box.lastChild)}};box.append(el('span'));paint();btn('Add',()=>{const free=choices.find(([id])=>!(id in d[key]));if(free){d[key][free[0]]=lo;paint()}},box)};
    mapEditor('XP rewards','xp',SKILLS.map(s=>[s,skillLabel(s)]),1,1000000);mapEditor('Item rewards','items',items.map(([k,g])=>[k,g.name]),1,1000);mapEditor('Start items (given on accept)','startItems',items.map(([k,g])=>[k,g.name]),1,1000);
+   questV2Sections(right,d,{el,btn,field,section,actions,picker,npcs,items,keys,objectivesUI,names,position:()=>ctx.bridge.position(),redraw:editor});
    // dialogue
    const dl=section('Dialogue',right,'console-subcard');d.dialogue??={};
    for(const stage of DIALOGUE_STAGES){const box=el('div',null,{class:'console-map-editor'});box.append(el('h4',{offer:'Offer (before accepting)',progress:'Progress (while active)',complete:'Complete (hand-in)'}[stage]));dl.append(box);d.dialogue[stage]??=[];
@@ -149,11 +155,16 @@ export function createFullControlTabs(ctx){
    // advanced
    const adv=el('details',null,{class:'console-subcard'});adv.append(el('summary','Advanced JSON (other quest fields)'));const extra=Object.fromEntries(Object.entries(d).filter(([k])=>!QUEST_KEYS.includes(k)));const json=el('textarea',null,{class:'console-json',rows:'4','aria-label':'Advanced quest JSON'});json.value=JSON.stringify(extra,null,1);adv.append(json);right.append(adv);
    const showErrors=errorsBox(right),preview=el('pre',null,{class:'console-preview-text'});preview.hidden=true;right.append(preview);
-   const collect=()=>{let extraJson;try{extraJson=JSON.parse(json.value||'{}')}catch(e){throw Error('Advanced JSON: '+e.message)}const out={...extraJson};for(const k of QUEST_KEYS)if(d[k]!==undefined&&d[k]!=='')out[k]=d[k];for(const k of ['items','startItems','xp'])if(out[k]&&!Object.keys(out[k]).length)delete out[k];if(out.dialogue&&DIALOGUE_STAGES.every(s=>!out.dialogue[s]?.length))delete out.dialogue;out.objectives=d.objectives.map(o=>Object.fromEntries(Object.entries(o).filter(([,v])=>v!==undefined&&v!=='')));return out};
-   const check=()=>{const q=collect();return showErrors(validateQuestDraft(q,{npcs:new Set(npcs.map(x=>x.id)),actors:new Set(qs.actors.map(x=>x.id)),items:new Set(items.map(([k])=>k)),keys}))?q:null};
+   const collect=()=>{let extraJson;try{extraJson=JSON.parse(json.value||'{}')}catch(e){throw Error('Advanced JSON: '+e.message)}const out={...extraJson};for(const k of QUEST_KEYS)if(d[k]!==undefined&&d[k]!=='')out[k]=d[k];for(const k of ['items','startItems','xp'])if(out[k]&&!Object.keys(out[k]).length)delete out[k];if(out.dialogue&&DIALOGUE_STAGES.every(s=>!out.dialogue[s]?.length))delete out.dialogue;const tidy=list=>(list||[]).map(o=>Object.fromEntries(Object.entries(o).filter(([,v])=>v!==undefined&&v!=='')));out.objectives=tidy(d.objectives);if(Array.isArray(out.stages))out.stages=out.stages.map(st=>({...st,objectives:tidy(st.objectives)}));return cleanV2(out)};
+   const check=()=>{const q=collect(),vctx={npcs:new Set(npcs.map(x=>x.id)),actors:new Set(qs.actors.map(x=>x.id)),items:new Set(items.map(([k])=>k)),keys},staged=Array.isArray(q.stages)&&q.stages.length;
+    const base=validateQuestDraft(staged?{...q,objectives:q.stages.find(s=>s.objectives?.length)?.objectives||[]}:q,vctx);
+    const v2=validateV2Draft(q,{...vctx,objectiveErrors:list=>validateQuestDraft({...q,objectives:list},vctx).filter(m=>/^Objective|^Combine/.test(m))});
+    return showErrors([...new Set([...base,...v2])])?q:null};
    const a=actions(right);a.classList.add('console-primary-actions');
    btn('Save quest',async()=>{const q=check();if(!q)return;const r=await invoke('fc_quest_save',{...(qs.selected?{id:qs.selected}:{}),data:q});const i=qs.rows.findIndex(x=>x.id===r.id);if(i<0)qs.rows.unshift(r);else qs.rows[i]=r;qs.selected=r.id;qs.draft=structuredClone(r.data);note('Quest saved (version '+r.version+'). Players who already accepted keep their objectives.');draw();editor()},a);
    btn('Validate & preview',()=>{const q=check();preview.hidden=!q;if(q)preview.textContent=questPreview(q,names())},a);
+   const simBox=el('div',null,{class:'console-subcard console-simulator'});simBox.hidden=true;right.append(simBox);
+   btn('▶ Simulate',()=>{const q=check();if(!q)return;simBox.hidden=false;questSimulator(simBox,q,{el,btn,names});simBox.scrollIntoView?.({block:'nearest'})},a);
    btn('Duplicate',()=>{const q=collect();qs.selected=null;qs.draft={...structuredClone(q),name:q.name+' (copy)',published:false,...(q.key?{key:q.key+'-copy'}:{})};editor()},a);
    if(qs.selected){const u=btn(d.published?'Unpublish':'Publish',async()=>{if(d.published){const r=await invoke('quest_archive',{id:qs.selected});qs.rows[qs.rows.findIndex(x=>x.id===r.id)]=r;qs.draft=structuredClone(r.data)}else{d.published=true;const q=check();if(!q){d.published=false;return}const r=await invoke('fc_quest_save',{id:qs.selected,data:q});qs.rows[qs.rows.findIndex(x=>x.id===r.id)]=r;qs.draft=structuredClone(r.data)}draw();editor()},a);if(d.published)u.classList.add('danger')}
   }

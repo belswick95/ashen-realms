@@ -50,3 +50,14 @@
 @media(max-height:500px){.quest-scroll-paper{padding-top:12px;padding-bottom:10px}.quest-scroll-dialog h2{margin-bottom:6px}.quest-scroll-icon{width:72px}.quest-scroll-close{margin-top:8px;min-height:38px}}
 @media(prefers-reduced-motion:reduce){.quest-scroll-paper,.quest-scroll-paper>*,.quest-scroll-icon{animation:none}.quest-scroll-sparks{display:none}}
 .quest-scroll.reduced .quest-scroll-paper,.quest-scroll.reduced .quest-scroll-paper>*,.quest-scroll.reduced .quest-scroll-icon{animation:none}
+/* Quest system v2: requirement checklist, OSRS-style stage journal, lamps and quest teleports */
+.quest-requirements{list-style:none;margin:4px 0 10px;padding:0;font-size:13px}.quest-requirements li{display:flex;gap:7px;padding:2px 0}.quest-requirements li.met{color:#7fd987}.quest-requirements li.unmet{color:#ff8a78}
+.quest-stages{font:14px/1.5 Georgia,serif;margin:4px 0 8px}.quest-stages p{margin:0 0 8px}.quest-stages p.done{color:#9e9886}.quest-stages p.done s{text-decoration-thickness:1px;text-decoration-color:#bcb39a}.quest-stages p.current{color:#fff3c4}.quest-stages p.complete{color:#e9e0cb}
+.quest-complete-line{color:#45dc55!important;font-weight:700;letter-spacing:.06em}.quest-intro{font-style:italic;color:#d8cfb6}
+.quest-claims{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}.quest-extras h4{margin:6px 0 2px}
+.quest-lamp-dialog{width:min(460px,92vw);background:linear-gradient(#f1e2bb,#dcc28c);color:#2e2210;border:2px solid #6b4b22;border-radius:12px;padding:16px;box-shadow:0 18px 60px #000a}.quest-lamp-dialog::backdrop{background:#0008}
+.quest-lamp-dialog h3{margin:0 0 4px;font:700 19px Georgia,serif}.quest-lamp-dialog p{margin:0 0 10px;font-size:13px}
+.quest-lamp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px;max-height:52dvh;overflow:auto}
+.quest-lamp-skill{display:grid;grid-template-columns:22px 1fr;align-items:center;column-gap:6px;text-align:left;padding:6px 8px;border:1px solid #8c6a37;border-radius:7px;background:#fff6dd;color:#2e2210;cursor:pointer;min-height:44px}
+.quest-lamp-skill small{grid-column:2;font-size:11px;color:#6b5330}.quest-lamp-skill:disabled{opacity:.45;cursor:not-allowed}.quest-lamp-skill:not(:disabled):hover{background:#ffe9a8}
+.quest-lamp-close,.quest-scroll-lamp{margin-top:10px;padding:8px 14px;border-radius:7px;border:1px solid #6b4b22;background:#b88a4a;color:#2e2210;cursor:pointer}
