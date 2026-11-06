@@ -108,8 +108,11 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
  function signature(src,variant,avg,emissiveAvg){
   const color=variant==='flat'?quantizedLinear(src.color,avg).getHex():src.color.getHex(),emissive=src.emissive?new T.Color().copy(src.emissive).multiply(new T.Color(...emissiveAvg)).getHex():0;
   return [variant,color,variant==='cutout'?src.map.uuid:'',variant==='bake'||!!src.vertexColors,src.transparent,+src.opacity.toFixed(3),src.side,src.alphaTest,src.depthWrite,src.depthTest,src.fog,src.visible,src.polygonOffset,src.polygonOffsetFactor,src.polygonOffsetUnits,src.toneMapped,emissive,+(src.emissiveIntensity??1).toFixed(3)].join('|')}
+ // Leaf cards and hair keep their texture for the cut-out shape; without the
+ // environment light of the normal renderer they need a lift to stay readable.
+ const CUTOUT_LIFT=1.5;
  function pooled(sig,src,variant,avg,emissiveAvg){let m=pool.get(sig);if(m)return m;
-  m=new T.MeshLambertMaterial({name:'classic',color:variant==='flat'?quantizedLinear(src.color,avg):src.color.clone(),flatShading:true,vertexColors:variant==='bake'||!!src.vertexColors,transparent:src.transparent,opacity:src.opacity,side:src.side,alphaTest:src.alphaTest,depthWrite:src.depthWrite,depthTest:src.depthTest,fog:src.fog,visible:src.visible,polygonOffset:src.polygonOffset,polygonOffsetFactor:src.polygonOffsetFactor,polygonOffsetUnits:src.polygonOffsetUnits,toneMapped:src.toneMapped});
+  m=new T.MeshLambertMaterial({name:'classic',color:variant==='flat'?quantizedLinear(src.color,avg):variant==='cutout'?src.color.clone().multiplyScalar(CUTOUT_LIFT):src.color.clone(),flatShading:true,vertexColors:variant==='bake'||!!src.vertexColors,transparent:src.transparent,opacity:src.opacity,side:src.side,alphaTest:src.alphaTest,depthWrite:src.depthWrite,depthTest:src.depthTest,fog:src.fog,visible:src.visible,polygonOffset:src.polygonOffset,polygonOffsetFactor:src.polygonOffsetFactor,polygonOffsetUnits:src.polygonOffsetUnits,toneMapped:src.toneMapped});
   if(variant==='cutout'){const t=src.map.clone();t.magFilter=T.NearestFilter;t.needsUpdate=true;m.map=t}
   if(src.emissive){m.emissive.copy(src.emissive).multiply(new T.Color(...emissiveAvg));m.emissiveIntensity=src.emissiveIntensity}
   m.userData.eldervaleShared=true;pool.set(sig,m);return m}
