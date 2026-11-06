@@ -57,6 +57,18 @@ Current state (06 Nov 2026): 25 fishing spots + 1 training pond, no caves/dungeo
 10. **Exploration**: hidden areas, shortcuts (agility-gated), lore objects, treasure-hunt clues,
     new regions to reach.
 
+## Quest markers & guidance (Wave 2, with quest system v2)
+- Floating **yellow "!"** over NPCs with a quest you can start (requirements met); grey "!" if you
+  can see it but don't meet requirements yet (optional). Floating **yellow "?"** when a quest is ready
+  to hand in. Gentle bob, always faces camera, visible through fog at distance, culled by LOD.
+- **Quest guidance (replaces the down arrow)**: both, tuned to be subtle —
+  - a slightly transparent, softly glowing **breadcrumb trail on the ground** (dots/footprints along
+    the real walkable path from the tile pathfinder) toward the active objective, showing only the
+    next ~25 m and fading in/out; updates as you move; stops at doors/caves/stairs with a hint;
+  - **minimap**: objective icon + faint path line, edge-of-map arrow when off-screen;
+  - player can switch the trail on/off in Settings; owner can configure in the Game console.
+- Quest tracker panel (active quest, current step) pinned under the minimap, collapsible.
+
 ## Cross-cutting requirements (every wave)
 - **Deep OSRS research**: study publicly documented OSRS systems end to end (mechanics, pacing,
   progression, skill/combat/quest design patterns, economy, boss design, area design) and write
