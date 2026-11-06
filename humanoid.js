@@ -1,7 +1,7 @@
-import {installLocalSkinning} from './local-skinning.js?v=release-20261106-fix99';
-import {characterStore as store,CHARACTER_SCALE,ensurePart,outfitMaterial,skinMaterial,hairMaterial,eyeMaterial} from './character-assets.js?v=release-20261106-fix99';
-import {outfitItems,wornOutfit,OUTFIT_SLOTS} from './outfits.js?v=release-20261106-fix99';
-import {BEARDS,SKINS,HAIRS} from './appearance.js?v=release-20261106-fix99';
+import {installLocalSkinning} from './local-skinning.js?v=release-20261106-caves100';
+import {characterStore as store,CHARACTER_SCALE,ensurePart,outfitMaterial,skinMaterial,hairMaterial,eyeMaterial} from './character-assets.js?v=release-20261106-caves100';
+import {outfitItems,wornOutfit,OUTFIT_SLOTS} from './outfits.js?v=release-20261106-caves100';
+import {BEARDS,SKINS,HAIRS} from './appearance.js?v=release-20261106-caves100';
 // Characters used to skip frustum culling (frustumCulled=false), so every
 // NPC and monster in the region was drawn twice a frame (camera + shadow map)
 // even behind the camera. Skinned vertices stay in the model's local frame

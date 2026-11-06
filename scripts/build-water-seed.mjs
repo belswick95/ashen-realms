@@ -6,7 +6,7 @@
 //  * the generated:catalog block of db/water-1-fishing.sql (fish-tiers.js: catalog, recipes, fish_table)
 // Usage: node scripts/build-water-seed.mjs   (tests/water-fishing.test.js checks the output is current)
 import fs from 'node:fs';
-const V='?v=release-20261106-fix99';
+const V='?v=release-20261106-caves100';
 globalThis.eldervaleWorldConfig={enabled:true,seed:241916600,version:2};
 const root=new URL('../',import.meta.url);
 const {createLandscape}=await import('../landscape.js'+V);
@@ -76,7 +76,7 @@ function waterSql(){
   'Idempotent. Water outlines use ids 9001+ (lakes/sea 9001–9009, rivers 9010+, bridges 9050+); the console can make',
   'one passable. Trees and rocks the new water covers are moved to floor -1 (no collision, the client never drew',
   'them there). Entities use fixed ids md5(key); rows the owner edited (data.ownerEdited) are kept.']),
-  'insert into eldervale_private.realm_water(id,outline,passable) select (w->>\'id\')::integer,(w->>\'outline\')::polygon,(w->>\'passable\')::boolean from jsonb_array_elements('+lit(outlines.map(({id,outline,passable})=>({id,outline,passable})))+') w',
+  'insert into eldervale_private.realm_water(id,outline,passable) overriding system value select (w->>\'id\')::integer,(w->>\'outline\')::polygon,(w->>\'passable\')::boolean from jsonb_array_elements('+lit(outlines.map(({id,outline,passable})=>({id,outline,passable})))+') w',
   ' on conflict(id) do update set outline=excluded.outline;',
   'update eldervale_private.realm_objects o set data=o.data||\'{"floor":-1,"submerged":true}\'::jsonb where o.kind in (\'tree\',\'rock\') and coalesce((o.data->>\'floor\')::integer,0)=0',
   ' and exists(select 1 from eldervale_private.realm_water w where w.id between 9001 and 9049 and not w.passable and point(o.x,o.z)<@w.outline)',

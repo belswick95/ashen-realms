@@ -1,6 +1,6 @@
 // Quest tracker pinned under the minimap: the active quest's name and current step, collapsible,
 // tap to open it in the journal. Round 2 hooks the ground breadcrumb trail onto onTarget().
-import {trackedQuest,trackerStep} from './quest-guide.js?v=release-20261106-fix99';
+import {trackedQuest,trackerStep} from './quest-guide.js?v=release-20261106-caves100';
 
 const KEY='eldervale-quest-tracker';
 const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{return {}}};
@@ -8,7 +8,7 @@ const write=v=>{try{localStorage.setItem(KEY,JSON.stringify(v))}catch{}};
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 
 export function createQuestTracker({openJournal=()=>{},anchor=()=>document.querySelector('#map-widget')}={}){
- if(!document.querySelector('link[href^="./quest-ui.css"]'))document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./quest-ui.css?v=release-20261106-fix99'}));
+ if(!document.querySelector('link[href^="./quest-ui.css"]'))document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./quest-ui.css?v=release-20261106-caves100'}));
  const saved=read();let collapsed=!!saved.collapsed,preferred=saved.quest||null,current=null,step=null,signature='',last=null;const listeners=new Set();
  const root=el('section','quest-tracker');root.id='quest-tracker';root.hidden=true;root.setAttribute('aria-label','Quest tracker');
  const head=el('button','quest-tracker-head');head.type='button';head.setAttribute('aria-expanded',String(!collapsed));
