@@ -1432,10 +1432,10 @@ for(const bridge of landscape.bridges){
 const easternClock=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
 const worldClock=document.createElement('output');worldClock.id='world-clock';worldClock.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:36;pointer-events:none;background:#12202bc9;color:#e7d1a5;border:1px solid #927b56;border-radius:5px;padding:5px 9px;font:11px Arial';document.body.append(worldClock);
 let nextSkyUpdate=0,skyHour=12,skyDaylight=1;const cameraWorldOccluders=new Set(),waterAnimationRoots=new Set();
-const naturalSky=createNaturalSky(T,scene);
+const naturalSky=createNaturalSky(T,scene);underground.setSky(naturalSky);
 const wildlife=createWildlife(T,scene,landscape,{seed:generatedWorld?.seed||2419,canPlace:(x,z)=>!window.eldervaleSurfaceCover?.(x,z)&&!window.eldervaleCastleCollision?.(x,z)});
-const meadow=createMeadow(T,scene,landscape,{seed:generatedWorld?.seed||2419,count:navigator.maxTouchPoints?9000:18000,canPlant:(x,z)=>!onBridge(landscape.bridges,x,z)&&!window.eldervaleSurfaceCover?.(x,z)&&(generatedWorld||landscape.heightAt(x,z)<35)&&distanceToRoad(x,z)>3&&landscape.canWalk(x,z)&&!window.eldervalePropCollision?.(x,z)&&!window.eldervaleCastleCollision?.(x,z)&&!houseInteriors.some(h=>{const p=h.group.worldToLocal(new T.Vector3(x,h.group.position.y,z));return Math.abs(p.x)<2.3&&Math.abs(p.z)<2.15})});
-const groundDressing=createGroundDressing(T,scene,landscape,{seed:generatedWorld?.seed||2419,canPlant:(x,z)=>!onBridge(landscape.bridges,x,z,1.2)&&!window.eldervaleSurfaceCover?.(x,z,1.2)&&distanceToRoad(x,z)>4.5&&landscape.canWalk(x,z)&&!window.eldervalePropCollision?.(x,z)&&!window.eldervaleCastleCollision?.(x,z)});
+const meadow=createMeadow(T,scene,landscape,{seed:generatedWorld?.seed||2419,count:navigator.maxTouchPoints?9000:18000,canPlant:(x,z)=>x<900&&z<900&&!onBridge(landscape.bridges,x,z)&&!window.eldervaleSurfaceCover?.(x,z)&&(generatedWorld||landscape.heightAt(x,z)<35)&&distanceToRoad(x,z)>3&&landscape.canWalk(x,z)&&!window.eldervalePropCollision?.(x,z)&&!window.eldervaleCastleCollision?.(x,z)&&!houseInteriors.some(h=>{const p=h.group.worldToLocal(new T.Vector3(x,h.group.position.y,z));return Math.abs(p.x)<2.3&&Math.abs(p.z)<2.15})});
+const groundDressing=createGroundDressing(T,scene,landscape,{seed:generatedWorld?.seed||2419,canPlant:(x,z)=>x<900&&z<900&&!onBridge(landscape.bridges,x,z,1.2)&&!window.eldervaleSurfaceCover?.(x,z,1.2)&&distanceToRoad(x,z)>4.5&&landscape.canWalk(x,z)&&!window.eldervalePropCollision?.(x,z)&&!window.eldervaleCastleCollision?.(x,z)});
 window.eldervaleSceneryStatus=()=>({grass:meadow.meshes.filter(m=>m.visible).reduce((n,m)=>n+m.count,0),grassBusy:meadow.busy,detailBusy:groundDressing.busy});
 window.eldervalePrepareScenery=async()=>{const ticket=areaLoading.begin('Preparing nearby scenery…');try{meadow.invalidate();meadow.update(player.position,performance.now());wildlife.update(player.position,window.eldervaleServerTime?.()||Date.now(),skyDaylight);groundDressing.update(player.position);while(meadow.busy||groundDressing.busy)await new Promise(requestAnimationFrame);}finally{ticket.end()}};
 
@@ -1461,7 +1461,7 @@ function updateWorldSky(){
  window.eldervaleWorldNight=daylight<.2;window.eldervaleDaylight=daylight;
  // The owner's classic default can arrive with a later snapshot.
  if(classicReady&&classicLook.enabled!==classicEnabled(clientSettings,window.eldervaleGameConfig))applyGraphics();classicLook.applySky(daylight,twilight);
- window.eldervaleSetTimeOfDay?.(hour,daylight);
+ window.eldervaleSetTimeOfDay?.(hour,daylight);underground.relight();
 }
 const clock=new T.Clock();let lastAutosave=performance.now();
 // Distance the avatar really moved since the previous frame, including the server-pose

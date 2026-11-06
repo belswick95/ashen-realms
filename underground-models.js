@@ -41,7 +41,7 @@ export function undergroundObjectModel(T,parent,id,d={}){
  }else if(id==='rope_swing'){const top=5.2;for(const s of [-1,1])add(T,g,cyl(T),wood,s*1.1,top/2,-len/2+.6,{sx:.14,sy:top,sz:.14});add(T,g,box(T),wood,0,top,-len/2+.6,{sx:2.4,sy:.18,sz:.18});
   add(T,g,cyl(T),rope,0,top-1.6,-len/2+.6+.6,{sx:.04,sy:3.2,sz:.04,rx:-.35});add(T,g,cyl(T),wood,len*0,.6,len/2-.4,{sx:.14,sy:1.2,sz:.14});
  }else if(id==='wall_climb'){add(T,g,box(T),dark,0,1.8,0,{sx:2.4,sy:3.6,sz:.3});for(const [x,y] of [[-.6,.7],[.5,1.3],[-.4,2],[.6,2.7],[-.2,3.3]])add(T,g,rock(T),stone,x,y,.2,{sx:.18,sy:.14,sz:.18});add(T,g,cyl(T),moss,.9,1.9,.18,{sx:.05,sy:3.4,sz:.05,shadow:false});
- }else if(id==='stepping_stones'){const n=Math.max(3,Math.round(len/1.6));for(let k=0;k<n;k++){const z=-len/2+(k+.5)*len/n;add(T,g,sharedGeometry(T,'cylinder',.55,.65,.5,8),stone,(k%2?.25:-.25),.12,z,{ry:k})}
+ }else if(id==='stepping_stones'){const n=Math.max(3,Math.round(len/1.6));for(let k=0;k<n;k++){const z=-len/2+(k+.5)*len/n;add(T,g,sharedGeometry(T,'cylinder',.55,.65,.5,8),stone,(k%2?.25:-.25),Math.max(.12,.2-h0),z,{ry:k})}
  }else if(id==='squeeze'){for(const s of [-1,1])add(T,g,rock(T),dark,s*1.15,1.4,0,{sx:.9,sy:1.6,sz:1.3,ry:s});add(T,g,rock(T),dark,0,2.6,0,{sx:1.4,sy:.6,sz:1.2});add(T,g,disc(T),sharedMaterial(T,'ug:hole',()=>new T.MeshBasicMaterial({color:0x050403})),0,1,.0,{sx:.5,sy:.9,shadow:false});
  }else if(id==='pier'){const deck=wood,n=Math.max(2,Math.round(len/2));add(T,g,box(T),deck,0,.38,0,{sx:2.4,sy:.18,sz:len});
   for(let k=0;k<=n;k++){const z=-len/2+k*len/n;for(const s of [-1,1])add(T,g,cyl(T),dark,s*1.1,-.4,z,{sx:.13,sy:1.7,sz:.13})}

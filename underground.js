@@ -54,7 +54,7 @@ export function levelMeshData(grid,theme){
    continue}
   let near=0;for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++)if((di||dj)&&walk(i+di,j+dj))near=Math.max(near,di&&dj?1:2);
   let second=false;if(!near)for(let dj=-2;dj<=2&&!second;dj++)for(let di=-2;di<=2;di++)if(walk(i+di,j+dj)){second=true;break}
-  if(near||second&&hash(i,j,4)<.55){const t=hash(i,j,5);rocks.push({x:i*TILE+(hash(i,j,1)-.5)*.5,z:j*TILE+(hash(i,j,2)-.5)*.5,w:(near?1.15:1.45)+t*.5,h:(near?2.4:3.6)+hash(i,j,6)*2.2,r:t*6.28,k:hash(i,j,12)})}
+  if(near||second&&hash(i,j,4)<.55){const t=hash(i,j,5);rocks.push({x:i*TILE+(hash(i,j,1)-.5)*.5,z:j*TILE+(hash(i,j,2)-.5)*.5,w:(near?1:1.3)+t*.4,h:(near?1.5:2.4)+hash(i,j,6)*1.4,r:t*6.28,k:hash(i,j,12)})}
  }
  return {positions:pos,colors:col,indices:idx,rocks,decor};
 }
@@ -66,7 +66,7 @@ function levelCanvas(grid,theme){if(typeof document==='undefined')return null;co
 
 export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camera,lightProxies,say=()=>{},command=(c,p)=>globalThis.eldervaleRealm?.command(c,p),yieldFrame=nextFrame,now=()=>performance.now()}){
  if(landscape)installUndergroundTerrain(landscape);
- const built=new Map();let current=null,saved=null,lastScan=0,ambientWrapped=false,tween=null,remoteTweens=new Map();
+ const built=new Map();let skyMesh=null,current=null,saved=null,lastScan=0,ambientWrapped=false,tween=null,remoteTweens=new Map();
  const floorMat=()=>sharedMaterial(T,'ug-floor',()=>new T.MeshStandardMaterial({vertexColors:true,roughness:1,metalness:0}));
  const rockMat=()=>sharedMaterial(T,'ug-rock',()=>new T.MeshStandardMaterial({roughness:.95,metalness:0,flatShading:true}));
  const rockGeo=()=>sharedGeometry(T,'dodecahedron',.5,0);
@@ -113,12 +113,16 @@ export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camer
  const api={
   get current(){return current},prepare,areas:()=>state.areas,
   setAreas(list){return setUndergroundAreas(list)},
+  // The sky dome is hidden below ground (visibility only: no shader changes).
+  setSky(sky){skyMesh=scene.children.find(o=>o.material?.uniforms&&o.material.uniforms===sky?.uniforms)||null},
+  // The day/night sky update runs every 1.5 s; below ground the cave look wins straight after it.
+  relight(){if(current)applyLighting(current.area)},
   // Called every frame before the camera follows the player.
   frame(dt,player){if(!player)return;const p=player.position,at=undergroundAt(p.x,p.z);wrapAmbience();
    if(at&&(!current||current.area.id!==at.area.id||current.level!==at.level)){const area=at.area;current={area,level:at.level};window.eldervaleUndergroundArea={id:area.id,name:area.name,level:at.level};
     if(!built.has(area.id)){const ticket=loading.begin('Lighting the way into '+area.name+'…',{key:'underground-build',delay:0});prepare(area.id).finally(()=>ticket.end())}}
    else if(!at&&current){current=null;window.eldervaleUndergroundArea=null;restoreLighting()}
-   if(current)applyLighting(current.area);
+   if(current)applyLighting(current.area);if(skyMesh)skyMesh.visible=!current;
    if(now()>lastScan){lastScan=now()+1000;prefetch(p);
     for(const [id,entry] of built)entry.ready.then(b=>{if(b)b.group.visible=Math.hypot(b.area.origin.x-p.x,b.area.origin.z-p.z)<1400})}
    if(tween){if(stepTween(tween,player))tween=null}

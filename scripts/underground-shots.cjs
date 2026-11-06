@@ -33,11 +33,11 @@ const server=http.createServer((req,res)=>{try{const name=new URL(req.url,'http:
    {file:'06-saltglass-bay-coast.png',x:300,z:352,yaw:Math.PI,pitch:.38,zoom:30},
    {file:'07-saltglass-landing-hub.png',x:300,z:342,yaw:-2.4,pitch:.5,zoom:20},
    {file:'08-saltreed-run-river.png',x:345,z:190,yaw:.4,pitch:.45,zoom:22},
-   {file:'09-shortcut-wildwater-stones.png',x:-42,z:72,yaw:-1.1,pitch:.42,zoom:12},
+   {file:'09-shortcut-heron-log.png',x:150,z:341,yaw:Math.PI,pitch:.45,zoom:12},{file:'09b-shortcut-wildwater-stones.png',x:-35,z:62,yaw:Math.PI,pitch:.5,zoom:12},
    {file:'10-heronmere-lake.png',x:165,z:282,yaw:Math.PI,pitch:.42,zoom:28},
    {file:'11-hollowmere-crypt-door.png',x:-118,z:-366,yaw:0,pitch:.32,zoom:12}
   ];
   for(const s of shots){const err=await p.evaluate(async s=>{try{const w=window.visualTest;w.setCamera(s.yaw,s.pitch,s.zoom);w.move(s.x,s.z);await window.eldervaleRegionStreamer.scan();await window.eldervaleRegionStreamer.idle();if(s.area)await window.eldervaleUnderground.prepare(s.area);w.move(s.x,s.z,4);await new Promise(r=>setTimeout(r,300));w.move(s.x,s.z,3)}catch(e){return e.message+' '+e.stack}},s);if(err)console.log('ERROR',s.file,err.slice(0,900));
-   await p.screenshot({path:path.join(out,s.file)});console.log('shot',s.file)}
+   await p.screenshot({path:path.join(out,s.file),timeout:180000});console.log('shot',s.file)}
  }finally{await browser.close();server.close()}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1});
