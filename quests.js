@@ -128,7 +128,7 @@ export function createQuestJournal(state){
  head.append(el('h3','Quests'),summary);
  if(host&&tab){host.replaceChildren(head,legend,list,status);host.classList.add('quest-journal');tab.addEventListener('click',()=>{filter=null;selected=null;status.textContent='';draw()})}
  else{const toggle=button(document.body,'📜',()=>open());toggle.id='quest-journal-toggle';toggle.title='Quest journal';toggle.setAttribute('aria-label','Open quest journal');panel=el('dialog',null,{id:'quest-journal',class:'quest-journal'});const top=el('header');top.append(el('h2','Quest journal'));button(top,'Close',()=>panel.close());panel.append(top,head,legend,list,status);document.body.append(panel)}
- let quests=[],filter=null,selected=null,signature='',pending=false,previous=null;
+ let quests=[],filter=null,selected=null,signature='',pending=false,previous=null,rowsText=null;
  const carried=id=>quantity(state,id);
  function drawSummary(){const s=journalSummary(quests);summary.replaceChildren(el('strong','Quest Points: '+s.points),el('span',s.complete+'/'+s.total+' complete'))}
  function detail(q){
@@ -160,7 +160,9 @@ export function createQuestJournal(state){
  const shown=()=>panel?panel.open:!host.hidden&&tab.getAttribute('aria-expanded')!=='false';
  function open(npc=null){if(panel){if(!panel.open)panel.showModal()}else if(!shown()||!tab.classList.contains('selected'))tab.click();filter=npc;selected=null;const mine=npc?quests.filter(q=>q.data.giver===npc&&q.data.chain!=='tutorial'):[];if(mine.length===1)selected=mine[0].id;draw();status.textContent='Accept and hand in quests near their giver. Collected items are consumed when handed in.'}
  return {open,draw,hasFor:npc=>quests.some(q=>q.data.giver===npc&&!q.completed&&q.data.chain!=='tutorial'),sync(rows=[]){
-  for(const q of newlyCompleted(previous,rows))showQuestComplete(q,{totalPoints:journalSummary(rows).points});
-  previous=new Map(rows.map(q=>[q.id,questStatus(q)]));quests=rows;
-  const next=JSON.stringify([rows,rows.flatMap(q=>q.data.objectives.filter(o=>o.type==='collect').map(o=>quantity(state,o.target)))]);if(next!==signature){signature=next;if(!pending&&(!panel||panel.open))draw()}}};
+  // The lean world sync hands back the same array while quests are unchanged
+  // (sync-diet.js): only the carried collect counts need checking then.
+  if(rows!==quests||rowsText===null){for(const q of newlyCompleted(previous,rows))showQuestComplete(q,{totalPoints:journalSummary(rows).points});
+   previous=new Map(rows.map(q=>[q.id,questStatus(q)]));quests=rows;rowsText=JSON.stringify(rows)}
+  const next=rowsText+'|'+rows.flatMap(q=>q.data.objectives.filter(o=>o.type==='collect').map(o=>quantity(state,o.target))).join(',');if(next!==signature){signature=next;if(!pending&&(!panel||panel.open))draw()}}};
 }

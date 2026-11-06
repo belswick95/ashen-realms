@@ -17,7 +17,7 @@ export const DEATH_KNEEL=1.1,KNEEL_HOLD=.7,DEATH_JOIN=.8,DEATH_FALL_SPEED=.6;
 const FADE=.18,FIGHT_HOLD=6,COMBAT_HOLD=3,WALK_LIMIT=3.8;
 // Town and profession activities → looping clips.
 // A clip name ending in '@loop' repeats a normally one-shot clip (chopping, mining).
-const ACTIVITY={smith:'Fixing_Kneeling',fix:'Fixing_Kneeling',garden:'Fixing_Kneeling',sweep:'Push_Loop',push:'Push_Loop',carry:'Idle_Torch_Loop',read:'Idle_Talking_Loop',talk:'Idle_Talking_Loop',sit:'Sitting_Idle_Loop',interact:'Interact@loop',pickup:'PickUp_Table@loop',swim:'Swim_Idle_Loop',mine:'Sword_Attack@loop',woodcut:'Sword_Attack@loop',fish:'Idle_Torch_Loop',net:'PickUp_Table@loop',cook:'Interact@loop',craft:'Fixing_Kneeling',
+const ACTIVITY={smith:'Fixing_Kneeling',fix:'Fixing_Kneeling',garden:'Fixing_Kneeling',sweep:'Push_Loop',push:'Push_Loop',carry:'Idle_Torch_Loop',read:'Idle_Talking_Loop',talk:'Idle_Talking_Loop',sit:'Sitting_Idle_Loop',interact:'Interact@loop',pickup:'PickUp_Table@loop',swim:'Swim_Idle_Loop',mine:'Sword_Attack@loop',woodcut:'Sword_Attack@loop',fish:'Idle_Torch_Loop',net:'Fixing_Kneeling',cook:'Interact@loop',craft:'Fixing_Kneeling',
  // Town jobs (npc-activities.js layers hands and props over these).
  hammer:'Idle_Loop',broom:'Idle_Loop',haul:'Idle_Loop',ledger:'Idle_Loop',trade:'Idle_Talking_Loop',chat:'Idle_Talking_Loop',fetch:'PickUp_Table@loop',pray:'Idle_Loop',watch:'Idle_Loop',rest:'Idle_Loop',sitread:'Sitting_Idle_Loop'};
 export const ACTIVITY_CLIPS=ACTIVITY;
@@ -27,7 +27,7 @@ export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
  const actions=new Map(),weights=new Map();let deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
  const warp=createStrideWarp(rig),runStyle=createRunStyle(rig);let stride=1;
- const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0;
+ const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0,netting=0;
  const holding=socket=>!!socket&&socket.children.some(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);
  const loops={};
  function clipFor(name){const [clip,loop]=name.split('@');if(!loop)return clips[clip];if(!clips[clip])return null;return loops[name]||(loops[name]=Object.assign(clips[clip].clone(),{name}))}
@@ -44,7 +44,8 @@ export function createHumanoidAnimator(rig){
   // Fighting (an armed attack, a block, or the caller's combat flag) holds the
   // combat stance a few seconds, then it eases back to the relaxed idle.
   if(armed&&attack>0||block>0)fightUntil=time+FIGHT_HOLD;else if(combat)fightUntil=Math.max(fightUntil,time+COMBAT_HOLD);lastAttack=attack;
-  const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>.5&&lastHit<=.5&&!oneShot)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
+  // A fresh hit (the timer jumps up; callers start it at .3-.45 s) flinches once.
+  const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>lastHit+.05&&hitNow>.1&&!oneShot&&!dead)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
   if(air&&!airborne)startOneShot('Jump_Start',.3);else if(!air&&airborne)startOneShot('Jump_Land',.35);airborne=!!air;
   // Base loop for the current state.
   let base;const work=ACTIVITY[activity||rig.activity];
@@ -63,6 +64,8 @@ export function createHumanoidAnimator(rig){
   if(base!==current){current=base;const a=action(base);if(dead||!((weights.get(base)||0)>.05))a.reset?.();if(dead&&base==='Death01'&&clips.Fixing_Kneeling)a.time=DEATH_JOIN}
   const loop=action(base);if(STRIDE[base]){const play=gaitPlayback(base,speed,{stride:STRIDE[base],duration:loop.getClip().duration,scale:CHARACTER_SCALE});loop.timeScale=play.timeScale;stride=play.amplitude}else{loop.timeScale=1;stride=1}
   if(work&&base===work&&rig.activityPhase!=null){loop.time=rig.activityPhase*loop.getClip().duration;loop.timeScale=0}
+  // Net fishing holds the kneel (the arms and spine are posed by arms.net), so the body does not bob each loop.
+  else if(base===work&&(activity||rig.activity)==='net'&&base==='Fixing_Kneeling'){loop.time=Math.min(KNEEL_HOLD,loop.getClip().duration);loop.timeScale=0}
   if(dead&&base==='Fixing_Kneeling')loop.timeScale=loop.time>=KNEEL_HOLD?0:1;else if(dead&&base==='Death01')loop.timeScale=DEATH_FALL_SPEED;
   // Cross-fade: the active one-shot (if any) takes over, then hands back.
   if(oneShot){oneShotLeft-=dt;if(oneShotLeft<=0&&!(oneShot==='Death01'))oneShot=null}
@@ -86,11 +89,26 @@ export function createHumanoidAnimator(rig){
   aim+=((shot&&!mounted&&!dead?1:0)-aim)*Math.min(1,k*1.6);if(aim<.001)aim=0;if(aim)arms.aim(aim,draw);
   // Eating: weapon and shield are put away, the right hand brings the food to the mouth.
   const bite=eating.update(eat,food,{mounted,dead});
+  // Net fishing (gathering-visuals.js sets rig.netDip): lean over the bank,
+  // both hands on the pole, dip the net into the water, scoop and lift.
+  const dip=rig.netDip;netting+=((dip&&!moving&&!mounted&&!dead&&!oneShot?1:0)-netting)*k;if(netting<.001)netting=0;if(netting&&dip)arms.net(netting,dip);
   const run=base==='Sprint_Loop'?1:base==='Jog_Fwd_Loop'?.65:0;
   return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite};
  },dispose(){eating.dispose();mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
 }
 
+// One net-fishing cycle, u in 0..1 (gathering-visuals.js times it so the net
+// meets the water at u = .35, when the splash sounds):
+//  0-.15 net held up over the water, .15-.35 lean in and lower it, .35-.6 scoop
+//  just under the surface toward the bank, .6-.85 lift it out, .85-1 shake.
+// lean: 0..1 forward bend; height: net ring above the water (m); sweep: sideways (m).
+export function netDipPhase(u){u=((Number(u)%1)+1)%1||0;const ease=x=>x<=0?0:x>=1?1:x*x*(3-2*x);
+ if(u<.15)return {lean:.25,height:.9,sweep:0};
+ if(u<.35){const e=ease((u-.15)/.2);return {lean:.25+.75*e,height:.9-1.0*e,sweep:0}}
+ if(u<.6){const e=ease((u-.35)/.25);return {lean:1,height:-.1-.06*Math.sin(e*Math.PI),sweep:-.25*Math.sin(e*Math.PI)}}
+ if(u<.85){const e=ease((u-.6)/.25);return {lean:1-.75*e,height:-.1+1.0*e,sweep:0}}
+ return {lean:.25,height:.9+.04*Math.sin((u-.85)/.15*Math.PI*4),sweep:0};
+}
 // Arm layers applied after the mixer, weighted 0..1 so they fade in and out:
 // a two-bone reach (upper arm, forearm) to a point in the character's frame,
 // then an optional wrist turn aligning the held item.
@@ -102,6 +120,7 @@ function createArmLayers(rig){
  const T=rig.T,b=rig.bones;
  const forward=new T.Vector3(),up=new T.Vector3(),left=new T.Vector3(),a=new T.Vector3(),c=new T.Vector3(),to=new T.Vector3(),target=new T.Vector3();
  const q=new T.Quaternion(),wq=new T.Quaternion(),pq=new T.Quaternion(),id=new T.Quaternion(),rot=new T.Quaternion(),m=new T.Matrix4();
+ const netShoulder=new T.Vector3(),netGoal=new T.Vector3(),netHand=new T.Vector3(),netDir=new T.Vector3(),netY=new T.Vector3(0,1,0),netParent=new T.Quaternion(),netWant=new T.Quaternion();
  // Rotate `bone` in world space by `rotation`, scaled by weight.
  function turn(bone,rotation,weight){q.copy(id).slerp(rotation,weight);bone.getWorldQuaternion(wq);bone.parent.getWorldQuaternion(pq);bone.quaternion.copy(pq.invert().multiply(q).multiply(wq));bone.updateMatrixWorld(true)}
  function frame(){rig.model.updateMatrixWorld(true);rig.root.getWorldQuaternion(wq);forward.set(0,0,1).applyQuaternion(wq);up.set(0,1,0).applyQuaternion(wq);left.set(1,0,0).applyQuaternion(wq)}
@@ -118,6 +137,23 @@ function createArmLayers(rig){
    if(side==='left'){rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,left),weight*.85)}},
   guard(weight){frame();b.spine_03.getWorldPosition(target).addScaledVector(forward,.5).addScaledVector(left,.12);reach('left',target,weight);
    rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,forward),weight)},
+  // Net fishing pose for cycle position dip.u (see netDipPhase): the spine leans
+  // toward the water, the right hand reaches along the pole toward the net's
+  // goal at the water line (dip.water, world space), the left hand grips the
+  // pole further down, and the net prop (dip.tool) is turned to lie along it.
+  net(weight,dip){const ph=netDipPhase(dip.u);frame();
+   for(const bone of [b.spine_01,b.spine_02,b.spine_03])if(bone)turn(bone,rot.setFromAxisAngle(left,ph.lean*.12),weight);
+   frame();const sh=b.upperarm_r;if(!sh||!b.lowerarm_r||!b.hand_r)return;sh.getWorldPosition(netShoulder);
+   // Arm length (shoulder -> hand) and pole length (hand -> net ring) in world units.
+   const elbow=b.lowerarm_r.getWorldPosition(netGoal),arm=(netShoulder.distanceTo(elbow)+elbow.distanceTo(b.hand_r.getWorldPosition(netHand)))*.92;let pole=dip.pole||1;if(dip.tool?.parent){dip.tool.updateWorldMatrix(true,false);dip.tool.getWorldPosition(netHand);pole=netGoal.set(0,dip.tool.userData.ringY||1.02,0).applyMatrix4(dip.tool.matrixWorld).distanceTo(netHand)||pole}
+   // Net ring on the vertical plane ahead: as far out as arm + pole reach, at the phase height above the water.
+   // The net never reaches further out than its dip point: lifting draws it up and back to the bank.
+   const v=dip.water.y+ph.height-netShoulder.y,R=arm+pole,low=dip.water.y-.1-netShoulder.y,h=Math.min(Math.sqrt(Math.max(.04,R*R-v*v)),Math.sqrt(Math.max(.04,R*R-low*low)));
+   netGoal.copy(netShoulder).addScaledVector(forward,h).addScaledVector(left,ph.sweep);netGoal.y=netShoulder.y+v;
+   dip.ring?.copy(netGoal);netDir.copy(netGoal).sub(netShoulder).normalize();
+   const span=Math.hypot(h,v);netGoal.copy(netShoulder).addScaledVector(netDir,Math.max(.25,Math.min(arm,span-pole)));reach('right',netGoal,weight);
+   b.hand_r.getWorldPosition(netHand);netGoal.copy(netHand).addScaledVector(netDir,.32).addScaledVector(left,.05);reach('left',netGoal,weight*.9);
+   const tool=dip.tool;if(tool?.parent){tool.userData.restQuaternion??=tool.quaternion.clone();tool.parent.getWorldQuaternion(netParent);netWant.setFromUnitVectors(netY,netDir);tool.quaternion.copy(netParent.invert().multiply(netWant)).slerp(tool.userData.restQuaternion,1-weight)}},
   aim(weight,draw){frame();
    // Bow arm: straight out from the left shoulder at shoulder height.
    b.upperarm_l.getWorldPosition(target).addScaledVector(forward,.78).addScaledVector(left,-.06).addScaledVector(up,.04);reach('left',target,weight);
