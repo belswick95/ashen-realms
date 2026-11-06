@@ -1,4 +1,5 @@
 import {foodRecipes} from './food.js?v=release-20261106-amb87';
+import {registerGearProfessions} from './gear-recipes.js?v=release-20261106-amb87';
 // Original Eldervale recipes inspired by OSRS resource-processing mechanics.
 // Levels and XP follow the OSRS experience table (combat-level.js). Per-action XP and level requirements match the
 // closest Old School RuneScape action (fractional XP such as 17.5 or 6.25 is kept exactly; see db/osrs-skill-parity.sql).
@@ -37,3 +38,5 @@ export const professionStations={construction_site:'Construction work site',furn
 // flax, wheat, berries or wild herbs gives no XP; rune essence gives 5 Mining XP.
 for(const [id,resource,skill,tool,level,xp,respawn]of [['herb_patch','grimyHerb','herblore',null,1,0,30],['flax_patch','flax','crafting',null,1,0,15],['wheat_patch','wheat','farming',null,1,0,20],['berry_bush','berries','farming',null,1,0,20],['essence_rock','runeEssence','mining','weapon:pickaxe',1,5,20]])recipe('gather_'+id,'Gather '+professionItems[resource].name.toLowerCase(),skill,level,xp,{}, {[resource]:1},tool?[tool]:[],id,{kind:'mine',resource,respawn});
 export const oreResources=Object.fromEntries(ores.map(([id,name,color,level])=>[id,{name,color,level}]));
+// Gear tiers: tiered bars, arrows, smithing and fletching recipes (gear-recipes.js).
+registerGearProfessions(professionItems,professionRecipes);

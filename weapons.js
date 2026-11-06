@@ -1,5 +1,7 @@
 import {meshItemIcon} from './item-appearance.js?v=release-20261106-amb87';
 import {heldItem} from './weapon-assets.js?v=release-20261106-amb87';
+import {tierWeapons,weaponGear,BOWS,describeGear} from './gear-tiers.js?v=release-20261106-amb87';
+import {tintHeldItem} from './tier-tint.js?v=release-20261106-amb87';
 // Weapons are Quaternius CC0 models (assets/weapons, scripts/build-weapons.mjs)
 // in the held-item frame: grip at the origin, blade along +Y, edge toward +X.
 // Keys are what saves, the server catalog and equipment use; the first eight
@@ -34,7 +36,17 @@ export const weaponCatalog={
  amethystStaff:W('Amethyst staff','staff',11,16,2.5,11,220,66,'A staff holding a humming amethyst.',{twoHanded:true,ranged:true,magic:true,color:0xc45bff}),
  emberStaff:W('Ember staff','staff',13,18,2.6,10,300,90,'A staff whose ruby burns like a coal.',{twoHanded:true,ranged:true,magic:true,color:0xff6a3d})
 };
-for(const item of Object.values(weaponCatalog))item.desc+=(item.magic?' Magic range '+item.reach+' · ':item.ranged?' Ranged '+item.reach+' · ':' ')+'Attack +'+item.attack+' · Damage +'+item.damage+' · Attack turn '+item.speed+'s.';
+// Metal tiers (gear-tiers.js): bronze to eldersteel versions of the iron weapons,
+// recoloured iron models. The iron tier keeps the original keys above.
+for(const [key,w] of Object.entries(tierWeapons())){
+ if(weaponCatalog[key]){Object.assign(weaponCatalog[key],{tier:w.tier,bonuses:w.bonuses,req:w.req,ticks:w.ticks,speed:w.speed,styles:w.styles});continue}
+ weaponCatalog[key]=W(w.name,'weapon',Math.round(w.bonuses.str/3)+2,Math.max(w.bonuses.astab,w.bonuses.aslash,w.bonuses.acrush),w.speed,w.reach,w.buy,w.sell,w.desc,{model:w.model,tint:w.tint,tier:w.tier,bonuses:w.bonuses,req:w.req,ticks:w.ticks,styles:w.styles,...(w.twoHanded?{twoHanded:true}:{})});
+}
+// Wood-tier shortbows: the wooden bow model with the wood recoloured.
+for(const [key,b] of Object.entries(BOWS))if(!weaponCatalog[key])weaponCatalog[key]=W(b.name,'bow',Math.round(b.arange/4)+4,b.arange,1.8,b.reach,b.buy,Math.round(b.buy*.3),b.desc,{twoHanded:true,ranged:true,model:'woodenBow',tint:b.wood,tintMode:'wood'});
+// OSRS-style bonuses, level requirement and speed (ticks) for every weapon.
+for(const [key,item] of Object.entries(weaponCatalog)){const g=item.bonuses?null:weaponGear(key,item.kind);if(g)Object.assign(item,{bonuses:g.bonuses,req:g.req,ticks:g.ticks,speed:g.speed,styles:g.styles,...(g.arrowCap?{arrowCap:g.arrowCap}:{}),...(g.spell?{spell:g.spell}:{}),...(g.tier&&!item.tier?{tier:g.tier}:{})})}
+export const weaponDetails=key=>describeGear(weaponCatalog[key]);
 // Bows use one 'arrows' item (the fletching product, also sold by outfitters)
 // per shot; staffs need none.
 export const usesArrows=key=>isRanged(key)&&!weaponCatalog[key]?.magic;
@@ -46,7 +58,8 @@ export const isBow=key=>isRanged(key)&&!isMagic(key);
 // Held model for an item key (an empty group if the assets are not loaded).
 const glows=new Map();
 export function makeWeapon(T,key){
- const g=heldItem(T,weaponCatalog[key]?key:'longsword','weapon'),item=weaponCatalog[key],tip=g.getObjectByName('tip');
+ const item=weaponCatalog[key],g=heldItem(T,item?item.model||key:'longsword','weapon',item?.tint!=null?m=>tintHeldItem(T,m,item.tint,item.tintMode||'metal'):null),tip=g.getObjectByName('tip');
+ g.name='weapon-'+key;g.userData.weaponKey=key;
  // Staffs: a soft glow around the focus gem (shared geometry and material per colour).
  if(item?.magic&&tip){if(!glows.has(item.color))glows.set(item.color,{geometry:new T.IcosahedronGeometry(.075,1),material:new T.MeshBasicMaterial({color:item.color,transparent:true,opacity:.45,blending:T.AdditiveBlending,depthWrite:false})});const {geometry,material}=glows.get(item.color);geometry.userData.eldervaleShared=material.userData.eldervaleShared=true;const glow=new T.Mesh(geometry,material);glow.name='gem-glow';glow.castShadow=false;glow.position.y=-.03;tip.add(glow)}
  return g;

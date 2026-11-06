@@ -1,5 +1,6 @@
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {preloadWeapons} from './weapon-assets.js?v=release-20261106-amb87';
+import {tintOutfitMaterial} from './tier-tint.js?v=release-20261106-amb87';
 // Loads and caches the Quaternius character assets (assets/characters, CC0).
 // Geometry is shared between every character; each character only creates
 // its own bones and lightweight SkinnedMesh wrappers.
@@ -56,13 +57,15 @@ export function texturesSettled(){return store.loading?new Promise(r=>(store.tex
 const rim={rimColor:{value:null},rimStrength:{value:.1}};
 function rimLight(m){const T=store.T;if(!T||!m.isMeshStandardMaterial)return;rim.rimColor.value??=new T.Color(0xfff1dc);const before=m.onBeforeCompile;
  m.onBeforeCompile=(shader,r)=>{before?.call(m,shader,r);Object.assign(shader.uniforms,rim);shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 rimColor;uniform float rimStrength;').replace('#include <opaque_fragment>','{float rimF=1.0-saturate(dot(normal,normalize(vViewPosition)));outgoingLight+=rimColor*rimF*rimF*rimF*rimStrength;}\n#include <opaque_fragment>')};
- m.customProgramCacheKey=()=>'eldervale-rim'}
+ const programKey=m.userData.programKey||'';m.customProgramCacheKey=()=>'eldervale-rim'+programKey}
 // Day: faint warm sky rim. Night: a stronger cool moon rim keeps silhouettes legible.
 export function setCharacterRim(daylight){const T=store.T;if(!T)return;const d=Math.max(0,Math.min(1,daylight));rim.rimColor.value??=new T.Color();rim.rimColor.value.set(0x9db4e6).lerp(new T.Color(0xfff1dc),d);rim.rimStrength.value=.2-.1*d}
 export function material(key,make){if(!store.materials.has(key)){const m=make();m.userData.eldervaleShared=true;rimLight(m);store.materials.set(key,m)}return store.materials.get(key)}
 // Outfit material: one per outfit colour, shared by every wearer.
-export function outfitMaterial(outfit,variant=1){
+// A gear tier tint (gear-tiers.js) recolours only the metal of the iron texture.
+export function outfitMaterial(outfit,variant=1,tint=null){
  const T=store.T,o=outfit.toLowerCase();
+ if(tint!=null)return material(`outfit:${o}:${variant}:${tint}`,()=>tintOutfitMaterial(T,outfitMaterial(outfit,variant),tint));
  return material(`outfit:${o}:${variant}`,()=>{const orm=texture(o+'_orm');return new T.MeshStandardMaterial({map:texture(`${o}_${variant}_color`,{color:true}),normalMap:texture(o+'_normal'),aoMap:orm,roughnessMap:orm,metalnessMap:orm,metalness:orm?1:.1,roughness:1})});
 }
 // Skin and hair are tinted from neutral base textures.

@@ -3024,24 +3024,6 @@
     "sha256": "bfe8166f85cf141f4323ef7fa00feee8231f282839678539bdc4e6bcedeeb869"
   },
   {
-    "key": "item-armor_knightArmet3",
-    "id": "armor:knightArmet3",
-    "name": "Blacksteel armet helm",
-    "model": "knightArmet3",
-    "bounds": [
-      0.5297616504409924,
-      0.772385326700644,
-      0.85
-    ],
-    "pixelBounds": [
-      43,
-      27,
-      110,
-      113
-    ],
-    "sha256": "dd8e27f0f418b324d469b2be04e3c6003472c1e5c4b995540eef362a06e25c46"
-  },
-  {
     "key": "item-armor_knightHornedHelm1",
     "id": "armor:knightHornedHelm1",
     "name": "Iron horned helm",
@@ -3078,24 +3060,6 @@
     "sha256": "92675a92c8e77d672b096becf32f8f2149a48d67eca39f1d914e0d55d08dac9c"
   },
   {
-    "key": "item-armor_knightHornedHelm3",
-    "id": "armor:knightHornedHelm3",
-    "name": "Blacksteel horned helm",
-    "model": "knightHornedHelm3",
-    "bounds": [
-      0.7271446882534257,
-      0.85,
-      0.6694524979400006
-    ],
-    "pixelBounds": [
-      37,
-      26,
-      105,
-      126
-    ],
-    "sha256": "ce7728ff1d5bf27bd67b13fbcac9390989bffb33c2a03147b90f7de0c2156c07"
-  },
-  {
     "key": "item-armor_chest",
     "id": "armor:chest",
     "name": "Iron breastplate",
@@ -3130,24 +3094,6 @@
       124
     ],
     "sha256": "b9ac12492fe52272bc46c2834e658f3a884541096a267f2fea43399079705e0b"
-  },
-  {
-    "key": "item-armor_knightBreastplate3",
-    "id": "armor:knightBreastplate3",
-    "name": "Blacksteel breastplate",
-    "model": "knightBreastplate3",
-    "bounds": [
-      0.4835871456038087,
-      0.85,
-      0.4659474471266823
-    ],
-    "pixelBounds": [
-      45,
-      16,
-      107,
-      124
-    ],
-    "sha256": "a86fa841275d7b665edd883ec86952661ecebb2421d0054443ae80e4093b28fc"
   },
   {
     "key": "item-armor_knightGambeson1",
@@ -3240,24 +3186,6 @@
     "sha256": "196b87f1351472302ac31a9fd86c5edfccebe794009997954d8014545096ded2"
   },
   {
-    "key": "item-armor_knightGauntlets3",
-    "id": "armor:knightGauntlets3",
-    "name": "Blacksteel gauntlets",
-    "model": "knightGauntlets3",
-    "bounds": [
-      0.85,
-      0.07792596209601123,
-      0.08155766472365489
-    ],
-    "pixelBounds": [
-      10,
-      52,
-      133,
-      97
-    ],
-    "sha256": "889a1be4428df85598dce97d374787ecf0f6239efa2d4593e741f6fcc3cc47a4"
-  },
-  {
     "key": "item-armor_legs",
     "id": "armor:legs",
     "name": "Iron greaves",
@@ -3292,24 +3220,6 @@
       123
     ],
     "sha256": "416e95dff153540ff982caf85b78f209bb5be222d9c4079b70fcf1ea5cfeba5f"
-  },
-  {
-    "key": "item-armor_knightGreaves3",
-    "id": "armor:knightGreaves3",
-    "name": "Blacksteel greaves",
-    "model": "knightGreaves3",
-    "bounds": [
-      0.44415723136082036,
-      0.85,
-      0.33393505661183503
-    ],
-    "pixelBounds": [
-      44,
-      21,
-      100,
-      123
-    ],
-    "sha256": "2845ea7c0a0df5b5f89d73d6d14d59e6ba943be08f2fd9adf2b161e8fbdeeb3f"
   },
   {
     "key": "item-armor_boots",
@@ -3348,24 +3258,6 @@
     "sha256": "662885f313c1990a5e79004713b3c49db2c92104b895453774152e2828e3cc00"
   },
   {
-    "key": "item-armor_knightSabatons3",
-    "id": "armor:knightSabatons3",
-    "name": "Blacksteel sabatons",
-    "model": "knightSabatons3",
-    "bounds": [
-      0.5658711508529923,
-      0.85,
-      0.6165074617755669
-    ],
-    "pixelBounds": [
-      36,
-      15,
-      112,
-      133
-    ],
-    "sha256": "07c94579eae88474372b32c192c3df85c1c79e9a412f07ca604d5ddfdb9e5df9"
-  },
-  {
     "key": "item-armor_knightRoundPauldrons1",
     "id": "armor:knightRoundPauldrons1",
     "name": "Iron round pauldrons",
@@ -3402,24 +3294,6 @@
     "sha256": "ffa667a1b0c14f2deb59fcd446348e62c667cf661efad7d3c8ec82057a8aa6c6"
   },
   {
-    "key": "item-armor_knightRoundPauldrons3",
-    "id": "armor:knightRoundPauldrons3",
-    "name": "Blacksteel round pauldrons",
-    "model": "knightRoundPauldrons3",
-    "bounds": [
-      0.85,
-      0.2564241462446974,
-      0.316917935728019
-    ],
-    "pixelBounds": [
-      16,
-      43,
-      129,
-      105
-    ],
-    "sha256": "c2f728547eeaadea1bce9bbfb161b457e3bbcd6667400d01c52a0b9de79f60c0"
-  },
-  {
     "key": "item-armor_knightSpikedPauldrons1",
     "id": "armor:knightSpikedPauldrons1",
     "name": "Iron spiked pauldrons",
@@ -3454,24 +3328,6 @@
       108
     ],
     "sha256": "ef744d220d3296c1885c0a1fd32f918e1d31405c1060ff8392191695e4870028"
-  },
-  {
-    "key": "item-armor_knightSpikedPauldrons3",
-    "id": "armor:knightSpikedPauldrons3",
-    "name": "Blacksteel spiked pauldrons",
-    "model": "knightSpikedPauldrons3",
-    "bounds": [
-      0.85,
-      0.24625537888729512,
-      0.25268868068483535
-    ],
-    "pixelBounds": [
-      17,
-      42,
-      127,
-      108
-    ],
-    "sha256": "2f6ed022ce9804d251827b988b07bb0ed5033a5cc3234d521e86d4298d54d10c"
   },
   {
     "key": "item-armor_knightScarf1",
@@ -5307,7 +5163,7 @@
       102,
       125
     ],
-    "sha256": "53507e01a94fe25cb2373dfe1fde453c3298abf60fdfe46ac052f12e51a43bdd"
+    "sha256": "98d8808091865b83842a6108ec738520990649b17d92907ac7833d81713d682c"
   },
   {
     "key": "item-rawShrimp",
@@ -5325,7 +5181,7 @@
       115,
       99
     ],
-    "sha256": "b10316a3bd55b16f4539555cd13ca30798ca2b439c904b1cb10e117254731c53"
+    "sha256": "31cb33cea123d633b0fbb5139ddf52946b23176c5372b999048e2a19c9a566d3"
   },
   {
     "key": "item-trout",
@@ -5343,7 +5199,7 @@
       125,
       93
     ],
-    "sha256": "8120b6412ee65cf3b66d3dc35a207c80771f3ae284a8aa4f4ee48c1e8903f869"
+    "sha256": "238b61c2a93b23c4f164dde2f018803f136e2ee95bc1b1f97791c0660d2f20b0"
   },
   {
     "key": "item-rawTrout",
@@ -5361,7 +5217,7 @@
       125,
       93
     ],
-    "sha256": "6f07cc9e216eb7f869d692edfcd10dcb096c3f190cf20f173d5f8b5c23490dfd"
+    "sha256": "e92102757edf3bd33d8972b05e160a1f49ff8b7a76cb1e935d4708633f5bc9d0"
   },
   {
     "key": "item-rawSalmon",
@@ -5379,7 +5235,7 @@
       125,
       93
     ],
-    "sha256": "d08783af138a169f16d8ce8ae646adf4ffd93cf1cbb07e2920bb63316983aa27"
+    "sha256": "66d692df7ff24e1df3af91f57883aaaf149d9a50293bd445f70c768243596e79"
   },
   {
     "key": "item-rawLobster",
@@ -5397,7 +5253,7 @@
       131,
       96
     ],
-    "sha256": "767fdbcb744dc4468c9357bda86fb2593eb28fe6aff9f0cbc187c7ba1dc8caa8"
+    "sha256": "9ad996f51399ba1d069f3d28606fc17912296223aefa84b05ab4d9f03a221936"
   },
   {
     "key": "item-swordfish",
@@ -5415,7 +5271,7 @@
       129,
       93
     ],
-    "sha256": "96950e4eb391cbdbc6d2b8b2c947ae3050235161365259e38d3afd320411640e"
+    "sha256": "63fe89ec895720a813b45c22377158606710a030c3849f9a789e3cfdeda31b0c"
   },
   {
     "key": "item-rawSwordfish",
@@ -5433,7 +5289,7 @@
       129,
       93
     ],
-    "sha256": "b0eed410a6cf5f4a8fa1eebe15b6184b270e9af472fc800a5207e97e57708f28"
+    "sha256": "8122686da30e0d6d6a19a8a83122b387f70b723e4395c67f85fdb92b0a814e70"
   },
   {
     "key": "item-stormfin",
@@ -5451,7 +5307,7 @@
       127,
       101
     ],
-    "sha256": "26ac2e850c79c711f225be3efa8c6a8b962724199c54c64e473de61950b613a5"
+    "sha256": "f5bddc5f4358258e96ef9cb668867002b5c98fa64f240dcfa52d19fe2748d521"
   },
   {
     "key": "item-rawStormfin",
@@ -5469,7 +5325,7 @@
       127,
       101
     ],
-    "sha256": "778d2e748315f5069162af3fb7c3295c334925356d42d2b9a03e2f17cb138920"
+    "sha256": "20724183edddebee1bd452ce8d0234aca9b4f019d74c6f7c2bb05bee39b498d1"
   },
   {
     "key": "item-lobsterPot",
@@ -5505,6 +5361,2760 @@
       131,
       91
     ],
-    "sha256": "bba9003c54a20c729fa8af8a39bbfc76cf0c938150cf76a1992d32d488a157ff"
+    "sha256": "aa44bb05440bf4dd1df59238e232a52a2319dfaefb14cfd44506d56527907ec8"
+  },
+  {
+    "key": "item-blacksteelBar",
+    "id": "blacksteelBar",
+    "name": "Blacksteel bar",
+    "model": "bar",
+    "bounds": [
+      0.7239185230583745,
+      0.22617769055068493,
+      0.5349459392659612
+    ],
+    "pixelBounds": [
+      21,
+      42,
+      123,
+      103
+    ],
+    "sha256": "353a307efec01c5e96001c8f92f32918973895a5a618e704f492b84398811915"
+  },
+  {
+    "key": "item-bronzeArrows",
+    "id": "bronzeArrows",
+    "name": "Bronze arrows",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "124b75877947bb8ac052f187ba6387f40946a11338dd99c38b9e7fd7333895ca"
+  },
+  {
+    "key": "item-bronzeArrowtips",
+    "id": "bronzeArrowtips",
+    "name": "Bronze arrowtips",
+    "model": "tips",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "124b75877947bb8ac052f187ba6387f40946a11338dd99c38b9e7fd7333895ca"
+  },
+  {
+    "key": "item-steelArrows",
+    "id": "steelArrows",
+    "name": "Steel arrows",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "bff6a78750baf6bf4eb170fd6e224e0a3cbb45c8984602e07aafc50efc774e9e"
+  },
+  {
+    "key": "item-steelArrowtips",
+    "id": "steelArrowtips",
+    "name": "Steel arrowtips",
+    "model": "tips",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "bff6a78750baf6bf4eb170fd6e224e0a3cbb45c8984602e07aafc50efc774e9e"
+  },
+  {
+    "key": "item-moonsilverArrows",
+    "id": "moonsilverArrows",
+    "name": "Moonsilver arrows",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "1346e700ba55f15b44923684d3a6f1d29a546536b4df2fdd6d31f37fcee190ce"
+  },
+  {
+    "key": "item-moonsilverArrowtips",
+    "id": "moonsilverArrowtips",
+    "name": "Moonsilver arrowtips",
+    "model": "tips",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "1346e700ba55f15b44923684d3a6f1d29a546536b4df2fdd6d31f37fcee190ce"
+  },
+  {
+    "key": "item-verditeArrows",
+    "id": "verditeArrows",
+    "name": "Verdite arrows",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "a35547dc221860b9c5ab68ae6b86fa18c97728be9d311003981767d5af2e886e"
+  },
+  {
+    "key": "item-verditeArrowtips",
+    "id": "verditeArrowtips",
+    "name": "Verdite arrowtips",
+    "model": "tips",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "a35547dc221860b9c5ab68ae6b86fa18c97728be9d311003981767d5af2e886e"
+  },
+  {
+    "key": "item-tidesteelArrows",
+    "id": "tidesteelArrows",
+    "name": "Tidesteel arrows",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "c91628bf89dec1aaae2ae1cdc46b79cdf879b1e18ea53a1121bec7089d4dd53a"
+  },
+  {
+    "key": "item-tidesteelArrowtips",
+    "id": "tidesteelArrowtips",
+    "name": "Tidesteel arrowtips",
+    "model": "tips",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "c91628bf89dec1aaae2ae1cdc46b79cdf879b1e18ea53a1121bec7089d4dd53a"
+  },
+  {
+    "key": "item-embersteelArrows",
+    "id": "embersteelArrows",
+    "name": "Embersteel arrows",
+    "model": "arrows",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "6751ebe8ccab92ee7fbdb416ce2afbcddc6ffcc020caf00b4ca72be562a94efe"
+  },
+  {
+    "key": "item-embersteelArrowtips",
+    "id": "embersteelArrowtips",
+    "name": "Embersteel arrowtips",
+    "model": "tips",
+    "bounds": [
+      0.5800000007450581,
+      0.11500000029802325,
+      0.23671069140435225
+    ],
+    "pixelBounds": [
+      9,
+      55,
+      132,
+      89
+    ],
+    "sha256": "6751ebe8ccab92ee7fbdb416ce2afbcddc6ffcc020caf00b4ca72be562a94efe"
+  },
+  {
+    "key": "item-weapon_bronzeDagger",
+    "id": "weapon:bronzeDagger",
+    "name": "Bronze dagger",
+    "model": "weapon",
+    "bounds": [
+      0.3463768185417617,
+      0.7244718426607479,
+      0.05748222406271318
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "838a250ac0f31ff848104cb9a915c25a115fc327d91efa5f3ed0c6f87b006cb5"
+  },
+  {
+    "key": "item-weapon_bronzeScimitar",
+    "id": "weapon:bronzeScimitar",
+    "name": "Bronze scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.5680971662972915,
+      1.2450869941797404,
+      0.07175023879472849
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "005ae13c517d0a0fb67285bbdf6648ccf14ee5f607d374bbc9a313920d944092"
+  },
+  {
+    "key": "item-weapon_bronzeLongsword",
+    "id": "weapon:bronzeLongsword",
+    "name": "Bronze longsword",
+    "model": "weapon",
+    "bounds": [
+      0.5438498113959847,
+      1.2841715039901347,
+      0.061251869315750655
+    ],
+    "pixelBounds": [
+      56,
+      23,
+      92,
+      123
+    ],
+    "sha256": "8db1885dd56e7aa1afdea8c3bb505fbd17efaad2446c4146102e814f7d306119"
+  },
+  {
+    "key": "item-weapon_bronzeHammer",
+    "id": "weapon:bronzeHammer",
+    "name": "Bronze hammer",
+    "model": "weapon",
+    "bounds": [
+      0.6252083096865574,
+      1.1054489231052511,
+      0.19534287212729348
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      104,
+      111
+    ],
+    "sha256": "5ae5b1ed7d29cabc95641ca1f63efdf3777b39571aa78d243486304e537709c1"
+  },
+  {
+    "key": "item-weapon_bronzeBattleaxe",
+    "id": "weapon:bronzeBattleaxe",
+    "name": "Bronze battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.05947446894426678
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      91,
+      121
+    ],
+    "sha256": "c9c0c81077d84c44dc21bc0e2cbef87d440061ed4c4336e5e35e7b027d17c82b"
+  },
+  {
+    "key": "item-weapon_bronzeTwohand",
+    "id": "weapon:bronzeTwohand",
+    "name": "Bronze 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.7920078533494594,
+      1.9027627715937472,
+      0.07027802163711215
+    ],
+    "pixelBounds": [
+      54,
+      22,
+      89,
+      124
+    ],
+    "sha256": "f39f99611079816850592a603b5a57a6372ac0989788868def7e8a3cfeb5bb06"
+  },
+  {
+    "key": "item-weapon_bronzeSpear",
+    "id": "weapon:bronzeSpear",
+    "name": "Bronze spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.0836207159642323
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "ad995187d6e94aa1c184d690cd0a3c2f9142af97da842e3ed1dbd6bdaabbd7a4"
+  },
+  {
+    "key": "item-weapon_steelDagger",
+    "id": "weapon:steelDagger",
+    "name": "Steel dagger",
+    "model": "weapon",
+    "bounds": [
+      0.3463768185417617,
+      0.7244718426607479,
+      0.05748222406271318
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "8c63d14b4c646fd730419a0bfd1bc6003e79c966055167521d62fcf9fbb96889"
+  },
+  {
+    "key": "item-weapon_steelScimitar",
+    "id": "weapon:steelScimitar",
+    "name": "Steel scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.5680971662972915,
+      1.2450869941797404,
+      0.07175023879472849
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "d61e0565804aece90b614fbe989268b7036ba0a56d16f13ee977c922efdf6a0b"
+  },
+  {
+    "key": "item-weapon_steelLongsword",
+    "id": "weapon:steelLongsword",
+    "name": "Steel longsword",
+    "model": "weapon",
+    "bounds": [
+      0.5438498113959847,
+      1.2841715039901347,
+      0.061251869315750655
+    ],
+    "pixelBounds": [
+      56,
+      23,
+      92,
+      123
+    ],
+    "sha256": "4a3f4ca6dda09f0c633675e7aba790ad1d42dcbb11cd200f53fab9451d87cd28"
+  },
+  {
+    "key": "item-weapon_steelHammer",
+    "id": "weapon:steelHammer",
+    "name": "Steel hammer",
+    "model": "weapon",
+    "bounds": [
+      0.6252083096865574,
+      1.1054489231052511,
+      0.19534287212729348
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      104,
+      111
+    ],
+    "sha256": "4fe77084602e2dcffa479ec4c06d620da48287105e01d8bad63402a7aa6045c4"
+  },
+  {
+    "key": "item-weapon_steelBattleaxe",
+    "id": "weapon:steelBattleaxe",
+    "name": "Steel battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.05947446894426678
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      91,
+      121
+    ],
+    "sha256": "0a4fa2c105867493d831cb16b400cd1e7547b99b458214b9a42e9370eb269dab"
+  },
+  {
+    "key": "item-weapon_steelTwohand",
+    "id": "weapon:steelTwohand",
+    "name": "Steel 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.7920078533494594,
+      1.9027627715937472,
+      0.07027802163711215
+    ],
+    "pixelBounds": [
+      54,
+      22,
+      89,
+      124
+    ],
+    "sha256": "24561423f1a76f669f9830126f9dc2dc866b9abdca2ee368f9f970020caec173"
+  },
+  {
+    "key": "item-weapon_steelSpear",
+    "id": "weapon:steelSpear",
+    "name": "Steel spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.0836207159642323
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "b69ed39c0e5695aa8b5379b73fbafff69264349499759e77b724fa031c7487d4"
+  },
+  {
+    "key": "item-weapon_blacksteelDagger",
+    "id": "weapon:blacksteelDagger",
+    "name": "Blacksteel dagger",
+    "model": "weapon",
+    "bounds": [
+      0.3463768185417617,
+      0.7244718426607479,
+      0.05748222406271318
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "6645d7071172f58dd4c78e71becedff0b011fcc06bd256a0344f53a036585683"
+  },
+  {
+    "key": "item-weapon_blacksteelScimitar",
+    "id": "weapon:blacksteelScimitar",
+    "name": "Blacksteel scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.5680971662972915,
+      1.2450869941797404,
+      0.07175023879472849
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "bb61fd0ad56003c0593fa4426660da98925fcb4e736ce97a51f620d6c2f58381"
+  },
+  {
+    "key": "item-weapon_blacksteelLongsword",
+    "id": "weapon:blacksteelLongsword",
+    "name": "Blacksteel longsword",
+    "model": "weapon",
+    "bounds": [
+      0.5438498113959847,
+      1.2841715039901347,
+      0.061251869315750655
+    ],
+    "pixelBounds": [
+      56,
+      23,
+      92,
+      123
+    ],
+    "sha256": "71a58ad34231218ba4b9b051c1b6e45b23feb67c569674b25d4ef03000b1a2bc"
+  },
+  {
+    "key": "item-weapon_blacksteelHammer",
+    "id": "weapon:blacksteelHammer",
+    "name": "Blacksteel hammer",
+    "model": "weapon",
+    "bounds": [
+      0.6252083096865574,
+      1.1054489231052511,
+      0.19534287212729348
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      104,
+      111
+    ],
+    "sha256": "a3ebdd7ff40c5cd55fd12af871c34b6891560d19b5a5565364d178b5ac2b70f8"
+  },
+  {
+    "key": "item-weapon_blacksteelBattleaxe",
+    "id": "weapon:blacksteelBattleaxe",
+    "name": "Blacksteel battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.05947446894426678
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      91,
+      121
+    ],
+    "sha256": "0893ccccf6529e924179d2e9a7cf585c7bf64645aba4818ab45cc237f3517a31"
+  },
+  {
+    "key": "item-weapon_blacksteelTwohand",
+    "id": "weapon:blacksteelTwohand",
+    "name": "Blacksteel 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.7920078533494594,
+      1.9027627715937472,
+      0.07027802163711215
+    ],
+    "pixelBounds": [
+      54,
+      22,
+      89,
+      124
+    ],
+    "sha256": "325fb70944b249a2a2e008efacc46f5b5b274adb20af010bfeddcc32eb82744b"
+  },
+  {
+    "key": "item-weapon_blacksteelSpear",
+    "id": "weapon:blacksteelSpear",
+    "name": "Blacksteel spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.0836207159642323
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "25c7f10d20b76b790c295523cc6e4a0dbc2f177bfd68d63eba719e741ff67cf8"
+  },
+  {
+    "key": "item-weapon_moonsilverDagger",
+    "id": "weapon:moonsilverDagger",
+    "name": "Moonsilver dagger",
+    "model": "weapon",
+    "bounds": [
+      0.3463768185417617,
+      0.7244718426607479,
+      0.05748222406271318
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "299c23e31bc110bbcbd76d00b626034a90eb313b3e7860cda747bd2916183fd0"
+  },
+  {
+    "key": "item-weapon_moonsilverScimitar",
+    "id": "weapon:moonsilverScimitar",
+    "name": "Moonsilver scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.5680971662972915,
+      1.2450869941797404,
+      0.07175023879472849
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "25b3bf91948425ddc26f29f02ddca9301ce31d7656a9280f49ffb98026ad0728"
+  },
+  {
+    "key": "item-weapon_moonsilverLongsword",
+    "id": "weapon:moonsilverLongsword",
+    "name": "Moonsilver longsword",
+    "model": "weapon",
+    "bounds": [
+      0.5438498113959847,
+      1.2841715039901347,
+      0.061251869315750655
+    ],
+    "pixelBounds": [
+      56,
+      23,
+      92,
+      123
+    ],
+    "sha256": "e65379848783f29a4992df685fa5d97727764774b7ebcd4747259ed4ae414d8e"
+  },
+  {
+    "key": "item-weapon_moonsilverHammer",
+    "id": "weapon:moonsilverHammer",
+    "name": "Moonsilver hammer",
+    "model": "weapon",
+    "bounds": [
+      0.6252083096865574,
+      1.1054489231052511,
+      0.19534287212729348
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      104,
+      111
+    ],
+    "sha256": "dc0e37f5596072c231ee57451fd3803ff9c8834fa3af340b183130e8252f3313"
+  },
+  {
+    "key": "item-weapon_moonsilverBattleaxe",
+    "id": "weapon:moonsilverBattleaxe",
+    "name": "Moonsilver battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.05947446894426678
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      91,
+      121
+    ],
+    "sha256": "5787194d38c0edfc84118fa95905105b15f0c499b94d4976df66d996625e867b"
+  },
+  {
+    "key": "item-weapon_moonsilverTwohand",
+    "id": "weapon:moonsilverTwohand",
+    "name": "Moonsilver 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.7920078533494594,
+      1.9027627715937472,
+      0.07027802163711215
+    ],
+    "pixelBounds": [
+      54,
+      22,
+      89,
+      124
+    ],
+    "sha256": "771bee4dceca3355f96e5dcc19a2233efbc943fbe350324e5bcb7801a3ca674b"
+  },
+  {
+    "key": "item-weapon_moonsilverSpear",
+    "id": "weapon:moonsilverSpear",
+    "name": "Moonsilver spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.0836207159642323
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "a419bd3db996c6309ead5836d90668a74d097c15958b5799349aac3598c40547"
+  },
+  {
+    "key": "item-weapon_verditeDagger",
+    "id": "weapon:verditeDagger",
+    "name": "Verdite dagger",
+    "model": "weapon",
+    "bounds": [
+      0.3463768185417617,
+      0.7244718426607479,
+      0.05748222406271318
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "88baf0d7c688ff4532215b46ca945c858b65bd9d75b8d02e91769188191278f8"
+  },
+  {
+    "key": "item-weapon_verditeScimitar",
+    "id": "weapon:verditeScimitar",
+    "name": "Verdite scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.5680971662972915,
+      1.2450869941797404,
+      0.07175023879472849
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "a4919d8bbc875890d8a0f6c8ce865e3d245b1c5c41eae3b60578e6dd9d272cc7"
+  },
+  {
+    "key": "item-weapon_verditeLongsword",
+    "id": "weapon:verditeLongsword",
+    "name": "Verdite longsword",
+    "model": "weapon",
+    "bounds": [
+      0.5438498113959847,
+      1.2841715039901347,
+      0.061251869315750655
+    ],
+    "pixelBounds": [
+      56,
+      23,
+      92,
+      123
+    ],
+    "sha256": "6907dd7ffa266be25c4e11c46e76be788d175da951aa2681a3012f7cca885539"
+  },
+  {
+    "key": "item-weapon_verditeHammer",
+    "id": "weapon:verditeHammer",
+    "name": "Verdite hammer",
+    "model": "weapon",
+    "bounds": [
+      0.6252083096865574,
+      1.1054489231052511,
+      0.19534287212729348
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      104,
+      111
+    ],
+    "sha256": "8e65fa4d623138e5cbbc3592e99fb3f0129b55ee827ce619a80006c2db63aeae"
+  },
+  {
+    "key": "item-weapon_verditeBattleaxe",
+    "id": "weapon:verditeBattleaxe",
+    "name": "Verdite battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.05947446894426678
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      91,
+      121
+    ],
+    "sha256": "0083ec0fcae20f295336f43b65e938f30c13dc1ac40c91fcb8bf5d2d27b7efdf"
+  },
+  {
+    "key": "item-weapon_verditeTwohand",
+    "id": "weapon:verditeTwohand",
+    "name": "Verdite 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.7920078533494594,
+      1.9027627715937472,
+      0.07027802163711215
+    ],
+    "pixelBounds": [
+      54,
+      22,
+      89,
+      124
+    ],
+    "sha256": "62eadadd51ed5310cad272448835849a13d4422f2d7421e4c5e4532a6ac4c1bf"
+  },
+  {
+    "key": "item-weapon_verditeSpear",
+    "id": "weapon:verditeSpear",
+    "name": "Verdite spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.0836207159642323
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "149a74bdac098ddf70b9eabc72c4d3a7dadcfd35bd0c8070af454989d0cf298c"
+  },
+  {
+    "key": "item-weapon_tidesteelDagger",
+    "id": "weapon:tidesteelDagger",
+    "name": "Tidesteel dagger",
+    "model": "weapon",
+    "bounds": [
+      0.3463768185417617,
+      0.7244718426607479,
+      0.05748222406271318
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "df6ca9a8b58c45f82d4aa2df9a448a4c5f4aaa7db1bcad1b52318beff6c0e636"
+  },
+  {
+    "key": "item-weapon_tidesteelScimitar",
+    "id": "weapon:tidesteelScimitar",
+    "name": "Tidesteel scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.5680971662972915,
+      1.2450869941797404,
+      0.07175023879472849
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "eeac89d55cd7fe3a6224d380615d1a0a0176657d988c4c9da9f59b6d63477bd4"
+  },
+  {
+    "key": "item-weapon_tidesteelLongsword",
+    "id": "weapon:tidesteelLongsword",
+    "name": "Tidesteel longsword",
+    "model": "weapon",
+    "bounds": [
+      0.5438498113959847,
+      1.2841715039901347,
+      0.061251869315750655
+    ],
+    "pixelBounds": [
+      56,
+      23,
+      92,
+      123
+    ],
+    "sha256": "0a299d387ada9ee90c5a729133d1712b7ef39705394c7da6dbedbbcd31cfca98"
+  },
+  {
+    "key": "item-weapon_tidesteelHammer",
+    "id": "weapon:tidesteelHammer",
+    "name": "Tidesteel hammer",
+    "model": "weapon",
+    "bounds": [
+      0.6252083096865574,
+      1.1054489231052511,
+      0.19534287212729348
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      104,
+      111
+    ],
+    "sha256": "4cc7cb1067caabb6c89b3ed29b04e2a988d55ba401e2d0fa900f6c85021d7037"
+  },
+  {
+    "key": "item-weapon_tidesteelBattleaxe",
+    "id": "weapon:tidesteelBattleaxe",
+    "name": "Tidesteel battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.05947446894426678
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      91,
+      121
+    ],
+    "sha256": "fa689e2820857929c33642c13288a91c0ffb3a3380d6c6f371ef2c43a7f93ab5"
+  },
+  {
+    "key": "item-weapon_tidesteelTwohand",
+    "id": "weapon:tidesteelTwohand",
+    "name": "Tidesteel 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.7920078533494594,
+      1.9027627715937472,
+      0.07027802163711215
+    ],
+    "pixelBounds": [
+      54,
+      22,
+      89,
+      124
+    ],
+    "sha256": "793f372d87d699bc47d8eef273b10218a3a5efdf67b5bae3cda0dfc6cad4efab"
+  },
+  {
+    "key": "item-weapon_tidesteelSpear",
+    "id": "weapon:tidesteelSpear",
+    "name": "Tidesteel spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.0836207159642323
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "0193e8ed1bece583d5c06badccc26afc10b8461b3a2e873257295983949fdb73"
+  },
+  {
+    "key": "item-weapon_embersteelDagger",
+    "id": "weapon:embersteelDagger",
+    "name": "Embersteel dagger",
+    "model": "weapon",
+    "bounds": [
+      0.3463768185417617,
+      0.7244718426607479,
+      0.05748222406271318
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "dbfb370078c616350e3f6439f26fd9380ce2b5a06c507e692ac4bb7292b6837c"
+  },
+  {
+    "key": "item-weapon_embersteelScimitar",
+    "id": "weapon:embersteelScimitar",
+    "name": "Embersteel scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.5680971662972915,
+      1.2450869941797404,
+      0.07175023879472849
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "fdc478a8a1961fc9b013d1ad84d600c07dec7c8adb12361e06655da1ceeb1e56"
+  },
+  {
+    "key": "item-weapon_embersteelLongsword",
+    "id": "weapon:embersteelLongsword",
+    "name": "Embersteel longsword",
+    "model": "weapon",
+    "bounds": [
+      0.5438498113959847,
+      1.2841715039901347,
+      0.061251869315750655
+    ],
+    "pixelBounds": [
+      56,
+      23,
+      92,
+      123
+    ],
+    "sha256": "1f5cea570ed4b705c1be603dd038896cdf15f18937bd5022c8b39d365f97b397"
+  },
+  {
+    "key": "item-weapon_embersteelHammer",
+    "id": "weapon:embersteelHammer",
+    "name": "Embersteel hammer",
+    "model": "weapon",
+    "bounds": [
+      0.6252083096865574,
+      1.1054489231052511,
+      0.19534287212729348
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      104,
+      111
+    ],
+    "sha256": "9df81d47bf1c05cb10579695449da0570c48b33e453dc02859758b70545cf9c0"
+  },
+  {
+    "key": "item-weapon_embersteelBattleaxe",
+    "id": "weapon:embersteelBattleaxe",
+    "name": "Embersteel battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.05947446894426678
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      91,
+      121
+    ],
+    "sha256": "0eaf059d20fdada7abd8b780220f253897fb2b181831b1d7e625abd1c74cf231"
+  },
+  {
+    "key": "item-weapon_embersteelTwohand",
+    "id": "weapon:embersteelTwohand",
+    "name": "Embersteel 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.7920078533494594,
+      1.9027627715937472,
+      0.07027802163711215
+    ],
+    "pixelBounds": [
+      54,
+      22,
+      89,
+      124
+    ],
+    "sha256": "b056ec319158b73a8a00bf26cfec64fa96876c9c4843c5790bd962d98868e8de"
+  },
+  {
+    "key": "item-weapon_embersteelSpear",
+    "id": "weapon:embersteelSpear",
+    "name": "Embersteel spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.0836207159642323
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "4f11fc11828c47d35cd4679eff267d90fe77e7b8b914603f9b9d2b9a50e6106b"
+  },
+  {
+    "key": "item-weapon_eldersteelDagger",
+    "id": "weapon:eldersteelDagger",
+    "name": "Eldersteel dagger",
+    "model": "weapon",
+    "bounds": [
+      0.3463768185417617,
+      0.7244718426607479,
+      0.05748222406271318
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "5392bb28f5e396ec90f8d1cf5145df0efb8ab039011682845b9ab4abb8beff43"
+  },
+  {
+    "key": "item-weapon_eldersteelScimitar",
+    "id": "weapon:eldersteelScimitar",
+    "name": "Eldersteel scimitar",
+    "model": "weapon",
+    "bounds": [
+      0.5680971662972915,
+      1.2450869941797404,
+      0.07175023879472849
+    ],
+    "pixelBounds": [
+      55,
+      21,
+      91,
+      122
+    ],
+    "sha256": "d5bf255a14f408966bfa7e8e580990aaf214dfae0143f0e70057dd1a822743c7"
+  },
+  {
+    "key": "item-weapon_eldersteelLongsword",
+    "id": "weapon:eldersteelLongsword",
+    "name": "Eldersteel longsword",
+    "model": "weapon",
+    "bounds": [
+      0.5438498113959847,
+      1.2841715039901347,
+      0.061251869315750655
+    ],
+    "pixelBounds": [
+      56,
+      23,
+      92,
+      123
+    ],
+    "sha256": "73bd96193861be1c9d1f1fa7f218ee6d67d3d993b42c91bcf58584f5f020e325"
+  },
+  {
+    "key": "item-weapon_eldersteelHammer",
+    "id": "weapon:eldersteelHammer",
+    "name": "Eldersteel hammer",
+    "model": "weapon",
+    "bounds": [
+      0.6252083096865574,
+      1.1054489231052511,
+      0.19534287212729348
+    ],
+    "pixelBounds": [
+      47,
+      21,
+      104,
+      111
+    ],
+    "sha256": "eb2f86d2e38b91879eaf4b3792107f8cf84810344341e848245217caf22a981f"
+  },
+  {
+    "key": "item-weapon_eldersteelBattleaxe",
+    "id": "weapon:eldersteelBattleaxe",
+    "name": "Eldersteel battleaxe",
+    "model": "weapon",
+    "bounds": [
+      0.6615215085554143,
+      1.4758148069054133,
+      0.05947446894426678
+    ],
+    "pixelBounds": [
+      51,
+      20,
+      91,
+      121
+    ],
+    "sha256": "0a4e11560f5d7dc4ccfecb02bef1062aa76ea11634b885a69cca942a40b7f054"
+  },
+  {
+    "key": "item-weapon_eldersteelTwohand",
+    "id": "weapon:eldersteelTwohand",
+    "name": "Eldersteel 2h sword",
+    "model": "weapon",
+    "bounds": [
+      0.7920078533494594,
+      1.9027627715937472,
+      0.07027802163711215
+    ],
+    "pixelBounds": [
+      54,
+      22,
+      89,
+      124
+    ],
+    "sha256": "eeca3a136ea5befc87475a3d1126ebb380e4c4d0c635a4379a29d8e558726501"
+  },
+  {
+    "key": "item-weapon_eldersteelSpear",
+    "id": "weapon:eldersteelSpear",
+    "name": "Eldersteel spear",
+    "model": "weapon",
+    "bounds": [
+      0.7926641502789137,
+      2.4403384080600654,
+      0.0836207159642323
+    ],
+    "pixelBounds": [
+      56,
+      20,
+      88,
+      125
+    ],
+    "sha256": "870f55241c052151626d69dc2bb98bba85d6146e6370bec5b28459a9676ed39d"
+  },
+  {
+    "key": "item-weapon_oakShortbow",
+    "id": "weapon:oakShortbow",
+    "name": "Oak shortbow",
+    "model": "weapon",
+    "bounds": [
+      0.8306397620582038,
+      1.605315687666265,
+      0.06944181432539767
+    ],
+    "pixelBounds": [
+      53,
+      33,
+      99,
+      126
+    ],
+    "sha256": "906409ef7298979a1aecd814b05b4706c29bb1c31bc5684d8b341109e1db50f1"
+  },
+  {
+    "key": "item-weapon_willowShortbow",
+    "id": "weapon:willowShortbow",
+    "name": "Willow shortbow",
+    "model": "weapon",
+    "bounds": [
+      0.8306397620582038,
+      1.605315687666265,
+      0.06944181432539767
+    ],
+    "pixelBounds": [
+      53,
+      33,
+      99,
+      126
+    ],
+    "sha256": "ccefb58e2a0738af01cdbc12789752029064e9478bf236d1e0a5450cd404b104"
+  },
+  {
+    "key": "item-weapon_mapleShortbow",
+    "id": "weapon:mapleShortbow",
+    "name": "Maple shortbow",
+    "model": "weapon",
+    "bounds": [
+      0.8306397620582038,
+      1.605315687666265,
+      0.06944181432539767
+    ],
+    "pixelBounds": [
+      53,
+      33,
+      99,
+      126
+    ],
+    "sha256": "0b34284cf1fd1cab25d5284a8f5c1f842eb294723b800bfa21991bc5c50a29d3"
+  },
+  {
+    "key": "item-weapon_yewShortbow",
+    "id": "weapon:yewShortbow",
+    "name": "Yew shortbow",
+    "model": "weapon",
+    "bounds": [
+      0.8306397620582038,
+      1.605315687666265,
+      0.06944181432539767
+    ],
+    "pixelBounds": [
+      53,
+      33,
+      99,
+      126
+    ],
+    "sha256": "4acd9a9058eb34310aebbed3a12cde9ee2ed8c8d8b6d12ef30dacb96d9944f54"
+  },
+  {
+    "key": "item-armor_bronzeArmet",
+    "id": "armor:bronzeArmet",
+    "name": "Bronze armet helm",
+    "model": "bronzeArmet",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "34232930a8044382af1d310b1e9fa33cd95848351dc76d401f62b7a4a80d399e"
+  },
+  {
+    "key": "item-armor_bronzeHornedHelm",
+    "id": "armor:bronzeHornedHelm",
+    "name": "Bronze horned helm",
+    "model": "bronzeHornedHelm",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "a8851d8892c25c14d2ac17cb587d8277463e6b5a4b08b8c2dc466da2c986182f"
+  },
+  {
+    "key": "item-armor_bronzeBreastplate",
+    "id": "armor:bronzeBreastplate",
+    "name": "Bronze breastplate",
+    "model": "bronzeBreastplate",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "c03fea3b99a4679baf2c0e5f81d1f03530afc96f11228ac3d647accc9af9e28f"
+  },
+  {
+    "key": "item-armor_bronzeGauntlets",
+    "id": "armor:bronzeGauntlets",
+    "name": "Bronze gauntlets",
+    "model": "bronzeGauntlets",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "ff6c8c97d930dc43f502728f09c1735e7efbe743da258c3da651c63cf6250041"
+  },
+  {
+    "key": "item-armor_bronzeGreaves",
+    "id": "armor:bronzeGreaves",
+    "name": "Bronze greaves",
+    "model": "bronzeGreaves",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "bbe61dc2ead97332cba7ac608843e3316b6123440001e8e9068ba1e0f2ccb811"
+  },
+  {
+    "key": "item-armor_bronzeSabatons",
+    "id": "armor:bronzeSabatons",
+    "name": "Bronze sabatons",
+    "model": "bronzeSabatons",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "ee0c8d279ab8fed4ee02a46e6a8410fcb3b35ea78cd310b7e789d73c6c810e2b"
+  },
+  {
+    "key": "item-armor_bronzeRoundPauldrons",
+    "id": "armor:bronzeRoundPauldrons",
+    "name": "Bronze round pauldrons",
+    "model": "bronzeRoundPauldrons",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "3e2ffd876c9d108e1eb1f92eb9b2ba90e2822cba6dc2f2273fc41947d334e77f"
+  },
+  {
+    "key": "item-armor_bronzeSpikedPauldrons",
+    "id": "armor:bronzeSpikedPauldrons",
+    "name": "Bronze spiked pauldrons",
+    "model": "bronzeSpikedPauldrons",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "b9fb7f21d8d5ecc89755a597cbaefb25719d76d73f1a837cccf954cb24189fd9"
+  },
+  {
+    "key": "item-armor_steelArmet",
+    "id": "armor:steelArmet",
+    "name": "Steel armet helm",
+    "model": "steelArmet",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "977173054fe904913baeec75c6c8e164d17b1378b7b79adfe054897ff72c2d5e"
+  },
+  {
+    "key": "item-armor_steelHornedHelm",
+    "id": "armor:steelHornedHelm",
+    "name": "Steel horned helm",
+    "model": "steelHornedHelm",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "ba446cf4c0b94ce5f2664168dc5104f5dd73daefcb0321c17d2669eddc94600e"
+  },
+  {
+    "key": "item-armor_steelBreastplate",
+    "id": "armor:steelBreastplate",
+    "name": "Steel breastplate",
+    "model": "steelBreastplate",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "800b95df70f668e03d31512efadf19df0639ef6bbcce628eb269cf929fbe7b94"
+  },
+  {
+    "key": "item-armor_steelGauntlets",
+    "id": "armor:steelGauntlets",
+    "name": "Steel gauntlets",
+    "model": "steelGauntlets",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "8eda3dcec1005a429e0cc35da42d1ef105c1eee8e20e1428ccebc3d77a89de6f"
+  },
+  {
+    "key": "item-armor_steelGreaves",
+    "id": "armor:steelGreaves",
+    "name": "Steel greaves",
+    "model": "steelGreaves",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "292d8c11d88dc396b46958ad2022aea9630aaa9b3a150f8369cee0bb22335783"
+  },
+  {
+    "key": "item-armor_steelSabatons",
+    "id": "armor:steelSabatons",
+    "name": "Steel sabatons",
+    "model": "steelSabatons",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "40d69a6b56bd868801e60d062a02a0c3d8118dd6e4a6873e6914cc36b2f78518"
+  },
+  {
+    "key": "item-armor_steelRoundPauldrons",
+    "id": "armor:steelRoundPauldrons",
+    "name": "Steel round pauldrons",
+    "model": "steelRoundPauldrons",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "0cd24ce79bcc5c50856c9e0733dd9af083c8a651b1c01dd8faa97db1c8ef126a"
+  },
+  {
+    "key": "item-armor_steelSpikedPauldrons",
+    "id": "armor:steelSpikedPauldrons",
+    "name": "Steel spiked pauldrons",
+    "model": "steelSpikedPauldrons",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "b4e8ae00b13e0cfd3a64cba76359e86b948be4e73b6986f61cb98f1558f6b0d6"
+  },
+  {
+    "key": "item-armor_moonsilverArmet",
+    "id": "armor:moonsilverArmet",
+    "name": "Moonsilver armet helm",
+    "model": "moonsilverArmet",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "5c57f8ed44300d81f9c7a5851918426ed251a65ecfefe0f792d3df72a0450497"
+  },
+  {
+    "key": "item-armor_moonsilverHornedHelm",
+    "id": "armor:moonsilverHornedHelm",
+    "name": "Moonsilver horned helm",
+    "model": "moonsilverHornedHelm",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "6f91cad3adf5c4c06817069faff423c3b2d18a69a01b5212334818a788fc4071"
+  },
+  {
+    "key": "item-armor_moonsilverBreastplate",
+    "id": "armor:moonsilverBreastplate",
+    "name": "Moonsilver breastplate",
+    "model": "moonsilverBreastplate",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "c0678f9dacd456f73ea34af28cd539c1815929b52634686556c3c76caec5ffae"
+  },
+  {
+    "key": "item-armor_moonsilverGauntlets",
+    "id": "armor:moonsilverGauntlets",
+    "name": "Moonsilver gauntlets",
+    "model": "moonsilverGauntlets",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "578f83be92167ff1a877d83bd4588dbf30d9b9d5ec51ec1578d3cd8e9d696419"
+  },
+  {
+    "key": "item-armor_moonsilverGreaves",
+    "id": "armor:moonsilverGreaves",
+    "name": "Moonsilver greaves",
+    "model": "moonsilverGreaves",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "8fcffa8f13a6a874fbe20182eea07148029f79b589cd1c65e994c6abccede32b"
+  },
+  {
+    "key": "item-armor_moonsilverSabatons",
+    "id": "armor:moonsilverSabatons",
+    "name": "Moonsilver sabatons",
+    "model": "moonsilverSabatons",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "d5228941c666be482ad0d854a860e573cd6f1b2a242fa6c077112b003aa9ad6b"
+  },
+  {
+    "key": "item-armor_moonsilverRoundPauldrons",
+    "id": "armor:moonsilverRoundPauldrons",
+    "name": "Moonsilver round pauldrons",
+    "model": "moonsilverRoundPauldrons",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "8bf3d0586ac455cae3e1b3d65e669e2c5acb836cb7d5b0a2de56f49ff9659306"
+  },
+  {
+    "key": "item-armor_moonsilverSpikedPauldrons",
+    "id": "armor:moonsilverSpikedPauldrons",
+    "name": "Moonsilver spiked pauldrons",
+    "model": "moonsilverSpikedPauldrons",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "ce87d93f886d9ccfe94da224ac1ab005bdf7fed8b886030790dd28557fb6c6a7"
+  },
+  {
+    "key": "item-armor_verditeArmet",
+    "id": "armor:verditeArmet",
+    "name": "Verdite armet helm",
+    "model": "verditeArmet",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "325985b441b0c32cec0a913c9a702b15c6c92329be5718111b8c7eb5d2e35ef3"
+  },
+  {
+    "key": "item-armor_verditeHornedHelm",
+    "id": "armor:verditeHornedHelm",
+    "name": "Verdite horned helm",
+    "model": "verditeHornedHelm",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "22dfe90e15a175b7b18bbc32215b46df8543026eda024ed10db7a8619aaec0db"
+  },
+  {
+    "key": "item-armor_verditeBreastplate",
+    "id": "armor:verditeBreastplate",
+    "name": "Verdite breastplate",
+    "model": "verditeBreastplate",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "6a9091e7eb2e0ed3732b230245c306846f05f99e81dec268057d48f87bd28af0"
+  },
+  {
+    "key": "item-armor_verditeGauntlets",
+    "id": "armor:verditeGauntlets",
+    "name": "Verdite gauntlets",
+    "model": "verditeGauntlets",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "8087b3cfab69b1793fa423cf208ade1d685133dae8fb5459ef41d2c30b6c8924"
+  },
+  {
+    "key": "item-armor_verditeGreaves",
+    "id": "armor:verditeGreaves",
+    "name": "Verdite greaves",
+    "model": "verditeGreaves",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "7ba7b8a38736547d1ff4ffbb6a1d2281533e93f279dad04e4a357216fb97bb0b"
+  },
+  {
+    "key": "item-armor_verditeSabatons",
+    "id": "armor:verditeSabatons",
+    "name": "Verdite sabatons",
+    "model": "verditeSabatons",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "ef605fd12021bf72417dff7aa627c04de336a6118f11912f7215440772d2c073"
+  },
+  {
+    "key": "item-armor_verditeRoundPauldrons",
+    "id": "armor:verditeRoundPauldrons",
+    "name": "Verdite round pauldrons",
+    "model": "verditeRoundPauldrons",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "31f82c731ddd6b9a3c46dbe424f785d8089dd718d1df454bcce0b9c1c96495ca"
+  },
+  {
+    "key": "item-armor_verditeSpikedPauldrons",
+    "id": "armor:verditeSpikedPauldrons",
+    "name": "Verdite spiked pauldrons",
+    "model": "verditeSpikedPauldrons",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "021868ed900ae68c1488364f347c44d4519ab66f32af5751494755de616d7cba"
+  },
+  {
+    "key": "item-armor_tidesteelArmet",
+    "id": "armor:tidesteelArmet",
+    "name": "Tidesteel armet helm",
+    "model": "tidesteelArmet",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "add9aee55fe7b97cc9e84532abf13098ea57c87b3da4311040dce52db222e398"
+  },
+  {
+    "key": "item-armor_tidesteelHornedHelm",
+    "id": "armor:tidesteelHornedHelm",
+    "name": "Tidesteel horned helm",
+    "model": "tidesteelHornedHelm",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "dd5950b0f218f35fdace429dfc5eabb7872dfa32bef680c40c1d24023011aab3"
+  },
+  {
+    "key": "item-armor_tidesteelBreastplate",
+    "id": "armor:tidesteelBreastplate",
+    "name": "Tidesteel breastplate",
+    "model": "tidesteelBreastplate",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "ec3f137de92083a9e7821e350a1c60251edc9b3051c30a02cd362f54dea79b72"
+  },
+  {
+    "key": "item-armor_tidesteelGauntlets",
+    "id": "armor:tidesteelGauntlets",
+    "name": "Tidesteel gauntlets",
+    "model": "tidesteelGauntlets",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "061b2d20a8fe1bd92651928f34f9a57fa2f70a7f74807e2e8fb6bcb7c270f175"
+  },
+  {
+    "key": "item-armor_tidesteelGreaves",
+    "id": "armor:tidesteelGreaves",
+    "name": "Tidesteel greaves",
+    "model": "tidesteelGreaves",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "15d565fbb96c7774cb5a3f93708300b1db53e16693995571b75e2bf0275f52ca"
+  },
+  {
+    "key": "item-armor_tidesteelSabatons",
+    "id": "armor:tidesteelSabatons",
+    "name": "Tidesteel sabatons",
+    "model": "tidesteelSabatons",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "abaddf161f492114ad83ffda3ed520dc7a474f1b65fc2ea3a2052dab71d9bbc6"
+  },
+  {
+    "key": "item-armor_tidesteelRoundPauldrons",
+    "id": "armor:tidesteelRoundPauldrons",
+    "name": "Tidesteel round pauldrons",
+    "model": "tidesteelRoundPauldrons",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "38249a508b6162bead46e3534d430ecb74aa1e63d612ba8cc036087df8c65b3e"
+  },
+  {
+    "key": "item-armor_tidesteelSpikedPauldrons",
+    "id": "armor:tidesteelSpikedPauldrons",
+    "name": "Tidesteel spiked pauldrons",
+    "model": "tidesteelSpikedPauldrons",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "e0050d8c016e623f2c4af16c5e81db28a7cdfd74a8cfd15fa008ced40fe91e40"
+  },
+  {
+    "key": "item-armor_embersteelArmet",
+    "id": "armor:embersteelArmet",
+    "name": "Embersteel armet helm",
+    "model": "embersteelArmet",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "f30645dcfaed965a6461892c9fa806088818f6fd314fc1ae98885dd02f3ebb79"
+  },
+  {
+    "key": "item-armor_embersteelHornedHelm",
+    "id": "armor:embersteelHornedHelm",
+    "name": "Embersteel horned helm",
+    "model": "embersteelHornedHelm",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "4b98aa961d810ba734ac7e7a50c0caef32ce82b0866ea7437f12db3622dc41a5"
+  },
+  {
+    "key": "item-armor_embersteelBreastplate",
+    "id": "armor:embersteelBreastplate",
+    "name": "Embersteel breastplate",
+    "model": "embersteelBreastplate",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "71957ae02cace982dff94ff098b913afb090b8c83bc2d8814d8062fa4c41c168"
+  },
+  {
+    "key": "item-armor_embersteelGauntlets",
+    "id": "armor:embersteelGauntlets",
+    "name": "Embersteel gauntlets",
+    "model": "embersteelGauntlets",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "09de90e05b81dbee16af1051daad8411bd04a4ac67ce9eae0f976b1fce2b08c3"
+  },
+  {
+    "key": "item-armor_embersteelGreaves",
+    "id": "armor:embersteelGreaves",
+    "name": "Embersteel greaves",
+    "model": "embersteelGreaves",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "09a14a686702d5eb6d19a04c7d11e781b755050376520aa5eb96377db8341e4f"
+  },
+  {
+    "key": "item-armor_embersteelSabatons",
+    "id": "armor:embersteelSabatons",
+    "name": "Embersteel sabatons",
+    "model": "embersteelSabatons",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "7740399a47dcffe492bd10b7e35e33f3e21b1504490e7f44b9b0f01d6798eb61"
+  },
+  {
+    "key": "item-armor_embersteelRoundPauldrons",
+    "id": "armor:embersteelRoundPauldrons",
+    "name": "Embersteel round pauldrons",
+    "model": "embersteelRoundPauldrons",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "eb1964c64407901e0c59972cc805e28293aa1a7aeabe91428c1fa2754a9b8b7e"
+  },
+  {
+    "key": "item-armor_embersteelSpikedPauldrons",
+    "id": "armor:embersteelSpikedPauldrons",
+    "name": "Embersteel spiked pauldrons",
+    "model": "embersteelSpikedPauldrons",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "3abcd07a969757588af939caeedf168fb397a9afc17f2fd1cb1307abea30cb67"
+  },
+  {
+    "key": "item-armor_eldersteelArmet",
+    "id": "armor:eldersteelArmet",
+    "name": "Eldersteel armet helm",
+    "model": "eldersteelArmet",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "63091448533b2735d770fa5fbc984ed290b0cf08ddb287b8a74c7889c4accdef"
+  },
+  {
+    "key": "item-armor_eldersteelHornedHelm",
+    "id": "armor:eldersteelHornedHelm",
+    "name": "Eldersteel horned helm",
+    "model": "eldersteelHornedHelm",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "bc3e5c2b2dcc5de621187ffd84838abb2b1b0faa7b81ba096a4df9d4c91231a8"
+  },
+  {
+    "key": "item-armor_eldersteelBreastplate",
+    "id": "armor:eldersteelBreastplate",
+    "name": "Eldersteel breastplate",
+    "model": "eldersteelBreastplate",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "ed620acf6e8ee8020381a324d455dd70898120c5103e8ac627e4930383bb8da2"
+  },
+  {
+    "key": "item-armor_eldersteelGauntlets",
+    "id": "armor:eldersteelGauntlets",
+    "name": "Eldersteel gauntlets",
+    "model": "eldersteelGauntlets",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "a79aca5af6934a65170a3936ad64247aea1d9e91079df9383bb64908b1e67ba6"
+  },
+  {
+    "key": "item-armor_eldersteelGreaves",
+    "id": "armor:eldersteelGreaves",
+    "name": "Eldersteel greaves",
+    "model": "eldersteelGreaves",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "260c425e6af1e2053f62f2253ab4409faa3194946a07b3c11be3b0c214b2bd14"
+  },
+  {
+    "key": "item-armor_eldersteelSabatons",
+    "id": "armor:eldersteelSabatons",
+    "name": "Eldersteel sabatons",
+    "model": "eldersteelSabatons",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "43b301358fd29c4863213dab7217a845a252d1460711e0d9fc9d348a854d015d"
+  },
+  {
+    "key": "item-armor_eldersteelRoundPauldrons",
+    "id": "armor:eldersteelRoundPauldrons",
+    "name": "Eldersteel round pauldrons",
+    "model": "eldersteelRoundPauldrons",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "0ea0881cc0821e55ff5658b59ce48fea4f6b9dd2a5f1ff823e16f7bee30b272f"
+  },
+  {
+    "key": "item-armor_eldersteelSpikedPauldrons",
+    "id": "armor:eldersteelSpikedPauldrons",
+    "name": "Eldersteel spiked pauldrons",
+    "model": "eldersteelSpikedPauldrons",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "5f68cb71480f9473f34286e4824b431c4e8cfa0e46e344e1798ff19af376d9f9"
+  },
+  {
+    "key": "item-shield_bronzeKiteshield",
+    "id": "shield:bronzeKiteshield",
+    "name": "Bronze kiteshield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "ee05361c63ef7458d7908fa2dbb00285c6740e80b6dbfb1f2188e2b7307c0748"
+  },
+  {
+    "key": "item-shield_bronzeHeaterShield",
+    "id": "shield:bronzeHeaterShield",
+    "name": "Bronze heater shield",
+    "model": "shield",
+    "bounds": [
+      0.8994125000459214,
+      1.149999976158142,
+      0.26855677411914747
+    ],
+    "pixelBounds": [
+      31,
+      19,
+      109,
+      124
+    ],
+    "sha256": "926c51683bbed31b94ba50ca132fde4ada975af6243cc8baa89b67acfd5f1cfc"
+  },
+  {
+    "key": "item-shield_steelKiteshield",
+    "id": "shield:steelKiteshield",
+    "name": "Steel kiteshield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "f13a1fbf3df61af3465ea5ca23e20e6feddf995dee7de656f7d3a0ec42a24d0f"
+  },
+  {
+    "key": "item-shield_steelHeaterShield",
+    "id": "shield:steelHeaterShield",
+    "name": "Steel heater shield",
+    "model": "shield",
+    "bounds": [
+      0.8994125000459214,
+      1.149999976158142,
+      0.26855677411914747
+    ],
+    "pixelBounds": [
+      31,
+      19,
+      109,
+      124
+    ],
+    "sha256": "170b51e8c03cf9fd2017d91193b94720b6fed2f851f833d26e87d90a43098585"
+  },
+  {
+    "key": "item-shield_blacksteelKiteshield",
+    "id": "shield:blacksteelKiteshield",
+    "name": "Blacksteel kiteshield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "a8ae548e68ecae6367023e1486a9420bb29b3799d82e8c54c6f0c0d5676a3190"
+  },
+  {
+    "key": "item-shield_blacksteelHeaterShield",
+    "id": "shield:blacksteelHeaterShield",
+    "name": "Blacksteel heater shield",
+    "model": "shield",
+    "bounds": [
+      0.8994125000459214,
+      1.149999976158142,
+      0.26855677411914747
+    ],
+    "pixelBounds": [
+      31,
+      19,
+      109,
+      124
+    ],
+    "sha256": "022aa8f59482499051d7aefd5bda836ec6257d94c8e1f163c3950a53e9858e36"
+  },
+  {
+    "key": "item-shield_moonsilverKiteshield",
+    "id": "shield:moonsilverKiteshield",
+    "name": "Moonsilver kiteshield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "49e1a765cc986a26e6a6d2ee8f908d382f45410b7ada5e8ae6e1501564678624"
+  },
+  {
+    "key": "item-shield_moonsilverHeaterShield",
+    "id": "shield:moonsilverHeaterShield",
+    "name": "Moonsilver heater shield",
+    "model": "shield",
+    "bounds": [
+      0.8994125000459214,
+      1.149999976158142,
+      0.26855677411914747
+    ],
+    "pixelBounds": [
+      31,
+      19,
+      109,
+      124
+    ],
+    "sha256": "a5964a556eafabd2c2553c6b8a282e1a8893c79f964ae9474c29b0d41af39fb6"
+  },
+  {
+    "key": "item-shield_verditeKiteshield",
+    "id": "shield:verditeKiteshield",
+    "name": "Verdite kiteshield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "38c47bd5ff3982437a03690e878366ddeb3a617fdec69a63a36e2664c5a4a4a8"
+  },
+  {
+    "key": "item-shield_verditeHeaterShield",
+    "id": "shield:verditeHeaterShield",
+    "name": "Verdite heater shield",
+    "model": "shield",
+    "bounds": [
+      0.8994125000459214,
+      1.149999976158142,
+      0.26855677411914747
+    ],
+    "pixelBounds": [
+      31,
+      19,
+      109,
+      124
+    ],
+    "sha256": "a265f6cbbde50bef01a739d6de85879b97c859863577a8717ede137adeb681fb"
+  },
+  {
+    "key": "item-shield_tidesteelKiteshield",
+    "id": "shield:tidesteelKiteshield",
+    "name": "Tidesteel kiteshield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "27a8e4364d5576660298c65c394964bc309221a65b62e013c055933f79d6de04"
+  },
+  {
+    "key": "item-shield_tidesteelHeaterShield",
+    "id": "shield:tidesteelHeaterShield",
+    "name": "Tidesteel heater shield",
+    "model": "shield",
+    "bounds": [
+      0.8994125000459214,
+      1.149999976158142,
+      0.26855677411914747
+    ],
+    "pixelBounds": [
+      31,
+      19,
+      109,
+      124
+    ],
+    "sha256": "9bec88755877cf352a4c23a5e4699c1891c332653e0a37cc488d6e7bbdb2cb76"
+  },
+  {
+    "key": "item-shield_embersteelKiteshield",
+    "id": "shield:embersteelKiteshield",
+    "name": "Embersteel kiteshield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "f9e9857ef89b285fe1ebd40233719da9d6ade61a9ce3175b67fb4169bf92d2b1"
+  },
+  {
+    "key": "item-shield_embersteelHeaterShield",
+    "id": "shield:embersteelHeaterShield",
+    "name": "Embersteel heater shield",
+    "model": "shield",
+    "bounds": [
+      0.8994125000459214,
+      1.149999976158142,
+      0.26855677411914747
+    ],
+    "pixelBounds": [
+      31,
+      19,
+      109,
+      124
+    ],
+    "sha256": "b57b6a293f1478abbd1b96fcf83346141a2a105fb43c16272655b0a9dc3fceb2"
+  },
+  {
+    "key": "item-shield_eldersteelKiteshield",
+    "id": "shield:eldersteelKiteshield",
+    "name": "Eldersteel kiteshield",
+    "model": "shield",
+    "bounds": [
+      1.0167271577504629,
+      1.2999999523162842,
+      0.3027924325106931
+    ],
+    "pixelBounds": [
+      30,
+      19,
+      109,
+      124
+    ],
+    "sha256": "b80248cfac5d2f8e19870c616a13b4219ddf61ad36f3216ea7fd8d3c7a45cdf6"
+  },
+  {
+    "key": "item-shield_eldersteelHeaterShield",
+    "id": "shield:eldersteelHeaterShield",
+    "name": "Eldersteel heater shield",
+    "model": "shield",
+    "bounds": [
+      0.8994125000459214,
+      1.149999976158142,
+      0.26855677411914747
+    ],
+    "pixelBounds": [
+      31,
+      19,
+      109,
+      124
+    ],
+    "sha256": "01f7e91b3cc12e994839ff67a272d4befac4880bf11e323a8b2449f2ece4ae74"
+  },
+  {
+    "key": "item-armor_knightArmet3",
+    "id": "armor:knightArmet3",
+    "name": "Blacksteel armet helm",
+    "model": "knightArmet3",
+    "bounds": [
+      0.5297616504409924,
+      0.772385326700644,
+      0.85
+    ],
+    "pixelBounds": [
+      43,
+      27,
+      110,
+      113
+    ],
+    "sha256": "7e95b26aee48c1b2b50e115561838d337820e1501da7cae92fbe8965f4260abf"
+  },
+  {
+    "key": "item-armor_knightHornedHelm3",
+    "id": "armor:knightHornedHelm3",
+    "name": "Blacksteel horned helm",
+    "model": "knightHornedHelm3",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "13af4e4fef8806e79d36ad4b02180f4afd889193b1b81b41ef0c49d0bf82a489"
+  },
+  {
+    "key": "item-armor_knightBreastplate3",
+    "id": "armor:knightBreastplate3",
+    "name": "Blacksteel breastplate",
+    "model": "knightBreastplate3",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "25257eaf8338e83a408ea02c1511d1755b57ad529a942a620ede5f5ab4c32121"
+  },
+  {
+    "key": "item-armor_knightGauntlets3",
+    "id": "armor:knightGauntlets3",
+    "name": "Blacksteel gauntlets",
+    "model": "knightGauntlets3",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "44863509d2f523994ffbc21e94f9658aad92590c1655a918d2f370a49b3521d9"
+  },
+  {
+    "key": "item-armor_knightGreaves3",
+    "id": "armor:knightGreaves3",
+    "name": "Blacksteel greaves",
+    "model": "knightGreaves3",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "fbf7d44ef94bbb61ddf5ee4cdc3ca71e5ff8810610de17e0f1fdf7358846aa88"
+  },
+  {
+    "key": "item-armor_knightSabatons3",
+    "id": "armor:knightSabatons3",
+    "name": "Blacksteel sabatons",
+    "model": "knightSabatons3",
+    "bounds": [
+      0.5658711508529923,
+      0.85,
+      0.6165074617755669
+    ],
+    "pixelBounds": [
+      36,
+      15,
+      112,
+      133
+    ],
+    "sha256": "fe948a03cbaf03194299df19b0da830d95cbbd814d92ec0675c484fdf56d0101"
+  },
+  {
+    "key": "item-armor_knightRoundPauldrons3",
+    "id": "armor:knightRoundPauldrons3",
+    "name": "Blacksteel round pauldrons",
+    "model": "knightRoundPauldrons3",
+    "bounds": [
+      0.85,
+      0.2564241462446974,
+      0.316917935728019
+    ],
+    "pixelBounds": [
+      16,
+      43,
+      129,
+      105
+    ],
+    "sha256": "b70b550d748f6bd37b30b9976f07f05fdda4aa3bce70c9af9f54b8a8b065449f"
+  },
+  {
+    "key": "item-armor_knightSpikedPauldrons3",
+    "id": "armor:knightSpikedPauldrons3",
+    "name": "Blacksteel spiked pauldrons",
+    "model": "knightSpikedPauldrons3",
+    "bounds": [
+      0.85,
+      0.24625537888729512,
+      0.25268868068483535
+    ],
+    "pixelBounds": [
+      17,
+      42,
+      127,
+      108
+    ],
+    "sha256": "92e92508dad4c9391030044afc54e23bdfd1b3dd4bb495dc330ff86463f527c9"
   }
 ]

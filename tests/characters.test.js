@@ -75,7 +75,8 @@ test('outfit parts stream in on first use and the slot keeps its previous mesh u
 });
 
 test('every outfit item resolves to a real part for both bodies and one slot',()=>{
- assert.equal(Object.keys(outfitItems).length,96);
+ // 96 outfit pieces plus 8 recoloured plate pieces for each of the 7 gear tiers without their own texture.
+ assert.equal(Object.keys(outfitItems).length,96+8*7);
  for(const item of Object.values(outfitItems)){assert.ok(OUTFIT_SLOTS.includes(item.slot),item.key);for(const sex of ['male','female'])assert.ok(characterStore.manifest.parts[item[sex]],item.key+' '+sex)}
  for(const legacy of ['helm','chest','legs','boots'])assert.equal(outfitItems[legacy].outfit,'knight');
  assert.equal(wornOutfit({helm:true,knightHornedHelm1:false}).helm,'helm');
