@@ -1,4 +1,4 @@
-import fs from 'node:fs';import {initializeGeography} from '../geography.js?v=release-20261106-weather101';import {trailCampBlueprint} from '../camp-blueprint.js';import {adventureItems} from '../adventure-catalog.js';
+import fs from 'node:fs';import {initializeGeography} from '../geography.js?v=release-20261106-amb102';import {trailCampBlueprint} from '../camp-blueprint.js';import {adventureItems} from '../adventure-catalog.js';
 const config=JSON.parse(fs.readFileSync(new URL('../db/generated-world.json',import.meta.url))).config;initializeGeography(config);const camp=trailCampBlueprint(config.seed);const json=d=>"'"+JSON.stringify(d).replaceAll("'","''")+"'::jsonb";
 let sql='-- Original, seed-stable exterior camp and reusable supplies. Castle entities are never updated.\n';
 for(const [id,d]of Object.entries(adventureItems))sql+=`insert into eldervale_private.realm_catalog(id,data) values('item:${id}',${json({...d,unique:false,icon:'supply'})}) on conflict(id) do update set data=eldervale_private.realm_catalog.data||excluded.data;\n`;

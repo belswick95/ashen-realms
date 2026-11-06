@@ -1,7 +1,7 @@
-import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261106-weather101';
-import {createSfx} from './sfx.js?v=release-20261106-weather101';
-import {createAmbience} from './ambience.js?v=release-20261106-weather101';
-import {playJingle} from './jingles.js?v=release-20261106-weather101';
+import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261106-amb102';
+import {createSfx} from './sfx.js?v=release-20261106-amb102';
+import {createAmbience} from './ambience.js?v=release-20261106-amb102';
+import {playJingle} from './jingles.js?v=release-20261106-amb102';
 let singleton;
 // One audio engine spans sign-in and gameplay: ONE AudioContext and mixer with
 // three channels, as in RuneScape — Music (region tracks, mixed soft by
