@@ -97,6 +97,17 @@ Current state (06 Nov 2026): 25 fishing spots + 1 training pond, no caves/dungeo
   NPC aggression/tolerance, prayers, special attacks, run energy, treasure hunts. Nothing ships that
   the owner can't view, edit, spawn or disable from the console.
 
+## Quest unlocks (every arc must unlock something players want)
+Each quest arc ends with meaningful, permanent unlocks (quests v2 unlock system is live):
+- New areas/dungeons only reachable after the arc (boss lairs, hidden valleys, a sky-island/ruin).
+- Fast travel: teleport spells/tablets, a ferry/boat route, a mine-cart network, a balloon or glider.
+- Gear: untradeable arc capstone items (a cape, an amulet with a teleport, a pickaxe/axe tier),
+  the anti-dragon shield, access to buy/smith a restricted metal tier.
+- Shops & services: a guild entry, a merchant with rare stock, a bank deposit box, a forge upgrade.
+- Skills/content: a new spellbook tab, a prayer, a pet companion, a player-owned house plot,
+  a boss's harder mode, a minigame.
+- World changes: rebuilt villages, NPCs who remember your choices, new dialogue across the world.
+
 ## Optional
 11. **Classic look mode**: low-poly, flat-shaded, retro-resolution renderer toggle (original art).
 
