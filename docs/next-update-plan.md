@@ -158,3 +158,8 @@ multiplies height by `smooth(4,13,distanceToRoad)`, so roads are carved to heigh
    bushes, ferns, fallen logs; denser forest bands along roads.
 4. Re-check building plots, bridges, fishing spots, cave entrances, tile collision grid (rebuild), camera clearance.
 Before/after screenshots at the same spots before deploy.
+
+## Queued after reset — Phone world map (owner report 06 Nov)
+On phones the full world map doesn't fit the screen and can't be zoomed out. Fix: fit-to-screen on open
+(whole world visible), pinch-zoom + drag-pan, zoom buttons, double-tap to zoom, safe-area aware, portrait
+and landscape; verify at iPhone SE / iPhone 15 / iPad sizes with Playwright screenshots.
