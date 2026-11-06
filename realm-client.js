@@ -1,5 +1,5 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
-import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-monsters89';
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-perf90';
 const MOTION_COMMANDS=new Set(['move','stop']);
 export async function startRealm(db,user,session){
  let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,movesPending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;

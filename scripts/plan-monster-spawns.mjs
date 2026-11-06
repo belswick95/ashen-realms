@@ -2,7 +2,7 @@
 // towns and the castle, deterministically, and writes monster-spawns.js.
 // usage: node --import ./tests/helpers/preload.js scripts/plan-monster-spawns.mjs
 import fs from 'node:fs';
-import {initializeGeography} from '../geography.js?v=release-20261106-monsters89';
+import {initializeGeography} from '../geography.js?v=release-20261106-perf90';
 import {createLandscape} from '../landscape.js';
 import {rosterBeasts,safeZoneDistance} from '../monster-roster.js';
 const root=new URL('../',import.meta.url);

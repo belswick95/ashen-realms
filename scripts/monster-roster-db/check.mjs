@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import {monsterStats} from '../../gear-tiers.js';
 import {rosterBeasts,BONES} from '../../monster-roster.js';
 import {monsterSpawns} from '../../monster-spawns.js';
-import {goods} from '../../economy.js?v=release-20261106-monsters89';
+import {goods} from '../../economy.js?v=release-20261106-perf90';
 const {PGlite}=await import(process.env.PGLITE||'@electric-sql/pglite');
 const repo=new URL('../..',import.meta.url).pathname;
 const db=new PGlite();
