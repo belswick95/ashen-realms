@@ -109,10 +109,11 @@ $fn$;
 -- Blocked tiles of a (w x w) tile_route window starting at (ox,oz), as 0-based window indices.
 create or replace function eldervale_private.underground_window(ox integer, oz integer, w integer) returns setof integer
 language sql stable set search_path to '' as $fn$
- select (gj-oz)*w+(gi-ox) from eldervale_private.underground_levels l
-  cross join lateral generate_series(greatest(l.i0,ox),least(l.i0+l.w-1,ox+w-1)) gi
-  cross join lateral generate_series(greatest(l.j0,oz),least(l.j0+l.h-1,oz+w-1)) gj
- where l.live and l.i0<=ox+w-1 and l.i0+l.w-1>=ox and l.j0<=oz+w-1 and l.j0+l.h-1>=oz
+ -- Parameters by position: underground_levels has its own column w.
+ select (gj-$2)*$3+(gi-$1) from eldervale_private.underground_levels l
+  cross join lateral generate_series(greatest(l.i0,$1),least(l.i0+l.w-1,$1+$3-1)) gi
+  cross join lateral generate_series(greatest(l.j0,$2),least(l.j0+l.h-1,$2+$3-1)) gj
+ where l.live and l.i0<=$1+$3-1 and l.i0+l.w-1>=$1 and l.j0<=$2+$3-1 and l.j0+l.h-1>=$2
   and get_bit(l.mask,(gj-l.j0)*l.w+(gi-l.i0))=0
 $fn$;
 -- The area and level under a world point (null on the overworld).

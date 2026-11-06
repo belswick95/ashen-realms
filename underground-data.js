@@ -35,13 +35,13 @@ export const dungeons=[
  {id:'birchroot_hollow',name:'Birchroot Hollow',theme:'earth',band:[3,20],origin:{x:1200,z:1200},enabled:true,
   blurb:'Roots of the old birch wood drink from an underground stream. Bats, spiders and goblin squatters; skeletons further down.',
   levels:[
-   {level:0,name:'Rootway',rooms:[room('mouth',0,0,6,5),room('roots',22,-10,10,8),room('pool',18,18,9,7),room('warren',46,4,11,9),room('drop',63,-17,6,6)],
+   {level:0,name:'Rootway',rooms:[room('mouth',0,0,6,5),room('roots',22,-10,10,8),room('pool',18,18,9,7),room('warren',46,4,11,9),room('chute',63,-17,6,6)],
     tunnels:[tunnel(3,[0,0],[22,-10]),tunnel(3,[0,0],[10,10],[18,18]),tunnel(3.2,[22,-10],[34,-4],[46,4]),tunnel(2.6,[18,18],[34,16],[46,4]),tunnel(2.6,[46,4],[56,-8],[63,-17])]},
    {level:1,name:'Deep burrows',rooms:[room('landing',0,0,6,6),room('ossuary',24,10,11,9),room('den',6,32,12,10),room('grotto',34,40,10,9)],
     tunnels:[tunnel(3,[0,0],[24,10]),tunnel(3,[0,0],[4,16],[6,32]),tunnel(2.8,[24,10],[30,24],[34,40]),tunnel(2.6,[6,32],[20,38],[34,40])]}
   ],
   entrances:[{id:'mouth',kind:'cave_mouth',x:-317,z:130,yaw:90,name:'Birchroot cave mouth',to:{level:0,x:2,z:0}}],
-  links:[{id:'drop',kind:'ladder',level:0,x:64,z:-18,to:{level:1,x:1.5,z:0}}],
+  links:[{id:'chute',kind:'ladder',level:0,x:64,z:-18,to:{level:1,x:1.5,z:0}}],
   spawns:[{id:'bats',roster:'dusk_bat',count:4,level:0,room:'roots'},{id:'spiders',roster:'mossweb_spider',count:4,level:0,room:'pool'},{id:'goblins',roster:'bramble_goblin',count:5,level:0,room:'warren'},
    {id:'skeletons',roster:'cairn_skeleton',count:4,level:1,room:'ossuary'},{id:'brutes',roster:'tuskgob_brute',count:4,level:1,room:'den'},{id:'lurkers',roster:'fen_lurker',count:3,level:1,room:'grotto'}],
   lights:[{level:0,x:3,z:-3,kind:'torch'},{level:0,x:22,z:-17,kind:'fungus'},{level:0,x:18,z:24,kind:'fungus'},{level:0,x:12,z:15,kind:'crystal'},{level:0,x:46,z:12,kind:'torch'},{level:0,x:60,z:-14,kind:'torch'},
@@ -63,7 +63,7 @@ export const dungeons=[
  {id:'cindervault_depths',name:'Cindervault Depths',theme:'fire',band:[55,100],origin:{x:2800,z:1200},enabled:true,
   blurb:'The fire under Cindervault never went out. Golems, hounds, whelps and fiends — and a sealed crucible waiting for something worse.',
   levels:[
-   {level:0,name:'Ash galleries',rooms:[room('entry',0,0,7,6),room('forge',26,8,13,10),room('run',52,-14,12,8),room('nest',36,-38,11,10),room('drop',68,-24,5,5)],
+   {level:0,name:'Ash galleries',rooms:[room('entry',0,0,7,6),room('forge',26,8,13,10),room('run',52,-14,12,8),room('nest',36,-38,11,10),room('chute',68,-24,5,5)],
     tunnels:[tunnel(3.2,[0,0],[26,8]),tunnel(3,[26,8],[40,-2],[52,-14]),tunnel(2.8,[26,8],[30,-20],[36,-38]),tunnel(2.6,[52,-14],[68,-24])]},
    {level:1,name:'Molten heart',rooms:[room('landing',0,0,6,6),room('fiends',26,0,14,11),room('causeway',50,16,10,8),room('rift',28,32,12,10),room('crucible',66,42,16,14)],
     tunnels:[tunnel(3.2,[0,0],[26,0]),tunnel(3,[26,0],[28,32]),tunnel(3.4,[50,16],[60,30],[66,42]),tunnel(2.6,[28,32],[50,40],[66,42])]}

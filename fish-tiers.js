@@ -26,10 +26,12 @@ export const fullFishTable=[...fishTable,...extraFishTable];
 export const extraMethods={fly:{label:'Lure',tool:'flyRod',bait:'feathers',level:20,seconds:3},bignet:{label:'Big net',tool:'bigNet',level:16,seconds:5.4}};
 export const allMethods={...fishingMethods,...extraMethods};
 // Fish a spot can give: its type's list (a spot without a type keeps every fish).
-export function spotCatches(spot={}){const t=SPOT_TYPES[spot.spotType];return t?(spot.catches||t.catches):null}
-export function spotMethods(spot={}){const t=SPOT_TYPES[spot.spotType];return t?t.methods:Object.keys(allMethods)}
+// A spot without a type (the first 25) keeps the first ladder and its four methods.
+export const LEGACY_CATCHES=fishTable.map(f=>f.item),LEGACY_METHODS=['net','rod','cage','harpoon'];
+export function spotCatches(spot={}){const t=SPOT_TYPES[spot.spotType];return Array.isArray(spot.catches)?spot.catches:t?t.catches:LEGACY_CATCHES}
+export function spotMethods(spot={}){const t=SPOT_TYPES[spot.spotType];return t?t.methods:LEGACY_METHODS}
 // One OSRS fishing roll at a spot: best fish first, each with its own level-scaled chance.
-export function fishCatchAt(spot,method,level,random=Math.random){const allow=spotCatches(spot);const tiers=fullFishTable.filter(f=>f.method===method&&f.level<=level&&(!allow||allow.includes(f.item))).sort((a,b)=>b.level-a.level);if(!tiers.length)return null;for(const f of tiers)if(random()<skillingChance(f.low,f.high,level))return f;return {}}
+export function fishCatchAt(spot,method,level,random=Math.random){const allow=spotCatches(spot);const tiers=fullFishTable.filter(f=>f.method===method&&f.level<=level&&allow.includes(f.item)).sort((a,b)=>b.level-a.level);if(!tiers.length)return null;for(const f of tiers)if(random()<skillingChance(f.low,f.high,level))return f;return {}}
 const food=(name,model,buy,extra)=>({name,model,buy,sell:Math.max(1,Math.floor(buy*.3)),stackable:false,category:'Food',...extra});
 const methodLabel=m=>(allMethods[m]?.label||m).toLowerCase();
 export const extraFishItems={};
