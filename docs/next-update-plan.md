@@ -187,3 +187,15 @@ and landscape; verify at iPhone SE / iPhone 15 / iPad sizes with Playwright scre
   (advisory lock 736211 contention: requests hold it per transaction, loop try-locks and skips, then
   request_tick falls back to inline world_tick). Reverted to tick_driver='inline' at ~20:35 UTC.
 - Follow-up (not started): make the loop wait for the lock or have requests release it before snapshot.
+
+## STATUS 06 Nov ~21:45 UTC (deploying walk117)
+LIVE after walk117: everything through Round 3, terrain, phone map, polish, tile mode (inline driver) +
+tile-perf-1 (0 timeouts since 21:15), OSRS-style locomotion + weapon carry v2 + shields on forearm + foot IK.
+Open items:
+- QA not finished (character couldn't leave castle): world map, quests tab/arc-crown-1, explore tabs/toast/
+  lore/clue, Sorrel shop, boss HUD/lairs, towns+capital ground check, tile mode doors/stairs/caves/lairs/NPCs.
+- Cosmetic: training_pond tile radius 2.5 -> ~3.1 (feet in water); iPad landscape "Report a player" under Jump;
+  auto graphics keeps full quality on very slow devices.
+- Tile loop driver lock redesign (follow-up). Tile-perf risks: cold cron ticks p99 ~300 ms; CPU throttling.
+- Owner: remove test account qa+1793995632@eldervale.apexfabricationco.com (aa43e880-08cf-4e93-843e-058d7e9347aa);
+  sign-up email setting.
