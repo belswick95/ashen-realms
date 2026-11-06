@@ -32,6 +32,12 @@ Current state (06 Nov 2026): 25 fishing spots + 1 training pond, no caves/dungeo
    shortcuts), multi-stage journals, cutscene hooks, rewards. Tooling stays in the Game console.
 6. **Bosses**: phased fights, special attacks/mechanics, unique drop tables, boss lairs, kill counts.
 
+6b. **Unique gear (drop-only & quest rewards)**: original high-level weapons/armour sets with
+   distinctive looks (glow, trims, particle accents, custom silhouettes — still lightweight), flagged
+   `untradeable`/`shopless` where appropriate: boss-only drops (rare, with kill-count tracking),
+   slayer-cave drops, and thematic quest rewards (combat arcs → combat gear, skilling quests → tools,
+   outfits, XP lamps). Never sold in shops; some tradeable rares to drive the player economy.
+
 ## Wave 3 — content (original Eldervale stories/places)
 
 7. **Caves & underground**: entrances in the world → separate underground maps (instanced areas)
