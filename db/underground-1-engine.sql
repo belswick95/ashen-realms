@@ -200,7 +200,7 @@ end $fn$;
 create or replace function eldervale_private.underground_command(session_id uuid, command text, payload jsonb, request_id uuid, event_cursor bigint) returns jsonb
 language plpgsql security definer set search_path to '' as $fn$
 declare p eldervale_private.realm_players;o eldervale_private.realm_objects;s public.player_saves;d jsonb;need integer;lvl integer;
- nx float8;nz float8;sx float8;sz float8;da float8;db float8;fail float8;ok boolean;dmg integer:=0;xp numeric:=0;ticks integer;
+ nx float8;nz float8;sx float8;sz float8;tx float8;tz float8;da float8;db float8;fail float8;ok boolean;dmg integer:=0;xp numeric:=0;ticks integer;
 begin
  if payload is null or jsonb_typeof(payload)<>'object' or pg_column_size(payload)>2000 or request_id is null then raise exception 'Invalid request';end if;
  -- The normal sync path checks the session, maintenance and moderation first.
@@ -237,6 +237,7 @@ begin
    if lvl<need then raise exception 'You need Agility level % to use this shortcut.',need;end if;
    if da<=db then nx:=(d->'ends'->1->>0)::float8;nz:=(d->'ends'->1->>1)::float8;sx:=(d->'ends'->0->>0)::float8;sz:=(d->'ends'->0->>1)::float8;
    else nx:=(d->'ends'->0->>0)::float8;nz:=(d->'ends'->0->>1)::float8;sx:=(d->'ends'->1->>0)::float8;sz:=(d->'ends'->1->>1)::float8;end if;
+   tx:=nx;tz:=nz;
    fail:=greatest(0,coalesce((d->>'fail')::float8,0)*(1-(lvl-need)/greatest(1,coalesce((d->>'margin')::float8,20))));
    ok:=random()>=fail;ticks:=greatest(1,least(12,coalesce((d->>'ticks')::integer,4)));
    if ok then
@@ -252,7 +253,7 @@ begin
   update eldervale_private.tile_walkers set route='[]'::jsonb,goal=null,step_tiles=0 where user_id=auth.uid();
   if command='travel' then update eldervale_private.realm_actors set target=null,phase='ready' where target=auth.uid();end if;
   perform eldervale_private.emit(jsonb_build_object('type',(case when command='travel' then 'travel' else 'agility' end),'player',auth.uid(),'target',o.id,'kind',o.data->>'template',
-   'area',d->>'area','ok',coalesce(ok,true),'from',jsonb_build_array(sx,sz),'to',jsonb_build_array(nx,nz),'ticks',ticks,'damage',dmg,'xp',xp));
+   'area',d->>'area','ok',coalesce(ok,true),'from',jsonb_build_array(sx,sz),'to',jsonb_build_array(nx,nz),'toward',jsonb_build_array(coalesce(tx,nx),coalesce(tz,nz)),'ticks',ticks,'damage',dmg,'xp',xp));
   insert into eldervale_private.realm_requests(user_id,request_id,result) values(auth.uid(),$4,'{}'::jsonb);
  end if;
  return eldervale_private.realm_request($1,'sync','{}'::jsonb,null,$5)||jsonb_build_object('underground',(select eldervale_private.underground_at(x,z) from eldervale_private.realm_players where user_id=auth.uid()));

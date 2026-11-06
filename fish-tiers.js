@@ -2,8 +2,9 @@
 // band (net, bait, lure/fly, cage, harpoon, big net, deep bait). The first ladder (food.js
 // foodLadder/fishTable) is unchanged; this extends it. Server twin: fish_table() and the catalog
 // rows in db/water-1-fishing.sql (tests/water-fishing.test.js keeps both in step).
-import {fishTable,fishingMethods,foodLadder} from './food.js?v=release-20261106-classic95';
+import {fishTable,fishingMethods,foodLadder,foodItems} from './food.js?v=release-20261106-classic95';
 import {skillingChance} from './combat-level.js?v=release-20261106-classic95';
+import {fishingItems} from './fishing.js?v=release-20261106-classic95';
 import {SPOT_TYPES} from './water-data.js?v=release-20261106-classic95';
 // low/high: OSRS-style catch chances out of 256 at Fishing 1 and 99.
 export const extraFish=[
@@ -39,3 +40,12 @@ for(const f of extraFish){extraFishItems[f.id]=food(f.name,f.model,f.buy,{heal:f
  extraFishItems[f.raw.id]={name:f.raw.name,model:f.model==='salmon'?'fish':f.model,buy:Math.max(4,Math.floor(f.buy*.6)),sell:Math.max(1,Math.floor(f.buy*.25)),stackable:false,category:'Ingredients',color:f.raw.color,description:'Fishing '+f.raw.fishLevel+' ('+methodLabel(f.raw.method)+'). Cook it (Cooking '+f.cookLevel+') before eating.'}}
 export const extraFishRecipes=Object.fromEntries(extraFish.map(f=>['cook_'+f.id,{name:'Cook '+f.name.replace('Cooked ','').toLowerCase(),skill:'cooking',level:f.cookLevel,xp:f.cookXp,inputs:{[f.raw.id]:1},outputs:{[f.id]:1},tools:[],station:'cooking',seconds:3,enabled:true,kind:'process',burnChance:f.burn,stopBurn:f.stopBurn}]));
 export const allFoodLadder=[...foodLadder,...extraFish];
+// Right-click menu of a fishing spot: one row per method the spot takes, best tier first.
+const BAIT={rod:'bait',fly:'feathers'};
+export function fishingOptions(spot,{have=()=>false,level=1}={}){
+ const allow=spotCatches(spot);
+ return spotMethods(spot).map(m=>{const def=allMethods[m]||{label:m},fish=fullFishTable.filter(f=>f.method===m&&allow.includes(f.item)).sort((a,b)=>a.level-b.level);
+  const names=fish.map(f=>((foodItems[f.item]||extraFishItems[f.item]||fishingItems[f.item])?.name||f.item).replace(/^Raw (river )?/,'river ').replace(/^river (?!fish)/,'')),min=fish.length?fish[0].level:def.level||1;
+  return {method:m,label:def.label+' ('+(names.join(', ')||'nothing here')+(min>1?' · Fishing '+min:'')+')',level:min,usable:!!fish.length&&have(def.tool)&&level>=min&&(!BAIT[m]||have(BAIT[m]))}})
+  .sort((a,b)=>b.level-a.level);
+}

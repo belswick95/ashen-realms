@@ -105,7 +105,7 @@ export function rasterize(area,level){
 }
 // The level (and area) under a world point, using the rasterised bounds.
 export function createUndergroundIndex(areas=dungeons){
- const grids=[];for(const area of areas)for(const lv of area.levels)grids.push({area,level:lv.level,lv,...rasterize(area,lv.level)});
+ const grids=[];for(const area of areas)for(const lv of area.levels)grids.push({...rasterize(area,lv.level),area,level:lv.level,lv});
  const at=(x,z)=>{if(!isUndergroundPoint(x,z))return null;const i=tileOf(x),j=tileOf(z);for(const g of grids)if(i>=g.i0&&i<g.i0+g.w&&j>=g.j0&&j<g.j0+g.h)return g;return null};
  const walkable=(x,z)=>{const g=at(x,z);if(!g)return !isUndergroundPoint(x,z);const i=tileOf(x),j=tileOf(z);return g.mask[(j-g.j0)*g.w+(i-g.i0)]===1};
  return {grids,at,walkable,area:id=>areas.find(a=>a.id===id)};
