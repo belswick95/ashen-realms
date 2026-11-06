@@ -1,7 +1,7 @@
-import {mountCatalog} from './mounts.js?v=release-20261106-shield120';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261106-shield120';
-import {buildHumanoid} from './humanoid.js?v=release-20261106-shield120';import {makeWeapon,weaponCatalog,isTwoHanded,isRanged,isMagic} from './weapons.js?v=release-20261106-shield120';import {makeShield,shieldCatalog} from './shields.js?v=release-20261106-shield120';import {createCape} from './cape.js?v=release-20261106-shield120';import {createHumanoidAnimator} from './animation.js?v=release-20261106-shield120';import {safeAppearance} from './appearance.js?v=release-20261106-shield120';
-import {armorCatalog} from './melee-stats.js?v=release-20261106-shield120';
+import {mountCatalog} from './mounts.js?v=release-20261106-quiet121';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261106-quiet121';
+import {buildHumanoid} from './humanoid.js?v=release-20261106-quiet121';import {makeWeapon,weaponCatalog,isTwoHanded,isRanged,isMagic} from './weapons.js?v=release-20261106-quiet121';import {makeShield,shieldCatalog} from './shields.js?v=release-20261106-quiet121';import {createCape} from './cape.js?v=release-20261106-quiet121';import {createHumanoidAnimator} from './animation.js?v=release-20261106-quiet121';import {safeAppearance} from './appearance.js?v=release-20261106-quiet121';
+import {armorCatalog} from './melee-stats.js?v=release-20261106-quiet121';
 // Cosmetic-only view of another player: validated appearance and worn items.
 // Armour is {itemKey:true}, at most one item per equipment slot.
 export function publicCharacter(appearance={},equipment={}){

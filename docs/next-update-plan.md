@@ -204,3 +204,9 @@ Open items:
 Live since last note: carry118 (weapons keep grip, natural swing), stomp119 (player walk = NPCs, no pelvis snap),
 shield120 (classic shield carry, forearm across front). Test account removed. Open items unchanged from the
 previous STATUS block (unfinished QA checks outside the castle, pond radius, iPad Report button, loop-lock follow-up).
+
+## Ambience (06 Nov late) — owner: "take them completely out and replace with something better"
+- quiet121: ambient beds and one-shots disabled in music.js (ambience.update no longer called); storm thunder kept.
+- TODO next session: replace with better, natural CC0 field recordings (daytime birds, night crickets, wind,
+  river/sea by water, town murmur), long seamless loops, gentle crossfades; NO synthesized calls, no dog/anvil
+  one-shots unless clearly natural. Owner must approve by listening before enabling.
