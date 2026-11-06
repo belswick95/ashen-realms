@@ -59,7 +59,7 @@ export function plantFeet(T,rig,visual,groundAt,contacts=null){
  if(rig.__footIk)for(const e of rig.__footIk){if(e.active&&e.bone.quaternion.equals(e.applied))e.bone.quaternion.copy(e.original);e.active=false}
  visual.updateWorldMatrix(true,true);
  const errors=rig.__footErrors||(rig.__footErrors={left:NaN,right:NaN});
- for(const side of SIDES){const ankle=rig[side+'Ankle'];errors[side]=NaN;if(!ankle||contacts&&!contacts[side])continue;ankle.getWorldPosition(s.A);errors[side]=groundAt(s.A.x,s.A.z)+rig.footHeight-s.A.y}
+ for(const side of SIDES){const ankle=rig[side+'Ankle'];errors[side]=NaN;if(!ankle||contacts&&!contacts[side])continue;ankle.getWorldPosition(s.A);errors[side]=groundAt(s.A.x,s.A.z)+rig.footHeight+(rig.footLift?.[side]||0)-s.A.y}
  const shift=footShift(errors,contacts);
  if(shift){visual.position.y+=shift;visual.updateWorldMatrix(false,true)}
  for(const side of SIDES){const e=errors[side];if(!Number.isFinite(e))continue;const residual=Math.min(FOOT_LIFT_LIMIT,e-shift);if(residual<=FOOT_EPSILON)continue;

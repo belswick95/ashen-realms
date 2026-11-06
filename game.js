@@ -1622,7 +1622,7 @@ const fighting=!!(window.eldervaleAuthority?realmInCombat:combatTurns.target||ac
 if(pose?.released&&combat.arrowTarget){launch(avatar,state.equippedWeapon,combat.arrowTarget);combat.arrowTarget=null}arrows.update(dt);
 body.rotation.y=combat.attackAnim>0?Math.sin((1-combat.attackAnim/.55)*Math.PI)*-.15:T.MathUtils.lerp(body.rotation.y,0,1-Math.exp(-10*dt));
 body.rotation.z=combat.hitAnim>0?Math.sin((1-combat.hitAnim/.35)*Math.PI)*.12:T.MathUtils.lerp(body.rotation.z,0,1-Math.exp(-12*dt));
-body.position.y=0;if(!mounted)groundFeet(avatar,body,pose?.contacts);playerHorse.update({active:mounted,distance:gaitDistance,rig:avatar,visual:body,groundHeight:landscape.walkHeight});merchantAnimator.update(dt);
+body.position.y=0;if(!mounted)groundFeet(avatar,body);playerHorse.update({active:mounted,distance:gaitDistance,rig:avatar,visual:body,groundHeight:landscape.walkHeight});merchantAnimator.update(dt);
 for(const [id,other] of remotePlayers){
  const before=actorBefore.copy(other.root.position);
  if(window.eldervaleAuthority&&other.motion){const sample=other.motion.sample();if(sample){other.root.position.x=sample.x;other.root.position.z=sample.z;other.root.rotation.y=sample.yaw}}else other.root.position.lerp(other.target,1-Math.exp(-12*dt));other.root.position.y=landscape.walkHeight(other.root.position.x,other.root.position.z)+floorOffset(playerFloorMap[id]||0,other.root.position.x,other.root.position.z)+jumpHeight(other.jumpAt,window.eldervaleServerTime?.()||Date.now());

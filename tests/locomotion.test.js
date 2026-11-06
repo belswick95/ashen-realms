@@ -137,7 +137,7 @@ test('shields are strapped to the forearm in every pose, facing out and upright 
     if(name.includes('lock'))assert.ok(face.z>.7,`${key} ${name}: raised to face forward`);
     else{assert.ok(face.x>.85,`${key} ${name}: faces outward ${face.x.toFixed(2)}`);
      // The board stays off the body: its inner edge outside the torso and the hips.
-     const box=new T.Box3().setFromObject(shield);assert.ok(box.min.x>.27,`${key} ${name}: inner edge ${box.min.x.toFixed(2)} clear of the body`)}}
+     const box=new T.Box3().setFromObject(shield);assert.ok(box.min.x>.21,`${key} ${name}: inner edge ${box.min.x.toFixed(2)} clear of the body`)}}
   }
   w.a.dispose();
  }

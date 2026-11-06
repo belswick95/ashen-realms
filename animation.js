@@ -87,6 +87,9 @@ export function createHumanoidAnimator(rig){
   oneW+=((oneShot?1:0)-oneW)*k;if(oneW<.001)oneW=0;
   let contacts=null;
   if(strideRig&&gait.move>0)contacts=strideRig.apply(gait,gait.move,gait.move*(1-oneW));
+  // Planned ankle lift per foot for ground placement (foot-ground.js): a rising heel or a
+  // swinging foot is not a foot floating above the ground, so the body is not pulled down to it.
+  const lift=rig.footLift||(rig.footLift={left:0,right:0});lift.left=contacts?contacts.liftLeft*gait.move:0;lift.right=contacts?contacts.liftRight*gait.move:0;
   // Held items: each hand takes the carry pose of what it holds. Weapons are
   // carried while moving (an attacking arm is left to the attack clip); a
   // shield rides on the bent forearm, board upright, all the time.

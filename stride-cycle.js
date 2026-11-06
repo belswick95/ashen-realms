@@ -150,7 +150,7 @@ export function createStrideRig(rig){
   return Math.abs(el.distanceTo(sh)-bind.upper)+.3*Math.max(0,el.y-(sh.y-.15))+.2*Math.max(0,(el.x-sh.x)*-reachSign)+.25*inward}
  const hip={l:new T.Vector3(),r:new T.Vector3()},ankle={l:new T.Vector3(),r:new T.Vector3()},knee=new T.Vector3(),pelvisP=new T.Vector3(),hipW=new T.Vector3();
  const track={l:{z:0,y:0,toe:0,stance:true,toes:1},r:{z:0,y:0,toe:0,stance:true,toes:1}},g=mixGait(0),X=new T.Vector3(1,0,0),Y=new T.Vector3(0,1,0);
- const contacts={left:true,right:true},wrist={l:BQ.lowerarm_l.clone().invert().multiply(BQ.hand_l),r:BQ.lowerarm_r.clone().invert().multiply(BQ.hand_r)};
+ const contacts={left:true,right:true,liftLeft:0,liftRight:0},wrist={l:BQ.lowerarm_l.clone().invert().multiply(BQ.hand_l),r:BQ.lowerarm_r.clone().invert().multiply(BQ.hand_r)};
  function basisQ(dv,kv,out){kv.addScaledVector(dv,-kv.dot(dv)).normalize();c.crossVectors(dv,kv);m.makeBasis(dv,kv,c);return out.setFromRotationMatrix(m)}
  // Write a bone's local rotation for a wanted root-space rotation under a
  // parent root-space rotation, blended in by w.
@@ -198,6 +198,8 @@ export function createStrideRig(rig){
    const sp=st.sprint||0;g.lean+=.18*sp;g.arm+=.08*sp;g.lift+=.06*sp;
    legTrack(ph,step,g,foot,track.l);legTrack(ph+.5,step,g,foot,track.r);
    contacts.left=track.l.stance;contacts.right=track.r.stance;
+   // How far each ankle is meant to be above its flat-footed height (heel strike, toe-off, swing).
+   contacts.liftLeft=track.l.y-foot.ankleY;contacts.liftRight=track.r.y-foot.ankleY;
    rootRS();
    // Pelvis: turns with the stride, shifts over the planted foot, bobs.
    const yaw=-g.yaw*Math.cos(TWO*ph),sway=g.sway*Math.cos(TWO*(ph-g.stance/2)),bob=g.bob*(1-2*st.run)*Math.cos(2*TWO*(ph-g.stance/2));
