@@ -35,5 +35,25 @@ export default async function(ctx){
  // A loop started while the driver is inline exits at once.
  const [,idle]=await ms(()=>db_call(ctx,`call eldervale_private.tick_loop(3)`));assert.ok(idle<300,'inline driver: the loop exits at once');
  console.log('ok the loop only runs while tick_driver = loop');
+
+ // db/walk-redirect.sql: a new click while walking keeps the step in progress; no idle tick.
+ const redirect=readFileSync(repo+'db/walk-redirect.sql','utf8');
+ for(let pass=1;pass<=2;pass++)await run(redirect,'walk-redirect pass '+pass);
+ await run(`select eldervale_private.engine_console('console_engine_set','{"config":{"tile_mode":true}}')`,'tile mode on');
+ const {tick,tileOfMe,at}=ctx,T=1.58;
+ await run(`update eldervale_private.realm_players set x=${cx(X0)},z=${cx(Z0+40)},path='[]',intent=null,run=false,input_until=null,motion_at=clock_timestamp() where user_id='${P}'`,'start');
+ await cmd('move',{path:[at(8,40)]});await tick(2);
+ const before2=await tileOfMe(),old=(await one(`select path from eldervale_private.realm_players where user_id='${P}'`)).path;
+ const r2=await cmd('move',{path:[at(before2[0],48)]});
+ const first=r2.r.motion.path[0],firstTile=[Math.round(first[0]/T)-X0,Math.round(first[1]/T)-Z0],here=[Math.round(r2.r.motion.x/T)-X0,Math.round(r2.r.motion.z/T)-Z0];
+ const oldNext=[Math.round(old[0][0]/T)-X0,Math.round(old[0][1]/T)-Z0];
+ assert.ok(String(firstTile)===String(oldNext)||String(here)===String(oldNext),'the step in progress is kept: '+firstTile+' vs '+oldNext);
+ const trail=[await tileOfMe()];for(let k=0;k<12;k++){await tick();trail.push(await tileOfMe())}
+ const end=trail.findIndex(t=>t[1]===48);assert.ok(end>0,'arrived: '+JSON.stringify(trail));
+ for(let k=1;k<=end;k++)assert.notDeepEqual(trail[k],trail[k-1],'moved on every tick until arrival: '+JSON.stringify(trail));
+ assert.equal(trail.at(-1)[1],48,'arrived at the new destination row');
+ const r3=await cmd('move',{path:[at(trail.at(-1)[0],48)]});assert.equal(r3.r.motion.path.length,0,'a click on your own tile when idle: no step');
+ console.log('ok redirect while walking (tile mode): the step in progress is kept and the walker moves every tick');
+ await run(`select eldervale_private.engine_console('console_engine_set','{"config":{"tile_mode":false}}')`,'tile mode off');
 }
 const db_call=(ctx,sql)=>ctx.run(sql,'call');

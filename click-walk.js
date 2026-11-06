@@ -68,6 +68,28 @@ export function drawMapFlag(ctx,x,y){
  ctx.fillStyle='#e0261d';ctx.strokeStyle='#4a0d09';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y-12);ctx.lineTo(x+10,y-8.5);ctx.lineTo(x,y-5);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
 }
 
+// Redirecting while walking (OSRS): the walker keeps following its current path until the new
+// one is acknowledged; it is only told to stop when a route search runs this long (a far click
+// around obstacles), never for an ordinary click.
+export const REDIRECT_PAUSE_MS=1500;
+// A route searched from where the walker stood when the click arrived starts behind it by the
+// time it is sent. Drop the leading waypoints it has already passed (or reached) so the server
+// walker never turns back for them. `route` is [[x,z],...]; `at` the walker's current point and,
+// when it is moving, its heading `yaw` (atan2(dx,dz)). A waypoint is dropped when it is reached,
+// when the walker is already between it and the next one, or when it lies behind the walker
+// while a later one lies ahead (close waypoints only).
+export function trimPassedWaypoints(route,at){
+ if(!Array.isArray(route)||!at)return route;let k=0;const moving=at.moving!==false&&Number.isFinite(at.yaw),hx=Math.sin(at.yaw),hz=Math.cos(at.yaw);
+ const ahead=([x,z])=>(x-at.x)*hx+(z-at.z)*hz>0;
+ while(k<route.length-1){const [ax,az]=route[k],[bx,bz]=route[k+1];
+  const reached=Math.hypot(ax-at.x,az-at.z)<.25,passed=(ax-at.x)*(bx-at.x)+(az-at.z)*(bz-at.z)<0;
+  // Only waypoints close by (what the walker covered while the route was searched and sent):
+  // a real detour behind the walker is never cut.
+  const behind=moving&&Math.hypot(ax-at.x,az-at.z)<2.5&&!ahead(route[k])&&route.slice(k+1).some(ahead);
+  if(reached||passed||behind)k++;else break}
+ return route.slice(k);
+}
+
 // Click-to-interact: walk into reach of a target, then act on arrival.
 // A spot short of the target on the walker's side, so the route ends beside a
 // tree, rock or stand instead of trying to enter its collision.
