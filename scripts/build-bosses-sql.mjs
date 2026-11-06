@@ -72,7 +72,7 @@ export function recipes(){
 
 // ---------------------------------------------------------------- SQL text
 const bossIds=BOSSES.map(b=>b.id),rosterBosses=BOSSES.filter(b=>b.id!=='twinflame_wyrm');
-function lairsSql(){
+export function lairsSql(){
  const defs=BOSSES.map(b=>({id:b.id,data:clean(b)}));
  const templates=newMonsterTemplates();
  const ext=LAIR_EXTENSIONS;
@@ -126,7 +126,7 @@ insert into eldervale_private.mech_rules(kind,id,data,enabled) select 'zone',z->
 commit;
 `;
 }
-function gearSql(){
+export function gearSql(){
  const rows=catalogRows(),drops=[...BOSSES.map(b=>({id:b.roster,data:bossDrops(b)})),...Object.entries(dragonDrops()).map(([id,data])=>({id,data}))];
  return `-- Eldervale bosses, part 4: unique gear, dragon-only drops, the Breathward tonic, boss loot tables,
 -- unique weapon specials and the Scaleward Shield / Breathward tonic recipes.

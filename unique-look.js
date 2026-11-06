@@ -41,5 +41,5 @@ export function accentHeldItem(T,root,accent,{height=.9}={}){
 export function accentOutfitShader(shader,accentColor,mode='metal'){
  shader.uniforms.lookTime=lookTime;shader.uniforms.uniqueAccent={value:accentColor};
  shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform float lookTime;uniform vec3 uniqueAccent;')
-  .replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>\n{float uw=${mode==='all'?'0.1':'0.4*smoothstep(.35,.75,metalnessFactor)'};totalEmissiveRadiance+=uniqueAccent*uw*(0.3+0.15*sin(lookTime*2.2));}`);
+  .replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>\n{float uw=${mode==='all'?'0.06':'0.16*smoothstep(.35,.75,metalnessFactor)'};totalEmissiveRadiance+=uniqueAccent*uw*(0.3+0.15*sin(lookTime*2.2));}`);
 }

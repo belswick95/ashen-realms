@@ -8748,222 +8748,6 @@
     "sha256": "d8cdcd593de393b0aad61b84debd517ea620e5b888b3bf1aaa04b62d45100ae1"
   },
   {
-    "key": "item-armor_warlordTuskhelm",
-    "id": "armor:warlordTuskhelm",
-    "name": "Warlord\u2019s Tuskhelm",
-    "model": "warlordTuskhelm",
-    "bounds": [
-      0.7271446882534257,
-      0.85,
-      0.6694524979400006
-    ],
-    "pixelBounds": [
-      37,
-      26,
-      105,
-      126
-    ],
-    "sha256": "e599fe880a68550dfb4b0548785628e3a91533b044d8859a3bfa898c2582db6f"
-  },
-  {
-    "key": "item-armor_hollowCrown",
-    "id": "armor:hollowCrown",
-    "name": "The Hollow Crown",
-    "model": "hollowCrown",
-    "bounds": [
-      0.85,
-      0.43274330881679735,
-      0.85
-    ],
-    "pixelBounds": [
-      26,
-      34,
-      117,
-      111
-    ],
-    "sha256": "4b0418a6db4571a05398ac6c3284fb497abde6248cebc384c314afc3efa85585"
-  },
-  {
-    "key": "item-armor_gloomsilkMantle",
-    "id": "armor:gloomsilkMantle",
-    "name": "Gloomsilk Mantle",
-    "model": "gloomsilkMantle",
-    "bounds": [
-      0.85,
-      0.49977416302987765,
-      0.7639805291909543
-    ],
-    "pixelBounds": [
-      23,
-      33,
-      115,
-      113
-    ],
-    "sha256": "e956b229d08e62b8b59ea95b5aa664414451cd0fed6a572facc70c8c354e8a62"
-  },
-  {
-    "key": "item-armor_glacierscaleGreaves",
-    "id": "armor:glacierscaleGreaves",
-    "name": "Glacierscale Greaves",
-    "model": "glacierscaleGreaves",
-    "bounds": [
-      0.44415723136082036,
-      0.85,
-      0.33393505661183503
-    ],
-    "pixelBounds": [
-      44,
-      21,
-      100,
-      123
-    ],
-    "sha256": "1923c469d66f09397fee8af7b5d8b1c891199b8fb084dd436318bbfdab7d3d73"
-  },
-  {
-    "key": "item-armor_heartforgePlate",
-    "id": "armor:heartforgePlate",
-    "name": "Heartforge Breastplate",
-    "model": "heartforgePlate",
-    "bounds": [
-      0.4835871456038087,
-      0.85,
-      0.4659474471266823
-    ],
-    "pixelBounds": [
-      45,
-      16,
-      107,
-      124
-    ],
-    "sha256": "af9428e05afeb1aa12bb69d24cf4e154a34745984f02230a13696a19be6c4bdf"
-  },
-  {
-    "key": "item-armor_wyrmscaleCoif",
-    "id": "armor:wyrmscaleCoif",
-    "name": "Wyrmscale coif",
-    "model": "wyrmscaleCoif",
-    "bounds": [
-      0.7587923825800348,
-      0.85,
-      0.8369258705404827
-    ],
-    "pixelBounds": [
-      38,
-      27,
-      109,
-      122
-    ],
-    "sha256": "db454efbcdf20a4480cceed9fcd10dc5b7837354cab3ede3ca0b0b325235366b"
-  },
-  {
-    "key": "item-armor_wyrmscaleJerkin",
-    "id": "armor:wyrmscaleJerkin",
-    "name": "Wyrmscale jerkin",
-    "model": "wyrmscaleJerkin",
-    "bounds": [
-      0.85,
-      0.85,
-      0.7242393261513107
-    ],
-    "pixelBounds": [
-      32,
-      29,
-      116,
-      120
-    ],
-    "sha256": "2361fce07584da74df695f9b5700e5efe698c346ae189c9cefd278a6c8df3b9b"
-  },
-  {
-    "key": "item-armor_wyrmscaleChaps",
-    "id": "armor:wyrmscaleChaps",
-    "name": "Wyrmscale chaps",
-    "model": "wyrmscaleChaps",
-    "bounds": [
-      0.49095431379131443,
-      0.85,
-      0.30737174596392713
-    ],
-    "pixelBounds": [
-      40,
-      22,
-      105,
-      127
-    ],
-    "sha256": "773478cc187966ef51e5c7bfd0e434980fea82c67df81ef7c7fbaca5b4f4a89f"
-  },
-  {
-    "key": "item-armor_wyrmscaleVambraces",
-    "id": "armor:wyrmscaleVambraces",
-    "name": "Wyrmscale vambraces",
-    "model": "wyrmscaleVambraces",
-    "bounds": [
-      0.85,
-      0.07714219469378292,
-      0.082097313769004
-    ],
-    "pixelBounds": [
-      10,
-      51,
-      134,
-      95
-    ],
-    "sha256": "857774af1890ea90eab87e2a6f511303ea5d5b8763f999fd02e3ea3926f0edee"
-  },
-  {
-    "key": "item-armor_crownwardenSigil",
-    "id": "armor:crownwardenSigil",
-    "name": "Crownwarden\u2019s Sigil",
-    "model": "crownwardenSigil",
-    "bounds": [
-      0.85,
-      0.5049623096407971,
-      0.7687536240730003
-    ],
-    "pixelBounds": [
-      31,
-      35,
-      125,
-      115
-    ],
-    "sha256": "4e11b008b6e810b396fa8c86e7c260b3790841dd75fa1cdb515177fd682a6e41"
-  },
-  {
-    "key": "item-armor_emberOathGauntlets",
-    "id": "armor:emberOathGauntlets",
-    "name": "Gauntlets of the Ember Oath",
-    "model": "emberOathGauntlets",
-    "bounds": [
-      0.85,
-      0.07792596209601123,
-      0.08155766472365489
-    ],
-    "pixelBounds": [
-      10,
-      52,
-      133,
-      97
-    ],
-    "sha256": "f5b0167262c27727273469bc016677c6f0ae41ba8a4e2f04a6545c6c7db8f57f"
-  },
-  {
-    "key": "item-armor_pathfinderBoots",
-    "id": "armor:pathfinderBoots",
-    "name": "Pathfinder\u2019s Boots",
-    "model": "pathfinderBoots",
-    "bounds": [
-      0.5404492324594867,
-      0.85,
-      0.511291848506119
-    ],
-    "pixelBounds": [
-      37,
-      16,
-      109,
-      132
-    ],
-    "sha256": "e5e9409e8b32656f0fd42eaa2bb371d4d0082ce2d915bbf6a088f46330ced6a1"
-  },
-  {
     "key": "item-shield_scalewardShield",
     "id": "shield:scalewardShield",
     "name": "Scaleward Shield",
@@ -8998,5 +8782,221 @@
       125
     ],
     "sha256": "e6660822259859f507a5b54b5d2ce5846aecb053c7a69a5e98c2182f9f141077"
+  },
+  {
+    "key": "item-armor_warlordTuskhelm",
+    "id": "armor:warlordTuskhelm",
+    "name": "Warlord\u2019s Tuskhelm",
+    "model": "warlordTuskhelm",
+    "bounds": [
+      0.7271446882534257,
+      0.85,
+      0.6694524979400006
+    ],
+    "pixelBounds": [
+      37,
+      26,
+      105,
+      126
+    ],
+    "sha256": "06ca548b13714f32165a3b7c2791d7c31c2d75e65406bac3c2bad9b2fd6b51a7"
+  },
+  {
+    "key": "item-armor_hollowCrown",
+    "id": "armor:hollowCrown",
+    "name": "The Hollow Crown",
+    "model": "hollowCrown",
+    "bounds": [
+      0.85,
+      0.43274330881679735,
+      0.85
+    ],
+    "pixelBounds": [
+      26,
+      34,
+      117,
+      111
+    ],
+    "sha256": "2646d3fc341c7d24b99fb0444555178533631d353f114ea0ef0398d5ccb5e9a4"
+  },
+  {
+    "key": "item-armor_gloomsilkMantle",
+    "id": "armor:gloomsilkMantle",
+    "name": "Gloomsilk Mantle",
+    "model": "gloomsilkMantle",
+    "bounds": [
+      0.85,
+      0.49977416302987765,
+      0.7639805291909543
+    ],
+    "pixelBounds": [
+      23,
+      33,
+      115,
+      113
+    ],
+    "sha256": "6f75e4e2457a37e30d0b590fed48c4fef526aa7586c46d37c37f26121f68a687"
+  },
+  {
+    "key": "item-armor_glacierscaleGreaves",
+    "id": "armor:glacierscaleGreaves",
+    "name": "Glacierscale Greaves",
+    "model": "glacierscaleGreaves",
+    "bounds": [
+      0.44415723136082036,
+      0.85,
+      0.33393505661183503
+    ],
+    "pixelBounds": [
+      44,
+      21,
+      100,
+      123
+    ],
+    "sha256": "7e3ee2b17706b80f5188e6554fbde5c02e2fd3213e60be6ae18f5f2b75970558"
+  },
+  {
+    "key": "item-armor_heartforgePlate",
+    "id": "armor:heartforgePlate",
+    "name": "Heartforge Breastplate",
+    "model": "heartforgePlate",
+    "bounds": [
+      0.4835871456038087,
+      0.85,
+      0.4659474471266823
+    ],
+    "pixelBounds": [
+      45,
+      16,
+      107,
+      124
+    ],
+    "sha256": "e863430ecc5651d62b777840571c61d80a1b698694f4f06ccf61d236e81b9d09"
+  },
+  {
+    "key": "item-armor_wyrmscaleCoif",
+    "id": "armor:wyrmscaleCoif",
+    "name": "Wyrmscale coif",
+    "model": "wyrmscaleCoif",
+    "bounds": [
+      0.7587923825800348,
+      0.85,
+      0.8369258705404827
+    ],
+    "pixelBounds": [
+      38,
+      27,
+      109,
+      122
+    ],
+    "sha256": "52ba24cfe32580a51bbacf6508c9973af38723f69343d94ef37f30afd4c38f19"
+  },
+  {
+    "key": "item-armor_wyrmscaleJerkin",
+    "id": "armor:wyrmscaleJerkin",
+    "name": "Wyrmscale jerkin",
+    "model": "wyrmscaleJerkin",
+    "bounds": [
+      0.85,
+      0.85,
+      0.7242393261513107
+    ],
+    "pixelBounds": [
+      32,
+      29,
+      116,
+      120
+    ],
+    "sha256": "01f75d49b4f6d0212ccd85d11a48aaf1f2c901185371d3a35a567ac2ef225932"
+  },
+  {
+    "key": "item-armor_wyrmscaleChaps",
+    "id": "armor:wyrmscaleChaps",
+    "name": "Wyrmscale chaps",
+    "model": "wyrmscaleChaps",
+    "bounds": [
+      0.49095431379131443,
+      0.85,
+      0.30737174596392713
+    ],
+    "pixelBounds": [
+      40,
+      22,
+      105,
+      127
+    ],
+    "sha256": "3ff91cb3a19836ae4121c6b14c8669075de74f708b8c78c22ef6661b4bd1c095"
+  },
+  {
+    "key": "item-armor_wyrmscaleVambraces",
+    "id": "armor:wyrmscaleVambraces",
+    "name": "Wyrmscale vambraces",
+    "model": "wyrmscaleVambraces",
+    "bounds": [
+      0.85,
+      0.07714219469378292,
+      0.082097313769004
+    ],
+    "pixelBounds": [
+      10,
+      51,
+      134,
+      95
+    ],
+    "sha256": "d91c4d5fb56da715ccc8e559243be32a847745ac37921c94d2f3083b998257fa"
+  },
+  {
+    "key": "item-armor_crownwardenSigil",
+    "id": "armor:crownwardenSigil",
+    "name": "Crownwarden\u2019s Sigil",
+    "model": "crownwardenSigil",
+    "bounds": [
+      0.85,
+      0.5049623096407971,
+      0.7687536240730003
+    ],
+    "pixelBounds": [
+      31,
+      35,
+      125,
+      115
+    ],
+    "sha256": "a61a7b292853056320f2628fe5bf39f7e17a334d14ca7cde81b12e10538cdee2"
+  },
+  {
+    "key": "item-armor_emberOathGauntlets",
+    "id": "armor:emberOathGauntlets",
+    "name": "Gauntlets of the Ember Oath",
+    "model": "emberOathGauntlets",
+    "bounds": [
+      0.85,
+      0.07792596209601123,
+      0.08155766472365489
+    ],
+    "pixelBounds": [
+      10,
+      52,
+      133,
+      97
+    ],
+    "sha256": "de378225f46772b5c6b67f3b5575f76615a9defc8cc37c162da8d79c672f7830"
+  },
+  {
+    "key": "item-armor_pathfinderBoots",
+    "id": "armor:pathfinderBoots",
+    "name": "Pathfinder\u2019s Boots",
+    "model": "pathfinderBoots",
+    "bounds": [
+      0.5404492324594867,
+      0.85,
+      0.511291848506119
+    ],
+    "pixelBounds": [
+      37,
+      16,
+      109,
+      132
+    ],
+    "sha256": "0d5e6e2209bb6e01c5ca2be9e3205ed38a0cd21e396a6067ef3e44672545551e"
   }
 ]

@@ -7,6 +7,7 @@ import {showPreview} from './admin-preview.js?v=release-20261106-cut106';
 import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261106-cut106';
 import {engineSection} from './admin-engine.js?v=release-20261106-cut106';
 import {mechanicsSection} from './admin-mechanics.js?v=release-20261106-cut106';
+import {bossesSection} from './admin-bosses.js?v=release-20261106-cut106';
 // Owner game console tabs: Dashboard, Spawn, Placed, NPCs, Monsters, Players and World.
 // Every write goes through world_admin, where the server re-checks owner access.
 const svg=p=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
@@ -190,6 +191,7 @@ export function createConsoleTabs(ctx){
   const tr=section('Travel',grid),ta=actions(tr);for(const [name,x,z] of travel)btn(name,()=>invoke('teleport',{x,z}),ta);const tf=el('form',null,{class:'console-inline'});tf.onsubmit=e=>e.preventDefault();tr.append(tf);const p=pos(),tx=field(tf,'X','wx',Math.round(p.x),'number'),tz=field(tf,'Z','wz',Math.round(p.z),'number');btn('Teleport me',()=>invoke('teleport',{x:Number(tx.value),z:Number(tz.value)}),tf);
   engineSection({section,el,btn,field,invoke,note,parent:grid});
   mechanicsSection({section,el,btn,field,invoke,note,parent:grid,pos});
+  bossesSection({section,el,btn,field,invoke,note,parent:grid});
   if(s.world_config?.enabled)grid.append(el('p','Shared procedural world · seed '+s.world_config.seed+'. All placements persist for every player.',{class:'console-muted'}));
  }
  return {Dashboard,Spawn,Placed,NPCs,Monsters,Players,World};
