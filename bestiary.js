@@ -1,5 +1,6 @@
 import {worldTemplates,entityDefaults} from './world-templates.js?v=release-20261106-amb87';
 import {worldPresets,presetEntity} from './world-presets.js?v=release-20261106-amb87';
+import {rosterBeasts} from './monster-roster.js?v=release-20261106-amb87';
 // Owner console catalog: MMORPG monsters with loot, farm bundles, buildings and decorative props.
 // Pure data and geometry helpers; the server re-validates everything the console sends.
 const drop=(item,min=1,max=min,chance=1)=>({item,min,max,chance});
@@ -31,6 +32,8 @@ export const bestiary={
  sheep:beast('Woolly sheep','sheep',{name:'Woolly sheep',xpReward:5,goldReward:0},[drop('fur',1,2,1),drop('rawMeat',1,1,.6)],{region:'Farmland',tier:'Peaceful'}),
  pig:beast('Farm pig','pig',{name:'Farm pig',xpReward:5,goldReward:0},[drop('rawMeat',1,3,1),drop('hide',1,1,.5)],{region:'Farmland',tier:'Peaceful'}),
 };
+// The monster roster (monster-roster.js): 53 more types from level 2 to 120, same entry shape.
+Object.assign(bestiary,rosterBeasts);
 export function bestiaryEntity(key,x,z){const b=bestiary[key];if(!b)throw Error('Unknown creature');const {label,template,region,tier,loot,...stats}=b;return structuredClone({...entityDefaults(template,x,z),...stats,loot,behavior:'wander'})}
 // Three.js turns +yaw counter-clockwise seen from above: local (x,z) → world.
 export function rotateOffset(dx,dz,deg){const a=deg*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return [dx*c+dz*s,-dx*s+dz*c]}

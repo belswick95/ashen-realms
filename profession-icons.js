@@ -11,6 +11,7 @@ else if(['herb','wheat','berries'].includes(model))art='<path d="M23 43V9M23 21Q
 else if(model==='rune'||model==='gem'||model==='ring')art=model==='ring'?'<ellipse cx="24" cy="26" rx="14" ry="12" fill="none" stroke="#dac783" stroke-width="7"/>':`<path d="m11 11 25-3 9 18-20 18L4 26Z" fill="${c}"/><path d="m15 26 9-12 9 12-9 8Z" fill="none" stroke="#eef2df" stroke-width="3"/>`;
 else if(['bread','dough','meat','fish','food'].includes(model))art=model==='fish'?`<path d="M4 24q18-22 31-2l10-8v21l-10-8Q17 43 4 24Z" fill="${c}"/><circle cx="12" cy="23" r="2"/>`:'<path d="M5 30Q3 10 21 13Q39 3 43 25v14H7Z" fill="#cc9e69"/><path d="m15 18 3 9m8-12 2 10" stroke="#f1d19a" stroke-width="3"/>';
 else if(['thread','nails'].includes(model))art=model==='nails'?'<path d="m11 8 10 33m2-36 8 34m2-29 6 28M5 10l13-4m1 2 11-5m0 9 12-4" fill="none" stroke="#b7b8a7" stroke-width="3"/>':'<path d="M13 9h22v30H13Z" fill="#a4a481"/><path d="M8 8h32M8 40h32M13 17h22m-22 7h22m-22 7h22" stroke="#dec7a2" stroke-width="4"/>';
+else if(model==='bones')art=`<path d="m12 34 22-22" stroke="${c}" stroke-width="7"/><circle cx="10" cy="32" r="5" fill="${c}"/><circle cx="14" cy="38" r="5" fill="${c}"/><circle cx="34" cy="10" r="5" fill="${c}"/><circle cx="38" cy="16" r="5" fill="${c}"/>`;
 else art='<path d="M14 8h20l-5 9q18 18 9 25H10q-9-9 9-25Z" fill="#b49c74"/><path d="M17 17h15m-9 5v15m-5-7h10" stroke="#6c6047" stroke-width="3"/>';
 return `<svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#35404a" stroke-width="1.5" stroke-linejoin="round">${art}</g></svg>`;
 }

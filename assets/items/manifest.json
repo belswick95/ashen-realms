@@ -8116,5 +8116,59 @@
       108
     ],
     "sha256": "92e92508dad4c9391030044afc54e23bdfd1b3dd4bb495dc330ff86463f527c9"
+  },
+  {
+    "key": "item-bones",
+    "id": "bones",
+    "name": "Bones",
+    "model": "bones",
+    "bounds": [
+      0.6997879050538048,
+      0.11999999731779099,
+      0.5918983605575854
+    ],
+    "pixelBounds": [
+      20,
+      49,
+      121,
+      105
+    ],
+    "sha256": "8ed3ce3754640f396dba0cf205b40e441b0724418256e5b4ca145c878ccc86b2"
+  },
+  {
+    "key": "item-heftyBones",
+    "id": "heftyBones",
+    "name": "Hefty bones",
+    "model": "bones",
+    "bounds": [
+      0.6997879050538048,
+      0.11999999731779099,
+      0.5918983605575854
+    ],
+    "pixelBounds": [
+      20,
+      49,
+      121,
+      105
+    ],
+    "sha256": "6e75de58a4740381d0780ac540cb7c39be44638f219105b7d6369d31e800f5ca"
+  },
+  {
+    "key": "item-wyrmBones",
+    "id": "wyrmBones",
+    "name": "Wyrm bones",
+    "model": "bones",
+    "bounds": [
+      0.6997879050538048,
+      0.11999999731779099,
+      0.5918983605575854
+    ],
+    "pixelBounds": [
+      20,
+      49,
+      121,
+      105
+    ],
+    "sha256": "eadc8a200afcd4f38e30edef04b6a2d7defc035e1e3188df1bec45dc15767e7d"
   }
 ]
