@@ -83,14 +83,14 @@ Untradeable, kept on death, recoverable story items:
 JS: `import {QUEST_REWARD_ITEMS} from './unique-gear.js'`.
 
 ## Quest hooks (unlock ids)
-Boss-level gates (`requires.unlock` + `requires.gate`). The Hollow Throne, Glacier heart and Crucible stairs are **gated by default** (they ship with R3-J's arcs); the other lairs are open by default. Only the stair into the boss level is gated, so the training levels above stay open.
+Boss-level gates (`requires.unlock` + `requires.gate`). The Hollow Throne, Glacier heart, Crucible and Matriarch's cradle stairs are **gated by default** (they ship with R3-J's arcs); the other lairs are open by default. Only the stair into the boss level is gated, so the training levels above stay open.
 The owner can open or close any gate in the console (Bosses › Lairs › gate). When a gate is on, entry needs `player_unlocked(uid, id)`.
 
 | Unlock id | Opens |
 |---|---|
 | `lair:bloodtusk_warhall` | Bloodtusk Warhall gate |
 | `lair:hollow_throne` | stairs from the cistern (L1) to the Hollow Throne (L2) — **on by default** |
-| `lair:gloomweb_nest` | Gloomweb Nest mouth |
+| `lair:gloomweb_nest` | ladder from the Silk warrens (L0) to the Matriarch's cradle (L1) — **on by default** |
 | `lair:rimecoil_cavern` | stairs from the Frozen gallery (L0) to the Glacier heart (L1) — **on by default** |
 | `lair:cindervault_crucible` | crucible stair (L1 crucible room) to The Crucible (L2) — **on by default** |
 | `lair:wyrmhold` | Wyrmhold maw |

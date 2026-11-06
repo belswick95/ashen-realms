@@ -253,7 +253,7 @@ await b.fails(`select eldervale_private.realm_request('${sid}','travel','{"targe
 await b.run(`update public.player_saves set game_flags='{"unlocks":{"lair:bloodtusk_warhall":{"quest":"q"}}}';update eldervale_private.realm_players set last_command=now()-interval '1 minute'`,'unlock');await travel();
 // Quest-gated boss levels (on by default): only the stair down to the boss level is gated.
 const passage=async key=>(await b.one(`select data->'passage' p from eldervale_private.entities where id=md5($1)::uuid`,[key]))?.p;
-for(const [key,unlock] of [['underground:hollowmere_undercroft:link:throne_stair:a','lair:hollow_throne'],['underground:rimecoil_cavern:link:stair:a','lair:rimecoil_cavern'],['underground:cindervault_depths:link:crucible_stair:a','lair:cindervault_crucible']]){
+for(const [key,unlock] of [['underground:hollowmere_undercroft:link:throne_stair:a','lair:hollow_throne'],['underground:rimecoil_cavern:link:stair:a','lair:rimecoil_cavern'],['underground:cindervault_depths:link:crucible_stair:a','lair:cindervault_crucible'],['underground:gloomweb_nest:link:chute:a','lair:gloomweb_nest']]){
  const p=await passage(key);assert.ok(p,key);assert.equal(p.requires.unlock,unlock);assert.equal(p.requires.gate,true,key+' gated by default')}
 assert.equal((await passage('underground:rimecoil_cavern:entrance:cleft')).requires.unlock,undefined,'the Rimecoil galleries stay open');
 assert.equal((await passage('underground:cindervault_depths:link:descent:a')).requires,null,'Molten heart stays open');
