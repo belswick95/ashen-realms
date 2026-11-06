@@ -73,10 +73,10 @@ export function terrainPatch(x,z,scale=25){const gx=x/scale,gz=z/scale,ix=Math.f
 // gives broad lush/dry patches and `jitter` (-1..1) a small per-point light
 // variation. Smoothly blended, not palette-snapped: the renderer interpolates
 // between points, so steps would show as stripes.
-const GROUND_ALBEDO={grass:1,snow:1,dry:1,rock:.8};
+const GROUND_ALBEDO={grass:1,snow:1,dry:1,rock:.8},SNOW_TINT=[.12,.07,0];// snow a little cool, so it shades instead of glaring
 export function terrainColor(climate,normalY,height,source=null,jitter=0,patch=0){
  const [g,s,d,c]=climate,G=CLASSIC_GROUND,sum=Math.max(1e-6,g+s+d+c),green=(g+c)/sum;const out=[0,0,0];
- if(source){const albedo=(GROUND_ALBEDO.grass*(g+c)+GROUND_ALBEDO.snow*s+GROUND_ALBEDO.dry*d)/sum;for(let k=0;k<3;k++)out[k]=source[k]*albedo}
+ if(source){const albedo=(GROUND_ALBEDO.grass*(g+c)+GROUND_ALBEDO.snow*s+GROUND_ALBEDO.dry*d)/sum,cold=s/sum;for(let k=0;k<3;k++)out[k]=source[k]*albedo*(1-cold*SNOW_TINT[k])}
  else for(let k=0;k<3;k++)out[k]=(G.grass[k]*(g+c)+G.snow[k]*s+G.sand[k]*d)/sum;
  // Lush and dry patches in grassland: a gentle shift between deeper and yellower green.
  const p=patch*green;out[0]*=1+.07*p;out[1]*=1+.02*p;out[2]*=1-.08*p;
