@@ -5,6 +5,7 @@ import {professionSkills} from './profession-data.js?v=release-20261106-anim92';
 import {SKINS,HAIRS,HAIRSTYLES} from './appearance.js?v=release-20261106-anim92';
 import {showPreview} from './admin-preview.js?v=release-20261106-anim92';
 import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261106-anim92';
+import {engineSection} from './admin-engine.js?v=release-20261106-anim92';
 // Owner game console tabs: Dashboard, Spawn, Placed, NPCs, Monsters, Players and World.
 // Every write goes through world_admin, where the server re-checks owner access.
 const svg=p=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
@@ -184,6 +185,7 @@ export function createConsoleTabs(ctx){
   const pop=section('Population',grid),pa=actions(pop);btn('Heal everyone online',async()=>{const r=await invoke('console_heal_all',{});note('Healed '+r.count+'.')},pa);btn('Respawn defeated creatures',async()=>{const r=await invoke('console_respawn_all',{});note('Respawned '+r.count+'.')},pa);btn('Reset every creature',async()=>{if(!confirm('Reset every NPC and monster to full health at home?'))return;const r=await invoke('console_respawn_all',{all:true});note('Reset '+r.count+'.')},pa);const cf=el('form',null,{class:'console-inline'});cf.onsubmit=e=>e.preventDefault();pop.append(cf);const rad=field(cf,'Clear ground drops within (m)','dropRadius',40,'number');btn('Clear drops near me',async()=>{const p=pos(),r=await invoke('console_clear_drops',{x:p.x,z:p.z,radius:Number(rad.value)});note('Removed '+r.count+' drops.')},cf);
   const spawn=section('New characters',grid);spawn.append(el('p','Current start: '+num(s.spawn_x)+', '+num(s.spawn_z),{class:'console-muted'}));btn('Use my position as the new-character start',()=>invoke('start_location',pos()),spawn);
   const tr=section('Travel',grid),ta=actions(tr);for(const [name,x,z] of travel)btn(name,()=>invoke('teleport',{x,z}),ta);const tf=el('form',null,{class:'console-inline'});tf.onsubmit=e=>e.preventDefault();tr.append(tf);const p=pos(),tx=field(tf,'X','wx',Math.round(p.x),'number'),tz=field(tf,'Z','wz',Math.round(p.z),'number');btn('Teleport me',()=>invoke('teleport',{x:Number(tx.value),z:Number(tz.value)}),tf);
+  engineSection({section,el,btn,field,invoke,note,parent:grid});
   if(s.world_config?.enabled)grid.append(el('p','Shared procedural world · seed '+s.world_config.seed+'. All placements persist for every player.',{class:'console-muted'}));
  }
  return {Dashboard,Spawn,Placed,NPCs,Monsters,Players,World};
