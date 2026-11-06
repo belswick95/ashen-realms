@@ -30,9 +30,9 @@ test('pixel-art cursors exist at 32px and 2x, and apply to mouse pointers only',
  for(const name of ['arrow','hand','wait']){assert.deepEqual(png(name+'.png'),[32,32]);assert.deepEqual(png(name+'@2x.png'),[64,64])}
  const block=css.slice(css.indexOf('@media (hover:hover) and (pointer:fine){'));
  assert.ok(block.length>0&&css.indexOf('--cursor-arrow')>css.indexOf('@media (hover:hover) and (pointer:fine){'),'cursor rules are scoped to fine pointers');
- assert.match(block,/arrow\.png\?v=release-20261106-tile93\) 1 1,auto/);
- assert.match(block,/hand\.png\?v=release-20261106-tile93\) 9 1,pointer/);
- assert.match(block,/wait\.png\?v=release-20261106-tile93\) 15 15,progress/);
+ assert.match(block,/arrow\.png\?v=release-20261106-ui94\) 1 1,auto/);
+ assert.match(block,/hand\.png\?v=release-20261106-ui94\) 9 1,pointer/);
+ assert.match(block,/wait\.png\?v=release-20261106-ui94\) 15 15,progress/);
  assert.match(block,/canvas\.cursor-interact\{cursor:var\(--cursor-hand\)\}/);
  assert.match(block,/textarea[^{]*\{cursor:text!important\}/);
 });
