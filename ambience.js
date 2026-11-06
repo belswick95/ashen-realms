@@ -9,7 +9,7 @@
 // Weather (weather-effects.js audio()): light and heavy rain beds, wind that
 // gusts with the storm, thunder after each flash (thunder()), a soft hush when
 // snow falls; under a roof the rain is muffled and underground it is silent.
-import {BED_FILES} from './sfx.js?v=release-20261106-walk117';
+import {BED_FILES} from './sfx.js?v=release-20261106-carry118';
 
 const clamp=v=>Math.max(0,Math.min(1,Number(v)||0));
 // Bed levels (0..1) for the current surroundings. `day` is 1 at noon, 0 at night.

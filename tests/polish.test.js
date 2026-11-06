@@ -86,7 +86,7 @@ test('the journal has a Bosses tab fed by public.boss_journal(), styled for phon
  assert.match(ex,/\['bosses','Bosses'\]/);assert.match(ex,/drawBossJournal\(body,el,bosses\)/);
  assert.match(wc,/eldervaleBossJournal=\(\)=>db\.rpc\('boss_journal'\)/);
  assert.match(css,/\.boss-log-row\{display:grid/);assert.match(css,/@media\(max-width:420px\)\{\.boss-log-row\{grid-template-columns:1fr\}/);
- assert.match(read('boss-journal.js'),/\?v=release-20261106-walk117/);
+ assert.match(read('boss-journal.js'),/\?v=release-20261106-carry118/);
 });
 
 // ---------------------------------------------------------------- market stall footprint
