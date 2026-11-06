@@ -33,7 +33,7 @@ test('area sounds crossfade with the day, water, towns and the Winterwatch and E
  assert.ok(ambienceMix({town:1}).crowd>.2&&ambienceMix({town:0}).crowd===0);
  const snow=ambienceMix({snow:1,day:1});assert.ok(snow.wind>ambienceMix({day:1}).wind*2&&snow.birds<day.birds/3);
  assert.ok(ambienceMix({ember:1}).fire>.4);assert.ok(ambienceMix({indoors:1,day:1}).birds<ambienceMix({day:1}).birds);
- const r=ambienceRates({day:0,forest:1,water:1});assert.ok(r.owl>0&&r.frog>0&&r.bird===0);
+ const r=ambienceRates({day:0,forest:1,water:1});assert.ok(r.owl>0&&!r.frog&&r.bird===0);
  const t=ambienceRates({day:1,town:1,smithy:1,chapel:1});assert.ok(t.hammer>0&&t.bell>0&&t.cart>0&&t.dog>0);
 });
 

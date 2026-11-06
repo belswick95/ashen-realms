@@ -1,12 +1,12 @@
 // Area sounds (RuneScape's "area sounds" channel): looping beds that crossfade
 // with the world clock and your surroundings, plus randomised one-shots —
-// several bird species by day; crickets, frogs and an owl at night; flowing
+// several bird species by day; crickets and an owl at night; flowing
 // water by rivers and lakes; wind (strongest in the Winterwatch snow); a low
 // rumble and crackle around Emberspire; and in towns a market murmur, carts,
 // dogs, a smithy's hammer and chapel bells. Nothing is a short obvious loop:
 // beds restart at random offsets with long crossfades, one-shots vary in
 // timing, pitch, level and position.
-import {BED_FILES} from './sfx.js?v=release-20261106-skills86';
+import {BED_FILES} from './sfx.js?v=release-20261106-amb87';
 
 const clamp=v=>Math.max(0,Math.min(1,Number(v)||0));
 // Bed levels (0..1) for the current surroundings. `day` is 1 at noon, 0 at night.
@@ -29,7 +29,6 @@ export function ambienceRates({day=1,water=0,town=0,farm=0,forest=.5,snow=0,embe
   bird:9*day*(.35+forest)*(1-.85*snow)*(1-.9*ember)*(1-.4*town)*quiet,
   woodpecker:.7*day*forest*(1-snow)*quiet,
   owl:.9*night*(.3+.7*forest)*(1-.7*town)*quiet,
-  frog:6*water*(.3+.7*night)*(1-snow)*quiet,
   dog:.8*(town+.6*farm)*quiet,
   sheep:1.6*farm*day*quiet,
   cluck:3*farm*day*quiet,
@@ -64,12 +63,14 @@ export function createAmbience({context,bus,sfx,fetcher=globalThis.fetch,base='/
    if(level<.003&&b.voices.length&&b.out.gain.value<.004){for(const v of b.voices){try{v.src.stop()}catch{}v.src.disconnect();v.g.disconnect()}b.voices=[]}}
   // One-shots, Poisson-timed from the per-minute rates.
   const L=env.listener||env.position||{x:0,z:0},rates=ambienceRates(env),fire=k=>random()<rates[k]*dt/60;
-  // Synthesized calls (bird chirps, owl, hen, cart) sounded artificial, so only recorded samples play.
-  if(fire('bird'))sfx.sample('birdSong',{at:around(L,10,30),gain:.5+random()*.3,rate:.92+random()*.16,bus:bus()});
+  if(fire('bird')){if(random()<.35)sfx.sample('birdSong',{at:around(L,10,30),gain:.5+random()*.3,rate:.92+random()*.16,bus:bus()});else sfx.bird({at:around(L,8,30),gain:.55+random()*.4});}
   if(fire('woodpecker'))sfx.proc('woodpecker',{at:around(L,15,40),gain:.6},bus());
-  if(fire('frog'))sfx.sample('frog',{at:env.waterPoint||around(L,4,14),gain:.45+random()*.3,rate:.9+random()*.25,bus:bus()});
+  if(fire('owl'))sfx.proc('owl',{at:around(L,14,36),gain:.8},bus());
+  // Frogs removed: the croak sample looped audibly and sounded harsh.
   if(fire('dog'))sfx.sample('dog',{at:around(L,22,45),gain:.55,rate:.92+random()*.16,bus:bus(),far:60});
   if(fire('sheep'))sfx.sample('sheep',{at:nearest(env.sources,'sheep',L)||around(L,10,30),gain:.6,rate:.9+random()*.2,bus:bus()});
+  if(fire('cluck'))sfx.proc('cluck',{at:nearest(env.sources,'hen',L)||around(L,6,20),gain:.8},bus());
+  if(fire('cart'))sfx.proc('cart',{at:around(L,10,26),gain:.7},bus());
   if(fire('hammer')){const s=nearest(env.sources,'smithy',L,50);if(s){sfx.sample('anvil',{at:s,gain:.55,far:55,bus:bus()});if(random()<.7)sfx.sample('anvil',{at:s,gain:.45,far:55,delay:.42+random()*.1,bus:bus()})}}
   if(fire('bell')){const s=nearest(env.sources,'chapel',L,90);if(s){for(let i=0;i<3;i++)sfx.proc('bell',{at:s,gain:.55,far:110,delay:i*1.6},bus())}}
   if(fire('crackle'))sfx.sample('crackle',{at:around(L,6,20),gain:.5,bus:bus()});

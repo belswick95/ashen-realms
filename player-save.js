@@ -1,5 +1,5 @@
-import {professionItems} from './profession-data.js?v=release-20261106-skills86';
-import {combatLevel,maxHpForXp} from './combat-level.js?v=release-20261106-skills86';
+import {professionItems} from './profession-data.js?v=release-20261106-amb87';
+import {combatLevel,maxHpForXp} from './combat-level.js?v=release-20261106-amb87';
 // Backward-compatible mapping between browser saves and the existing JSONB columns.
 // Authentication supplies the owner id; saved client data cannot choose another owner.
 export const skillKeys=['attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP','fletchingXP','runecraftingXP','constructionXP','hunterXP'];
