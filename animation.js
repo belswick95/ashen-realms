@@ -1,16 +1,13 @@
-import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261106-fix113';
-import {gaitPlayback,createStrideWarp} from './gait-cadence.js?v=release-20261106-fix113';
-import {createRunStyle,runStyleWeight} from './run-style.js?v=release-20261106-fix113';
-// Clip-driven animation for every human in Eldervale (Quaternius Universal
-// Animation Library, CC0). The caller describes what the character is doing;
-// this picks the clip, cross-fades, and plays gaits at a natural cadence
-// for the real travel speed with strides shortened to match (gait-cadence.js),
-// so feet do not slide. Gameplay roots are never moved here.
+import {clipsFor} from './character-assets.js?v=release-20261106-fix113';
+import {createStrideRig,createGaitState,advanceGait,blendWeights,mixGait} from './stride-cycle.js?v=release-20261106-fix113';
+import {carryStyle,CARRY} from './equipment-pose.js?v=release-20261106-fix113';
+// Animation for every human in Eldervale. Standing, working, fighting and
+// dying play clips (Quaternius Universal Animation Library, CC0) with
+// cross-fades; walking and running are procedural (stride-cycle.js): a
+// distance-driven cycle whose planted feet do not slide, blended over the
+// standing clip. Held items get a carry pose per kind (equipment-pose.js).
+// Gameplay roots are never moved here.
 
-// Ground speed of each loop at normal playback, in world units per second:
-// how fast the planted ball of the foot moves backward (measured from the
-// clips, Quaternius metres × scale).
-export const STRIDE={Walk_Loop:1.03*CHARACTER_SCALE,Jog_Fwd_Loop:6.27*CHARACTER_SCALE,Sprint_Loop:9.5*CHARACTER_SCALE};
 // Death pose timing (s): kneel clip is down by 0.7 s; Death01 joins where its hips are at
 // kneeling height (0.8 s) and plays a little slower so the collapse reads.
 export const DEATH_KNEEL=1.1,KNEEL_HOLD=.7,DEATH_JOIN=.8,DEATH_FALL_SPEED=.6;
@@ -27,9 +24,10 @@ const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_S
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
  const actions=new Map(),weights=new Map(),mids=new Map();let settle=0,deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
- const warp=createStrideWarp(rig),runStyle=createRunStyle(rig);let stride=1;
- const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0,netting=0;
- const holding=socket=>!!socket&&socket.children.some(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);
+ const strideRig=createStrideRig(rig),gait=createGaitState(),blend={idle:1,walk:0,run:0},gaitStyle={};let oneW=0,carryL=0,carryR=0,kindL=null,kindR=null;
+ const arms=createArmLayers(rig,strideRig);let aim=0,shot=null,cast=null,netting=0;
+ // What a hand holds (a visible weapon or shield), as a carry kind.
+ function heldKind(socket){if(!socket)return null;const list=socket.children;for(let i=0;i<list.length;i++){const c=list[i];if(!c.visible)continue;if(c.userData.shieldMount)return 'shield';if(c.userData.weaponMount)return c.userData.carryStyle??=carryStyle(c.userData.weaponKey||c.userData.itemKey)}return null}
  const loops={};
  function clipFor(name){const [clip,loop]=name.split('@');if(!loop)return clips[clip];if(!clips[clip])return null;return loops[name]||(loops[name]=Object.assign(clips[clip].clone(),{name}))}
  function action(name){if(!clipFor(name))name='Idle_Loop';if(!actions.has(name)){const a=mixer.clipAction(clipFor(name));a.enabled=true;a.setEffectiveWeight(0);if(ONE_SHOT.has(name)){a.setLoop(2200,1);a.clampWhenFinished=true}a.play();actions.set(name,a);weights.set(name,0)}return actions.get(name)}
@@ -49,21 +47,25 @@ export function createHumanoidAnimator(rig){
   const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>lastHit+.05&&hitNow>.1&&!oneShot&&!dead)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
   if(air&&!airborne)startOneShot('Jump_Start',.3);else if(!air&&airborne)startOneShot('Jump_Land',.35);airborne=!!air;
   // Base loop for the current state.
-  let base;const work=ACTIVITY[activity||rig.activity];
+  let base,gaitName;const work=ACTIVITY[activity||rig.activity];
   // Death: drop to the knees with the head bowed (Fixing_Kneeling, held), then collapse (Death01
   // joined mid-fall). About 2.7 s in all; the pose holds until `dead` clears.
   if(dead){if(deadAt<0)deadAt=time;oneShot=null}else deadAt=-1;
   if(dead)base=clips.Fixing_Kneeling&&time-deadAt<DEATH_KNEEL?'Fixing_Kneeling':'Death01';
   else if(mounted)base=clips.Driving_Loop?'Driving_Loop':'Sitting_Idle_Loop';
   else if(airborne)base='Jump_Loop';
-  else if(moving){const gait=locomotion==='run'?'Sprint_Loop':locomotion==='jog'?'Jog_Fwd_Loop':(locomotion==='walk'||locomotion==='combat')&&speed<=WALK_LIMIT?'Walk_Loop':speed>6.5?'Sprint_Loop':speed>2.6?'Jog_Fwd_Loop':'Walk_Loop';base=gait;}
+  // Moving: the gait is procedural. While it fades in, the clip underneath
+  // holds what was playing (one blend, e.g. kneel -> walk); once the gait is
+  // fully in, the relaxed standing clip takes over underneath for the stop.
+  else if(moving){gaitName=locomotion==='run'?'Sprint_Loop':locomotion==='jog'?'Jog_Fwd_Loop':(locomotion==='walk'||locomotion==='combat')&&speed<=WALK_LIMIT?'Walk_Loop':speed>6.5?'Sprint_Loop':speed>2.6?'Jog_Fwd_Loop':'Walk_Loop';base=gait.move>.98?'Idle_Loop':current}
   // Relaxed by default; the fighting stance is for an explicit combat stance or
   // a few seconds after armed melee attacks and blocks.
   else base=work||(block>0||!ranged&&time<fightUntil?'Sword_Idle':'Idle_Loop');
+  if(!moving)gaitName=base;
   // A loop that is still fading out keeps its phase when it comes back (walk ->
   // idle -> walk within a fade): restarting it from frame 0 visibly pops the limbs.
   if(base!==current){if(LOW_POSE.has(base)||LOW_POSE.has(current))settle=.9;current=base;const a=action(base);if(dead||!((weights.get(base)||0)>.05))a.reset?.();if(dead&&base==='Death01'&&clips.Fixing_Kneeling)a.time=DEATH_JOIN}
-  const loop=action(base);if(STRIDE[base]){const play=gaitPlayback(base,speed,{stride:STRIDE[base],duration:loop.getClip().duration,scale:CHARACTER_SCALE});loop.timeScale=play.timeScale;stride=play.amplitude}else{loop.timeScale=1;stride=1}
+  const loop=action(base);loop.timeScale=1;
   if(work&&base===work&&rig.activityPhase!=null){loop.time=rig.activityPhase*loop.getClip().duration;loop.timeScale=0}
   // Net fishing holds the kneel (the arms and spine are posed by arms.net), so the body does not bob each loop.
   else if(base===work&&(activity||rig.activity)==='net'&&base==='Fixing_Kneeling'){loop.time=Math.min(KNEEL_HOLD,loop.getClip().duration);loop.timeScale=0}
@@ -80,15 +82,20 @@ export function createHumanoidAnimator(rig){
   settle=Math.max(0,settle-dt);const soft=rig.smoothFade&&!oneShot&&!dead,k2=1-Math.exp(-dt/(settle>0?.12:.075));
   for(const [name,a] of actions){const t=name===target?1:0;let w;if(soft){const m0=mids.get(name)??weights.get(name),m=m0+(t-m0)*k2;mids.set(name,m);w=weights.get(name)+(m-weights.get(name))*k2}else{w=weights.get(name)+(t-weights.get(name))*k;mids.set(name,w)}weights.set(name,w<.001&&t===0&&!(mids.get(name)>.001)?0:w);a.setEffectiveWeight(weights.get(name))}
   mixer.update(dt);
-  // Shorter strides for the gait loop, weighted by how far it has faded in.
-  if(STRIDE[base]&&moving){const w=weights.get(base)||0;if(w>0)warp(loop.getClip(),1-(1-stride)*w)}
-  // Calm the run: steadier hips, head and torso, smaller arm swing (run-style.js).
-  if(moving&&!airborne&&!oneShot)runStyle.update(loop.getClip(),base,weights.get(base)||0);
-  // Blocking raises the shield across the chest on top of whatever clip plays.
+  // Walk / run cycle: phase from the ground covered; idle <-> walk <-> run blends.
+  advanceGait(gait,dt,{moving:moving&&!airborne&&!dead,running:gaitName==="Jog_Fwd_Loop"||gaitName==="Sprint_Loop",sprinting:gaitName==="Sprint_Loop",distance,speed,soft:rig.smoothFade?(settle>0||LOW_POSE.has(current)?.2:.075):0});blendWeights(gait,blend);
+  oneW+=((oneShot?1:0)-oneW)*k;if(oneW<.001)oneW=0;
+  let contacts=null;
+  if(strideRig&&gait.move>0)contacts=strideRig.apply(gait,gait.move,gait.move*(1-oneW));
+  // Held items: each hand takes the carry pose of what it holds. Weapons are
+  // carried while moving (an attacking arm is left to the attack clip); a
+  // shield rides on the bent forearm, board upright, all the time.
+  kindL=heldKind(rig.leftHand);kindR=heldKind(rig.rightHand);const able=!mounted&&!dead;
+  carryR+=((kindR&&able?gait.move*(1-oneW):0)-carryR)*k;if(carryR<.001)carryR=0;
+  carryL+=((kindL&&able?(kindL==='shield'?1:gait.move*(1-oneW)):0)-carryL)*k;if(carryL<.001)carryL=0;
+  if(strideRig){mixGait(gait.run,gaitStyle);if(carryR&&kindR)arms.carry("r",kindR,carryR,gait,gaitStyle);if(carryL&&kindL)arms.carry("l",kindL,carryL,gait,gaitStyle)}
+  // Blocking raises the shield in front of the chest on top of whatever plays.
   guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
-  // Held weapon / shield ride steady at the side while running (gently while walking).
-  carry+=((STRIDE[base]&&moving&&!airborne&&!oneShot&&!mounted&&!dead?1:0)-carry)*k;if(carry<.001)carry=0;
-  if(carry&&!guard)for(const side of ['left','right'])if(holding(side==='left'?rig.leftHand:rig.rightHand))arms.carry(side,carry*(runStyleWeight(base,1)?.8:.45));
   // Bow shot: raise and draw over 70% of the attack, release, then lower.
   let draw=0,released=false;
   // Spell: the bolt leaves the casting (left) hand partway through the cast.
@@ -100,8 +107,10 @@ export function createHumanoidAnimator(rig){
   // Net fishing (gathering-visuals.js sets rig.netDip): lean over the bank,
   // both hands on the pole, dip the net into the water, scoop and lift.
   const dip=rig.netDip;netting+=((dip&&!moving&&!mounted&&!dead&&!oneShot?1:0)-netting)*k;if(netting<.001)netting=0;if(netting&&dip)arms.net(netting,dip);
-  const run=base==='Sprint_Loop'?1:base==='Jog_Fwd_Loop'?.65:0;
-  return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite};
+  // A shield stays strapped to the forearm: the wrist is held straight whatever the clip does.
+  if(strideRig&&kindL==='shield')strideRig.straightWrist('l');
+  const run=gaitName==='Sprint_Loop'?1:gaitName==='Jog_Fwd_Loop'?.65:0,planted=contacts&&gait.move>.5;
+  return {blend:moving?1:0,run,gait:gaitName,weights:blend,phase:gait.phase,step:gait.step,flight:airborne,contacts:{left:!airborne&&(!planted||contacts.left),right:!airborne&&(!planted||contacts.right)},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite};
  },dispose(){eating.dispose();mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
 }
 
@@ -124,8 +133,9 @@ export function netDipPhase(u){u=((Number(u)%1)+1)%1||0;const ease=x=>x<=0?0:x>=
 //  aim(w,draw):   bow arm straight ahead with the bow upright (socket +Y up, its
 //                 limbs, socket +X, toward the target); the right hand draws
 //                 the string back toward the cheek as `draw` goes 0..1.
-function createArmLayers(rig){
+function createArmLayers(rig,stride){
  const T=rig.T,b=rig.bones;
+ const cU=new T.Vector3(),cF=new T.Vector3(),cK=new T.Vector3(),cQ=new T.Quaternion(),cR=new T.Quaternion(),cX=new T.Vector3(1,0,0),want=new T.Quaternion();
  const forward=new T.Vector3(),up=new T.Vector3(),left=new T.Vector3(),a=new T.Vector3(),c=new T.Vector3(),to=new T.Vector3(),target=new T.Vector3();
  const q=new T.Quaternion(),wq=new T.Quaternion(),pq=new T.Quaternion(),id=new T.Quaternion(),rot=new T.Quaternion(),m=new T.Matrix4();
  const netShoulder=new T.Vector3(),netGoal=new T.Vector3(),netHand=new T.Vector3(),netDir=new T.Vector3(),netY=new T.Vector3(0,1,0),netParent=new T.Quaternion(),netWant=new T.Quaternion();
@@ -136,15 +146,21 @@ function createArmLayers(rig){
  return {
   // Hand to mouth: the right fist rises just in front of the chin.
   mouth(weight){frame();(b.Head||b.head).getWorldPosition(target).addScaledVector(forward,.13).addScaledVector(up,-.07).addScaledVector(left,-.03);reach('right',target,weight)},
-  // Running with a weapon or shield: that arm is carried low beside the hip,
-  // elbow bent, instead of pumping the item across the chest; a shield hangs
-  // with its face turned outward.
-  carry(side,weight){frame();const s=side==='left'?'l':'r',out=side==='left'?1:-1,up_=b['upperarm_'+s],fore=b['lowerarm_'+s],hand=b['hand_'+s];
-   up_.getWorldPosition(c);fore.getWorldPosition(a);const L=c.distanceTo(a)+a.distanceTo(hand.getWorldPosition(to));
-   target.copy(c).addScaledVector(up,-.68*L).addScaledVector(forward,.42*L).addScaledVector(left,out*.12*L);reach(side,target,weight);
-   if(side==='left'){rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,left),weight*.85)}},
-  guard(weight){frame();b.spine_03.getWorldPosition(target).addScaledVector(forward,.5).addScaledVector(left,.12);reach('left',target,weight);
-   rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,forward),weight)},
+  // Carry pose for what a hand holds (CARRY in equipment-pose.js): the arm
+  // hangs, the forearm and knuckle line (the item's long axis) point where the
+  // kind wants them, and the whole arm swings a little with the stride.
+  carry(s,kind,weight,gait,style){const pose=CARRY[kind];if(!pose||!stride)return;const o=s==='l'?1:-1;
+   const swing=(s==='l'?-1:1)*style.arm*Math.cos(2*Math.PI*(gait.phase-style.lag))*pose.swing*gait.move+pose.raise;
+   cR.setFromAxisAngle(cX,-swing);
+   cU.set(o*Math.sin(pose.abd),-Math.cos(pose.abd),0).applyQuaternion(cR);
+   cK.set(o*pose.knuckle[0],pose.knuckle[1],pose.knuckle[2]).normalize();
+   // Forearm square to the knuckle line, so the item points exactly as set.
+   cF.set(o*pose.fore[0],pose.fore[1],pose.fore[2]);cF.addScaledVector(cK,-cF.dot(cK)).normalize();
+   cF.applyQuaternion(cR);cK.applyQuaternion(cR);
+   stride.arm(s,cU,cF,cK,stride.clavicleRS(s,cQ),weight)},
+  // Block: the shield arm comes up in front of the chest, forearm across the
+  // body, knuckles up, so the board stands upright facing forward.
+  guard(weight){if(!stride)return;const g=CARRY.guard;cU.fromArray(g.upper).normalize();cF.fromArray(g.fore).normalize();cK.fromArray(g.knuckle).normalize();stride.arm('l',cU,cF,cK,stride.clavicleRS('l',cQ),weight)},
   // Net fishing pose for cycle position dip.u (see netDipPhase): the spine leans
   // toward the water, the right hand reaches along the pole toward the net's
   // goal at the water line (dip.water, world space), the left hand grips the
@@ -166,7 +182,7 @@ function createArmLayers(rig){
    // Bow arm: straight out from the left shoulder at shoulder height.
    b.upperarm_l.getWorldPosition(target).addScaledVector(forward,.78).addScaledVector(left,-.06).addScaledVector(up,.04);reach('left',target,weight);
    // Bow upright, limbs toward the target: socket basis (X forward, Y up, Z = X × Y).
-   c.crossVectors(forward,up);m.makeBasis(forward,up,c);const want=new T.Quaternion().setFromRotationMatrix(m);rig.leftHand.getWorldQuaternion(pq);turn(b.hand_l,want.multiply(pq.invert()),weight);
+   c.crossVectors(forward,up);m.makeBasis(forward,up,c);want.setFromRotationMatrix(m);rig.leftHand.getWorldQuaternion(pq);turn(b.hand_l,want.multiply(pq.invert()),weight);
    // String hand: from the bow grip back to the cheek.
    b.hand_l.getWorldPosition(target).addScaledVector(forward,-.66*draw).addScaledVector(left,-.05*draw);b.upperarm_r.getWorldPosition(c);target.y=Math.max(target.y,c.y+.06*draw);reach('right',target,weight)}
  };

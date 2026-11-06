@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
 import {WALK_SPEED,RUN_SPEED,MOUNT_SPEED,TILE,GAME_TICK,travelSpeed,isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,crossFrame,crossColor,CROSS_TIME,approachPoint,withinReach,arrivalStatus} from '../click-walk.js';
 import {mapPoint} from '../minimap.js';import {searchRoute} from '../route-search.js';import {CHARACTER_SCALE} from '../character-assets.js';
-import {STRIDE,createHumanoidAnimator} from '../animation.js';import {gaitPlayback} from '../gait-cadence.js';import {buildHumanoid} from '../humanoid.js';import {mountSpeed} from '../mounts.js';
+import {createHumanoidAnimator} from '../animation.js';import {stepLength,cadence} from '../stride-cycle.js';import {buildHumanoid} from '../humanoid.js';import {mountSpeed} from '../mounts.js';
 
 test('travel pace matches RuneScape: walk 1 tile/tick, run 2, mount a modest gallop',()=>{
  assert.equal(TILE,CHARACTER_SCALE,'one tile is one metre in world units');
@@ -15,11 +15,11 @@ test('travel pace matches RuneScape: walk 1 tile/tick, run 2, mount a modest gal
  const strides=MOUNT_SPEED/7.6;assert.ok(strides>1&&strides<2);
 });
 
-test('walk plays the walk clip and run plays the jog clip with planted feet (no sliding)',()=>{
+test('walk reports the walk gait and run the jog gait, with strides matched to the ground speed',()=>{
  const rig=buildHumanoid(T,new T.Group()),animator=createHumanoidAnimator(rig);
  let pose;for(let i=0;i<30;i++)pose=animator.update(1/60,{distance:WALK_SPEED/60,speed:WALK_SPEED,locomotion:'walk'});assert.equal(pose.gait,'Walk_Loop');
  for(let i=0;i<30;i++)pose=animator.update(1/60,{distance:RUN_SPEED/60,speed:RUN_SPEED,locomotion:'jog'});assert.equal(pose.gait,'Jog_Fwd_Loop');
- for(const [gait,speed,duration] of [['Walk_Loop',WALK_SPEED,1.333],['Jog_Fwd_Loop',RUN_SPEED,.933]]){const p=gaitPlayback(gait,speed,{stride:STRIDE[gait],duration,scale:CHARACTER_SCALE});assert.ok(Math.abs(STRIDE[gait]*p.timeScale*p.amplitude-speed)<1e-6,gait+' planted foot travels at ground speed');assert.ok(p.timeScale<=2.4)}
+ for(const [run,speed] of [[0,WALK_SPEED],[1,RUN_SPEED]]){assert.ok(Math.abs(stepLength(run,speed)*cadence(run,speed)-speed)<1e-9,'steps cover exactly the ground travelled');assert.ok(cadence(run,speed)<4,'no frantic stepping')}
  animator.dispose();
 });
 
