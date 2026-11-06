@@ -1,0 +1,62 @@
+// Places the monster roster's spawn groups on walkable, dry ground away from the
+// towns and the castle, deterministically, and writes monster-spawns.js.
+// usage: node --import ./tests/helpers/preload.js scripts/plan-monster-spawns.mjs
+import fs from 'node:fs';
+import {initializeGeography} from '../geography.js?v=release-20261106-gear88';
+import {createLandscape} from '../landscape.js';
+import {rosterBeasts,safeZoneDistance} from '../monster-roster.js';
+const root=new URL('../',import.meta.url);
+const m=JSON.parse(fs.readFileSync(new URL('db/generated-world.json',root)));initializeGeography(m.config);const land=createLandscape();
+// Existing structures (live world, rounded) the groups keep clear of.
+const blockers=JSON.parse(fs.readFileSync(new URL('scripts/monster-roster-db/blockers.json',root)));
+// [group, x, z, radius, [[type, count], ...]]
+export const CLUSTERS=[
+ ['Kingsroad meadows',-238,-188,15,[['hedgerow_rat',4],['bramble_goblin',4]]],
+ ['Mound field',-118,-176,15,[['mound_shambler',4],['dusk_bat',3]]],
+ ['Birchford north fields',-215,40,16,[['hedgerow_rat',4],['bramble_goblin',2]]],
+ ['Thornwood edge',-335,40,14,[['mossweb_spider',4]]],
+ ['Willow fen',-118,255,16,[['peat_imp',4],['mossweb_spider',2]]],
+ ['Birchford wayside',-112,150,14,[['wayside_footpad',4]]],
+ ['Winterwatch outskirts',300,-195,16,[['snowpelt_fox',3],['icetooth_rat',4]]],
+ ['Emberspire scrubland',185,135,16,[['dune_jackal',4],['sand_scuttler',3]]],
+ ['Cairn hollow',-60,-120,14,[['cairn_skeleton',4]]],
+ ['Brigand thicket',-60,205,13,[['hedge_brigand',4]]],
+ ['Bramble dell',-160,330,14,[['thornback_boar',4]]],
+ ['Tuskgob warren',-60,335,15,[['tuskgob_brute',4],['bramble_goblin',2]]],
+ ['Gloomfen',-262,300,20,[['fen_lurker',4],['marsh_wight',3],['fenwitch',2]]],
+ ['Bloodtusk war camp',80,-65,15,[['bloodtusk_raider',4],['bloodtusk_shaman',2]]],
+ ['Frostfang pass',60,-250,18,[['frostfang_wolf',5],['rime_imp',3]]],
+ ['Rimeback crags',300,-330,18,[['rimeback_troll',3],['hoarfrost_wraith',3]]],
+ ['Cragmaw heights',352,-175,14,[['cragmaw_ogre',3]]],
+ ['Hollowmere cairns',-100,-385,20,[['cairnbound_knight',4],['crypt_warden',2],['hollow_king',1]]],
+ ['Sandscar hideout',70,120,16,[['sandscar_raider',4],['sandscar_archer',3]]],
+ ['Cinderwing roost',120,330,14,[['cinderwing_bat',4]]],
+ ['Dune stalker flats',200,385,16,[['dune_stalker',4]]],
+ ['Ember hound run',335,255,15,[['ember_hound',4]]],
+ ['Grizzled woods',-375,200,15,[['grizzled_mauler',3]]],
+ ['Cindervault',385,40,22,[['basalt_golem',3],['ashmaw_hound',3],['cinder_fiend',2],['ashen_colossus',1]]],
+ ['Blighted Reach west',-200,-402,18,[['gloam_phantom',3],['umbral_wraith',2]]],
+ ['Blighted Reach east',-60,-404,16,[['gloam_phantom',2],['dread_knight',3],['umbral_wraith',1]]],
+ ['Frostmaw eyrie',370,-390,22,[['glacier_colossus',2],['rimescale_whelp',2],['frostmaw',1]]],
+ ['Verdant whelp hollow',-385,395,16,[['verdant_whelp',2]]],
+ ['Ashscale scar',100,395,15,[['ashscale_whelp',2]]],
+ ['Runebound ruins',-30,-300,14,[['runebound_sentinel',3]]],
+ ['Stonehide crag',200,-395,15,[['stonehide_elder',2]]],
+ ['Duskborn rift',290,395,15,[['duskborn_demon',2]]],
+ ["Grimtusk's stronghold",330,-30,15,[['bloodtusk_berserker',3],['grimtusk',1]]],
+ ['Gloom hollow',-250,395,15,[['gloomweb_broodling',3],['gloom_matriarch',1]]]
+];
+function rng(seed){let n=seed>>>0;return ()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296}}
+const hash=s=>[...s].reduce((h,c)=>Math.imul(h^c.charCodeAt(0),16777619)>>>0,2166136261);
+export const okSpot=(x,z,roam=5)=>{if(!land.canWalk(x,z)||land.waterAt(x,z)>0)return false;for(let i=0;i<8;i++){const a=i*Math.PI/4;if(!land.canWalk(x+Math.cos(a)*Math.min(roam,4),z+Math.sin(a)*Math.min(roam,4)))return false}return safeZoneDistance(x,z)>roam+12&&blockers.every(([bx,bz,r])=>Math.hypot(bx-x,bz-z)>r+2.5)};
+const out=[],failures=[];
+for(const [group,cx,cz,radius,members] of CLUSTERS){const random=rng(hash(group)),placed=[];let tries=0;
+ for(const [key,count] of members){const b=rosterBeasts[key];if(!b)throw Error('Unknown roster type '+key);
+  for(let i=0;i<count;i++){let ok=false;for(let t=0;t<4000&&!ok;t++){tries++;const boss=b.tier==='Boss'||b.tier==='Legendary',r=(boss?.25:1)*radius*Math.sqrt(random()),a=random()*Math.PI*2,x=Math.round((cx+Math.cos(a)*r)*10)/10,z=Math.round((cz+Math.sin(a)*r)*10)/10,space=boss||b.scale>1.6?7:4;
+    if(!okSpot(x,z,b.roam)||placed.some(p=>Math.hypot(p.x-x,p.z-z)<space))continue;placed.push({x,z});out.push({key,x,z,group,yaw:Math.round(random()*360-180)});ok=true}
+   if(!ok)failures.push(key+' in '+group)}}
+}
+if(failures.length){console.error('No room for:\n '+failures.join('\n '));for(const [group,cx,cz,radius] of CLUSTERS){let n=0,ok=0;for(let dx=-radius;dx<=radius;dx+=2)for(let dz=-radius;dz<=radius;dz+=2){if(dx*dx+dz*dz>radius*radius)continue;n++;if(okSpot(cx+dx,cz+dz,5))ok++}console.error(group.padEnd(26),Math.round(ok/n*100)+'%')}process.exit(1)}
+const text='// Generated by scripts/plan-monster-spawns.mjs: where each roster monster stands.\n// Walkable, dry ground outside the towns and the castle; see tests/monster-roster.test.js.\nexport const monsterSpawns=[\n'+out.map(s=>' '+JSON.stringify(s)).join(',\n')+'\n];\n';
+fs.writeFileSync(new URL('monster-spawns.js',root),text);
+console.log(out.length+' spawns in '+CLUSTERS.length+' groups');

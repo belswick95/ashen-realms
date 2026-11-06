@@ -9,7 +9,7 @@ import fs from 'node:fs';
 const goods={rawMeat:{name:'Raw game meat'},hide:{name:'Animal hide'},'weapon:dagger':{name:'Iron dagger',field:'weaponsOwned'},noteA:{name:'Note',noteOf:'rawMeat'}};
 
 test('every bestiary creature is a valid entity with a sane loot table and rewards',()=>{
- for(const [key,b] of Object.entries(bestiary)){const e=bestiaryEntity(key,5,6);assert.equal(validateEntity(e),e);assert.ok(worldTemplates[b.template],key);assert.ok(e.level>=1&&e.level<=100,key);assert.ok(e.xpReward>=0&&e.xpReward<=100000);assert.ok(e.goldReward>=0);assert.doesNotThrow(()=>normalizeLoot(e.loot),key);assert.ok(e.loot.length<=8)}
+ for(const [key,b] of Object.entries(bestiary)){const e=bestiaryEntity(key,5,6);assert.equal(validateEntity(e),e);assert.ok(worldTemplates[b.template],key);assert.ok(e.level>=1&&e.level<=(b.roster?120:100),key);assert.ok(e.xpReward>=0&&e.xpReward<=100000);assert.ok(e.goldReward>=0);assert.doesNotThrow(()=>normalizeLoot(e.loot),key);assert.ok(e.loot.length<=8)}
  const a=bestiaryEntity('ember_dragon',0,0),b=bestiaryEntity('ember_dragon',0,0);a.loot[0].min=99;assert.equal(b.loot[0].min,bestiary.ember_dragon.loot[0].min,'entities never share loot arrays');
  for(const id of ['zombie','orc','cow','chicken','sheep','pig'])assert.equal(worldTemplates[id].kind,'monster');
  for(const id of farmAnimalSpecies)assert.equal(worldTemplates[id].hostile,false,'livestock is peaceful');
