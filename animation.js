@@ -1,6 +1,6 @@
-import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261106-qa114';
-import {gaitPlayback,createStrideWarp} from './gait-cadence.js?v=release-20261106-qa114';
-import {createRunStyle,runStyleWeight} from './run-style.js?v=release-20261106-qa114';
+import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261106-hud115';
+import {gaitPlayback,createStrideWarp} from './gait-cadence.js?v=release-20261106-hud115';
+import {createRunStyle,runStyleWeight} from './run-style.js?v=release-20261106-hud115';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip, cross-fades, and plays gaits at a natural cadence

@@ -1,4 +1,4 @@
-import {nextFrame} from './frame-work.js?v=release-20261106-qa114';
+import {nextFrame} from './frame-work.js?v=release-20261106-hud115';
 // Upserts are keyed by entity ID, so repeated snapshots never rebuild unchanged scenery.
 // The queue drains nearest-first (re-sorted when rows arrive or the player moves on), so what the
 // player — or an opening cutscene — looks at is built before far regions. near(radius) resolves as
