@@ -73,7 +73,7 @@ export function terrainPatch(x,z,scale=25){const gx=x/scale,gz=z/scale,ix=Math.f
 // gives broad lush/dry patches and `jitter` (-1..1) a small per-point light
 // variation. Smoothly blended, not palette-snapped: the renderer interpolates
 // between points, so steps would show as stripes.
-const GROUND_ALBEDO={grass:.92,snow:.96,dry:.88,rock:.72};
+const GROUND_ALBEDO={grass:1,snow:1,dry:1,rock:.8};
 export function terrainColor(climate,normalY,height,source=null,jitter=0,patch=0){
  const [g,s,d,c]=climate,G=CLASSIC_GROUND,sum=Math.max(1e-6,g+s+d+c),green=(g+c)/sum;const out=[0,0,0];
  if(source){const albedo=(GROUND_ALBEDO.grass*(g+c)+GROUND_ALBEDO.snow*s+GROUND_ALBEDO.dry*d)/sum;for(let k=0;k<3;k++)out[k]=source[k]*albedo}
@@ -85,6 +85,8 @@ export function terrainColor(climate,normalY,height,source=null,jitter=0,patch=0
  const t=clamp((Math.abs(normalY)-.58)/.3),rock=(1-t*t*(3-2*t))*.72;
  // Steep ground: the same colour over darker stone, as the normal ground shader does.
  for(let k=0;k<3;k++)out[k]=out[k]*(1-rock)+(source?source[k]*GROUND_ALBEDO.rock:G.rock[k])*rock;
+ // Slightly muted, so props and characters stand out against the ground.
+ const y=.2126*out[0]+.7152*out[1]+.0722*out[2];for(let k=0;k<3;k++)out[k]+=(y-out[k])*.2;
  const light=1+jitter*.07+patch*.05;
  for(let k=0;k<3;k++)out[k]=clamp(out[k]*light);
  return out;
@@ -143,12 +145,17 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
   pixels.set(key,p);return p}
  const atlas=t=>t&&t.wrapS===T.ClampToEdgeWrapping&&t.wrapT===T.ClampToEdgeWrapping;
  // Vertex colours sampled from a texture at each vertex UV (shared per geometry+texture).
+ // Each sample averages a small neighbourhood, so stains, stitching and
+ // folds painted into the texture do not show up as blotches: the cloth
+ // reads as clean colour regions.
  function bakeGeometry(geometry,texture){
   let byTex=baked.get(geometry);if(!byTex)baked.set(geometry,byTex=new Map());let g=byTex.get(texture.uuid);if(g)return g;
   const px=texturePixels(texture,128),uv=geometry.attributes.uv;if(!px?.data||!uv)return null;
-  g=geometry.clone();const n=uv.count,col=new Float32Array(n*3),s=px.size;
-  for(let i=0;i<n;i++){let u=uv.getX(i),v=uv.getY(i);u=clamp(u-Math.floor(u===1?0:u),0,1);v=clamp(v-Math.floor(v===1?0:v),0,1);if(texture.flipY)v=1-v;const x=Math.min(s-1,Math.floor(u*s)),y=Math.min(s-1,Math.floor(v*s)),o=(y*s+x)*4;
-   const q=quantizeColor(px.data[o]/255,px.data[o+1]/255,px.data[o+2]/255);col[i*3]=srgbToLinear(q[0]);col[i*3+1]=srgbToLinear(q[1]);col[i*3+2]=srgbToLinear(q[2])}
+  g=geometry.clone();const n=uv.count,col=new Float32Array(n*3),s=px.size,d=px.data;
+  for(let i=0;i<n;i++){let u=uv.getX(i),v=uv.getY(i);u=clamp(u-Math.floor(u===1?0:u),0,1);v=clamp(v-Math.floor(v===1?0:v),0,1);if(texture.flipY)v=1-v;const x=Math.min(s-1,Math.floor(u*s)),y=Math.min(s-1,Math.floor(v*s));
+   let r=0,gg=0,b=0,w=0;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=s||yy>=s)continue;const o=(yy*s+xx)*4;if(d[o+3]<40)continue;const k=3-Math.max(Math.abs(dx),Math.abs(dy));r+=d[o]*k;gg+=d[o+1]*k;b+=d[o+2]*k;w+=k}
+   if(!w){const o=(y*s+x)*4;r=d[o];gg=d[o+1];b=d[o+2];w=1}
+   const q=quantizeColor(r/w/255,gg/w/255,b/w/255);col[i*3]=srgbToLinear(q[0]);col[i*3+1]=srgbToLinear(q[1]);col[i*3+2]=srgbToLinear(q[2])}
   g.setAttribute('color',new T.BufferAttribute(col,3));g.userData={...geometry.userData,classicBaked:true};byTex.set(texture.uuid,g);return g}
  function quantizedLinear(color,avg){const c=color.clone().convertLinearToSRGB();const q=quantizeColor(c.r*avg[0],c.g*avg[1],c.b*avg[2]);return new T.Color().setRGB(q[0],q[1],q[2],T.SRGBColorSpace)}
  // The classic version of one material, or the material itself (unlit, custom
@@ -181,9 +188,9 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
   else if(variant==='hooked'){m.map=src.map;m.onBeforeCompile=src.onBeforeCompile;const key=src.customProgramCacheKey?.();m.customProgramCacheKey=()=>'classic|'+(key||src.uuid)}
   else if(variant==='textured'){m.map=src.map;gradeTexture(m,avg)}
   if(src.emissive){m.emissive.copy(src.emissive).multiply(new T.Color(...emissiveAvg));m.emissiveIntensity=src.emissiveIntensity}
-  m.userData.eldervaleShared=true;pool.set(sig,m);return m}
+  m.userData.eldervaleShared=true;m.userData.classicOwn=true;pool.set(sig,m);return m}
  function classicMaterial(src,mesh,faceted=facetedGeometry(mesh?.geometry)){
-  if(!LIT(src)||src.visible===false||src.userData?.classicKeep)return {material:src};
+  if(!LIT(src)||src.visible===false||src.userData?.classicKeep||src.userData?.classicOwn)return {material:src};
   const variant=variantOf(src,mesh),key=variant+(faceted?'#f':'');let slot=classicOf.get(src);if(!slot)classicOf.set(src,slot={});let entry=slot[key];
   if(!entry){
    let avg=[1,1,1],emissiveAvg=[1,1,1];if((variant==='flat'||variant==='textured')&&src.map){avg=textureAverage(src.map);if(!avg)return null}
@@ -228,7 +235,7 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
   const pos=src.attributes.position,nor=src.attributes.normal,cli=src.attributes.climate,tint=src.attributes.color;g=src.clone();const col=new Float32Array(pos.count*3);
   for(let i=0;i<pos.count;i++){const c=cli?[cli.getX(i),cli.getY(i),cli.getZ(i),cli.getW(i)]:[1,0,0,0],t=tint?[linearToSrgb(tint.getX(i)),linearToSrgb(tint.getY(i)),linearToSrgb(tint.getZ(i))]:null;const q=terrainColor(c,nor.getY(i),pos.getY(i),t,terrainJitter(pos.getX(i),pos.getZ(i)),terrainPatch(pos.getX(i),pos.getZ(i)));col[i*3]=srgbToLinear(q[0]);col[i*3+1]=srgbToLinear(q[1]);col[i*3+2]=srgbToLinear(q[2])}
   g.setAttribute('color',new T.BufferAttribute(col,3));g.userData={...src.userData,classicBaked:true};let byTex=baked.get(src);if(!byTex)baked.set(src,byTex=new Map());byTex.set('terrain',g);return g}
- const terrainMaterial=new T.MeshLambertMaterial({vertexColors:true,name:'classic-terrain'});terrainMaterial.userData.eldervaleShared=true;
+ const terrainMaterial=new T.MeshLambertMaterial({vertexColors:true,name:'classic-terrain'});terrainMaterial.userData.eldervaleShared=true;terrainMaterial.userData.classicOwn=true;
  function convertTerrain(ground){if(!ground)return;const ud=ground.userData;
   if(ud.classicOrig){
    // The game rebuilds the heightfield after terrain edits: bake the new one.
@@ -247,7 +254,7 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
  // --- Light: a warm ambient fill that follows the time of day ---
  // The sky dome, fog colour and any weather stay under the normal renderer's
  // control; classic only adds the fill light that Lambert needs.
- const AMBIENT={day:.85,night:.22},AMBIENT_TINT={day:0xfff1dc,dusk:0xffc79a,night:0x8d9ac4};
+ const AMBIENT={day:.85,night:.22},AMBIENT_TINT={day:0xf6f2ea,dusk:0xffcfa8,night:0x8d9ac4};
  let lastSky={daylight:1,twilight:0};const tint=new T.Color();
  function applySky(daylight=lastSky.daylight,twilight=lastSky.twilight){lastSky={daylight,twilight};if(!enabled)return;
   tint.set(AMBIENT_TINT.night).lerp(new T.Color(AMBIENT_TINT.day),daylight).lerp(new T.Color(AMBIENT_TINT.dusk),twilight*.45);ambient.color.copy(tint);ambient.intensity=AMBIENT.night+(AMBIENT.day-AMBIENT.night)*daylight}
