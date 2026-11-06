@@ -77,6 +77,13 @@ Current state (06 Nov 2026): 25 fishing spots + 1 training pond, no caves/dungeo
 - Dialogue UI: quest offer/progress text and normal NPC dialogue must not stack on top of each other —
   one dialogue box with a clear flow (NPC line → options incl. quest), consistent with the HUD.
 
+## Building signs (Wave 1, small)
+- Remove the floating green name labels on buildings. Replace with real in-world signs: hanging
+  wooden signboards on iron brackets (swinging slightly), carved/painted lettering plus a simple
+  trade icon (anvil, loaf, potion, sword, coin, bed/mug for inns, fish, etc.), wall plaques for
+  civic buildings, a post sign at town entrances. Cheap: one shared board mesh + canvas texture
+  atlas, batched; readable up close, icon-only at distance; editable text/icon in the Game console.
+
 ## Cross-cutting requirements (every wave)
 - **Deep OSRS research**: study publicly documented OSRS systems end to end (mechanics, pacing,
   progression, skill/combat/quest design patterns, economy, boss design, area design) and write
