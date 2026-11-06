@@ -1,5 +1,5 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
-import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-gear88';
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-monsters89';
 export async function startRealm(db,user,session){
  let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
  const badge=document.createElement('output');badge.id='realm-connection';badge.setAttribute('role','status');badge.style.cssText='position:fixed;top:42px;left:50%;transform:translateX(-50%);z-index:250;background:#25271d;color:#f4d899;padding:7px 12px;border-radius:5px';badge.hidden=true;document.body.append(badge);
