@@ -11,6 +11,7 @@ export function anchors(){
  }
  // Single patch_function calls on live functions written as SQL string literals.
  out.push({file:'tick-tile-engine-1-grid.sql',fn:'eldervale_private.admin_console(text,jsonb)',old:" if command='console_give_xp' then",next:'eldervale_private.engine_console(command,payload)'});
+ out.push({file:'tick-tile-engine-5-cadence.sql',fn:'eldervale_private.realm_request_base(uuid,text,jsonb,uuid,bigint)',old:' perform eldervale_private.world_tick();\n',next:'eldervale_private.request_tick()'});
  return out;
 }
 if(import.meta.url===`file://${process.argv[1]}`){

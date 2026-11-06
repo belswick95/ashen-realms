@@ -78,6 +78,13 @@ test('tick/tile SQL files: rules of the repo (no approval-prompt words, one tran
  assert.match(grid,/\(c\.src is null and s\.live\)/,'removed sources are rebuilt once');
 });
 
+test('every live patch anchor appears exactly once in the PGlite stand-ins (verified read-only against live)',async()=>{
+ const {anchors}=await import('../scripts/tick-tile-db/live-anchors.mjs');
+ const fixture=['fixture.sql','fixture-stage2.sql'].map(f=>fs.readFileSync(new URL('../scripts/tick-tile-db/'+f,import.meta.url),'utf8')).join('\n');
+ const list=anchors();assert.ok(list.length>=26,'anchors: '+list.length);
+ for(const a of list){if(a.fn.includes('engine_console('))continue;assert.equal(fixture.split(a.old).length-1,1,a.file+' '+a.fn+': '+a.old.slice(0,70));assert.notEqual(a.old,a.next)}
+});
+
 test('remote tile walkers: tick-stamped samples glide, a repeated tick only turns the actor',async()=>{
  const {createMotionTrack,presentPose}=await import('../motion-track.js');
  const track=createMotionTrack({delay:600});const now0=10000;

@@ -31,9 +31,11 @@ export default async function({db,run,one,all,ms,repo,T}){
  await run(`select set_config('test.owner','1',false);select eldervale_private.engine_console('console_engine_set','{"config":{"tile_mode":true}}')`,'tile mode on');
  // Walk 1 tile per tick, run 2.
  let r=await cmd('move',{path:[at(5,0)]});
- assert.deepEqual(r.r.motion.path.map(([x,z])=>[Math.round(x/T)-X0,Math.round(z/T)-Z0]),[[1,0],[2,0],[3,0],[4,0],[5,0]],'server plans tile centres');
+ // The command's own tick may already have taken the first step (a tick boundary passed).
+ const done=Math.round(r.r.motion.x/T)-X0;
+ assert.deepEqual(r.r.motion.path.map(([x,z])=>[Math.round(x/T)-X0,Math.round(z/T)-Z0]),[[1,0],[2,0],[3,0],[4,0],[5,0]].slice(done),'server plans tile centres');
  assert.equal(r.r.motion.tile,true);assert.equal(r.r.motion.tileSize,1.58);
- for(let k=1;k<=5;k++){await tick();assert.deepEqual(await tileOfMe(),[k,0],'walk tick '+k)}
+ for(let k=done+1;k<=5;k++){await tick();assert.deepEqual(await tileOfMe(),[k,0],'walk tick '+k)}
  p=await me();assert.equal(p.path.length,0);assert.ok(Math.abs(p.x-cx(X0+5))<1e-6,'stands on the tile centre');
  await run(`update eldervale_private.realm_players set run=true where user_id='${P}'`,'run');
  await cmd('move',{path:[at(0,0)]});const runs=[];for(let k=0;k<3;k++){await tick();runs.push((await tileOfMe())[0])}
@@ -57,7 +59,7 @@ export default async function({db,run,one,all,ms,repo,T}){
 
  // Talking to an NPC: stop on an orthogonal tile, both face each other, the NPC turns back later.
  await run(`update eldervale_private.realm_players set x=${cx(X0)},z=${cx(Z0)},path='[]',motion_at=clock_timestamp() where user_id='${P}';
-  insert into eldervale_private.realm_actors(id,data,x,z,yaw,hp) values('npc1','{"kind":"npc","name":"Mira","roam":3}',${cx(X0+8)},${cx(Z0+5)},2.5,10)`,'npc');
+  insert into eldervale_private.realm_actors(id,data,x,z,yaw,hp) values('npc1','{"kind":"npc","name":"Mira","roam":3,"x":${cx(X0+8)},"z":${cx(Z0+5)}}',${cx(X0+8)},${cx(Z0+5)},2.5,10)`,'npc');
  await cmd('move',{path:[at(7,5)],target:'npc1',kind:'npc'});
  r=await cmd('sync');const last=r.r.motion.path.at(-1);const lt=[Math.round(last[0]/T)-X0,Math.round(last[1]/T)-Z0];
  assert.equal(Math.abs(lt[0]-8)+Math.abs(lt[1]-5),1,'talk tile is orthogonally adjacent: '+lt);
@@ -92,7 +94,7 @@ export default async function({db,run,one,all,ms,repo,T}){
 
  // Attacking a moving monster: the player re-plans each tick to stay orthogonally adjacent.
  await run(`update eldervale_private.realm_players set x=${cx(X0)},z=${cx(Z0)},path='[]',intent=null where user_id='${P}';
-  insert into eldervale_private.realm_actors(id,data,x,z,hp) values('rat','{"kind":"monster","name":"Rat","hp":5,"attackSpeed":2.4}',${cx(X0-5)},${cx(Z0+4)},5)`,'rat');
+  insert into eldervale_private.realm_actors(id,data,x,z,hp) values('rat','{"kind":"monster","name":"Rat","hp":5,"attackSpeed":2.4,"x":${cx(X0-5)},"z":${cx(Z0+4)}}',${cx(X0-5)},${cx(Z0+4)},5)`,'rat');
  await cmd('move',{path:[at(-5,4)],target:'rat',kind:'creature'});await tick(3);
  await run(`update eldervale_private.realm_actors set x=${cx(X0-9)},z=${cx(Z0+7)} where id='rat'`,'rat moves');await tick(9);
  const mt=await tileOfMe();assert.equal(Math.abs(mt[0]+9)+Math.abs(mt[1]-7),1,'followed the rat to an orthogonal tile: '+mt);
