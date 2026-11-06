@@ -59,6 +59,7 @@ export function createNpcDialogue({dialog,nameEl,textEl,nextEl,choicesEl,portrai
 // Parchment summary shown before Accept/Decline: objectives then rewards.
 export function questCard(q,carried){
  const nodes=[el('strong','dialog-quest-title',q.data.name)];
+ if(q.data.stages?.length)nodes.push(el('small',null,'A quest in '+q.data.stages.length+' parts'));
  const objectives=q.data.objectives||[];if(objectives.length){const ul=el('ul','dialog-quest-objectives');for(const o of objectives)ul.append(el('li',null,(o.label||o.type+' '+(o.target||''))+(o.amount>1?' × '+o.amount:'')));nodes.push(el('small',null,'Objectives'),ul)}
  const rewards=rewardEntries(q.data);if(rewards.length){const ul=el('ul','dialog-quest-rewards');for(const r of rewards)ul.append(el('li',null,r.label));nodes.push(el('small',null,'Rewards'),ul)}
  void carried;return nodes;

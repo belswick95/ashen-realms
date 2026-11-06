@@ -161,7 +161,7 @@ export function createQuestJournal(state){
  else{const toggle=button(document.body,'📜',()=>open());toggle.id='quest-journal-toggle';toggle.title='Quest journal';toggle.setAttribute('aria-label','Open quest journal');panel=el('dialog',null,{id:'quest-journal',class:'quest-journal'});const top=el('header');top.append(el('h2','Quest journal'));button(top,'Close',()=>panel.close());panel.append(top,head,legend,list,status);document.body.append(panel)}
  let quests=[],filter=null,selected=null,signature='',pending=false,previous=null,rowsText=null;
  const carried=id=>quantity(state,id);
- function drawSummary(){const s=journalSummary(quests);summary.replaceChildren(el('strong','Quest Points: '+s.points),el('span',s.complete+'/'+s.total+' complete'))}
+ function drawSummary(){const s=journalSummary(quests);summary.replaceChildren(el('strong','Quest Points: '+(questState()?.qp??s.points)),el('span',s.complete+'/'+s.total+' complete'))}
  function detail(q){
   const st=questStatus(q),card=el('article',null,{class:'quest-detail '+QUEST_STATUS[st].className});
   button(card,'‹ All quests',()=>{selected=null;draw()}).className='quest-back';
@@ -177,7 +177,7 @@ export function createQuestJournal(state){
    if(q.completed)box.append(el('p','QUEST COMPLETE!',{class:'quest-complete-line'}));
    card.append(box);
    const rowsNow=q.accepted&&!q.completed?objectiveRows(questViewOf(q),carried):[];
-   if(rowsNow.length){const ol=el('ol',null,{class:'quest-objectives'});for(const o of rowsNow){const li=el('li',null,{class:o.done?'done':''});li.append(el('span',o.label),el('small',Math.min(o.amount,o.count)+'/'+o.amount));ol.append(li)}card.append(ol)}
+   if(rowsNow.length){const ol=el('ol',null,{class:'quest-objectives'}),objs=questViewOf(q).data.objectives;rowsNow.forEach((o,i)=>{if(objs[i]?.label)o.label=objs[i].label});for(const o of rowsNow){const li=el('li',null,{class:o.done?'done':''});li.append(el('span',o.label),el('small',Math.min(o.amount,o.count)+'/'+o.amount));ol.append(li)}card.append(ol)}
   }else{
    card.append(el('p',q.data.description||''));
    card.append(el('h4','Objectives'));const ol=el('ol',null,{class:'quest-objectives'});

@@ -131,7 +131,7 @@ export function questSimulator(host,d,{el,btn,names=()=>({})}){
  const paint=()=>{journal.replaceChildren();for(const e of sim.journal()){const p=el('p',null,{class:e.done?'done':e.complete?'complete':'current'});p.append(e.done?el('s',e.text):el('span',e.text));journal.append(p)}
   acts.replaceChildren();for(const a of sim.actions())btn(a.label,()=>{sim.apply(a);paint()},acts);if(!sim.actions().length)btn('↺ Restart',()=>questSimulator(host,d,{el,btn,names}),acts);
   const f=sim.flags();extra.textContent=(Object.keys(f).length?'Flags: '+JSON.stringify(f)+' · ':'')+(sim.quest.completed?'Unlocks: '+(sim.unlocks().map(unlockLabel).join(', ')||'none')+' · Lamps: '+((d.lamps||[]).map(lampLabel).join(', ')||'none'):'');
-  const nm=names();log.textContent=sim.log.map(l=>l.replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f-]{27}/g,id=>nm[id]||id)).join('\n')};
+  const nm=names();log.textContent=sim.log.map(l=>l.replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g,id=>nm[id]||id)).join('\n')};
  paint();return sim;
 }
 

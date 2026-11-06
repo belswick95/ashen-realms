@@ -63,14 +63,14 @@ void main(){float d=length(vUv-.5)*2.;float core=smoothstep(.55,.15,d);float glo
  float pulse=.72+.28*sin(uTime*3.2-vAlong*14.);float tail=mix(1.,smoothstep(1.,.62,vAlong),uTail);float near=smoothstep(.7,1.5,vNear);
  float a=(core+glow)*pulse*tail*near*uOpacity*.62;if(a<.01)discard;gl_FragColor=vec4(mix(uColor,vec3(1.),core*.35),a);}`;
 const RING_FRAG=`uniform float uTime;uniform float uOpacity;uniform vec3 uColor;varying vec2 vUv;
-void main(){float d=length(vUv-.5)*2.;float w=.12+.04*sin(uTime*2.6);float ring=smoothstep(w,0.,abs(d-.72));float a=ring*uOpacity*.7;if(a<.01)discard;gl_FragColor=vec4(uColor,a);}`;
+void main(){float d=length(vUv-.5)*2.;float w=.12+.04*sin(uTime*2.6);float ring=smoothstep(w,0.,abs(d-.72));float a=ring*uOpacity*.85;if(a<.01)discard;gl_FragColor=vec4(uColor,a);}`;
 
 // heightAt(x,z); player() -> {x,z}; locate(id) -> {x,z} | null; fetchTiles(x,z,r) -> Promise(view);
 // floor() -> current floor (the trail follows the ground floor grid only).
 export function createQuestTrail(T,scene,{heightAt=()=>0,player,locate=()=>null,fetchTiles=null,floor=()=>0,owner=()=>({})}={}){
  const cache=createTileCache(),max=TRAIL.maxDots,dots=new Float32Array(max*3);
  const uniforms={uTime:{value:0},uOpacity:{value:0},uTail:{value:1},uPlayer:{value:new T.Vector2()},uColor:{value:new T.Color(0xffe39a)}};
- const geometry=new T.PlaneGeometry(.52,.52);geometry.rotateX(-Math.PI/2);
+ const geometry=new T.PlaneGeometry(.66,.66);geometry.rotateX(-Math.PI/2);
  const along=new T.InstancedBufferAttribute(new Float32Array(max),1);geometry.setAttribute('aAlong',along);
  const material=new T.ShaderMaterial({uniforms,vertexShader:VERT,fragmentShader:FRAG,transparent:true,depthWrite:false,fog:false,polygonOffset:true,polygonOffsetFactor:-2});
  const mesh=new T.InstancedMesh(geometry,material,max);mesh.count=0;mesh.frustumCulled=false;mesh.renderOrder=12;mesh.userData.questTrail=true;scene.add(mesh);
