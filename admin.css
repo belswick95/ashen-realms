@@ -155,3 +155,40 @@ body.fantasy-hud #owner-studio .console-chip:not(:disabled){background:#17251f!i
 body.fantasy-hud #owner-studio .console-chip[aria-pressed=true]{background:#4a4129!important;border-color:#cfae68!important;color:#ffe7ae!important}
 body.fantasy-hud #owner-studio button.danger:not(:disabled){background:#4a2420!important;border-color:#9b4a3f!important;color:#ffd6cc!important}
 body.fantasy-hud #owner-studio .console-primary-actions button:first-child:not(:disabled){background:linear-gradient(180deg,#6b5a2f,#4c3f22)!important;border-color:#e2c27a!important;color:#fff0c8!important}
+
+/* ---- News (login "What's new" posts) ---- */
+#owner-studio .news-admin-layout{display:grid;grid-template-columns:minmax(210px,250px) minmax(0,1fr) minmax(270px,330px);gap:14px;align-items:start}
+#owner-studio .news-admin-layout>.console-card{margin:0;min-width:0}
+#owner-studio .news-admin-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}#owner-studio .news-admin-head h3{margin:0}
+#owner-studio label.news-admin-check{flex-direction:row;align-items:center;gap:8px;font-size:12px;margin:4px 0 10px}#owner-studio .news-admin-check input{flex:none}
+#owner-studio .news-admin-rows{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
+#owner-studio .news-admin-row{display:flex;gap:4px;align-items:stretch}
+#owner-studio .news-admin-pick{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:#17251f;border-color:#34473c}
+#owner-studio .news-admin-pick strong{font-size:13px;line-height:1.3;color:#f3e3bb;overflow-wrap:anywhere}#owner-studio .news-admin-pick small{color:var(--c-muted);font-size:11px}
+#owner-studio .news-admin-row.selected .news-admin-pick{background:#4a4129;border-color:#ccae69}
+#owner-studio .news-admin-row.archived .news-admin-pick{opacity:.6}
+#owner-studio .news-admin-move{display:flex;flex-direction:column;gap:3px}#owner-studio .news-admin-move button{padding:2px 8px;min-width:30px;flex:1}
+#owner-studio .news-admin-move button:disabled{opacity:.35;cursor:default}
+#owner-studio .news-admin-empty{color:var(--c-muted);font-style:italic}
+#owner-studio .news-admin-hint{display:block;color:var(--c-muted);font-size:11px;line-height:1.45;margin:2px 0 0}
+#owner-studio .news-admin-form textarea{min-height:180px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace}
+#owner-studio .news-admin-count{display:block;margin:-6px 0 10px;color:var(--c-muted);font-size:11px;text-align:right}
+#owner-studio .news-admin-form fieldset{border:1px solid var(--c-line);border-radius:8px;padding:10px 12px;margin:0 0 12px}#owner-studio .news-admin-form legend{padding:0 6px;color:var(--c-gold);font-size:12px}
+#owner-studio .news-admin-image{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 12px;align-items:center}
+#owner-studio .news-admin-image>.news-admin-thumb{grid-row:span 2}#owner-studio .news-admin-image>label,#owner-studio .news-admin-image>small{grid-column:1/-1;margin-bottom:0}
+#owner-studio .news-admin-thumb{width:120px;aspect-ratio:16/9;border:1px dashed var(--c-line2);border-radius:6px;overflow:hidden;display:grid;place-items:center;color:var(--c-muted);font-size:11px;background:#0a1512}
+#owner-studio .news-admin-thumb img{width:100%;height:100%;object-fit:cover}
+#owner-studio .news-admin-image input[type=file]{padding:6px;font-size:12px}
+#owner-studio .news-admin-link-row{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:6px;margin-bottom:6px}
+#owner-studio .news-admin-flags{display:flex;flex-wrap:wrap;gap:4px 18px}
+#owner-studio .news-admin-errors{margin:4px 0 10px;padding-left:18px;color:var(--c-bad);font-size:12px}#owner-studio .news-admin-errors:empty{display:none}
+#owner-studio .news-admin-preview{position:sticky;top:0;background:radial-gradient(120% 90% at 30% 0%,#2a3438,#0c1215);}
+#owner-studio .news-admin-preview .news-parchment{margin:14px 6px 12px;max-height:none}
+#owner-studio .news-admin-preview .news-list{overflow:visible}
+@media(max-width:1180px){#owner-studio .news-admin-layout{grid-template-columns:minmax(200px,240px) minmax(0,1fr)}#owner-studio .news-admin-preview{grid-column:1/-1;position:static}#owner-studio .news-admin-preview .news-parchment{max-width:420px;margin-inline:auto}}
+@media(max-width:760px){#owner-studio .news-admin-layout{grid-template-columns:minmax(0,1fr)}#owner-studio .news-admin-image{grid-template-columns:minmax(0,1fr)}#owner-studio .news-admin-image>.news-admin-thumb{grid-row:auto}#owner-studio .news-admin-link-row{grid-template-columns:minmax(0,1fr)}}
+/* The preview parchment keeps the login look: undo the console's header/h3/button styling inside it. */
+#owner-studio .news-parchment header.news-post-head{display:flex;grid-column:auto;padding:0;background:none;border:0;justify-content:flex-start}
+#owner-studio .news-parchment h3.news-title{margin:0 0 6px;color:#2a1b0b;font:700 17px/1.25 Georgia,serif}
+#owner-studio .news-parchment button.news-more{padding:4px 0;background:none;border:0;border-radius:0;color:#7a2716;font:700 11px/1.4 Arial,sans-serif;letter-spacing:1.2px;text-transform:uppercase}
+#owner-studio .news-parchment a.news-link{color:#f7e6c1}

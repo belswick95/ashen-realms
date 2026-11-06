@@ -1,14 +1,14 @@
 [
   {
     "id": "login",
-    "title": "Stoneworld Battle",
+    "title": "Clash Defiant",
     "artist": "Kevin MacLeod",
-    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100352",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600003",
     "license": "CC BY 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
     "file": "/assets/audio/login.mp3",
-    "duration": 131.51,
-    "changes": "Excerpt beginning at 1:42; loudness normalized, short endpoint fades, MP3 encoding."
+    "duration": 172.04,
+    "changes": "Excerpt of the first 2:52; loudness normalized, short endpoint fades, MP3 encoding."
   },
   {
     "id": "oakcross",

@@ -4,7 +4,7 @@ import {landscapeSettlements} from '../geography.js';import {coverPoint} from '.
 test('every actual town has a distinct licensed recording on disk',()=>{
  const credits=JSON.parse(fs.readFileSync(new URL('../assets/audio/credits.json',import.meta.url)));assert.equal(townMusic.length,landscapeSettlements.length+1);assert.equal(new Set(townMusic.map(t=>t.title)).size,townMusic.length);
  for(const [x,z] of landscapeSettlements){const region=musicRegion({x,z});assert.ok(region,`${x},${z} requires music`);const credit=credits.find(c=>c.id===region.id);assert.equal(credit.title,region.title);assert.equal(credit.license,'CC BY 4.0');assert.ok(fs.statSync(new URL('..'+credit.file,import.meta.url)).size>100000)}
- assert.ok(credits.some(c=>c.id==='login'&&c.title==='Stoneworld Battle'));
+ assert.ok(credits.some(c=>c.id==='login'&&c.title==='Clash Defiant'&&c.license==='CC BY 4.0'));
 });
 test('town boundaries have hysteresis and open wilderness has no music track',()=>{
  const town=townMusic[0];assert.equal(musicRegion({x:51,z:0}),null);assert.equal(musicRegion({x:51,z:0},town),town);assert.equal(musicRegion({x:57,z:0},town),null);

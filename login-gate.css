@@ -1,0 +1,162 @@
+/* Login gate: living scene (parallax, fog, torchlight), carved stone-and-iron card
+   frame, "Adventurers online" and the "What's new in Eldervale" parchment.
+   Loaded after login.css and phone-fit.css so its layout wins on every device. */
+
+/* ---------- Living scene ---------- */
+#auth-screen .login-scene{--px:0;--py:0}
+#auth-screen .login-drift{position:absolute;inset:0}
+#auth-screen .login-depth,#auth-screen .login-fog{position:absolute;inset:0;will-change:transform;backface-visibility:hidden}
+#auth-screen .login-depth{transform:translate3d(calc(var(--px)*-14px),calc(var(--py)*-9px),0) scale(1.06)}
+#auth-screen .login-torchlight{position:absolute;inset:0;pointer-events:none;opacity:.75;
+ background:radial-gradient(circle var(--torch-r,240px) at var(--torch0-x,24%) var(--torch0-y,34%),#ff8a2a2e,#ff6a1612 45%,transparent 70%),radial-gradient(circle var(--torch-r,240px) at var(--torch1-x,76%) var(--torch1-y,34%),#ff8a2a24,transparent 65%)}
+/* Fog: each layer is two viewports wide with a one-viewport seamless tile; it slides one tile per loop. */
+#auth-screen .login-fog{right:auto;width:200%;pointer-events:none;background-repeat:repeat-x;background-size:50% 100%;contain:strict}
+#auth-screen .fog-back{top:28%;bottom:18%;opacity:.5;background-image:radial-gradient(ellipse 34% 42% at 22% 55%,#93a6ad2e,transparent 72%),radial-gradient(ellipse 30% 36% at 70% 40%,#8aa0a826,transparent 70%),radial-gradient(ellipse 22% 30% at 92% 70%,#9fb1b51c,transparent 70%)}
+
+#auth-screen .fog-front{top:66%;bottom:-6%;opacity:.6;background-image:radial-gradient(ellipse 46% 48% at 25% 70%,#b0bdbb30,transparent 72%),radial-gradient(ellipse 38% 40% at 74% 62%,#a3b3b326,transparent 70%)}
+#auth-screen .login-mist{opacity:.16}
+@media(prefers-reduced-motion:no-preference){
+ #auth-screen .login-drift{animation:gate-sway 26s ease-in-out infinite alternate}
+ #auth-screen .fog-back{animation:gate-fog-back 150s linear infinite}
+
+ #auth-screen .fog-front{animation:gate-fog-front 62s linear infinite}
+ #auth-screen .login-torchlight{animation:gate-torch 2.7s steps(9,jump-none) infinite}
+ #auth-screen .login-online .online-dot{animation:gate-online 2.4s ease-in-out infinite}
+}
+@keyframes gate-sway{from{transform:translate3d(-.5%,.25%,0)}to{transform:translate3d(.5%,-.25%,0)}}
+@keyframes gate-fog-back{from{transform:translate3d(calc(var(--px)*-22px),calc(var(--py)*-12px),0)}to{transform:translate3d(calc(-50% + var(--px)*-22px),calc(var(--py)*-12px),0)}}
+
+@keyframes gate-fog-front{from{transform:translate3d(calc(var(--px)*-42px),calc(var(--py)*-20px),0)}to{transform:translate3d(calc(-50% + var(--px)*-42px),calc(var(--py)*-20px),0)}}
+@keyframes gate-torch{0%{opacity:.7}11%{opacity:.86}23%{opacity:.62}37%{opacity:.8}48%{opacity:.92}61%{opacity:.66}73%{opacity:.84}86%{opacity:.7}100%{opacity:.78}}
+@keyframes gate-online{50%{box-shadow:0 0 0 4px #6fd18a22,0 0 10px #6fd18a}}
+#auth-screen .login-scene[data-paused] *{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){#auth-screen .login-depth{transform:scale(1.02)}#auth-screen .login-fog{transform:translate3d(-12%,0,0)}}
+
+/* ---------- Adventurers online ---------- */
+#auth-screen .login-online{display:inline-flex;align-items:center;gap:9px;margin:14px 0 0;padding:6px 14px 6px 11px;border:1px solid #8e79435c;border-radius:999px;background:#0a1114b8;color:#d6c597;font:600 10.5px/1.3 Arial,sans-serif;letter-spacing:1.6px;text-transform:uppercase;box-shadow:0 4px 18px #0007}
+#auth-screen .login-online[hidden]{display:none}
+#auth-screen .login-online b{color:#f4dfa6;font-size:12px;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+#auth-screen .online-dot{width:7px;height:7px;border-radius:50%;background:#6fd18a;box-shadow:0 0 0 2px #6fd18a22,0 0 6px #6fd18a99;flex:none}
+
+/* ---------- Carved stone-and-iron card frame ---------- */
+#auth-screen .auth-card{--stone:12px;border:1px solid #050607;border-radius:2px;margin:var(--stone);box-shadow:0 0 0 1px #000,0 0 0 2px #9b7b45aa,0 0 0 3px #0a0c0d,0 26px 90px #000c,0 0 120px #b36d2818}
+#auth-screen .auth-card::before,#auth-screen .auth-card::after{content:"";position:absolute;pointer-events:none;width:auto;top:auto;bottom:auto;left:auto;right:auto}
+/* The stone band: a ring outside the card, masked so the card face is untouched. */
+#auth-screen .auth-card::before{inset:calc(-1px - var(--stone));z-index:-1;padding:var(--stone);border-radius:5px;
+ background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .48 0 0 0 0 .44 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+  linear-gradient(90deg,transparent 0 calc(50% - 1px),#0b0a0999 calc(50% - 1px) calc(50% + 1px),transparent 0),
+  linear-gradient(0deg,transparent 0 calc(50% - 1px),#0b0a0999 calc(50% - 1px) calc(50% + 1px),transparent 0),
+  linear-gradient(155deg,#6a655b 0%,#4a463f 30%,#38352f 62%,#26241f 100%);
+ box-shadow:inset 0 1px 0 #c9bfa83a,inset 1px 0 0 #c9bfa826,inset 0 -1px 0 #000a,inset -1px 0 0 #0008,0 0 0 1px #050506;
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+/* Inner chamfer where the stone meets the card face. */
+#auth-screen .auth-card::after{inset:-1px;z-index:0;border-radius:2px;background:none;box-shadow:inset 0 0 0 1px #00000080,inset 0 2px 0 #00000055,inset 0 0 26px #0008}
+#auth-screen .login-frame-defs{position:absolute;width:0;height:0;overflow:hidden}
+#auth-screen .login-corner{position:absolute;width:62px;height:62px;border:0;z-index:3;filter:drop-shadow(0 3px 3px #000b);overflow:visible}
+#auth-screen .corner-tl{top:calc(-3px - var(--stone));left:calc(-3px - var(--stone))}
+#auth-screen .corner-tr{top:calc(-3px - var(--stone));right:calc(-3px - var(--stone));transform:scaleX(-1)}
+#auth-screen .corner-bl{bottom:calc(-3px - var(--stone));left:calc(-3px - var(--stone));transform:scaleY(-1)}
+#auth-screen .corner-br{bottom:calc(-3px - var(--stone));right:calc(-3px - var(--stone));transform:scale(-1)}
+#auth-screen .auth-card>*:not(.login-corner):not(.login-frame-defs){position:relative;z-index:1}
+#auth-screen .login-card-foot{margin-bottom:0}
+
+/* ---------- "What's new in Eldervale" parchment ---------- */
+.news-parchment{--ink:#3a2814;--ink-soft:#6a4f2e;--ink-red:#7a2716;position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;box-sizing:border-box;margin:12px 6px;padding:22px 20px 18px;color:var(--ink);font-family:Georgia,'Times New Roman',serif;text-align:left;border-radius:3px;
+ background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .16 0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E"),
+  radial-gradient(ellipse at 18% 8%,#fffbe8b0,transparent 55%),radial-gradient(ellipse at 85% 95%,#a77d4255,transparent 55%),
+  linear-gradient(176deg,#f1e3bf,#e6d2a4 55%,#d8bf8a);
+ box-shadow:0 22px 60px #000b,0 4px 12px #0008,inset 0 0 46px #8c602a5c,inset 0 0 0 1px #7e5d3166}
+/* Rolled ends of the scroll. */
+.news-parchment::before,.news-parchment::after{content:"";position:absolute;left:-7px;right:-7px;height:15px;border-radius:8px;pointer-events:none;
+ background:linear-gradient(180deg,#f2e2b8 0%,#d4b57c 35%,#9b7340 70%,#6b4a24 100%);box-shadow:0 3px 6px #0009,inset 0 1px 0 #fff4d455}
+.news-parchment::before{top:-8px}.news-parchment::after{bottom:-8px;transform:scaleY(-1)}
+.news-parchment .news-head{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 10px;flex:none}
+.news-parchment .news-head::before,.news-parchment .news-head::after{content:"";flex:1;height:1px;max-width:70px;background:linear-gradient(90deg,transparent,#7a5a31)}
+.news-parchment .news-head::after{transform:scaleX(-1)}
+.news-parchment .news-heading{margin:0;color:var(--ink-red);font:400 19px/1.2 Georgia,serif;font-variant:small-caps;letter-spacing:.06em;text-align:center;white-space:nowrap}
+.news-parchment .news-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:2px 6px 2px 2px;margin-right:-6px;scrollbar-width:thin;scrollbar-color:#8a6838 transparent}
+.news-parchment .news-list:focus-visible{outline:2px solid #7a3b12;outline-offset:3px}
+.news-parchment .news-post{padding:12px 0 14px;border-top:1px solid #7e5d3140}
+.news-parchment .news-post:first-child{border-top:0;padding-top:2px}
+.news-parchment .news-post-head{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.news-parchment .news-date{color:var(--ink-soft);font:600 10px/1.4 Arial,sans-serif;letter-spacing:1.3px;text-transform:uppercase}
+.news-parchment .news-pin{display:inline-flex;align-items:center;gap:5px;padding:1px 8px 1px 4px;border-radius:999px;background:#7a2716;color:#f8e3c0;font:700 9px/1.6 Arial,sans-serif;letter-spacing:1.2px;text-transform:uppercase;box-shadow:inset 0 0 0 1px #4a140a}
+.news-parchment .news-pin::before{content:"";width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e8775a,#8e2614 60%,#5a160b);box-shadow:0 0 0 1px #3a0d06}
+.news-parchment .news-title{margin:0 0 6px;color:#2a1b0b;font:700 17px/1.25 Georgia,serif;letter-spacing:.01em}
+.news-parchment .news-figure{margin:6px 0 9px;border:1px solid #6b4f2a;border-radius:2px;overflow:hidden;background:#cdb489;box-shadow:0 2px 6px #5a3e1a40}
+.news-parchment .news-figure img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.news-parchment .news-body{position:relative;max-height:8.6em;overflow:hidden;font:13.5px/1.55 Georgia,serif;color:var(--ink);-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+.news-parchment .news-body.expanded{max-height:none;-webkit-mask-image:none;mask-image:none}
+.news-parchment .news-body p{margin:0 0 .6em}
+.news-parchment .news-body ul{margin:0 0 .6em;padding:0 0 0 1.15em;list-style:none}
+.news-parchment .news-body li{position:relative;margin:0 0 .25em}
+.news-parchment .news-body li::before{content:"◆";position:absolute;left:-1.6em;top:.75em;line-height:1;color:#8a5a26;font-size:.6em}
+.news-parchment .news-body strong{color:#24170a}
+.news-parchment .news-body a{color:#7a2716;text-underline-offset:2px}
+.news-parchment .news-more{display:inline-block;width:auto;min-height:0;margin:4px 0 0;padding:4px 0;border:0;background:none;box-shadow:none;color:#7a2716;font:700 11px/1.4 Arial,sans-serif;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer}
+.news-parchment .news-more[hidden]{display:none}
+.news-parchment .news-more:hover{text-decoration:underline}
+.news-parchment .news-links{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.news-parchment .news-link{display:inline-flex;align-items:center;min-height:32px;padding:5px 12px;border:1px solid #2f1d0c;border-radius:3px;background:linear-gradient(#6b4523,#4a2e14);color:#f7e6c1;font:700 11px/1.2 Arial,sans-serif;letter-spacing:.8px;text-decoration:none;box-shadow:inset 0 1px 0 #c79a5a55,0 2px 4px #4a2e1455}
+.news-parchment .news-link::after{content:"↗";margin-left:7px;font-size:12px;opacity:.8}
+.news-parchment .news-link:hover{background:linear-gradient(#7b522c,#583619)}
+.news-parchment :is(a,button):focus-visible{outline:2px solid #7a2716;outline-offset:2px}
+.news-parchment .news-empty{margin:8px 0;color:var(--ink-soft);font-style:italic;text-align:center}
+.news-parchment[aria-busy=true] .news-list{opacity:.92}
+
+/* ---------- Layout ---------- */
+#auth-screen .login-shell{grid-template-areas:none}
+#auth-screen .login-news{grid-area:news;width:100%;max-height:min(560px,calc(100dvh - 60px))}
+/* Portrait and narrow screens: brand, card, then the news parchment below the card. */
+@media(max-width:759.98px),(orientation:portrait){
+ #auth-screen .login-shell{display:flex!important;flex-direction:column;align-items:center;gap:22px!important}
+ #auth-screen .login-brand{order:1}#auth-screen .auth-card{order:2;width:min(420px,calc(100% - 24px))!important}#auth-screen .login-news{order:3;width:min(440px,calc(100% - 12px));max-height:none}#auth-screen .login-footer{order:4}
+ #auth-screen .login-news .news-list{max-height:min(460px,60dvh)}
+}
+/* Tablet portrait (iPad): brand beside the card, news across the width below. */
+@media(min-width:700px) and (orientation:portrait){
+ #auth-screen .login-shell{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(320px,410px);grid-template-areas:"brand card" "footer card" "news news";column-gap:32px!important;row-gap:16px!important;max-width:820px!important;align-items:center}
+ #auth-screen .login-brand{grid-area:brand;align-self:end}#auth-screen .login-footer{grid-area:footer;align-self:start}#auth-screen .auth-card{grid-area:card;width:auto!important}
+ #auth-screen .login-news{width:auto;margin:24px 6px 8px;max-height:none}
+ #auth-screen .login-news .news-list{max-height:min(420px,36dvh);columns:auto}
+}
+/* Mid landscape (small laptops, 1024-wide iPads): brand on top, card and news side by side. */
+@media(min-width:760px) and (max-width:1099.98px) and (min-height:501px) and (orientation:landscape){
+ #auth-screen .login-shell{display:grid!important;grid-template-columns:minmax(330px,400px) minmax(290px,390px);grid-template-areas:"brand brand" "card news" "footer footer";column-gap:30px!important;row-gap:14px!important;max-width:860px!important;justify-content:center;align-items:stretch}
+ #auth-screen .login-brand{grid-area:brand;padding-bottom:0!important;align-self:end}#auth-screen .login-brand .login-crest{display:none}
+ #auth-screen .auth-card{grid-area:card;width:auto!important;align-self:start}#auth-screen .login-footer{grid-area:footer}
+ #auth-screen .login-news{max-height:none;align-self:stretch;margin-top:12px;margin-bottom:12px}
+ #auth-screen .login-news .news-list{max-height:none;height:0;flex:1 1 0}
+ #auth-screen .login-wordmark{font-size:clamp(36px,5vw,54px)!important}
+}
+/* Wide landscape (desktop, 1180-wide iPad): brand | card | news. */
+@media(min-width:1100px) and (min-height:501px) and (orientation:landscape){
+ #auth-screen .login-shell{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(340px,410px) minmax(300px,380px);grid-template-areas:"brand card news" "footer card news";column-gap:clamp(26px,3vw,52px)!important;row-gap:16px!important;max-width:1380px!important;align-items:center}
+ #auth-screen .login-brand{grid-area:brand;align-self:end;padding-bottom:12px}#auth-screen .login-footer{grid-area:footer;align-self:start}
+ #auth-screen .auth-card{grid-area:card;width:auto!important}
+ #auth-screen .login-news{align-self:stretch;max-height:none;margin-top:12px;margin-bottom:12px}
+ #auth-screen .login-news .news-list{height:0;flex:1 1 0}
+ #auth-screen .login-wordmark{font-size:clamp(28px,calc((100vw - 900px) * .085 + 12px),66px)!important;letter-spacing:.1em!important;padding-left:.1em!important}
+ #auth-screen .login-brand-line{letter-spacing:3px}
+}
+/* Phones in landscape: brand and the news parchment share the left column beside the card. */
+@media(max-height:500px) and (orientation:landscape){
+ #auth-screen{place-items:stretch center}
+ #auth-screen .login-shell{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(296px,370px)!important;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"brand card" "news card" "footer card";column-gap:clamp(14px,3vw,30px)!important;row-gap:8px!important;max-width:880px!important;height:calc(100dvh - max(16px,env(safe-area-inset-top) + env(safe-area-inset-bottom)));min-height:300px;margin:0 auto;align-items:stretch}
+ #auth-screen .login-brand{grid-area:brand;padding:0!important;align-self:start}#auth-screen .login-brand .login-crest{display:none!important}
+ #auth-screen .login-wordmark{font-size:clamp(22px,4.2vw,36px)!important}
+ #auth-screen .login-brand-line{margin-top:5px!important;font-size:7px!important;letter-spacing:3px!important}
+ #auth-screen .login-online{margin-top:6px;padding:3px 10px 3px 8px;font-size:8.5px;letter-spacing:1.2px}#auth-screen .login-online b{font-size:10px}
+ #auth-screen .auth-card{grid-area:card;width:auto!important;align-self:center;--stone:8px}
+ #auth-screen .login-corner{width:44px;height:44px}
+ #auth-screen .login-news{margin:8px 5px;padding:12px 12px 10px;max-height:none;min-height:0}
+ #auth-screen .login-news .news-head{margin-bottom:4px}#auth-screen .login-news .news-heading{font-size:14px}
+ #auth-screen .login-news .news-list{height:0;flex:1 1 0}
+ #auth-screen .login-news .news-title{font-size:14px}#auth-screen .login-news .news-body{font-size:12px;max-height:6.4em}
+ #auth-screen .login-footer{grid-area:footer;gap:2px!important}
+ #auth-screen .login-world{display:none}
+ #auth-screen .login-audio{gap:6px!important;flex-wrap:nowrap!important}#auth-screen #login-audio-status{display:none}
+ #auth-screen #login-sound-toggle{min-height:32px!important;padding:4px 8px}#auth-screen .login-audio a{padding:8px 2px!important}
+}

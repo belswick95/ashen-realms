@@ -4,11 +4,11 @@ All compositions below are by Kevin MacLeod (incompetech.com), licensed under Cr
 
 Original files were downloaded from the composer’s published MP3 links in https://incompetech.com/music/royalty-free/pieces.json. The composer’s license page is https://incompetech.com/music/royalty-free/licenses/.
 
-## Stoneworld Battle
+## Clash Defiant
 - Location: Login theme
-- Composer/source: https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100352
+- Composer/source: https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600003
 - Included file: /assets/audio/login.mp3
-- Changes: Excerpt beginning at 1:42; loudness normalized, short endpoint fades, MP3 encoding.
+- Changes: Excerpt of the first 2:52 (0:00–2:52); loudness normalized to -18.5 LUFS, short fade-in and 4 s fade-out, MP3 encoding (112 kbps).
 
 ## Lord of the Land
 - Location: Oakcross
