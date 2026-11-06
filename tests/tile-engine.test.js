@@ -53,6 +53,15 @@ test('tile walker interpolation is smooth and tick-paced, diagonals included',()
  assert.equal(projectTilePose(pose,1300).yaw,Math.atan2(1,0),'faces the direction of travel');
 });
 
+// QA (fix113): with tile mode on, the bronze sword tooltip read "Speed 4 ticks (1.8s)" (0.45 s ticks) while the
+// game waits 3 game ticks of 600 ms. The label follows the engine; the seconds are the same either way.
+test('weapon speed tooltip counts game ticks in tile mode',async()=>{
+ const {speedLabel}=await import('../gear-tiers.js');
+ const sword={ticks:4,speed:1.8},axe={ticks:6,speed:2.7};
+ assert.equal(speedLabel(sword,false),'4 ticks (1.8s)');assert.equal(speedLabel(sword,true),'3 ticks (1.8s)');
+ assert.equal(speedLabel(axe,true),'5 ticks (3s)');assert.equal(speedLabel({},true),'');
+ assert.match(fs.readFileSync(new URL('../equipment-stats.js',import.meta.url),'utf8'),/'Attack speed '\+speedLabel\(item\)/);
+});
 test('weapon speeds in 600 ms game ticks keep their feel',async()=>{
  const {gameTicks,TICK_SECONDS,GAME_TICK_SECONDS,WEAPON_TEMPLATES}=await import('../gear-tiers.js');
  assert.equal(GAME_TICK_SECONDS,GAME_TICK);

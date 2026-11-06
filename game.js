@@ -1,6 +1,6 @@
 import {capital,capitalActive,capitalMapWalls,inCapitalClearing,isCapitalTown,townExtent,inwardNormal} from './capital-layout.js?v=release-20261106-map112';
 import {campClearing} from './camp-blueprint.js?v=release-20261106-map112';
-import {createLevelUpPanel} from './level-up.js?v=release-20261106-map112';
+import {createLevelUpPanel,jingleFor} from './level-up.js?v=release-20261106-map112';
 import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261106-map112';
 import {createQuestJournal} from './quests.js?v=release-20261106-map112';
 import {createTutorial} from './tutorial.js?v=release-20261106-map112';

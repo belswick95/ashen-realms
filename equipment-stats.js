@@ -3,7 +3,7 @@
 // fight (max hit, accuracy, attack speed, ammunition).
 import {BONUS_LABELS,playerAttackProfile,playerDefenceRoll,styleLabels,tierById,ARROWS,attackPeriod,TICK_SECONDS} from './gear-tiers.js?v=release-20261106-map112';
 import {equipmentBonuses,playerLevels,gearFor,equipRefusal} from './melee-stats.js?v=release-20261106-map112';
-import {bonusSummary,requirementText} from './gear-tiers.js?v=release-20261106-map112';
+import {bonusSummary,requirementText,speedLabel} from './gear-tiers.js?v=release-20261106-map112';
 import {weaponCatalog} from './weapons.js?v=release-20261106-map112';
 const signed=v=>(v>=0?'+':'')+v;
 // The numbers shown in the panel (also used by tests).
@@ -40,7 +40,7 @@ export function installGearTooltip(doc,getState){
   const name=doc.createElement('strong');name.textContent=item.name;if(item.tier&&tierById[item.tier])name.style.color='#'+tierById[item.tier].color.toString(16).padStart(6,'0');
   const req=doc.createElement('div');req.className='gear-tooltip-req';req.dataset.met=String(!refusal);const text=requirementText(item.req);req.textContent=text?'Requires '+text:'No level requirement';
   const bon=doc.createElement('div');bon.className='gear-tooltip-bonuses';bon.textContent=bonusSummary(item.bonuses)||'No bonuses';tip.append(name,req,bon);
-  if(item.ticks){const sp=doc.createElement('div');sp.textContent='Attack speed '+item.ticks+' ticks ('+item.speed+'s)';tip.append(sp)}
+  if(item.ticks){const sp=doc.createElement('div');sp.textContent='Attack speed '+speedLabel(item);tip.append(sp)}
   tip.hidden=false;const r=tip.getBoundingClientRect(),vw=doc.documentElement.clientWidth,vh=doc.documentElement.clientHeight;tip.style.left=Math.max(4,Math.min(vw-r.width-4,x+14))+'px';tip.style.top=Math.max(4,Math.min(vh-r.height-4,y+14))+'px'};
  doc.addEventListener('pointerover',e=>{const el=e.target.closest?.('[data-gear-tip]');if(el&&e.pointerType!=='touch')show(el,e.clientX,e.clientY);else if(!el)tip.hidden=true});
  doc.addEventListener('pointermove',e=>{if(!tip.hidden){const el=e.target.closest?.('[data-gear-tip]');if(el)show(el,e.clientX,e.clientY);else tip.hidden=true}});

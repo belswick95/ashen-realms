@@ -28,6 +28,9 @@ export const TICK_SECONDS=.45;
 // longsword 5 -> 4, battleaxe 6 -> 5, 2h 7 -> 5). Matches eldervale_private.engine_seconds.
 export const GAME_TICK_SECONDS=.6;
 export const gameTicks=ticks=>Math.max(1,Math.floor(ticks*TICK_SECONDS/GAME_TICK_SECONDS+.5));
+// Tooltip text for a weapon's speed: in tile mode (600 ms game ticks) the whole game ticks it really
+// waits, otherwise Eldervale's original 0.45 s ticks. The seconds match in both.
+export function speedLabel(item,tileMode=globalThis.eldervaleTileMode===true){if(!item?.ticks)return '';if(!tileMode)return item.ticks+' ticks ('+item.speed+'s)';const t=gameTicks(item.ticks);return t+' ticks ('+ +(t*GAME_TICK_SECONDS).toFixed(2)+'s)'}
 // Eldervale health is 10x OSRS (max HP = 10 x Hitpoints level), so hits are rolled
 // at 10x the OSRS resolution: OSRS max hit 1 → up to 10 damage here.
 export const HIT_SCALE=10;
@@ -276,7 +279,7 @@ export function bonusSummary(b){if(!b)return '';const parts=[];for(const [k,l] o
 // Examine / tooltip text: requirement, bonuses and speed.
 export function describeGear(item){
  if(!item)return '';const bits=[];const req=requirementText(item.req);bits.push(req?'Requires '+req:'No level requirement');
- const b=bonusSummary(item.bonuses);if(b)bits.push(b);if(item.ticks)bits.push('Speed '+item.ticks+' ticks ('+item.speed+'s)');if(item.arrowCap)bits.push('Arrows up to '+tierById[item.arrowCap].name.toLowerCase());if(item.spell)bits.push('Casts '+item.spell+' spells');
+ const b=bonusSummary(item.bonuses);if(b)bits.push(b);if(item.ticks)bits.push('Speed '+speedLabel(item));if(item.arrowCap)bits.push('Arrows up to '+tierById[item.arrowCap].name.toLowerCase());if(item.spell)bits.push('Casts '+item.spell+' spells');
  return bits.join(' · ');
 }
 // Skill levels from a client state / save skills object (xp keys).

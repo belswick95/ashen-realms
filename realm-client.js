@@ -2,6 +2,9 @@
 import {loading,commandLabel} from './loading-indicator.js?v=release-20261106-map112';
 import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261106-map112';
 const MOTION_COMMANDS=new Set(['move','stop']);
+// Database/transport failures are not game messages: never show raw Postgres text (e.g. "canceling
+// statement due to statement timeout") in the chat. Game-rule refusals pass through unchanged.
+export function playerFacingError(message){const m=String(message||'');return /statement timeout|canceling statement|deadlock detected|could not obtain lock|lock timeout|Failed to fetch|NetworkError|Load failed|upstream|Bad Gateway|Gateway Time-?out|Service Unavailable/i.test(m)?'The realm is busy - please try that again.':m}
 export async function startRealm(db,user,session){
  const diet=createSyncDiet();let lean=true;
  let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,movesPending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
@@ -37,7 +40,7 @@ export async function startRealm(db,user,session){
  }
  // steerPending: only unacknowledged WASD input holds the local walker; a click-walk in flight
  // does not (the walker keeps presenting its current path until the new one arrives).
- const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued||movesPending>0,steerPending:()=>acknowledged<issued,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=e.message;window.eldervaleWorldBridge.notice(e.message);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
+ const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued||movesPending>0,steerPending:()=>acknowledged<issued,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=playerFacingError(e.message);window.eldervaleWorldBridge.notice(commandError);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
   // Cosmetic commands (level-up fireworks) fail silently: no chat notice.
   quietCommand:(c,p)=>enqueue(c,p).then(r=>r??true).catch(()=>false),
   // Quest guidance trail: the server tile grid around a point (db/quests-v2.sql quest_guide_tiles).
