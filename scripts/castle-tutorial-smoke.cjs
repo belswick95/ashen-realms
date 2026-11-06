@@ -3,7 +3,7 @@
 // Usage: node scripts/castle-tutorial-smoke.cjs [outputDir]   (ELDERVALE_CHROMIUM=/path/to/chrome)
 const fs=require('fs'),http=require('http'),path=require('path'),assert=require('assert/strict'),{chromium}=require('playwright-core'),root=path.resolve(__dirname,'..'),manifest=JSON.parse(fs.readFileSync(path.join(root,'db/generated-world.json')));
 const output=path.resolve(process.argv[2]||path.join(root,'test-results/castle-tutorial'));fs.mkdirSync(output,{recursive:true});
-const V='release-20261106-hud115';
+const V='release-20261106-pond116';
 const server=http.createServer((req,res)=>{try{const file=path.join(root,new URL(req.url,'http://local').pathname==='/'?'index.html':new URL(req.url,'http://local').pathname);res.setHeader('content-type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.webp')?'image/webp':file.endsWith('.json')?'application/json':'text/html');res.end(fs.readFileSync(file))}catch{res.writeHead(404).end()}});
 const chrome=process.env.ELDERVALE_CHROMIUM||['/usr/bin/chromium','/usr/bin/google-chrome'].find(f=>fs.existsSync(f));
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({...(chrome?{executablePath:chrome}:{}),args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});

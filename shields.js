@@ -1,8 +1,8 @@
-import {heldItem} from './weapon-assets.js?v=release-20261106-hud115';
-import {tierShields,shieldGear,describeGear} from './gear-tiers.js?v=release-20261106-hud115';
-import {tintHeldItem} from './tier-tint.js?v=release-20261106-hud115';
-import {UNIQUE_ITEMS,defenceOf} from './unique-gear.js?v=release-20261106-hud115';
-import {accentHeldItem} from './unique-look.js?v=release-20261106-hud115';
+import {heldItem} from './weapon-assets.js?v=release-20261106-pond116';
+import {tierShields,shieldGear,describeGear} from './gear-tiers.js?v=release-20261106-pond116';
+import {tintHeldItem} from './tier-tint.js?v=release-20261106-pond116';
+import {UNIQUE_ITEMS,defenceOf} from './unique-gear.js?v=release-20261106-pond116';
+import {accentHeldItem} from './unique-look.js?v=release-20261106-pond116';
 // Off-hand shields: Quaternius CC0 models (assets/weapons) in the held-item
 // frame: the fist at the origin behind the board, face toward +Z, top toward +Y.
 const S=(name,defence,buy,sell,desc)=>({name,kind:'shield',defence,buy,sell,desc});
