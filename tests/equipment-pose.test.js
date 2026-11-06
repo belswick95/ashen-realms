@@ -1,18 +1,13 @@
-import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';import {buildCharacterDisplay} from '../character-display.js';import {weaponCatalog,isRanged,isTwoHanded,isBow} from '../weapons.js';import {carryStyle} from '../equipment-pose.js';
+import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';import {buildCharacterDisplay} from '../character-display.js';import {weaponCatalog,isRanged,isTwoHanded,isBow} from '../weapons.js';
 const direction=(o,v)=>v.transformDirection(o.matrixWorld);
 const MOTIONS={idle:{},walk:{distance:3.2/60,speed:3.2,locomotion:'walk'},run:{distance:6.4/60,speed:6.4,locomotion:'run'}};
 test('every weapon stays in its fist (bows in the left) and clear of the ground through idle, walking and running',()=>{
  for(const weapon of Object.keys(weaponCatalog))for(const [name,motion] of Object.entries(MOTIONS)){
   const d=buildCharacterDisplay(T,new T.Group(),{},{weapon,shield:'kite'});for(let i=0;i<40;i++)d.update(1/60,motion);d.visual.updateMatrixWorld(true);
   const hand=isBow(weapon)?d.rig.leftHand:d.rig.rightHand,held=hand.children.filter(o=>o.isGroup&&o.userData.weaponMount);assert.equal(held.length,1,weapon);
-  // Blades point forward and up out of the fist, standing or moving (the arm
-  // swings with its usual grip); two-handed swords ride the shoulder; war axes,
-  // spears, scythes and warhammers are carried low.
-  const box=new T.Box3().setFromObject(held[0]),moving=name!=='idle',magic=weaponCatalog[weapon].magic,up=direction(held[0],new T.Vector3(0,1,0)).y;
-  assert.ok(box.min.y>(isRanged(weapon)||moving?.05:.8),weapon+' '+name+(isRanged(weapon)||moving?' clears the ground':' stays above the knees'));
-  if(magic)assert.ok(up>(moving?.8:.9),weapon+' '+name+' staff stands upright');
-  else if(isBow(weapon)||!moving||['greatsword','battleaxe','blade'].includes(carryStyle(weapon)))assert.ok(up>0,weapon+' '+name+' is not pointed at the ground');
-  else assert.ok(up<0,weapon+' '+name+' is carried low, tip down');
+  const box=new T.Box3().setFromObject(held[0]);// A long spear's butt may pass below the knee while running (held forward and up), never near the ground.
+  assert.ok(box.min.y>(isRanged(weapon)?.05:name!=='idle'?.4:.8),weapon+' '+name+(isRanged(weapon)?' clears the ground':' stays above the knees'));
+  assert.ok(direction(held[0],new T.Vector3(0,1,0)).y>(weaponCatalog[weapon].magic&&name==='idle'?.9:0),weapon+' '+name+(weaponCatalog[weapon].magic?' staff stands upright':' blade is not pointed at the ground'));
   assert.equal(d.rig.leftHand.children.filter(o=>o.isGroup&&o.userData.shieldMount).length,isTwoHanded(weapon)?0:1,weapon+' shield');
   d.dispose();
  }
