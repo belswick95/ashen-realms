@@ -1,5 +1,5 @@
-import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261106-amb123';
-import {createStrideRig,createGaitState,advanceGait,mixGait} from './stride-cycle.js?v=release-20261106-amb123';
+import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261106-osrswalk124';
+import {createStrideRig,createGaitState,advanceGait,mixGait} from './stride-cycle.js?v=release-20261106-osrswalk124';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip, cross-fades, and plays gaits at a natural cadence
