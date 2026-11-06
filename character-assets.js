@@ -1,6 +1,7 @@
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {preloadWeapons} from './weapon-assets.js?v=release-20261106-fix99';
-import {tintOutfitMaterial} from './tier-tint.js?v=release-20261106-fix99';
+import {preloadWeapons} from './weapon-assets.js?v=release-20261106-boss107';
+import {tintOutfitMaterial} from './tier-tint.js?v=release-20261106-boss107';
+import {accentOutfitShader} from './unique-look.js?v=release-20261106-boss107';
 // Loads and caches the Quaternius character assets (assets/characters, CC0).
 // Geometry is shared between every character; each character only creates
 // its own bones and lightweight SkinnedMesh wrappers.
@@ -63,8 +64,9 @@ export function setCharacterRim(daylight){const T=store.T;if(!T)return;const d=M
 export function material(key,make){if(!store.materials.has(key)){const m=make();m.userData.eldervaleShared=true;rimLight(m);store.materials.set(key,m)}return store.materials.get(key)}
 // Outfit material: one per outfit colour, shared by every wearer.
 // A gear tier tint (gear-tiers.js) recolours only the metal of the iron texture.
-export function outfitMaterial(outfit,variant=1,tint=null){
+export function outfitMaterial(outfit,variant=1,tint=null,look=null){
  const T=store.T,o=outfit.toLowerCase();
+ if(tint!=null&&look&&(look.accent!=null||look.mode==='all'))return material(`outfit:${o}:${variant}:${tint}:${look.mode||'metal'}:${look.accent??''}`,()=>tintOutfitMaterial(T,outfitMaterial(outfit,variant),tint,{accent:look.accent,mode:look.mode,accentShader:accentOutfitShader}));
  if(tint!=null)return material(`outfit:${o}:${variant}:${tint}`,()=>tintOutfitMaterial(T,outfitMaterial(outfit,variant),tint));
  return material(`outfit:${o}:${variant}`,()=>{const orm=texture(o+'_orm');return new T.MeshStandardMaterial({map:texture(`${o}_${variant}_color`,{color:true}),normalMap:texture(o+'_normal'),aoMap:orm,roughnessMap:orm,metalnessMap:orm,metalness:orm?1:.1,roughness:1})});
 }

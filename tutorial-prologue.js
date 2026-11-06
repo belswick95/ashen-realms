@@ -4,7 +4,7 @@
 // It is plain DOM (no Three.js, no world data): a dawn silhouette of the castle, the title card and
 // a few narrated lines, then it holds on "The gates draw near…" until the in-engine arrival
 // cutscene (tutorial.js) takes over from a black frame. It never blocks loading.
-import {needsCutscene} from './tutorial-logic.js?v=release-20261106-fix99';
+import {needsCutscene} from './tutorial-logic.js?v=release-20261106-boss107';
 
 export const PROLOGUE_LINES=[
  'A summons rode out from the capital, carried to every village and crossroads.',
@@ -20,7 +20,7 @@ const SKYLINE='<svg class="tutorial-prologue-skyline" viewBox="0 0 1200 300" pre
 
 export function startPrologue({lines=PROLOGUE_LINES,title=PROLOGUE_TITLE,linger=2600}={}){
  if(typeof document==='undefined')return null;
- if(!document.querySelector('link[href^="./tutorial.css"]'))document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-fix99'}));
+ if(!document.querySelector('link[href^="./tutorial.css"]'))document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-boss107'}));
  const root=el('section','tutorial-prologue');root.setAttribute('role','dialog');root.setAttribute('aria-label','Arrival');
  const art=el('div','tutorial-prologue-art');art.innerHTML=SKYLINE;
  const caption=el('div','tutorial-caption'),narration=el('p','tutorial-prologue-line'),holdLine=el('p','tutorial-prologue-hold'),skip=el('button','tutorial-skip','Skip ▸▸');skip.type='button';
@@ -28,7 +28,7 @@ export function startPrologue({lines=PROLOGUE_LINES,title=PROLOGUE_TITLE,linger=
  root.append(art,el('i','bar top'),el('i','bar bottom'),caption,narration,holdLine,skip);document.body.append(root);
  globalThis.performance?.mark?.('eldervale-prologue-visible');
  requestAnimationFrame(()=>root.classList.add('show'));
- let skipped=false,hurry=false,finished=false,ready=null;const state={titleShown:false};
+ let skipped=false,hurry=false,finished=false,ready=null;const state={titleShown:false,narrating:true};
  skip.onclick=()=>{skipped=true;root.classList.add('skipped')};
  // Wall-clock waits: heavy loading (game.js, the first world build) can starve timers, so each beat
  // ends at its deadline however late the timer fires. Once the world is ready (hurry) the current
@@ -39,6 +39,7 @@ export function startPrologue({lines=PROLOGUE_LINES,title=PROLOGUE_TITLE,linger=
   await hold(3200,1400);caption.classList.remove('show');
   for(const text of lines){if(skipped||hurry)break;narration.textContent=text;narration.classList.add('show');await hold(linger,1400);narration.classList.remove('show');if(!skipped)await wait(450)}
   if(!finished&&!hurry){holdLine.textContent='The castle gates draw near…';holdLine.classList.add('show')}
+  state.narrating=false;
  })();
  function finish(){if(finished)return;finished=true;skipped=true;root.classList.add('leaving');setTimeout(()=>root.remove(),900)}
  const controller={root,state,

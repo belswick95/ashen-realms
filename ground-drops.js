@@ -1,5 +1,5 @@
-import {makeDroppedItemModel} from './item-models.js?v=release-20261106-fix99';
-import {goods} from './economy.js?v=release-20261106-fix99';
+import {makeDroppedItemModel} from './item-models.js?v=release-20261106-boss107';
+import {goods} from './economy.js?v=release-20261106-boss107';
 export function createGroundDrops(T,scene,landscape,targets){
  const entries=new Map();
  function remove(id){const e=entries.get(id);if(!e)return;const i=targets.indexOf(e.hit);if(i>=0)targets.splice(i,1);e.root.removeFromParent();e.root.traverse(o=>{if(!o.geometry?.userData?.eldervaleShared)o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])if(!m?.userData?.eldervaleShared){m?.map?.dispose();m?.dispose()}});entries.delete(id)}

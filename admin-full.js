@@ -1,11 +1,11 @@
 // Owner console › full-control tabs: Catalog, Economy, Quests, Backup and Audit, plus the player
 // inspector shown inside Players. Reads use world_admin directly; writes go through ctx.invoke so
 // they are owner-checked and audited on the server (db/admin-full-control.sql, fc_* commands).
-import {goods} from './economy.js?v=release-20261106-fix99';
+import {goods} from './economy.js?v=release-20261106-boss107';
 import {SKILLS,skillLabel,xpKey,statsXpKey,levelForXp,CATALOG_GROUPS,catalogForm,buildCatalogData,validateCatalogDraft,catalogKind,catalogMatches,duplicateId,
  normalizeMultipliers,effectiveXp,validateTimeOverride,MULTIPLIER_LIMITS,OBJECTIVE_TYPES,QUEST_EVENTS,DIALOGUE_STAGES,validateQuestDraft,questPreview,objectiveText,
- auditLine,backupStats,MODERATION_PRESETS} from './admin-full-data.js?v=release-20261106-fix99';
-import {questV2Sections,questSimulator,questPlayerTools,V2_KEYS,cleanV2,validateV2Draft} from './admin-quest-v2.js?v=release-20261106-fix99';
+ auditLine,backupStats,MODERATION_PRESETS} from './admin-full-data.js?v=release-20261106-boss107';
+import {questV2Sections,questSimulator,questPlayerTools,V2_KEYS,cleanV2,validateV2Draft} from './admin-quest-v2.js?v=release-20261106-boss107';
 
 const QUEST_KEYS=['name','description','giver','key','chain','order','requires','questPoints','icon','finishes','published','hint','objectives','gold','items','startItems','xp','dialogue',...V2_KEYS];
 const download=(name,data)=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
@@ -88,7 +88,7 @@ export function createFullControlTabs(ctx){
    const hour=field(wf,'Hour (0–24, empty = real time)','timeOverride',cfg.world?.timeOverride??'','number');hour.min=0;hour.max=24;hour.step='0.5';
    btn('Apply time',async()=>{const v=validateTimeOverride(hour.value);await invoke('fc_settings_save',{key:'world',value:{timeOverride:v,classicLook:!!cfg.world?.classicLook}});cfg.world={...(cfg.world||{}),timeOverride:v};note(v===null?'Sky follows the real clock.':'Sky locked to '+v+':00.')},wf);
    const qa=actions(world);for(const [label,h] of [['Dawn',6],['Noon',12],['Dusk',19],['Midnight',0]])btn(label,()=>{hour.value=h},qa);btn('Real time',()=>{hour.value=''},qa);
-   world.append(el('p','Weather: Eldervale has no weather system yet, so there is nothing to override.',{class:'console-muted'}));
+   world.append(el('p','Weather: see Game › Weather to force, schedule or turn off rain, storms, fog and snow.',{class:'console-muted'}));
    // Graphics default (classic-look.js): players who never touched Settings › Classic look follow this.
    const look=section('Classic look default',box),lf=el('form',null,{class:'console-inline'});lf.onsubmit=e=>e.preventDefault();look.append(el('p','Old-school low-detail look: simple low-poly models, soft lighting and a limited palette at full resolution (faster on iPad and phones). Players can still switch it in Settings › Graphics; their own choice wins.',{class:'console-muted'}),lf);
    const classicBox=el('input',null,{type:'checkbox','aria-label':'Classic look by default'});classicBox.checked=cfg.world?.classicLook===true;const classicLabel=el('label',' Classic look by default');classicLabel.prepend(classicBox);lf.append(classicLabel);

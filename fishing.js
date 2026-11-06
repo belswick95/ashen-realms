@@ -2,4 +2,8 @@ export const fishingItems={fishingPole:{name:'Fishing pole',buy:35,sell:12,icon:
 // Lobster pots and harpoons unlock the deep-water tiers (Fishing 40 and 50).
 fishingItems.lobsterPot={name:'Lobster pot',buy:40,sell:12,unique:true,model:'pot',description:'Cage fishing for lobsters at Fishing 40. Carry it to a fishing spot.'};
 fishingItems.harpoon={name:'Harpoon',buy:45,sell:14,unique:true,model:'harpoon',description:'Harpoon swordfish (Fishing 50) and stormfin (Fishing 76).'};
+// Lure (fly) fishing and big nets for the new water (fish-tiers.js, Fishing 20 and 16).
+fishingItems.flyRod={name:'Fly rod',buy:40,sell:12,unique:true,model:'rod',description:'Lure fishing for trout, salmon and rainbowfin (Fishing 20). Needs feathers.'};
+fishingItems.feathers={name:'Feathers',buy:3,sell:1,stackable:true,model:'feather',description:'Lure for fly fishing; one is used for each catch.'};
+fishingItems.bigNet={name:'Big net',buy:60,sell:18,unique:true,model:'net',description:'Big-net fishing for mackerel, cod and stone bass (Fishing 16).'};
 export const fishingItemIds=Object.keys(fishingItems);

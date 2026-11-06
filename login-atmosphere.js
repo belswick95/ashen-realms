@@ -2,7 +2,7 @@
 // placement and pause/resume. Fog drift, torch flicker and the idle sway are pure
 // CSS (compositor-only transforms/opacity, see login-gate.css); this module only
 // writes two custom properties, and only while the scene is actually easing.
-import {coverPoint} from './login-fire.js?v=release-20261106-fix99';
+import {coverPoint} from './login-fire.js?v=release-20261106-boss107';
 
 export const TORCH_ANCHORS=[[.239,.382],[.758,.382]];
 const clamp=(v,lo=-1,hi=1)=>Math.max(lo,Math.min(hi,v));

@@ -2,7 +2,7 @@
 // shields per metal tier), fletching (tiered arrows, wood shortbows) and the
 // Eldervale names for the higher-tier ores and bars. profession-data.js calls
 // registerGearProfessions() once, after its own items and recipes.
-import {GEAR_TIERS,tierById,WEAPON_TEMPLATES,SHIELD_TEMPLATES,PLATE_PIECES,PLATE_SMITH,PLATE_NAMES,ARROWS,tierItemKey} from './gear-tiers.js?v=release-20261106-fix99';
+import {GEAR_TIERS,tierById,WEAPON_TEMPLATES,SHIELD_TEMPLATES,PLATE_PIECES,PLATE_SMITH,PLATE_NAMES,ARROWS,tierItemKey} from './gear-tiers.js?v=release-20261106-boss107';
 // Higher-tier ore and bar ids predate the tiers; their display names follow the tier metals.
 export const METAL_NAMES={mithrilOre:'Moonsilver ore',adamantOre:'Verdite ore',runiteOre:'Tidestone ore',mithrilBar:'Moonsilver bar',adamantBar:'Verdite bar',runiteBar:'Tidesteel bar',mithrilFittings:'Moonsilver fittings',adamantFittings:'Verdite fittings',runiteFittings:'Tidesteel fittings'};
 const RECIPE_NAMES={mine_mithrilOre:'Mine moonsilver ore',mine_adamantOre:'Mine verdite ore',mine_runiteOre:'Mine tidestone ore',smelt_mithrilBar:'Smelt moonsilver bar',smelt_adamantBar:'Smelt verdite bar',smelt_runiteBar:'Smelt tidesteel bar',forge_mithril_fittings:'Forge moonsilver fittings',forge_adamant_fittings:'Forge verdite fittings',forge_runite_fittings:'Forge tidesteel fittings'};

@@ -1,6 +1,6 @@
-import {foodRecipes} from './food.js?v=release-20261106-fix99';
-import {registerGearProfessions} from './gear-recipes.js?v=release-20261106-fix99';
-import {BONES,ALTAR_OFFER_MULTIPLIER} from './monster-roster.js?v=release-20261106-fix99';
+import {foodRecipes} from './food.js?v=release-20261106-boss107';import {extraFishRecipes} from './fish-tiers.js?v=release-20261106-boss107';
+import {registerGearProfessions} from './gear-recipes.js?v=release-20261106-boss107';
+import {BONES,ALTAR_OFFER_MULTIPLIER} from './monster-roster.js?v=release-20261106-boss107';
 // Original Eldervale recipes inspired by OSRS resource-processing mechanics.
 // Levels and XP follow the OSRS experience table (combat-level.js). Per-action XP and level requirements match the
 // closest Old School RuneScape action (fractional XP such as 17.5 or 6.25 is kept exactly; see db/osrs-skill-parity.sql).
@@ -30,7 +30,7 @@ for(const [output,name,bars,level]of [['armor:helm','Iron full helm',2,22],['arm
 // Per-bar smithing XP as in OSRS: bronze 12.5, iron 25, steel 37.5, mithril 50, adamant 62.5, rune 75.
 for(const [id,input,out,level,xp]of [['nails','bronzeBar','nails',1,12.5],['steel_nails','steelBar','steelNails',34,37.5],['arrowtips','ironBar','arrowTips',20,25],['brace','steelBar','steelBrace',35,37.5],['mithril_fittings','mithrilBar','mithrilFittings',55,50],['adamant_fittings','adamantBar','adamantFittings',75,62.5],['runite_fittings','runiteBar','runiteFittings',90,75]])recipe('forge_'+id,'Forge '+out.replace(/([A-Z])/g,' $1').toLowerCase(),'smithing',level,xp,{[input]:1},{[out]:out==='nails'||out==='steelNails'||out==='arrowTips'?15:1},['hammer'],'anvil');
 for(const [id,level,xp]of [['wood',1,40],['oakLogs',15,60],['willowLogs',30,90],['mapleLogs',45,135],['yewLogs',60,202.5]])recipe('burn_'+id,'Light '+(id==='wood'?'logs':professionItems[id].name.toLowerCase()),'firemaking',level,xp,{[id]:1},{},['firelighter'],null,{kind:'fire',seconds:2.4});
-Object.assign(professionRecipes,foodRecipes);// burnChance is the chance at the recipe's level; it falls to 0 at stopBurn (the OSRS stop-burn level).
+Object.assign(professionRecipes,foodRecipes,extraFishRecipes);// burnChance is the chance at the recipe's level; it falls to 0 at stopBurn (the OSRS stop-burn level).
 recipe('cook_fish','Cook river fish','cooking',1,40,{rawFish:1},{cookedFish:1},[],'cooking',{burnChance:.15,stopBurn:38});recipe('cook_meat','Roast meat','cooking',1,30,{rawMeat:1},{cookedMeat:1},[],'cooking',{burnChance:.15,stopBurn:31});recipe('mill_flour','Grind flour','cooking',1,0,{wheat:1},{flour:1},[],'mill');recipe('mix_dough','Mix bread dough','cooking',1,0,{flour:1,water:1},{dough:1});recipe('bake_bread','Bake bread','cooking',1,40,{dough:1},{bread:1},[],'cooking',{burnChance:.10,stopBurn:38});
 recipe('tan_hide','Tan hide','crafting',1,0,{hide:1},{leather:1},[],'tanning_rack');recipe('sew_gloves','Sew work gloves','crafting',1,13.8,{leather:1,thread:1},{leatherGloves:1},['needle']);recipe('spin_string','Spin bow string','crafting',10,15,{flax:1},{bowString:1},[],'spinning_wheel');recipe('cut_gem','Cut sapphire','crafting',20,50,{uncutGem:1},{cutGem:1},['chisel']);recipe('silver_ring','Cast silver signet','crafting',16,50,{silverBar:1},{silverRing:1},[],'furnace');
 recipe('shafts','Carve arrow shafts','fletching',1,5,{wood:1},{arrowShafts:15},['knife']);recipe('feather_arrows','Feather arrow shafts','fletching',1,15,{arrowShafts:15,feathers:15},{headlessArrows:15});recipe('finish_arrows','Fit iron arrowtips','fletching',15,37.5,{headlessArrows:15,arrowTips:15},{arrows:15});recipe('carve_bow','Carve an unstrung bow','fletching',5,5,{wood:1},{unstrungBow:1},['knife']);recipe('string_bow','String a shortbow','fletching',5,5,{unstrungBow:1,bowString:1},{shortbow:1});

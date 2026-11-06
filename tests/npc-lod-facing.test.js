@@ -42,6 +42,6 @@ test('a walking worker follows the server yaw; an idle or interrupted one has no
 
 test('game.js presents the work facing in the per-frame realm pose and clears it when work is interrupted',async()=>{
  const game=(await import('node:fs')).readFileSync(new URL('../game.js',import.meta.url),'utf8');
- assert.match(game,/actor\.root\.rotation\.y=workFacing\(actor\.rig,sample\.yaw,moved\)/);
+ assert.match(game,/actor\.root\.rotation\.y=workFacing\(actor\.rig,sample\.yaw,moved,dt\)/);
  assert.match(game,/if\(!working&&npc\.rig\.work\)npc\.rig\.work\.yaw=null/);
 });

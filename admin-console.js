@@ -1,12 +1,13 @@
-import {spawnCatalog,searchCatalog,catalogEntity,consoleCategories,bestiary,lootSummary,normalizeLoot,behaviorPatch,normalizePatrol,transformGroup,aheadOf,ringPositions,mergePlayers,matchesQuery,wrapYaw} from './bestiary.js?v=release-20261106-fix99';
-import {worldTemplates,attackTypes} from './world-templates.js?v=release-20261106-fix99';
-import {goods} from './economy.js?v=release-20261106-fix99';
-import {professionSkills} from './profession-data.js?v=release-20261106-fix99';
-import {SKINS,HAIRS,HAIRSTYLES} from './appearance.js?v=release-20261106-fix99';
-import {showPreview} from './admin-preview.js?v=release-20261106-fix99';
-import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261106-fix99';
-import {engineSection} from './admin-engine.js?v=release-20261106-fix99';
-import {mechanicsSection} from './admin-mechanics.js?v=release-20261106-fix99';
+import {spawnCatalog,searchCatalog,catalogEntity,consoleCategories,bestiary,lootSummary,normalizeLoot,behaviorPatch,normalizePatrol,transformGroup,aheadOf,ringPositions,mergePlayers,matchesQuery,wrapYaw} from './bestiary.js?v=release-20261106-boss107';
+import {worldTemplates,attackTypes} from './world-templates.js?v=release-20261106-boss107';
+import {goods} from './economy.js?v=release-20261106-boss107';
+import {professionSkills} from './profession-data.js?v=release-20261106-boss107';
+import {SKINS,HAIRS,HAIRSTYLES} from './appearance.js?v=release-20261106-boss107';
+import {showPreview} from './admin-preview.js?v=release-20261106-boss107';
+import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261106-boss107';
+import {engineSection} from './admin-engine.js?v=release-20261106-boss107';
+import {mechanicsSection} from './admin-mechanics.js?v=release-20261106-boss107';
+import {bossesSection} from './admin-bosses.js?v=release-20261106-boss107';
 // Owner game console tabs: Dashboard, Spawn, Placed, NPCs, Monsters, Players and World.
 // Every write goes through world_admin, where the server re-checks owner access.
 const svg=p=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
@@ -16,6 +17,7 @@ export const consoleIcons={
  NPCs:svg('<circle cx="12" cy="7" r="3.5"/><path d="M5 21c.8-4 3.6-6.5 7-6.5s6.2 2.5 7 6.5"/>'),Monsters:svg('<path d="M5 4l3 4M19 4l-3 4"/><path d="M6 10c0-3 2.7-4 6-4s6 1 6 4v4c0 4-3 6-6 6s-6-2-6-6z"/><circle cx="9.5" cy="12" r="1"/><circle cx="14.5" cy="12" r="1"/><path d="M10 17h4"/>'),
  Players:svg('<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c.6-3.5 3-5.5 6-5.5s5.4 2 6 5.5M15 15c2.8-.4 5 1.4 6 4"/>'),World:svg('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>'),
  Editor:svg('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>'),Items:svg('<path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/>'),Recipes:svg('<path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h6"/>'),Quests:svg('<path d="M6 3h9l3 3v15H6z"/><path d="M9 9l2 2 4-4M9 15h6"/>'),
+ Weather:svg('<path d="M7 15a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8.5a3.5 3.5 0 0 1-.5 6.5z"/><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"/>'),
  Signs:svg('<path d="M12 3v18M8 21h8"/><path d="M5 6h12l3 2.5L17 11H5z"/><path d="M19 13H8l-3 2.5L8 18h11z"/>'),
  Actors:svg('<circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20c1-3.5 3.3-5 6-5s5 1.5 6 5M14 15c3 0 5.4 1.6 6 5"/>'),Server:svg('<rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/>'),
  Catalog:svg('<path d="M4 5h7v14H4zM13 5h7v14h-7z"/><path d="M6.5 9h2M15.5 9h2M6.5 12h2M15.5 12h2"/>'),Economy:svg('<circle cx="9" cy="9" r="5"/><path d="M14.5 10.5A5 5 0 1 1 10 18"/><path d="M9 7v4M7.5 9h3"/>'),Backup:svg('<path d="M4 7c0-2 3.6-3 8-3s8 1 8 3-3.6 3-8 3-8-1-8-3z"/><path d="M4 7v10c0 2 3.6 3 8 3s8-1 8-3V7M4 12c0 2 3.6 3 8 3s8-1 8-3"/>'),
@@ -189,6 +191,7 @@ export function createConsoleTabs(ctx){
   const tr=section('Travel',grid),ta=actions(tr);for(const [name,x,z] of travel)btn(name,()=>invoke('teleport',{x,z}),ta);const tf=el('form',null,{class:'console-inline'});tf.onsubmit=e=>e.preventDefault();tr.append(tf);const p=pos(),tx=field(tf,'X','wx',Math.round(p.x),'number'),tz=field(tf,'Z','wz',Math.round(p.z),'number');btn('Teleport me',()=>invoke('teleport',{x:Number(tx.value),z:Number(tz.value)}),tf);
   engineSection({section,el,btn,field,invoke,note,parent:grid});
   mechanicsSection({section,el,btn,field,invoke,note,parent:grid,pos});
+  bossesSection({section,el,btn,field,invoke,note,parent:grid});
   if(s.world_config?.enabled)grid.append(el('p','Shared procedural world · seed '+s.world_config.seed+'. All placements persist for every player.',{class:'console-muted'}));
  }
  return {Dashboard,Spawn,Placed,NPCs,Monsters,Players,World};

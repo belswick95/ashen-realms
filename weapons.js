@@ -1,7 +1,9 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261106-fix99';
-import {heldItem} from './weapon-assets.js?v=release-20261106-fix99';
-import {tierWeapons,weaponGear,BOWS,describeGear} from './gear-tiers.js?v=release-20261106-fix99';
-import {tintHeldItem} from './tier-tint.js?v=release-20261106-fix99';
+import {meshItemIcon} from './item-appearance.js?v=release-20261106-boss107';
+import {heldItem} from './weapon-assets.js?v=release-20261106-boss107';
+import {tierWeapons,weaponGear,BOWS,describeGear} from './gear-tiers.js?v=release-20261106-boss107';
+import {tintHeldItem} from './tier-tint.js?v=release-20261106-boss107';
+import {UNIQUE_ITEMS,legacyWeaponNumbers} from './unique-gear.js?v=release-20261106-boss107';
+import {accentHeldItem} from './unique-look.js?v=release-20261106-boss107';
 // Weapons are Quaternius CC0 models (assets/weapons, scripts/build-weapons.mjs)
 // in the held-item frame: grip at the origin, blade along +Y, edge toward +X.
 // Keys are what saves, the server catalog and equipment use; the first eight
@@ -44,6 +46,9 @@ for(const [key,w] of Object.entries(tierWeapons())){
 }
 // Wood-tier shortbows: the wooden bow model with the wood recoloured.
 for(const [key,b] of Object.entries(BOWS))if(!weaponCatalog[key])weaponCatalog[key]=W(b.name,'bow',Math.round(b.arange/4)+4,b.arange,1.8,b.reach,b.buy,Math.round(b.buy*.3),b.desc,{twoHanded:true,ranged:true,model:'woodenBow',tint:b.wood,tintMode:'wood'});
+// Unique weapons (unique-gear.js): an existing model, recoloured, with an accent glow and motes.
+for(const u of UNIQUE_ITEMS)if(u.kind==='weapon'&&!weaponCatalog[u.id]){const n=legacyWeaponNumbers(u);weaponCatalog[u.id]=W(u.name,u.staff?'staff':'weapon',n.damage,n.attack,+(u.ticks*.45).toFixed(2),u.reach,u.value,Math.round(u.value*.3),u.desc,
+ {model:u.model,tint:u.tint,accent:u.accent,tier:'unique',unique:true,bonuses:{...u.bonuses},req:{...u.req},ticks:u.ticks,styles:u.styles,tradeable:u.tradeable,quest:u.quest,shopless:true,...(u.twoHanded||u.staff?{twoHanded:true}:{}),...(u.staff?{ranged:true,magic:true,color:u.color,spell:u.spell}:{})})}
 // OSRS-style bonuses, level requirement and speed (ticks) for every weapon.
 for(const [key,item] of Object.entries(weaponCatalog)){const g=item.bonuses?null:weaponGear(key,item.kind);if(g)Object.assign(item,{bonuses:g.bonuses,req:g.req,ticks:g.ticks,speed:g.speed,styles:g.styles,...(g.arrowCap?{arrowCap:g.arrowCap}:{}),...(g.spell?{spell:g.spell}:{}),...(g.tier&&!item.tier?{tier:g.tier}:{})})}
 export const weaponDetails=key=>describeGear(weaponCatalog[key]);
@@ -62,6 +67,7 @@ export function makeWeapon(T,key){
  g.name='weapon-'+key;g.userData.weaponKey=key;
  // Staffs: a soft glow around the focus gem (shared geometry and material per colour).
  if(item?.magic&&tip){if(!glows.has(item.color))glows.set(item.color,{geometry:new T.IcosahedronGeometry(.075,1),material:new T.MeshBasicMaterial({color:item.color,transparent:true,opacity:.45,blending:T.AdditiveBlending,depthWrite:false})});const {geometry,material}=glows.get(item.color);geometry.userData.eldervaleShared=material.userData.eldervaleShared=true;const glow=new T.Mesh(geometry,material);glow.name='gem-glow';glow.castShadow=false;glow.position.y=-.03;tip.add(glow)}
+ if(item?.accent)accentHeldItem(T,g,item.accent,{height:item.magic?1.3:.9});
  return g;
 }
 export function iconForWeapon(key){return meshItemIcon('weapon:'+key)}

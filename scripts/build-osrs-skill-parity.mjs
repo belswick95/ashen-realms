@@ -2,6 +2,8 @@
 // (which includes food.js cooking recipes). Usage: node scripts/build-osrs-skill-parity.mjs
 import {readFileSync,writeFileSync} from 'node:fs';
 import {professionRecipes} from '../profession-data.js';
+// Fish tiers added later (fish-tiers.js) ship their recipes in db/water-1-fishing.sql.
+import {extraFishRecipes} from '../fish-tiers.js';
 
 // Fields that carry OSRS levels, XP and success models. Outputs/crops only where the OSRS
 // mapping changes the yield (rune multiples, chest coins, harvest XP).
@@ -9,7 +11,7 @@ const FIELDS=['level','xp','burnChance','stopBurn','chance','chanceLow','chanceH
 const WITH_OUTPUTS=new Set(['air_runes','fire_runes','pick_training_lock']);
 export function recipePatches(){
  const out={};
- for(const [id,r]of Object.entries(professionRecipes)){
+ for(const [id,r]of Object.entries(professionRecipes)){if(extraFishRecipes[id])continue;
   const p={};for(const k of FIELDS)if(r[k]!==undefined)p[k]=r[k];
   if(WITH_OUTPUTS.has(id))p.outputs=r.outputs;
   if(r.kind==='plant')p.crop=r.crop;
