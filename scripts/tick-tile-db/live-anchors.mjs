@@ -15,7 +15,9 @@ export function anchors(){
 }
 if(import.meta.url===`file://${process.argv[1]}`){
  const q=s=>"'"+s.replace(/'/g,"''")+"'";
- const rows=anchors().filter(a=>!a.fn.includes('engine_console(')).map((a,k)=>`(${k+1},${q(a.file)},${q(a.fn)},${q(a.old)},${q(a.next)})`);
- console.log(`select n,file,fn,(length(d)-length(replace(d,old,'')))/length(old) matches,position(next in d)>0 applied
+ // Optional argument: only the anchors of files whose name contains it (e.g. 3-npcs).
+ const only=process.argv[2]||'';
+ const rows=anchors().filter(a=>!a.fn.includes('engine_console(')&&a.file.includes(only)).map((a,k)=>`(${k+1},${q(a.file)},${q(a.fn)},${q(a.old)},${q(a.next)})`);
+ console.log(`select n,file,(length(d)-length(replace(d,old,'')))/length(old) matches,position(next in d)>0 applied
 from (values ${rows.join(',\n ')}) v(n,file,fn,old,next) cross join lateral (select pg_get_functiondef(fn::regprocedure) d) x order by n;`);
 }
