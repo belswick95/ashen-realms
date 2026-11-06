@@ -1,6 +1,6 @@
-import {clipsFor} from './character-assets.js?v=release-20261106-quiet121';
-import {createStrideRig,createGaitState,advanceGait,blendWeights,mixGait} from './stride-cycle.js?v=release-20261106-quiet121';
-import {carryStyle,CARRY} from './equipment-pose.js?v=release-20261106-quiet121';
+import {clipsFor} from './character-assets.js?v=release-20261106-shieldorig122';
+import {createStrideRig,createGaitState,advanceGait,blendWeights,mixGait} from './stride-cycle.js?v=release-20261106-shieldorig122';
+import {carryStyle,CARRY} from './equipment-pose.js?v=release-20261106-shieldorig122';
 // Animation for every human in Eldervale. Standing, working, fighting and
 // dying play clips (Quaternius Universal Animation Library, CC0) with
 // cross-fades; walking and running are procedural (stride-cycle.js): a
@@ -95,7 +95,7 @@ export function createHumanoidAnimator(rig){
   // shield rides on the bent forearm, board upright, all the time.
   kindL=heldKind(rig.leftHand);kindR=heldKind(rig.rightHand);const able=!mounted&&!dead;
   carryR+=((kindR&&able?(kindR==='greatsword'?1:gait.move)*(1-oneW):0)-carryR)*k;if(carryR<.001)carryR=0;
-  carryL+=((kindL&&able?(kindL==='shield'?1:gait.move*(1-oneW)):0)-carryL)*k;if(carryL<.001)carryL=0;
+  carryL+=((kindL&&kindL!=='shield'&&able?gait.move*(1-oneW):0)-carryL)*k;if(carryL<.001)carryL=0;
   if(strideRig){mixGait(gait.run,gaitStyle);if(carryR&&kindR)arms.carry("r",kindR,carryR,gait,gaitStyle);if(carryL&&kindL)arms.carry("l",kindL,carryL,gait,gaitStyle)}
   // Blocking raises the shield in front of the chest on top of whatever plays.
   guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
@@ -111,7 +111,7 @@ export function createHumanoidAnimator(rig){
   // both hands on the pole, dip the net into the water, scoop and lift.
   const dip=rig.netDip;netting+=((dip&&!moving&&!mounted&&!dead&&!oneShot?1:0)-netting)*k;if(netting<.001)netting=0;if(netting&&dip)arms.net(netting,dip);
   // A shield stays strapped to the forearm: the wrist is held straight whatever the clip does.
-  if(strideRig&&kindL==='shield')strideRig.straightWrist('l');
+  // Shield: original hand mount and free arm (owner request, 06 Nov) - no carry pose or wrist lock.
   const run=gaitName==='Sprint_Loop'?1:gaitName==='Jog_Fwd_Loop'?.65:0,planted=contacts&&gait.move>.5;
   return {blend:moving?1:0,run,gait:gaitName,weights:blend,phase:gait.phase,step:gait.step,flight:airborne,contacts:{left:!airborne&&(!planted||contacts.left),right:!airborne&&(!planted||contacts.right)},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite};
  },dispose(){eating.dispose();mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};

@@ -124,22 +124,9 @@ const SHIELDS=(()=>{const first=new Map();for(const [k,s] of Object.entries(shie
 // Distance from the shield's attach point (the strap side of the board) to the forearm bone.
 function strapGap(rig,shield){const e=rig.bones.lowerarm_l.getWorldPosition(v()),h=rig.bones.hand_l.getWorldPosition(v()),o=shield.getWorldPosition(v()),seg=h.clone().sub(e),t=Math.max(0,Math.min(1,o.clone().sub(e).dot(seg)/seg.lengthSq()));return {gap:o.distanceTo(e.clone().addScaledVector(seg,t)),t}}
 
-test('shields are strapped to the forearm in every pose, upright, carried across the front (players and NPCs, every model)',()=>{
- assert.ok(SHIELDS.includes('kite')&&SHIELDS.includes('roundShield')&&SHIELDS.includes('celticShield')&&SHIELDS.length>=8);
- const POSES={idle:{},walk:{speed:WALK_REF,locomotion:'walk'},run:{speed:RUN_REF,locomotion:'jog'},sprint:{speed:6.4,locomotion:'run'},combat:{combat:true},block:{block:1},walkBlock:{speed:WALK_REF,locomotion:'combat',block:1},eat:{eat:.6},attack:{attack:.6},hit:{hit:.4}};
- for(const sex of ['male','female'])for(const key of SHIELDS)for(const [name,opts] of Object.entries(POSES)){
-  const w=walker({sex,weapon:'longsword',shield:key});const shield=w.held.shield;
-  for(let i=0;i<50;i++){const pose=w.step(1/60,opts);if(name==='attack'||name==='hit'){if(i===0)continue}
-   const {gap,t}=strapGap(w.rig,shield);assert.equal(shield.parent,w.rig.leftHand,'parented to the hand bone socket');
-   assert.ok(gap>.07&&gap<.14,`${sex} ${key} ${name}: strap gap ${gap.toFixed(3)}`);assert.ok(t>.25&&t<.85,`${sex} ${key} ${name}: board centred on the forearm (${t.toFixed(2)})`);
-   if(i>=30&&!['attack','hit','eat'].includes(name)){const q=shield.getWorldQuaternion(new T.Quaternion()),face=v().set(0,0,1).applyQuaternion(q),up=v().set(0,1,0).applyQuaternion(q);
-    assert.ok(up.y>.8,`${key} ${name}: board upright ${up.y.toFixed(2)}`);
-    if(name.includes('lock'))assert.ok(face.z>.7,`${key} ${name}: raised to face forward`);
-    else{// Classic carry: forearm across the front, board facing forward and angled out ~25 degrees.
-     assert.ok(face.z>.8&&face.x>.2&&face.x<.65,`${key} ${name}: faces forward, angled out (${face.x.toFixed(2)},${face.z.toFixed(2)})`);
-     // The board sits in front of the chest, not in it.
-     const o=shield.getWorldPosition(v()).sub(w.root.position),chest=w.rig.bones.spine_03.getWorldPosition(v()).sub(w.root.position);assert.ok(o.z>chest.z+.12,`${key} ${name}: in front of the chest ${o.z.toFixed(2)} vs ${chest.z.toFixed(2)}`)}}
-  }
-  w.a.dispose();
- }
+test('shields use the original hand mount with no carry pose (owner request)',async()=>{
+ const src=(await import('node:fs')).readFileSync(new URL('../equipment-pose.js',import.meta.url),'utf8');
+ assert.match(src,/model\.position\.set\(0,0,\.04\);model\.rotation\.set\(0,0,0\);model\.userData\.shieldMount=true/);
+ const anim=(await import('node:fs')).readFileSync(new URL('../animation.js',import.meta.url),'utf8');
+ assert.doesNotMatch(anim,/straightWrist\('l'\)/);
 });

@@ -1,4 +1,4 @@
-import {isBow,isMagic,weaponCatalog} from './weapons.js?v=release-20261106-quiet121';
+import {isBow,isMagic,weaponCatalog} from './weapons.js?v=release-20261106-shieldorig122';
 // Staffs stand upright like walking staffs: in the right-hand socket of the
 // relaxed idle pose, world up is UP and the character's forward is FORWARD
 // (measured from the rig; the same for both bodies).
@@ -24,7 +24,7 @@ export function attachWeapon(rig,model,key){
 // (animation.js), so the board follows the forearm in every pose.
 export const SHIELD_MOUNT={along:.3,out:.115};
 export function attachShield(rig,model){
- model.position.set(SHIELD_MOUNT.along,0,SHIELD_MOUNT.out);model.rotation.set(0,0,0);model.userData.shieldMount=true;
+ model.position.set(0,0,.04);model.rotation.set(0,0,0);model.userData.shieldMount=true;
  rig.leftHand.add(model);return model;
 }
 // How a held item is carried while moving (and, for shields, always):

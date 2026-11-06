@@ -1,6 +1,6 @@
 // One server-saved seed produces the same terrain, roads and settlement blueprint on every client.
-import {entityDefaults} from './world-templates.js?v=release-20261106-quiet121';
-import {extraLakes,extraRivers} from './water-data.js?v=release-20261106-quiet121';
+import {entityDefaults} from './world-templates.js?v=release-20261106-shieldorig122';
+import {extraLakes,extraRivers} from './water-data.js?v=release-20261106-shieldorig122';
 export let worldConfig=globalThis.eldervaleWorldConfig||null;
 export function seededRandom(seed){let n=seed>>>0;return ()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296}}
 const clamp=x=>Math.max(0,Math.min(1,x)),smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
