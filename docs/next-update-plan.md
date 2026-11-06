@@ -148,3 +148,18 @@ Max 4 agents at a time so a usage limit pauses cleanly.
 | **R3-K Exploration** | Hidden areas, lore objects, treasure-hunt clue chains, new regions to reach. |
 
 Final: full live QA pass on a fresh account + performance check on iPad/phone sizes.
+
+## Queued after the owner's usage reset — Terrain & forests (approved 06 Nov)
+Owner dislikes the steep, unrealistic banks on both sides of every road. Cause: `landscape.js` sculpt()
+multiplies height by `smooth(4,13,distanceToRoad)`, so roads are carved to height 0 through hills (trenches).
+1. Roads follow the land: road height = smoothed (low-pass) local terrain, soft shoulders, no trenches.
+2. Flatter lowlands: roughly halve the rolling noise in the central/lowland areas; keep corner mountain ranges.
+3. Forest variety: birch, pine/spruce, willow near water, dead trees in dry areas, snowy pines north;
+   bushes, ferns, fallen logs; denser forest bands along roads.
+4. Re-check building plots, bridges, fishing spots, cave entrances, tile collision grid (rebuild), camera clearance.
+Before/after screenshots at the same spots before deploy.
+
+## Queued after reset — Phone world map (owner report 06 Nov)
+On phones the full world map doesn't fit the screen and can't be zoomed out. Fix: fit-to-screen on open
+(whole world visible), pinch-zoom + drag-pan, zoom buttons, double-tap to zoom, safe-area aware, portrait
+and landscape; verify at iPhone SE / iPhone 15 / iPad sizes with Playwright screenshots.

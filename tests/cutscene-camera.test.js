@@ -84,7 +84,7 @@ test('tutorial cutscene engine guards every shot with the obstruction logic and 
  assert.match(src,/cutscene\.from=cutscene\.cam\?/);
  assert.match(src,/glideClear\(cutscene\.from\.eye,to\.eye,clear\)\)cutscene\.ms=1/);
  const game=fs.readFileSync(new URL('../game.js',import.meta.url),'utf8');
- assert.match(game,/createTutorial\(\{T,scene,cameraOccluders:\(\)=>cameraWalls,rooms:/);
+ assert.match(game,/createTutorial\(\{T,scene,.{0,200}?cameraOccluders:\(\)=>cameraWalls,rooms:/);
 });
 
 test('a walk stopped by a shut Keep door does not leave the player outside while the King talks',()=>{

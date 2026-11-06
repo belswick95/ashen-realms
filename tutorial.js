@@ -1,9 +1,9 @@
 // Castle training client: objective HUD, guide arrow, tutor dialogue, gate lock and the arrival cutscene.
 // Server state (quests + game_flags.tutorial) arrives with every realm sync; nothing here is authoritative.
-import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261106-sweep104';
-import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261106-sweep104';
-import {frameShot,roomFromGroup,glideClear} from './cutscene-camera.js?v=release-20261106-sweep104';
-import {obstructionDistance} from './camera-obstruction.js?v=release-20261106-sweep104';
+import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261106-cut106';
+import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261106-cut106';
+import {frameShot,roomFromGroup,glideClear} from './cutscene-camera.js?v=release-20261106-cut106';
+import {obstructionDistance} from './camera-obstruction.js?v=release-20261106-cut106';
 
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -14,9 +14,10 @@ const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 // actorRoot(id) (optional): an NPC's scene root, for quest cutscenes' NPC moves (quest-cutscenes.js).
 // cameraOccluders() (optional): meshes a cutscene camera must not look through (camera-obstruction.js
 // collectCameraOccluders: walls, doors, furniture); rooms() (optional): building groups, so shots of
-// people indoors stay inside that room (cutscene-camera.js).
-export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null,actorRoot=null,cameraOccluders=()=>[],rooms=()=>[]}){
- document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-sweep104'}));
+// people indoors stay inside that room (cutscene-camera.js). prewarm(eye,look) (optional): draws a
+// shot off-screen so its shaders compile while the prologue still covers the canvas (cutscene-boot.js).
+export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null,actorRoot=null,cameraOccluders=()=>[],rooms=()=>[],prewarm=null}){
+ document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-cut106'}));
  let quests=[],flags={},locked=false,step=null,talking=false,destroyed=false,selfName='';
  // ---- objective HUD
  const hud=el('section','tutorial-hud');hud.hidden=true;hud.setAttribute('aria-live','polite');
@@ -102,6 +103,9 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
   shot=resolveShot(shot);if(!shot)return;
   cutscene.to={eye:new T.Vector3(...shot.eye),look:new T.Vector3(...shot.look)};
  }
+ // Shot timings run in rendered time: a step waits for its shot's first frame (a slow device's first
+ // frames compile shaders), so no shot is skipped unseen. Gives up after `limit` ms.
+ async function shotShown(limit=20000){const mark=cutscene.placed||0,t0=performance.now();while(!cutscene.skip&&(cutscene.placed||0)<=mark&&performance.now()-t0<limit)await new Promise(r=>requestAnimationFrame(()=>r()))}
  // Places the cutscene camera: eased move between shots, cut when the glide would cross a wall,
  // then pulled in front of anything between the subject and the lens (camera-obstruction.js).
  function placeCamera(camera){
@@ -115,13 +119,16 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
    if(to.spec&&(!to.eye||to.aspect!==camera.aspect||to.fov!==camera.fov||moved)){const r=frameDynamic(to.spec,camera);if(!r)return false;
     if(to.eye&&moved&&cutscene.cam){cutscene.from={eye:cutscene.cam.eye.clone(),look:cutscene.cam.look.clone()};cutscene.start=now;cutscene.ms=700;cutscene.checked=false}Object.assign(to,r)}
    if(!to.eye)return false;
-   if(!cutscene.checked){cutscene.checked=true;if(!cutscene.from||!glideClear(cutscene.from.eye,to.eye,clear))cutscene.ms=1}
+   if(!cutscene.checked){cutscene.checked=true;cutscene.start=now;if(!cutscene.from||!glideClear(cutscene.from.eye,to.eye,clear))cutscene.ms=1}
    const from=cutscene.from||to,t=ease(Math.min(1,(now-cutscene.start)/cutscene.ms));
    eye=new T.Vector3().lerpVectors(from.eye,to.eye,t);look=new T.Vector3().lerpVectors(from.look,to.look,t);focus=look;
   }else return false;
   const offset=eye.clone().sub(focus),want=offset.length();
   if(want>.01){const hit=hitDistance(focus,eye);cutscene.guard=obstructionDistance(cutscene.guard,hit<want?hit-.3:want,want,dt);eye.copy(focus).addScaledVector(offset,Math.min(1,cutscene.guard/want))}
-  camera.position.copy(eye);camera.lookAt(look);cutscene.cam={eye,look};return true;
+  camera.position.copy(eye);camera.lookAt(look);cutscene.cam={eye,look};cutscene.placed=(cutscene.placed||0)+1;
+  // First rendered frame of the scene (this frame renders right after): for load-time measurement.
+  if(!cutscene.shown){cutscene.shown=true;queueMicrotask(()=>performance.mark?.('eldervale-cutscene-first-frame'))}
+  return true;
  }
  // Walks the player with real move commands. A walk that stalls (a shut door, a crowd) stops early
  // instead of waiting out the timeout; with `settle` ({command,payload}: the scene's record command,
@@ -144,17 +151,21 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
  // options.scene: a scene object (quest cutscenes); options.record: {command,payload} that records it.
  async function playCutscene(id,options={}){const prologue=options.prologue||null;
   const sceneData=options.scene||cutscenes[id];if(!validCutscene(sceneData)||cutscene.active)return;
-  cutscene.active=true;cutscene.skip=false;cutscene.to=null;cutscene.from=null;cutscene.cam=null;cutscene.guard=null;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
+  cutscene.active=true;cutscene.skip=false;cutscene.to=null;cutscene.from=null;cutscene.cam=null;cutscene.guard=null;cutscene.shown=false;document.body.classList.add('tutorial-cutscene');letterbox.hidden=false;hud.hidden=true;arrow.visible=false;
   window.addEventListener('keydown',blockKeys,true);fader.style.transition='none';fader.style.opacity='1';
   performance.mark?.('eldervale-cutscene-start');
   // The DOM prologue (tutorial-prologue.js) already showed the title card while the world loaded:
   // take over from it on a black frame and skip the repeated caption.
-  let titled=false;if(prologue){try{titled=(await prologue.handoff()).titleShown}catch{}}
+  // The prologue starts its last line now; meanwhile (only if it is still talking: otherwise the
+  // scene simply starts) the opening shot's shaders compile behind it.
+  const handoff=prologue?prologue.handoff().catch(()=>({titleShown:false})):null;
+  if(prologue?.state?.narrating&&prewarm){const first=sceneData.steps.find(s=>s.shot?.eye);if(first){await new Promise(r=>requestAnimationFrame(()=>r()));try{prewarm(first.shot.eye,first.shot.look)}catch(e){console.warn('Cutscene prewarm:',e.message)}}}
+  let titled=false;if(handoff)titled=!!(await handoff)?.titleShown;
   try{
    for(const s of sceneData.steps){
     if(cutscene.skip)break;
     if(s.title&&titled){if(s.shot)setShot(s.shot,s.ms||0);continue}
-    if(s.shot)setShot(s.shot,s.fade?0:s.ms||0);
+    if(s.shot){setShot(s.shot,s.fade?0:s.ms||0);await shotShown()}
     if(s.fade){await fade(s.fade==='in'?0:1,s.ms||800);continue}
     if(s.title){caption.replaceChildren(el('strong',null,s.title),el('span',null,s.subtitle||''));caption.classList.add('show');await wait(s.ms||2500);caption.classList.remove('show');continue}
     if(s.walk){await walkTo(s.walk,s.timeout||20000,s.settle?(options.record||{command:'tutorial_cutscene',payload:{id}}):null);continue}

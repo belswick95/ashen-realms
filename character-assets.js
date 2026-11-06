@@ -1,7 +1,7 @@
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {preloadWeapons} from './weapon-assets.js?v=release-20261106-sweep104';
-import {tintOutfitMaterial} from './tier-tint.js?v=release-20261106-sweep104';
-import {accentOutfitShader} from './unique-look.js?v=release-20261106-sweep104';
+import {preloadWeapons} from './weapon-assets.js?v=release-20261106-cut106';
+import {tintOutfitMaterial} from './tier-tint.js?v=release-20261106-cut106';
+import {accentOutfitShader} from './unique-look.js?v=release-20261106-cut106';
 // Loads and caches the Quaternius character assets (assets/characters, CC0).
 // Geometry is shared between every character; each character only creates
 // its own bones and lightweight SkinnedMesh wrappers.

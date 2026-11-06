@@ -28,5 +28,5 @@ export function createCombatTurns({interval,onWindup,onImpact,onEnd=()=>{},delay
    clock+=dt;while(clock>=COMBAT_TICK-1e-9&&target){clock-=COMBAT_TICK;step(inRange);if(!target?.alive||!playerAlive){cancel();return}}
   }};
 }
-export {WALK_SPEED} from './click-walk.js?v=release-20261106-sweep104';
-export {RUN_SPEED as SPRINT_SPEED} from './click-walk.js?v=release-20261106-sweep104';
+export {WALK_SPEED} from './click-walk.js?v=release-20261106-cut106';
+export {RUN_SPEED as SPRINT_SPEED} from './click-walk.js?v=release-20261106-cut106';
