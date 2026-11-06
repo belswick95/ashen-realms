@@ -1,7 +1,7 @@
-import {createFortressFire} from './login-fire.js?v=release-20261106-smooth91';
-import {startMusic} from './music.js?v=release-20261106-smooth91';
-import {createLoginAtmosphere} from './login-atmosphere.js?v=release-20261106-smooth91';
-import {startLoginNews} from './login-news.js?v=release-20261106-smooth91';
+import {createFortressFire} from './login-fire.js?v=release-20261106-anim92';
+import {startMusic} from './music.js?v=release-20261106-anim92';
+import {createLoginAtmosphere} from './login-atmosphere.js?v=release-20261106-anim92';
+import {startLoginNews} from './login-news.js?v=release-20261106-anim92';
 const screen=document.querySelector('#auth-screen'),canvas=document.querySelector('#login-fire'),image=document.querySelector('#login-art');
 let fire=null;
 function scene(){if(!screen||screen.hidden)return;if(!fire){try{fire=createFortressFire(canvas,image)}catch(error){console.warn('Login fire unavailable:',error)}}}

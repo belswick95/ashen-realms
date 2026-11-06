@@ -1,7 +1,7 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261106-smooth91';
-import {heldItem} from './weapon-assets.js?v=release-20261106-smooth91';
-import {tierWeapons,weaponGear,BOWS,describeGear} from './gear-tiers.js?v=release-20261106-smooth91';
-import {tintHeldItem} from './tier-tint.js?v=release-20261106-smooth91';
+import {meshItemIcon} from './item-appearance.js?v=release-20261106-anim92';
+import {heldItem} from './weapon-assets.js?v=release-20261106-anim92';
+import {tierWeapons,weaponGear,BOWS,describeGear} from './gear-tiers.js?v=release-20261106-anim92';
+import {tintHeldItem} from './tier-tint.js?v=release-20261106-anim92';
 // Weapons are Quaternius CC0 models (assets/weapons, scripts/build-weapons.mjs)
 // in the held-item frame: grip at the origin, blade along +Y, edge toward +X.
 // Keys are what saves, the server catalog and equipment use; the first eight
