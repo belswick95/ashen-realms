@@ -103,3 +103,37 @@ Current state (06 Nov 2026): 25 fishing spots + 1 training pond, no caves/dungeo
 ## Notes
 - Each step: server changes in idempotent `db/*.sql`, tests, staged deploys with live checks.
 - Run in waves so usage limits pause cleanly; work is committed per agent.
+
+---
+
+# Agent roster (execution order)
+
+Rules for every agent: work in its own worktree branch; commit only (I merge, apply SQL, deploy);
+idempotent `db/*.sql` (no DELETE/ALTER/DROP words); tests must pass; Game console tools for anything
+new; original Eldervale content only (mechanics may mirror OSRS); stay inside its file ownership.
+Max 4 agents at a time so a usage limit pauses cleanly.
+
+## Round 1 — foundations (4 agents in parallel)
+| Agent | Scope | Owns |
+|---|---|---|
+| **R1-A Research** | Deep study of publicly documented OSRS systems → `docs/mechanics-spec.md` (exact numbers, tick timings, formulas, test vectors) + `docs/design-patterns.md` (quest/boss/area/progression/economy design patterns). No code. | docs only |
+| **R1-B Tick & tile engine** | 600 ms server tick; tile grid + per-tile collision flags; BFS pathing; walk 1 / run 2 tiles; all timers in ticks; client tile-synced smooth movement; **interaction distance** (stop adjacent, never inside targets) and **always face the target**; NPCs turn to face the player on talk. Staged: grid → player → NPCs → combat/skilling timing, each shippable. | world_tick, realm movement, can_step chain, click-walk.js, movement-collision.js, motion-track.js, realm-client.js |
+| **R1-C UI polish** | Remove floating building labels → real hanging signs/plaques/signposts (+ console editor); merge quest text into the single NPC dialogue box; floating yellow **!** / **?** quest markers; quest tracker panel under the minimap; opening cutscene shows immediately for new accounts. | dialogue/quest UI, tutorial.js boot path, signs module, admin sign/marker tools |
+| **R1-D Rendering & performance** | Model/material pooling and instancing for props + monsters; streaming without spikes; frame budget for iPad/phone; **Classic look mode** (low-poly simplified models, vertex-colour palette, flat shading, retro resolution, blob shadows) as a Settings switch. | renderer, graphics-quality.js, model builders, static-batch.js, settings |
+
+## Round 2 — systems (after Round 1 is merged and live)
+| Agent | Scope |
+|---|---|
+| **R2-E Combat & mechanics II** | Run energy + weight, prayer points/drain, protection prayers, special attacks, poison, aggression tolerance & retreat, eat/potion/ammo tick delays — per R1-A spec. |
+| **R2-F Quest system v2 + guidance** | Quest points, quest & skill requirements, unlocks, multi-stage journals, cutscene hooks; ground breadcrumb trail (tile pathfinder) + minimap objective/path; full quest console tools. |
+| **R2-G Underground & world** | Cave/dungeon engine (entrances → instanced underground maps, multi-level, own lighting/ambience/spawns); more rivers/lakes/coast + fishing spots for every tier + fishing hub; agility shortcuts. |
+| **R2-H Weather** | Rain, storms (thunder/lightning), fog, snow in the north, rolling clouds, wet surfaces, sounds; console force/schedule. |
+
+## Round 3 — content (after Round 2)
+| Agent | Scope |
+|---|---|
+| **R3-I Bosses, dragons & unique gear** | Phased bosses with lairs, special mechanics, kill counts; dragon lair + dragon boss + anti-dragon shield; drop-only and quest-reward gear with standout (lightweight) looks; untradeable flags. |
+| **R3-J Quest chains** | 3–4 original story arcs × 4–6 quests with prerequisites, varied objectives, cutscenes, boss finales and thematic rewards (per the quality bar above). |
+| **R3-K Exploration** | Hidden areas, lore objects, treasure-hunt clue chains, new regions to reach. |
+
+Final: full live QA pass on a fresh account + performance check on iPad/phone sizes.
