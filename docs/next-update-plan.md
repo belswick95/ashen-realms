@@ -42,7 +42,14 @@ Current state (06 Nov 2026): 25 fishing spots + 1 training pond, no caves/dungeo
 
 7. **Caves & underground**: entrances in the world → separate underground maps (instanced areas)
    with their own lighting, ambience and monsters; multi-level dungeons; slayer-style caves.
-8. **Quest chains**: 3–4 story arcs of 4–6 quests each that build on one another
+8. **Quest chains — story & reward quality bar**: every quest has a real story (memorable
+   characters with motives, a twist or choice, humour where it fits, callbacks to earlier quests,
+   a payoff that changes the world — new NPC lines, opened areas, restored places), varied
+   objectives (investigate, sneak, puzzle, escort, craft, fight, boss finale), short cutscenes at key
+   beats, and rewards that fit the story and feel worth it: XP lamps/skill XP for the skills used,
+   quest points, thematic unique gear (untradeable where right), unlocks (areas, shortcuts, shops,
+   spells, teleports), and a big capstone reward at the end of each arc. All stories original.
+   Quest chains: 3–4 story arcs of 4–6 quests each that build on one another
    (e.g. the Crown's arc from Birchford, a frontier arc in Winterwatch, a fire-cult arc around
    Emberspire, a sunken-ruins arc), with skill/quest prerequisites and meaningful unlocks.
 9. **Water & fishing**: more rivers, lakes and coastline; fishing spots for every tier;
