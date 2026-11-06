@@ -2,19 +2,30 @@
 // other): a short fanfare per skill family, rendered live with WebAudio
 // instruments — brass, timpani, harp, glockenspiel, string pad — through a small
 // generated-hall reverb. Each lasts about 4–5 s. 'death' is the somber ~5 s cue for
-// "Oh dear, you are dead!" (also original).
+// "Oh dear, you are dead!" (also original). 'motif' is the short login sting.
+// Quest, level-up and login cues all state ELDERVALE_MOTIF in their own voicing.
 export const SKILL_FAMILY={attackXP:'combat',strengthXP:'combat',defenceXP:'combat',hitpointsXP:'combat',rangedXP:'combat',magicXP:'combat',prayerXP:'combat',
  woodXP:'gathering',woodcuttingXP:'gathering',miningXP:'gathering',fishingXP:'gathering',farmingXP:'gathering',hunterXP:'gathering',thievingXP:'gathering',agilityXP:'gathering',
  cookingXP:'artisan',firemakingXP:'artisan',smithingXP:'artisan',craftingXP:'artisan',fletchingXP:'artisan',herbloreXP:'artisan',runecraftingXP:'artisan',constructionXP:'artisan'};
 export const skillFamily=key=>SKILL_FAMILY[key]||'gathering';
 const n=(t,m,d,inst,v=.8)=>({t,m,d,inst,v});
+// The Eldervale motif (original): tonic, leap up a fifth, step back to the fourth,
+// lift to the sixth, land on the octave — "short, short, long, pick-up, held".
+// Semitones above the tonic, with each note's onset offset and length as a
+// fraction of one motif "beat"; every jingle family states it in its own voice.
+export const ELDERVALE_MOTIF=Object.freeze({intervals:Object.freeze([0,7,5,9,12]),onsets:Object.freeze([0,1,2,3.4,4]),lengths:Object.freeze([.9,.9,1.3,.5,2.2])});
+export function motifNotes(tonic,start,beat,inst,v=.8,{last=null}={}){
+ return ELDERVALE_MOTIF.intervals.map((step,i)=>({...n(start+ELDERVALE_MOTIF.onsets[i]*beat,tonic+step,i===4&&last?last:ELDERVALE_MOTIF.lengths[i]*beat,inst,v),motif:true}));
+}
 // Score: time (s), MIDI note, duration (s), instrument, velocity.
 export function composeJingle(kind='gathering'){
  const notes=[];const chord=(t,ms,d,inst,v)=>{for(const m of ms)notes.push(n(t,m,d,inst,v))};
  if(kind==='combat'){ // D major, martial: rising call, triplet answer, held tonic over timpani.
-  for(const [t,m,d] of [[0,62,.22],[.24,69,.22],[.48,74,.5],[1.02,78,.16],[1.2,79,.16],[1.38,81,.62],[2.08,78,.24],[2.34,81,.24],[2.6,86,1.7]])notes.push(n(t,m,d,'brass',.85));
-  chord(2.6,[62,66,69],1.8,'brass',.45);chord(0,[50],.5,'timpani',.9);notes.push(n(.48,50,.4,'timpani',.6),n(1.38,45,.5,'timpani',.75),n(2.42,45,.12,'timpani',.5),n(2.5,45,.12,'timpani',.6),n(2.6,50,1.6,'timpani',1));
-  notes.push(n(2.6,0,1.9,'cymbal',.35));
+  // The motif as a clipped brass call, answered by a triplet climb to the high tonic.
+  notes.push(...motifNotes(62,0,.2,'brass',.85));
+  for(const [t,m,d] of [[1.3,78,.16],[1.47,79,.16],[1.64,81,.6],[2.32,78,.22],[2.56,81,.22],[2.82,86,1.6]])notes.push(n(t,m,d,'brass',.85));
+  chord(2.82,[62,66,69],1.7,'brass',.45);chord(0,[50],.5,'timpani',.9);notes.push(n(.4,50,.3,'timpani',.6),n(.8,45,.4,'timpani',.7),n(1.64,45,.5,'timpani',.75),n(2.64,45,.12,'timpani',.5),n(2.72,45,.12,'timpani',.6),n(2.82,50,1.5,'timpani',1));
+  notes.push(n(2.82,0,1.8,'cymbal',.35));
  }else if(kind==='death'){ // D minor, somber (original): a slow falling sigh over a low pad, a darker iv chord, the bare tonic.
   chord(0,[50,57,62,65],2.1,'pad',.5);notes.push(n(0,38,.9,'timpani',.55));
   for(const [t,m,d] of [[.1,69,.55],[.72,70,.28],[1.02,69,.3],[1.36,65,.42],[1.84,64,.3],[2.18,62,.9]])notes.push(n(t,m,d,'brass',.42));
@@ -23,23 +34,31 @@ export function composeJingle(kind='gathering'){
   chord(3.35,[38,50,57,62],1.45,'pad',.55);notes.push(n(3.35,50,1.4,'brass',.35),n(3.35,38,1.3,'timpani',.6),n(3.35,74,1.1,'glock',.28),n(3.7,69,.9,'harp',.35),n(4.0,62,.8,'harp',.3));
  }else if(kind==='artisan'){ // F major, warm: harp arpeggio, glock sparkle, strings swell to a sus4→3 cadence.
   [65,69,72,77,81,84].forEach((m,i)=>notes.push(n(i*.17,m,.9,'harp',.7)));
-  for(const [t,m] of [[1.1,84],[1.32,81],[1.54,82],[1.76,77]])notes.push(n(t,m,.5,'glock',.55));
+  notes.push(...motifNotes(77,1.1,.18,'glock',.55)); // the motif rung out on glockenspiel, an octave above the harp
   chord(1.0,[53,60,65,70],1.4,'pad',.45);chord(2.4,[53,60,65,69],2.0,'pad',.5);
   for(const [t,m,d] of [[2.0,79,.35],[2.4,77,.5],[2.95,81,1.4]])notes.push(n(t,m,d,'brass',.55));
   notes.push(n(2.95,89,1.2,'glock',.5),n(2.95,41,1.6,'timpani',.55));
  }else if(kind==='combatLevel'){ // B♭ major, grand: brass call and answer, timpani roll, full chord.
-  for(const [t,m,d] of [[0,58,.3],[.32,65,.3],[.64,70,.55],[1.25,74,.2],[1.47,77,.2],[1.69,82,.65],[2.45,81,.2],[2.66,79,.2],[2.87,77,.2],[3.08,82,1.6]])notes.push(n(t,m,d,'brass',.85));
-  chord(3.08,[58,62,65,70,74],1.7,'brass',.42);chord(3.08,[46,58,65],1.8,'pad',.5);
-  for(let i=0;i<10;i++)notes.push(n(2.45+i*.062,46,.1,'timpani',.35+i*.05));notes.push(n(0,46,.5,'timpani',.9),n(.64,41,.5,'timpani',.7),n(3.08,46,1.6,'timpani',1),n(3.08,0,1.8,'cymbal',.45));
-  notes.push(n(3.08,94,1.4,'glock',.4));
+  // The motif broadened in octaves (brass over low brass), then the call-and-answer climb.
+  notes.push(...motifNotes(58,0,.26,'brass',.85),...motifNotes(46,0,.26,'brass',.5).map(x=>({...x,motif:false})));
+  for(const [t,m,d] of [[1.52,74,.2],[1.73,77,.2],[1.94,82,.62],[2.7,81,.2],[2.91,79,.2],[3.12,77,.2],[3.33,82,1.5]])notes.push(n(t,m,d,'brass',.85));
+  chord(3.33,[58,62,65,70,74],1.55,'brass',.42);chord(3.33,[46,58,65],1.6,'pad',.5);
+  for(let i=0;i<10;i++)notes.push(n(2.7+i*.062,46,.1,'timpani',.35+i*.05));notes.push(n(0,46,.5,'timpani',.9),n(.52,41,.4,'timpani',.7),n(1.04,46,.4,'timpani',.75),n(3.33,46,1.5,'timpani',1),n(3.33,0,1.6,'cymbal',.45));
+  notes.push(n(3.33,94,1.3,'glock',.4));
  }else if(kind==='quest'){ // C major, triumphant (original): rising brass fanfare, harp flourish, held full chord with timpani roll.
-  for(const [t,m,d] of [[0,60,.2],[.22,64,.2],[.44,67,.35],[.84,72,.55],[1.48,71,.18],[1.68,72,.18],[1.88,74,.18],[2.08,76,.5],[2.66,74,.2],[2.88,76,.2],[3.08,79,1.7]])notes.push(n(t,m,d,'brass',.8));
+  // Opens with the full Eldervale motif, then climbs on to the held fifth.
+  notes.push(...motifNotes(60,0,.22,'brass',.8,{last:.55}));
+  for(const [t,m,d] of [[1.48,71,.18],[1.68,72,.18],[1.88,74,.18],[2.08,76,.5],[2.66,74,.2],[2.88,76,.2],[3.08,79,1.7]])notes.push(n(t,m,d,'brass',.8));
   [72,76,79,84,88].forEach((m,i)=>notes.push(n(1.0+i*.08,m,.7,'harp',.5)));
   chord(3.08,[60,64,67,72,76],1.8,'brass',.4);chord(3.08,[48,55,64],1.9,'pad',.5);
-  notes.push(n(0,48,.5,'timpani',.85),n(.84,43,.5,'timpani',.7));for(let i=0;i<9;i++)notes.push(n(2.5+i*.065,48,.1,'timpani',.3+i*.05));
+  notes.push(n(0,48,.5,'timpani',.85),n(.88,43,.5,'timpani',.7));for(let i=0;i<9;i++)notes.push(n(2.5+i*.065,48,.1,'timpani',.3+i*.05));
   notes.push(n(3.08,48,1.6,'timpani',1),n(3.08,0,1.8,'cymbal',.4),n(3.08,91,1.3,'glock',.45),n(3.4,96,1,'glock',.3));
+ }else if(kind==='motif'){ // Login sting (~2.5 s): the motif alone in D, brass in octaves over drums and a held chord.
+  notes.push(...motifNotes(62,0,.26,'brass',.85,{last:1.25}),...motifNotes(50,0,.26,'brass',.45,{last:1.25}).map(x=>({...x,motif:false})));
+  notes.push(n(0,38,.4,'timpani',.9),n(.52,38,.25,'timpani',.6),n(.88,45,.12,'timpani',.55),n(1.04,38,1.2,'timpani',1),n(1.04,0,1.3,'cymbal',.35));
+  chord(1.04,[50,57,62,66],1.3,'pad',.5);notes.push(n(1.04,86,.9,'glock',.35));
  }else{ // gathering — G major, open air: pentatonic harp and glock, horn-like brass answer.
-  [67,71,74,79,83].forEach((m,i)=>notes.push(n(i*.15,m,.8,'harp',.65)));
+  notes.push(...motifNotes(67,0,.16,'harp',.65,{last:.8})); // the motif plucked lightly on harp
   for(const [t,m] of [[.85,86],[1.05,83],[1.25,86],[1.45,88]])notes.push(n(t,m,.45,'glock',.5));
   for(const [t,m,d] of [[1.7,74,.3],[2.02,76,.3],[2.34,79,.4],[2.8,83,1.5]])notes.push(n(t,m,d,'brass',.6));
   chord(2.8,[55,62,67,71],1.7,'pad',.45);notes.push(n(2.8,43,1.5,'timpani',.6),n(2.8,91,1.1,'glock',.45));

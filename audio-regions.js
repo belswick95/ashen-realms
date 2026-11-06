@@ -1,6 +1,6 @@
-import {townExtent} from './capital-layout.js?v=release-20261105-qa84';
-import {generatedWorld} from './procedural-world.js?v=release-20261105-qa84';
-import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261105-qa84';
+import {townExtent} from './capital-layout.js?v=release-20261106-login85';
+import {generatedWorld} from './procedural-world.js?v=release-20261106-login85';
+import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261106-login85';
 export const townMusic=[
  {id:'oakcross',name:'Oakcross',x:0,z:0,radius:50,title:'Lord of the Land'},
  {id:'northwatch',name:'Northwatch',x:-60,z:45,radius:22,title:'Night Vigil'},
@@ -16,7 +16,7 @@ export const townMusic=[
  {id:'stonebridge',name:'Stonebridge',x:164,z:-116,radius:24,title:'The Britons'},
  {id:'castle',name:'Eldervale Castle',x:-340,z:-305,radius:76,title:'Crown of the Heartlands',artist:'Eldervale'}
 ];
-export const loginMusic={id:'login',name:'The gates of Eldervale',title:'Stoneworld Battle'};
+export const loginMusic={id:'login',name:'The gates of Eldervale',title:'Clash Defiant'};
 export function musicRegion(position,current=null){
  if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.z))return null;
  const towns=generatedWorld?[...generatedWorld.towns.map((t,i)=>({...t,...townExtent(t,48),id:['oakcross','northwatch','suncrest'][i],title:['Lord of the Land','Night Vigil','Angevin'][i]})),townMusic.find(t=>t.id==='castle')]:townMusic;
