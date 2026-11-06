@@ -1,21 +1,21 @@
-import {questEditor} from './quests.js?v=release-20261106-map112';
-import {worldPresets,presetEntity} from './world-presets.js?v=release-20261106-map112';
-import {customItemModels,meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261106-map112';
-import {recipes} from './professions.js?v=release-20261106-map112';
-import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261106-map112';
-import {itemIcons} from './item-icons.js?v=release-20261106-map112';
-import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261106-map112';
-import {goods} from './economy.js?v=release-20261106-map112';
-import {createConsoleTabs,consoleIcons} from './admin-console.js?v=release-20261106-map112';
-import {createFullControlTabs,playerInspector} from './admin-full.js?v=release-20261106-map112';
-import {createSignTabs} from './admin-signs.js?v=release-20261106-map112';
-import {createWorldTabs} from './admin-world.js?v=release-20261106-map112';
-import {parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261106-map112';
-import {createWeatherTab} from './admin-weather.js?v=release-20261106-map112';
-import {createExploreTab} from './admin-explore.js?v=release-20261106-map112';
+import {questEditor} from './quests.js?v=release-20261106-fix113';
+import {worldPresets,presetEntity} from './world-presets.js?v=release-20261106-fix113';
+import {customItemModels,meshItemIcon,modelForLegacyIcon} from './item-appearance.js?v=release-20261106-fix113';
+import {recipes} from './professions.js?v=release-20261106-fix113';
+import {professionSkills,professionStations,oreResources} from './profession-data.js?v=release-20261106-fix113';
+import {itemIcons} from './item-icons.js?v=release-20261106-fix113';
+import {worldTemplates,entityDefaults,attackTypes,validateEntity} from './world-templates.js?v=release-20261106-fix113';
+import {goods} from './economy.js?v=release-20261106-fix113';
+import {createConsoleTabs,consoleIcons} from './admin-console.js?v=release-20261106-fix113';
+import {createFullControlTabs,playerInspector} from './admin-full.js?v=release-20261106-fix113';
+import {createSignTabs} from './admin-signs.js?v=release-20261106-fix113';
+import {createWorldTabs} from './admin-world.js?v=release-20261106-fix113';
+import {parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261106-fix113';
+import {createWeatherTab} from './admin-weather.js?v=release-20261106-fix113';
+import {createExploreTab} from './admin-explore.js?v=release-20261106-fix113';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==null)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
 export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge,storage=null,auth=null}){
- const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261106-map112';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='./admin.css?v=release-20261106-fix113';document.head.append(css);
  const button=el('button','♛ Game console',{id:'owner-studio-toggle',type:'button'}),panel=el('dialog',null,{id:'owner-studio'});document.body.append(button,panel);
  panel.innerHTML='<header><div><small>ELDERVALE · OWNER ACCESS</small><h2>Game console</h2><a href="/owner-guide.html" target="_blank" rel="noopener">Owner guide</a></div><button type="button" data-close aria-label="Close studio">×</button></header><nav aria-label="Owner tools"></nav><div class="studio-workspace"></div><footer role="status">Changes are saved to the server and audited.</footer>';
  const owner=snapshot.owner;let tab=owner?'Dashboard':'Players',rows=new Map(),selected=null,placing=false,selecting=false,busy=false,overview=null,current=snapshot,formData=null;
@@ -25,7 +25,7 @@ export function createAdminPanel({userId,rpc,action,refresh,snapshot,bridge,stor
  const run=(fn)=>void Promise.resolve().then(fn).catch(e=>note(e.message,true));
  const btn=(label,fn,parent=workspace)=>{const b=el('button',label,{type:'button'});b.onclick=()=>run(fn);parent.append(b);return b};
  const field=(parent,label,key,value,type='text',options=null)=>{const wrap=el('label',label);let input;if(options){input=el('select',null,{name:key});for(const [v,t] of options)input.append(el('option',t,{value:v}));input.value=value}else{input=el(type==='textarea'?'textarea':'input',null,{name:key});if(type!=='textarea')input.type=type;if(type==='checkbox')input.checked=!!value;else input.value=value??''}wrap.append(input);parent.append(wrap);return input};
- function draw(){workspace.replaceChildren();panel.dataset.tab=tab;for(const n of panel.querySelectorAll('nav button'))n.setAttribute('aria-selected',String(n.textContent===tab));if(owner&&consoleTabs[tab])consoleTabs[tab]();else if(tab==='Editor')world();else if(tab==='Reports')void players();else if(tab==='Actors')void actors();else if(tab==='Items')items();else if(tab==='Recipes')recipeEditor();else if(tab==='Quests'){const root=el('section');workspace.append(root);void questEditor(root,{rpc,action:invoke,note});}else if(tab==='News'){const root=el('section');workspace.append(root);void import('./admin-news.js?v=release-20261106-map112').then(m=>m.newsEditor(root,{rpc,note,storage})).catch(e=>note(e.message,true))}else if(tab==='Server')server();else if(tab==='Players')void players();else if(tab==='Audit')void audit();else consoleView()}
+ function draw(){workspace.replaceChildren();panel.dataset.tab=tab;for(const n of panel.querySelectorAll('nav button'))n.setAttribute('aria-selected',String(n.textContent===tab));if(owner&&consoleTabs[tab])consoleTabs[tab]();else if(tab==='Editor')world();else if(tab==='Reports')void players();else if(tab==='Actors')void actors();else if(tab==='Items')items();else if(tab==='Recipes')recipeEditor();else if(tab==='Quests'){const root=el('section');workspace.append(root);void questEditor(root,{rpc,action:invoke,note});}else if(tab==='News'){const root=el('section');workspace.append(root);void import('./admin-news.js?v=release-20261106-fix113').then(m=>m.newsEditor(root,{rpc,note,storage})).catch(e=>note(e.message,true))}else if(tab==='Server')server();else if(tab==='Players')void players();else if(tab==='Audit')void audit();else consoleView()}
  const navGroups=owner?[['Live',['Dashboard','Players','Reports']],['Build',['Spawn','Placed','Editor','Signs']],['World',['Underground','Shortcuts','Fishing','Waters','Exploration']],['Population',['NPCs','Monsters','Actors']],['Game',['Catalog','Items','Recipes','Economy','Weather','Quests','News']],['Server',['World','Backup','Audit','Terminal']]]:[['Moderation',['Players','Terminal']]];
  // Tab finder: typing filters the tab list; Enter opens the first match.
  if(owner){const nav=panel.querySelector('nav'),find=el('input',null,{type:'search',class:'console-nav-search',placeholder:'Find a tool…','aria-label':'Find a console tab'});nav.append(find);find.oninput=()=>{const q=find.value.trim().toLowerCase();for(const b of nav.querySelectorAll('button'))b.hidden=!!q&&!b.textContent.toLowerCase().includes(q);for(const g of nav.querySelectorAll('.console-nav-group'))g.hidden=!!q};find.onkeydown=e=>{if(e.key==='Enter'){const b=[...nav.querySelectorAll('button')].find(b=>!b.hidden);if(b)b.click()}}}

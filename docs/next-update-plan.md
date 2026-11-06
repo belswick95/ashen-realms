@@ -181,3 +181,9 @@ and landscape; verify at iPhone SE / iPhone 15 / iPad sizes with Playwright scre
   boss kill-count panel, capital stall collision).
 - Then: final live QA on fresh account at iPad/phone sizes; evaluate tile mode (owner switch) and report.
 - Email: owner handles (not us).
+
+## Tile mode (06 Nov 20:10 UTC)
+- LIVE: tile_mode=true, grid built (48,770 tiles). tick_driver set to 'loop' caused HTTP 500 timeouts
+  (advisory lock 736211 contention: requests hold it per transaction, loop try-locks and skips, then
+  request_tick falls back to inline world_tick). Reverted to tick_driver='inline' at ~20:35 UTC.
+- Follow-up (not started): make the loop wait for the lock or have requests release it before snapshot.
