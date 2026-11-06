@@ -114,6 +114,7 @@ import {createUnderground,installUndergroundTerrain} from './underground.js?v=re
 import {createExplore} from './explore.js?v=release-20261106-hud115';
 import {createBossFx} from './boss-fx.js?v=release-20261106-hud115';
 import {fishingOptions} from './fish-tiers.js?v=release-20261106-hud115';
+import {plantFeet} from './foot-ground.js?v=release-20261106-hud115';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 // RuneScape-style death: input lock and death pose, jingle, kept-items note, death pile on the maps (death.js).
 const deathFlow=createDeathFlow({say:text=>say(text),jingle:kind=>playLevelUpJingle(kind),now:()=>window.eldervaleServerTime?.()||Date.now(),goods});
@@ -1491,7 +1492,7 @@ const clock=new T.Clock();let lastAutosave=performance.now();
 // Distance the avatar really moved since the previous frame, including the server-pose
 // reconciliation that click-to-walk relies on (it runs before frameStart is captured).
 // Jumps over 3 units are teleports/corrections, not steps.
-let lastGaitPosition=null;function gaitTravel(position){const last=lastGaitPosition;lastGaitPosition=position.clone();if(!last)return 0;const moved=Math.hypot(position.x-last.x,position.z-last.z);return moved>3?0:moved}
+const lastGaitPosition=new T.Vector3();let gaitStarted=false;function gaitTravel(position){if(!gaitStarted){gaitStarted=true;lastGaitPosition.copy(position);return 0}const lx=lastGaitPosition.x,lz=lastGaitPosition.z;lastGaitPosition.copy(position);const moved=Math.hypot(position.x-lx,position.z-lz);return moved>3?0:moved}
 // Small scenery, props and characters past the fog start are skipped by the
 // main and shadow passes (see graphics-quality.js); large terrain, water, sky
 // and instanced forests are never touched.
@@ -1764,9 +1765,11 @@ townAnimations.push(()=>{if(performance.now()<nextLampUpdate)return;nextLampUpda
 
 if(!generatedWorld){const fishingMarker=new T.Group();fishingMarker.position.set(-70,landscape.walkHeight(-70,80),80);scene.add(fishingMarker);objectModel(T,fishingMarker,'fishing_spot');const fishingHit=new T.Mesh(new T.CylinderGeometry(.8,.8,1.6,10),new T.MeshBasicMaterial({visible:false}));fishingHit.position.y=.8;fishingMarker.add(fishingHit);fishingHit.userData={kind:'fishing',x:-70,z:80,realmId:'base:fishing:moonmere'};targets.push(fishingHit);realmObjectTargets.set('base:fishing:moonmere',fishingHit);}
 
+const footBox=new T.Box3(),groundHeightAt=(x,z)=>landscape.walkHeight(x,z);
 function groundFeet(rig,visual,contacts=null){visual.updateWorldMatrix(true,true);let lift=0;
- if(rig.clipDriven){const p=new T.Vector3();for(const side of ['left','right']){if(contacts&&!contacts[side])continue;rig[side+'Ankle'].getWorldPosition(p);lift=Math.max(lift,landscape.walkHeight(p.x,p.z)+rig.footHeight-p.y)}visual.position.y+=Math.min(.3,Math.max(0,lift));return}
-const ankles=contacts&&(contacts.left||contacts.right)?[contacts.left?rig.leftAnkle:null,contacts.right?rig.rightAnkle:null]:[rig.leftAnkle,rig.rightAnkle];const feet=[];for(const ankle of ankles)ankle?.traverse(m=>{if(m.isMesh)feet.push(m)});for(const side of ['left','right'])if((!contacts||contacts[side])&&rig.meshes?.[side+'Foot'])feet.push(rig.meshes[side+'Foot']);for(const m of feet){if(!m.visible||m.material?.visible===false)continue;if(m.isSkinnedMesh)m.computeBoundingBox();else if(!m.geometry.boundingBox)m.geometry.computeBoundingBox();const box=(m.isSkinnedMesh?m.boundingBox:m.geometry.boundingBox).clone().applyMatrix4(m.matrixWorld);const x=(box.min.x+box.max.x)/2,z=(box.min.z+box.max.z)/2;lift=Math.max(lift,landscape.walkHeight(x,z)+.012-box.min.y)}visual.position.y+=Math.min(.3,Math.max(0,lift));}
+ // Clip-driven humanoids: pelvis to the lower foot, per-foot leg IK lifts a foot that would sink (foot-ground.js).
+ if(rig.clipDriven){plantFeet(T,rig,visual,groundHeightAt,contacts);return}
+const ankles=contacts&&(contacts.left||contacts.right)?[contacts.left?rig.leftAnkle:null,contacts.right?rig.rightAnkle:null]:[rig.leftAnkle,rig.rightAnkle];const feet=[];for(const ankle of ankles)ankle?.traverse(m=>{if(m.isMesh)feet.push(m)});for(const side of ['left','right'])if((!contacts||contacts[side])&&rig.meshes?.[side+'Foot'])feet.push(rig.meshes[side+'Foot']);for(const m of feet){if(!m.visible||m.material?.visible===false)continue;if(m.isSkinnedMesh)m.computeBoundingBox();else if(!m.geometry.boundingBox)m.geometry.computeBoundingBox();const box=footBox.copy(m.isSkinnedMesh?m.boundingBox:m.geometry.boundingBox).applyMatrix4(m.matrixWorld);const x=(box.min.x+box.max.x)/2,z=(box.min.z+box.max.z)/2;lift=Math.max(lift,landscape.walkHeight(x,z)+.012-box.min.y)}visual.position.y+=Math.min(.3,Math.max(0,lift));}
 
 window.eldervaleGetWaterSoundProximity=()=>Math.max(0,...scene.children.filter(o=>o.userData.waterSource).map(o=>Math.max(0,1-Math.hypot(player.position.x-o.position.x,player.position.z-o.position.z)/9)));
 
