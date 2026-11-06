@@ -109,3 +109,11 @@ test('a walker standing in a pen gateway (nearest grid point inside the fence) s
  assert.ok(path.length>0,'found a route');assert.ok(Math.hypot(path.at(-1).x-goal.x,path.at(-1).z-goal.z)<1e-6);
  let prev=start;for(const p of path){assert.ok(canTravel(prev,p),'segment clear');prev=p}
 });
+
+test('closed service dialog is never forced visible by phone layout CSS',()=>{
+ const css=require('fs').readFileSync(require('path').join(__dirname,'..','phone-fit.css'),'utf8');
+ for(const rule of css.match(/#service-panel[^{]*\{[^}]*\}/g)||[]){
+  const [sel,body]=rule.split('{');
+  if(/display:\s*(flex|block|grid)/.test(body))assert.match(sel,/\[open\]/,'display set without [open]: '+sel.trim());
+ }
+});
