@@ -65,6 +65,15 @@ export function createWorkKit(T,rig,profile={}){
  return g;
 }
 
+// Facing to present for a server-driven worker this frame. The realm pose
+// (interpolateRealm) rewrites root.rotation.y every frame, but the work layer
+// only runs on the character's LOD frames (every 2nd-3rd frame past ~20 m on a
+// tablet): applying the station facing only then turned the whole body (and
+// its broom/book, which live in root space) back and forth between the server
+// yaw and the station every few frames. The caller keeps the station facing on
+// every frame while the worker stands; a moving walker follows the server yaw.
+export function workFacing(rig,yaw,moved=false){const face=rig?.work?.yaw;return !moved&&Number.isFinite(face)?face:yaw}
+
 // Pose helpers (all in the character's own frame: +Z forward, +X its left).
 function poser(T){
  const v=new T.Vector3(),a=new T.Vector3(),c=new T.Vector3(),to=new T.Vector3(),q=new T.Quaternion(),wq=new T.Quaternion(),pq=new T.Quaternion(),id=new T.Quaternion(),rot=new T.Quaternion(),axis=new T.Vector3(),inv=new T.Matrix4();
