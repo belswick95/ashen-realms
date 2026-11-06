@@ -69,6 +69,14 @@ Current state (06 Nov 2026): 25 fishing spots + 1 training pond, no caves/dungeo
   - player can switch the trail on/off in Settings; owner can configure in the Game console.
 - Quest tracker panel (active quest, current step) pinned under the minimap, collapsible.
 
+## Interaction polish (Wave 1, small)
+- NPCs turn to face the player when talked to (and turn back to their activity after).
+- Player stops at a proper interaction distance (one tile / sensible gap per target size) instead of
+  walking into NPCs, trees, rocks, stations; always faces the thing being used (talk, chop, mine,
+  fish, cook, smith, bank, trade, attack).
+- Dialogue UI: quest offer/progress text and normal NPC dialogue must not stack on top of each other —
+  one dialogue box with a clear flow (NPC line → options incl. quest), consistent with the HUD.
+
 ## Cross-cutting requirements (every wave)
 - **Deep OSRS research**: study publicly documented OSRS systems end to end (mechanics, pacing,
   progression, skill/combat/quest design patterns, economy, boss design, area design) and write
