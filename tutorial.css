@@ -23,5 +23,21 @@
 .tutorial-caption span{display:block;margin-top:8px;font:italic clamp(15px,2.6vw,20px) Georgia,serif}
 .tutorial-skip{position:absolute;right:16px;bottom:calc(11vh + 12px);padding:8px 14px;min-height:40px;border:1px solid #f6e7bf88;border-radius:4px;background:#000a;color:#f6e7bf;font:600 14px system-ui,sans-serif;cursor:pointer}
 .tutorial-fade{position:fixed;inset:0;z-index:1150;background:#000;opacity:0;pointer-events:none}
-body.tutorial-cutscene>:not(canvas):not(.tutorial-letterbox):not(.tutorial-fade):not(.tutorial-dialogue){opacity:0!important;pointer-events:none!important;transition:opacity .4s}
+body.tutorial-cutscene>:not(canvas):not(.tutorial-letterbox):not(.tutorial-fade):not(.tutorial-dialogue):not(.tutorial-prologue){opacity:0!important;pointer-events:none!important;transition:opacity .4s}
 @media (max-width:600px){.tutorial-hud{top:calc(64px + env(safe-area-inset-top));font-size:13px}.tutorial-dialogue{font-size:15px;bottom:calc(10px + env(safe-area-inset-bottom))}}
+
+/* Arrival prologue (tutorial-prologue.js): shown from character creation until the 3D scene takes over. */
+.tutorial-prologue{position:fixed;inset:0;z-index:10500;background:#000;color:#f6e7bf;opacity:0;transition:opacity .7s ease;overflow:hidden;font-family:Georgia,'Times New Roman',serif}
+.tutorial-prologue.show{opacity:1}.tutorial-prologue.leaving{opacity:0;transition:opacity .85s ease;pointer-events:none}
+/* Static art and short opacity fades only: nothing animates continuously while the world loads behind it. */
+.tutorial-prologue-art{position:absolute;inset:11vh 0;opacity:0;transition:opacity 4s ease}
+.tutorial-prologue.show .tutorial-prologue-art{opacity:.62}
+.tutorial-prologue-skyline{position:absolute;inset:0;width:100%;height:100%}
+.tutorial-prologue .bar{position:absolute;left:0;right:0;height:11vh;background:#000;z-index:2}
+.tutorial-prologue .bar.top{top:0}.tutorial-prologue .bar.bottom{bottom:0}
+.tutorial-prologue .tutorial-caption{z-index:3}
+.tutorial-prologue-line,.tutorial-prologue-hold{position:absolute;left:50%;bottom:calc(11vh + 26px);transform:translateX(-50%);z-index:3;width:min(720px,calc(100vw - 48px));margin:0;text-align:center;font:italic clamp(16px,2.6vw,22px)/1.45 Georgia,serif;text-shadow:0 2px 8px #000;opacity:0;transition:opacity .8s ease}
+.tutorial-prologue-line.show{opacity:1}
+.tutorial-prologue-hold{font-size:clamp(14px,2vw,17px);color:#e9d39c}.tutorial-prologue-hold.show{opacity:.85}
+.tutorial-prologue .tutorial-skip{z-index:4}.tutorial-prologue.skipped .tutorial-skip{visibility:hidden}
+@media (prefers-reduced-motion:reduce){.tutorial-prologue,.tutorial-prologue-art,.tutorial-prologue-line,.tutorial-prologue-hold{transition:none}}
