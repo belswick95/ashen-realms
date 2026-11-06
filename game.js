@@ -1074,6 +1074,7 @@ const worldMap=createWorldMap({canvas:largeMap,source:{extent:840,phone:matchMed
  buildings:()=>houseInteriors.map(h=>({x:h.group.position.x,z:h.group.position.z,halfW:2*h.group.scale.x,halfD:1.85*h.group.scale.z,rot:h.group.rotation.y,roof:'#'+Number(h.roofColor||0x8a4b33).toString(16).padStart(6,'0'),type:h.type,name:h.name})),
  places:()=>places.map(([name,x,z])=>({name,x,z,kind:name.includes('Castle')?'castle':'town',...(isCapitalTown({x,z})&&name===capital.name?{capital:true,title:capital.title}:{})})),walls:()=>capitalActive()?[capitalMapWalls()]:[],
  pois:()=>[...houseInteriors.map(h=>({kind:poiKind(h.type),x:h.group.position.x,z:h.group.position.z,name:h.name})),...worldMapRows().map(r=>({kind:r.data.kind==='npc'&&(r.data.quest||r.data.questId)?'quest':poiKind(r.data.template),x:r.data.x,z:r.data.z,name:r.data.name}))],
+ quests:()=>questUiRef?.markers.givers?.()||[],objective:()=>{const t=questUiRef?.trail?.target;return t?{x:t.x,z:t.z,label:questUiRef.tracker?.step?.label||''}:null},
  player:()=>({x:player.position.x,z:player.position.z,heading:player.rotation.y}),flag:()=>walkFlagState||mapDestination,deathPile:()=>deathFlow.pile(),
  signature:()=>forestTrees.length+':'+townStreets.length+':'+worldMapRows().filter(r=>r.data.template==='plaza').length}});
 function setMapOpen(next){mapOpen=next;mapPanel.hidden=!mapOpen;if(mapOpen)worldMap.open();else worldMap.close()}

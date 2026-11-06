@@ -46,6 +46,8 @@ export function createQuestMarkers(T,scene,{actorFor=()=>null,max=48}={}){
     glyph.array[n]=kind==='?'?1:0;phase.array[n]=(id.length*1.7+n)%6.28;scale.array[n]=markerScale(d);shown.push({id,kind,x:root.position.x,z:root.position.z});n++}
    mesh.count=n;mesh.instanceMatrix.needsUpdate=true;glyph.needsUpdate=phase.needsUpdate=scale.needsUpdate=true;
   },
+  // World map: every marked giver with a body in the world, as {id,kind,x,z}.
+  givers(){const out=[];for(const [id,kind]of markers){const a=actorFor(id),root=a?.root;if(!root||a.deleted)continue;out.push({id,kind,x:root.position.x,z:root.position.z,name:a.profile?.name||a.name})}return out},
   // Minimap: project(x,z) -> {x,y} canvas pixels or null when off the map.
   drawMinimap(ctx,project){
    ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 13px Georgia,serif';ctx.lineJoin='round';

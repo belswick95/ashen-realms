@@ -2,9 +2,13 @@
 // real world data — terrain heights and biomes, water, forests, roads, the
 // castle and every building footprint — rendered once into a cached canvas,
 // with serif place labels, region names and point-of-interest icons drawn on
-// top at a constant screen size. Drag or pinch to pan, wheel / buttons to zoom;
-// a click or tap only selects (names what is there). It never walks the
-// player: only the minimap and the 3D world start walking.
+// top at a constant screen size. It opens fitted: the whole world inside the
+// visible screen (safe areas respected, portrait or landscape). Drag to pan
+// (with momentum), pinch / wheel / double-tap / + − to zoom between that fit
+// and a close-up, "Fit" to go back. A click or tap only selects (names what is
+// there). It never walks the player: only the minimap and the 3D world do.
+// Redraws happen only when the view or something on the map changes, and each
+// one is a single crop of the cached terrain painting plus the overlays.
 //
 // The pure helpers (view maths, colours, POI kinds) are exported for tests.
 
@@ -25,9 +29,17 @@ export function poiKind(key){return KIND_OF[String(key||'').toLowerCase()]||null
 export function mergePois(list,radius=10){const out=[];for(const p of list){if(!p||!POI_KINDS[p.kind]||!Number.isFinite(p.x)||!Number.isFinite(p.z))continue;const near=out.find(o=>o.kind===p.kind&&Math.hypot(o.x-p.x,o.z-p.z)<radius);if(near){if(!near.name&&p.name)near.name=p.name;continue}out.push({...p})}return out}
 
 // View: centre (x,z) in world units and scale in screen pixels per world unit.
-export function fitScale(w,h,extent){return Math.min(w,h)/extent*.96}
+// Fit: the whole (square) world inside a w×h frame with a small margin. This
+// is also the furthest the map zooms out.
+export function fitScale(w,h,extent,margin=.96){return Math.max(1e-6,Math.min(w,h))/extent*margin}
+export function fitView(w,h,extent){return {x:0,z:0,scale:fitScale(w,h,extent)}}
+// Zoom limits: out to fit-whole-world, in to `maxScale` px per world unit (at
+// least 4× the fit, so a large screen can still zoom in).
+export function zoomRange(w,h,extent,maxScale=8){const min=fitScale(w,h,extent);return {min,max:Math.max(maxScale,min*4)}}
+// True while the view is (within rounding) zoomed all the way out.
+export function isFitView(view,w,h,extent){return view.scale<=fitScale(w,h,extent)*1.002}
 export function clampView(view,w,h,extent,maxScale=8){
- const min=fitScale(w,h,extent),scale=Math.max(min,Math.min(maxScale,view.scale)),half=extent/2;
+ const {min,max}=zoomRange(w,h,extent,maxScale),scale=Math.max(min,Math.min(max,Number.isFinite(view.scale)?view.scale:min)),half=extent/2;
  // Keep the world on screen: the centre may move until an edge reaches the frame.
  const sx=Math.max(0,half-w/2/scale),sz=Math.max(0,half-h/2/scale);
  return {x:Math.max(-sx,Math.min(sx,view.x))||0,z:Math.max(-sz,Math.min(sz,view.z))||0,scale};
@@ -38,6 +50,40 @@ export function screenToWorld(view,sx,sy,w,h){return {x:view.x+(sx-w/2)/view.sca
 export function zoomAround(view,factor,sx,sy,w,h,extent,maxScale){
  const at=screenToWorld(view,sx,sy,w,h),scale=view.scale*factor;
  return clampView({scale,x:at.x-(sx-w/2)/scale,z:at.z-(sy-h/2)/scale},w,h,extent,maxScale);
+}
+// Pinch: the view that keeps the world point under the start midpoint under
+// the current midpoint, scaled by the change in finger distance.
+export function pinchView(start,startMid,startDist,mid,dist,w,h,extent,maxScale){
+ const at=screenToWorld(start,startMid.x,startMid.y,w,h),scale=start.scale*(dist||1)/(startDist||1);
+ return clampView({scale,x:at.x-(mid.x-w/2)/scale,z:at.z-(mid.y-h/2)/scale},w,h,extent,maxScale);
+}
+// Pan by a screen-pixel delta (drag moves the map with the finger).
+export function panView(view,dx,dy,w,h,extent,maxScale){return clampView({...view,x:view.x-dx/view.scale,z:view.z-dy/view.scale},w,h,extent,maxScale)}
+// Two taps close in time and place make a double tap.
+export function isDoubleTap(prev,tap,{ms=320,slop=30}={}){return !!prev&&tap.t-prev.t<=ms&&tap.t>=prev.t&&Math.hypot(tap.x-prev.x,tap.y-prev.y)<=slop}
+// Release velocity (px/ms) from recent pointer samples [{t,x,y}], newest last,
+// over the last `window` ms; zero when the finger rested before lifting.
+export function releaseVelocity(samples,window=90){
+ if(!samples||samples.length<2)return {vx:0,vy:0};const last=samples[samples.length-1];let first=last;
+ for(let i=samples.length-2;i>=0&&last.t-samples[i].t<=window;i--)first=samples[i];
+ const dt=last.t-first.t;return dt>0?{vx:(last.x-first.x)/dt,vy:(last.y-first.y)/dt}:{vx:0,vy:0};
+}
+// Momentum: velocity decays exponentially (time constant `tau` ms); returns the
+// step to move this frame and the remaining velocity, or null once it has stopped.
+export function inertiaStep(v,dt,{tau=320,stop=.02}={}){
+ const k=Math.exp(-dt/tau),vx=v.vx*k,vy=v.vy*k;if(Math.hypot(vx,vy)<stop)return null;
+ // Distance travelled during dt under exponential decay.
+ const d=tau*(1-k);return {dx:v.vx*d,dy:v.vy*d,vx,vy};
+}
+// Labels and icons shrink a little on small screens (never below 72%).
+export function uiScale(w,h){return Math.max(.72,Math.min(1,Math.min(w,h)/560))}
+// Label boxes {x,y,w,h} (centre, size): does `box` collide with any placed one?
+export function boxHits(placed,box,pad=2){return placed.some(q=>Math.abs(q.x-box.x)*2<q.w+box.w+pad*2&&Math.abs(q.y-box.y)*2<q.h+box.h+pad*2)}
+// Where an off-screen point meets the frame (inset by `m`), for an edge arrow.
+export function edgePoint(x,y,w,h,m=18){
+ if(x>=m&&y>=m&&x<=w-m&&y<=h-m)return null;const cx=w/2,cy=h/2,dx=x-cx,dy=y-cy;
+ const t=Math.min(dx?((dx>0?w-m:m)-cx)/dx:Infinity,dy?((dy>0?h-m:m)-cy)/dy:Infinity);
+ return {x:cx+dx*t,y:cy+dy*t,angle:Math.atan2(dy,dx)};
 }
 // Nearest feature to a world point within `radius` world units, or null.
 export function pickFeature(list,x,z,radius){let best=null,bd=radius;for(const f of list){const d=Math.hypot(f.x-x,f.z-z);if(d<=bd){bd=d;best=f}}return best}
@@ -107,6 +153,11 @@ export function drawCrownIcon(ctx,x,y,size=16){
  for(const [cx,cy,c]of [[0,-7,'#d8344a'],[-9,-4,'#3b7bd4'],[9,-4,'#3b7bd4']]){ctx.fillStyle=c;ctx.beginPath();ctx.arc(cx,cy,1.6,0,Math.PI*2);ctx.fill();ctx.stroke()}
  ctx.restore();
 }
+// Quest giver: the yellow "!" (quest to start) or "?" (hand-in) the world shows over their heads.
+export function drawQuestGlyph(ctx,kind,x,y,scale=1){
+ ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 17px Georgia,serif';ctx.lineJoin='round';
+ ctx.lineWidth=4.5;ctx.strokeStyle='#1d1404';ctx.strokeText(kind==='?'?'?':'!',0,0);ctx.fillStyle='#ffd23a';ctx.fillText(kind==='?'?'?':'!',0,0);ctx.restore();
+}
 // City walls: a thick stone band along each wall polygon, with gaps for the gates.
 export function drawCityWalls(ctx,walls,project,{width=4,gates=[],gateWidth=8}={}){
  for(const wall of walls||[]){const pts=wall.points||wall;ctx.save();ctx.lineCap='square';ctx.lineJoin='miter';
@@ -127,23 +178,41 @@ function outlinedText(ctx,text,x,y,{font,fill,stroke='#140f08',width=4,shadow=tr
  if('letterSpacing' in ctx)ctx.letterSpacing='0px';
 }
 
-const STYLE=`#map-panel{padding:8px;z-index:9000!important}#map-panel .map-card{width:min(1180px,calc(100vw - 16px));height:min(880px,calc(100dvh - 16px));display:flex;flex-direction:column;padding:10px 12px 8px;box-sizing:border-box}
-#map-panel .map-head h2{font-size:clamp(16px,2.4vw,24px)}
-.wm-stage{position:relative;flex:1;min-height:0;margin:8px 0 6px;border:2px solid #8e7c53;border-radius:6px;overflow:hidden;background:#0c1820;touch-action:none}
-#map-panel #worldmap{display:block;width:100%!important;height:100%!important;max-height:none!important;margin:0!important;border:0!important;cursor:grab;outline:none}
+// The panel fills the visible screen inside the safe areas (notch, home bar,
+// rounded corners) in portrait and landscape; the stage takes all the height
+// the header leaves. --safe-* default to the env() insets (tests override them).
+// Above every HUD layer, and above the rotate-your-phone gate when a phone is
+// turned upright with the map open.
+const STYLE=`#map-panel{--safe-top:env(safe-area-inset-top,0px);--safe-right:env(safe-area-inset-right,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px);--map-gap:8px;
+position:fixed!important;inset:0!important;z-index:9500!important;display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;margin:0;
+height:var(--visible-height,100dvh);padding:calc(var(--map-gap) + var(--safe-top)) calc(var(--map-gap) + var(--safe-right)) calc(var(--map-gap) + var(--safe-bottom)) calc(var(--map-gap) + var(--safe-left))!important;overscroll-behavior:none;touch-action:none}
+#map-panel[hidden]{display:none!important}
+body.landscape-required #map-panel:not([hidden]){z-index:30001!important;visibility:visible!important}
+#map-panel .map-card{width:100%!important;max-width:1180px;height:100%!important;max-height:880px;min-width:0;min-height:0;margin:0;display:flex;flex-direction:column;padding:10px 12px 8px;box-sizing:border-box;overflow:hidden}
+#map-panel .map-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+#map-panel .map-head h2{font-size:clamp(16px,2.4vw,24px);margin:0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#map-panel #map-close{flex:0 0 auto;min-height:36px;min-width:64px}
+.wm-stage{position:relative;flex:1 1 auto;min-height:0;min-width:0;margin:8px 0 6px;border:2px solid #8e7c53;border-radius:6px;overflow:hidden;background:#0c1820;touch-action:none;-webkit-user-select:none;user-select:none}
+#map-panel #worldmap{position:absolute;inset:0;display:block;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;border:0!important;cursor:grab;outline:none;touch-action:none;object-fit:fill!important}
 #map-panel #worldmap.dragging{cursor:grabbing}
-.wm-tools{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:5px;z-index:2}
-.wm-tools button{margin:0;width:36px;height:36px;padding:0;font:bold 18px Georgia,serif;border-radius:6px;background:#1d2a22e8;border:1px solid #b99a5e;color:#f0dcae}
+.wm-tools{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:2}
+.wm-tools button{margin:0;width:38px;height:38px;min-height:0;padding:0;font:bold 18px Georgia,serif;line-height:1;border-radius:6px;background:#1d2a22e8;border:1px solid #b99a5e;color:#f0dcae;touch-action:manipulation}
+.wm-tools.wm-row{flex-direction:row}
+.wm-tools button[data-act=fit]{font-size:12px;letter-spacing:.5px}
 .wm-tools button[aria-pressed=true]{background:#7a6235}
-.wm-legend{position:absolute;left:8px;bottom:8px;z-index:2;background:#14100ae0;border:1px solid #9d8554;border-radius:6px;padding:7px 10px;color:#efdfb9;font:12px Georgia,serif;display:grid;grid-template-columns:auto auto;gap:4px 12px}
+.wm-tools button:disabled{opacity:.45}
+.wm-legend{position:absolute;left:8px;bottom:8px;z-index:2;max-height:calc(100% - 16px);overflow:auto;background:#14100ae0;border:1px solid #9d8554;border-radius:6px;padding:7px 10px;color:#efdfb9;font:12px Georgia,serif;display:grid;grid-template-columns:auto auto;gap:4px 12px}
 .wm-legend[hidden]{display:none}.wm-legend div{display:flex;align-items:center;gap:6px;white-space:nowrap}.wm-legend canvas{width:20px;height:20px}
 .wm-legend strong{grid-column:1/-1;color:#e8c56f;letter-spacing:1px;font-size:11px;text-transform:uppercase}
-.wm-info{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;background:#14100ae6;border:1px solid #9d8554;border-radius:16px;padding:5px 14px;color:#f3e2b5;font:13px Georgia,serif;pointer-events:none;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis}
+.wm-info{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;background:#14100ae6;border:1px solid #9d8554;border-radius:16px;padding:5px 14px;color:#f3e2b5;font:13px Georgia,serif;pointer-events:none;white-space:nowrap;max-width:calc(100% - 120px);overflow:hidden;text-overflow:ellipsis}
 .wm-info[hidden]{display:none}
 .wm-busy{position:absolute;inset:0;display:grid;place-items:center;color:#e9d6a6;font:italic 16px Georgia,serif;pointer-events:none}
 .wm-busy[hidden]{display:none}
-#map-panel>.map-card>small{font-size:11px}
-@media (max-height:500px){#map-panel{padding:4px}#map-panel .map-card{height:calc(100dvh - 8px);width:calc(100vw - 8px);padding:5px 8px 4px}#map-panel .map-head h2{font-size:15px}#map-panel>.map-card>small{display:none}.wm-stage{margin:4px 0 0}.wm-tools button{width:32px;height:32px;font-size:16px}.wm-legend{font-size:11px;padding:5px 7px;gap:2px 10px}}`;
+#map-panel>.map-card>small{flex:0 0 auto;font-size:11px}
+body.touch-controls #map-panel .wm-tools button{width:42px;height:42px}
+@media (max-width:560px),(max-height:560px){#map-panel{--map-gap:4px}#map-panel .map-card{padding:6px 8px 6px;max-width:none;max-height:none}#map-panel .map-head h2{font-size:16px}#map-panel>.map-card>small{display:none}.wm-stage{margin:6px 0 0}.wm-legend{font-size:11px;padding:5px 7px;gap:2px 10px}}
+@media (max-height:430px){#map-panel .map-card{padding:4px 6px}#map-panel .map-head h2{font-size:14px}#map-panel #map-close{min-height:32px}.wm-stage{margin:4px 0 0}.wm-tools{gap:4px;top:6px;right:6px}body.touch-controls #map-panel .wm-tools button,.wm-tools button{width:36px;height:36px;font-size:16px}}
+@media (max-height:340px){.wm-tools button[data-act=me]{display:none}}`;
 
 export function createWorldMap({canvas,source}){
  const doc=canvas.ownerDocument,win=doc.defaultView,extent=source.extent||840,half=extent/2;
@@ -151,16 +220,17 @@ export function createWorldMap({canvas,source}){
  if(!doc.getElementById('world-map-style')){const st=doc.createElement('style');st.id='world-map-style';st.textContent=STYLE;doc.head.append(st)}
  // Stage: canvas plus zoom buttons, legend and the selection chip.
  const stage=doc.createElement('div');stage.className='wm-stage';canvas.replaceWith(stage);stage.append(canvas);
- canvas.removeAttribute('width');canvas.removeAttribute('height');canvas.tabIndex=0;canvas.title='World map · drag to pan, scroll or pinch to zoom';canvas.style.cursor='';
+ canvas.removeAttribute('width');canvas.removeAttribute('height');canvas.tabIndex=0;canvas.title='World map · drag to pan, scroll, pinch or double-tap to zoom';canvas.style.cursor='';
  canvas.setAttribute('role','img');canvas.setAttribute('aria-label','World map of Eldervale');
  const tools=doc.createElement('div');tools.className='wm-tools';stage.append(tools);
- const tool=(text,label,fn)=>{const b=doc.createElement('button');b.type='button';b.textContent=text;b.title=label;b.setAttribute('aria-label',label);b.onclick=fn;tools.append(b);return b};
+ const tool=(text,label,act,fn)=>{const b=doc.createElement('button');b.type='button';b.textContent=text;b.title=label;b.dataset.act=act;b.setAttribute('aria-label',label);b.onclick=e=>{e.preventDefault();e.stopPropagation();fn()};tools.append(b);return b};
  const busy=doc.createElement('div');busy.className='wm-busy';busy.textContent='Drawing the map…';stage.append(busy);
  const info=doc.createElement('div');info.className='wm-info';info.hidden=true;info.setAttribute('aria-live','polite');stage.append(info);
  const legend=doc.createElement('div');legend.className='wm-legend';stage.append(legend);
- const caption=stage.parentElement?.querySelector('small');if(caption)caption.textContent='Drag to pan · scroll, pinch or +/− to zoom · tap a place for its name · walk with the minimap or in the world';
- let base=null,regions=[],signature='',open=false,raf=0,dirty=true,lastDraw=0,w=1,h=1,dpr=1,selected=null,infoTimer=0;
- let view={x:0,z:0,scale:1},target=null;
+ const caption=stage.parentElement?.querySelector('small');if(caption)caption.textContent='Drag to pan · scroll, pinch, double-tap or +/− to zoom · Fit shows the whole world · tap a place for its name';
+ let base=null,regions=[],signature='',open=false,raf=0,dirty=true,w=1,h=1,dpr=1,selected=null,infoTimer=0,watch=0;
+ let view={x:0,z:0,scale:1},target=null,inertia=null,lastTick=0;
+ const stats={draws:0,lastDrawMs:0};
  const ctx=canvas.getContext('2d');
 
  function paintBase(){
@@ -215,103 +285,172 @@ export function createWorldMap({canvas,source}){
   return performance.now()-t0;
  }
 
- function size(){const r=stage.getBoundingClientRect();dpr=Math.min(win.devicePixelRatio||1,phone?1.5:2);w=Math.max(100,Math.round(r.width));h=Math.max(100,Math.round(r.height));canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);view=clampView(view,w,h,extent,MAX);dirty=true}
+ // Canvas backing store at the device pixel ratio (capped at 2) so icons and
+ // labels stay sharp; a resize keeps a fitted view fitted.
+ function size(){const r=stage.getBoundingClientRect(),wasFit=isFitView(view,w,h,extent);dpr=Math.min(win.devicePixelRatio||1,2);
+  const nw=Math.max(60,Math.round(r.width)),nh=Math.max(60,Math.round(r.height));if(nw===w&&nh===h&&canvas.width===Math.round(w*dpr))return;
+  w=nw;h=nh;tools.classList.toggle('wm-row',h>w*1.25);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);view=wasFit?fitView(w,h,extent):clampView(view,w,h,extent,MAX);if(target)target=clampView(target,w,h,extent,MAX);invalidate()}
  const ro=win.ResizeObserver?new win.ResizeObserver(()=>{if(open)size()}):null;ro?.observe(stage);
+ const onViewport=()=>{if(open)size()};win.visualViewport?.addEventListener('resize',onViewport);win.addEventListener('orientationchange',onViewport);
 
- function buildingsNow(){return source.buildings?.()||[]}
- function placesNow(){return source.places?.()||[]}
- function poisNow(){return mergePois(source.pois?.()||[])}
+ // World features are read when the map opens and every two seconds while it
+ // is open; a redraw happens only when something on the map actually changed.
+ let lists={buildings:[],places:[],pois:[],quests:[]},listKey='',dynKey='',lastLists=0;
+ function readLists(){lists={buildings:source.buildings?.()||[],places:source.places?.()||[],pois:mergePois(source.pois?.()||[]),quests:source.quests?.()||[]};
+  const sum=a=>a.reduce((s,p)=>s+(p.x||0)*1.3+(p.z||0)*.7,0).toFixed(1);const key=[lists.buildings.length,lists.places.length,lists.pois.length,lists.quests.map(q=>q.kind).join(''),sum(lists.buildings),sum(lists.pois),sum(lists.quests)].join('|');
+  lastLists=performance.now();if(key!==listKey){listKey=key;return true}return false}
+ // Moving things: player, destination flag, death pile and the quest objective.
+ function dynamicKey(){const me=source.player?.(),f=source.flag?.(),pile=source.deathPile?.(),o=source.objective?.(),r=v=>Math.round(v*4)/4;
+  return [me?r(me.x)+','+r(me.z)+','+Math.round(me.heading*20):'',f?r(f.x)+','+r(f.z):'',pile?r(pile.x)+','+r(pile.z)+pile.label:'',o?r(o.x)+','+r(o.z)+(o.label||''):''].join('|')}
+ function poll(){if(!open)return;let changed=false;if(performance.now()-lastLists>2000&&readLists()){changed=true;refreshLegend()}const k=dynamicKey();if(k!==dynKey){dynKey=k;changed=true}if(changed)invalidate()}
+
+ // Request one redraw on the next animation frame (coalesces pointer moves).
+ function invalidate(){dirty=true;schedule()}
+ function schedule(){if(open&&!raf)raf=win.requestAnimationFrame(tick)}
+ function tick(now){raf=0;if(!open)return;const dt=Math.min(250,lastTick?now-lastTick:16);lastTick=now;let more=false;
+  if(target){const t=1-Math.exp(-dt/90);view=clampView({x:view.x+(target.x-view.x)*t,z:view.z+(target.z-view.z)*t,scale:view.scale*Math.pow(target.scale/view.scale,t)},w,h,extent,MAX);dirty=true;
+   if(Math.abs(target.scale/view.scale-1)<.002&&Math.hypot(target.x-view.x,target.z-view.z)*view.scale<.5){view=target;target=null}else more=true}
+  else if(inertia){const s=inertiaStep(inertia,dt);if(!s)inertia=null;else{const next=panView(view,s.dx,s.dy,w,h,extent,MAX);
+    // Stop along an axis that has hit the world edge.
+    inertia={vx:Math.abs(next.x-(view.x-s.dx/view.scale))>1e-6?0:s.vx,vy:Math.abs(next.z-(view.z-s.dy/view.scale))>1e-6?0:s.vy};view=next;dirty=true;more=true}}
+  if(dirty)draw();if(more)schedule();else lastTick=0}
+ function animateTo(v){inertia=null;target=clampView(v,w,h,extent,MAX);schedule()}
+ function setNow(v){target=null;inertia=null;view=clampView(v,w,h,extent,MAX);invalidate()}
+ function syncButtons(){const v=target||view,{min,max}=zoomRange(w,h,extent,MAX);zoomIn.disabled=v.scale>=max*.999;zoomOut.disabled=fitButton.disabled=v.scale<=min*1.001}
 
  function draw(){
-  dirty=false;lastDraw=performance.now();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#0c1820';ctx.fillRect(0,0,w,h);
-  if(!base)return;const s=BASE/extent,tl=screenToWorld(view,0,0,w,h);
-  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  dirty=false;const t0=performance.now();stats.draws++;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#0c1820';ctx.fillRect(0,0,w,h);
+  syncButtons();if(!base)return;
+  // Terrain: one crop of the cached painting (never re-rendered per frame).
+  const s=BASE/extent,tl=screenToWorld(view,0,0,w,h);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality=view.scale*dpr>s*1.5?'medium':'high';
   ctx.drawImage(base,(tl.x+half)*s,(tl.z+half)*s,w/view.scale*s,h/view.scale*s,0,0,w,h);
-  const S=(x,z)=>worldToScreen(view,x,z,w,h),k=view.scale;
+  const S=(x,z)=>worldToScreen(view,x,z,w,h),k=view.scale,ui=uiScale(w,h);
   // Buildings: top-down roofs on their real footprints, with a ridge and shadow.
-  for(const bld of buildingsNow()){const p=S(bld.x,bld.z),r=Math.hypot(bld.halfW,bld.halfD)*k;if(p.x<-r||p.y<-r||p.x>w+r||p.y>h+r)continue;
+  for(const bld of lists.buildings){const p=S(bld.x,bld.z),r=Math.hypot(bld.halfW,bld.halfD)*k;if(p.x<-r||p.y<-r||p.x>w+r||p.y>h+r)continue;
    const c=Math.cos(bld.rot),sn=Math.sin(bld.rot),corner=(lx,lz)=>S(bld.x+lx*c+lz*sn,bld.z-lx*sn+lz*c),poly=pts=>{ctx.beginPath();pts.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.closePath()};
    const pts=[corner(-bld.halfW,-bld.halfD),corner(bld.halfW,-bld.halfD),corner(bld.halfW,bld.halfD),corner(-bld.halfW,bld.halfD)],off=Math.max(1,k*.6);
+   if(r<1.2){ctx.fillStyle=bld.roof||'#8a4b33';ctx.fillRect(p.x-1,p.y-1,2,2);continue}
    ctx.save();ctx.translate(off,off*1.2);poly(pts);ctx.fillStyle='rgba(15,12,8,.42)';ctx.fill();ctx.restore();
-   poly(pts);ctx.fillStyle=bld.roof||'#8a4b33';ctx.fill();ctx.strokeStyle='#22180f';ctx.lineWidth=Math.max(.8,Math.min(1.6,k*.25));ctx.stroke();
+   poly(pts);ctx.fillStyle=bld.roof||'#8a4b33';ctx.fill();ctx.strokeStyle='#22180f';ctx.lineWidth=Math.max(.6,Math.min(1.6,k*.25));ctx.stroke();
    if(k>1.1){const along=bld.halfW>=bld.halfD,a=along?corner(-bld.halfW*.92,0):corner(0,-bld.halfD*.92),b2=along?corner(bld.halfW*.92,0):corner(0,bld.halfD*.92);
     // Two roof planes: the far one a shade darker.
     const half1=along?[corner(-bld.halfW,-bld.halfD),corner(bld.halfW,-bld.halfD),corner(bld.halfW,0),corner(-bld.halfW,0)]:[corner(-bld.halfW,-bld.halfD),corner(0,-bld.halfD),corner(0,bld.halfD),corner(-bld.halfW,bld.halfD)];
     poly(half1);ctx.fillStyle='rgba(0,0,0,.18)';ctx.fill();ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b2.x,b2.y);ctx.strokeStyle='rgba(255,226,170,.55)';ctx.lineWidth=Math.max(.8,k*.3);ctx.stroke()}}
   // City walls around the capital.
-  drawCityWalls(ctx,source.walls?.(),S,{width:Math.max(2.5,Math.min(9,k*2.6))});
+  drawCityWalls(ctx,source.walls?.(),S,{width:Math.max(1.5,Math.min(9,k*2.6))});
+  // Labels claim screen boxes so names and icons never pile on each other.
+  const placed=[],claim=b=>{if(boxHits(placed,b))return false;placed.push(b);return true};
+  const textBox=(text,x,y,font,px,spacing=0)=>{ctx.font=font;if('letterSpacing' in ctx)ctx.letterSpacing=spacing+'px';const tw=ctx.measureText(text).width;if('letterSpacing' in ctx)ctx.letterSpacing='0px';const bw=tw+6;return {x:bw<w-4?Math.max(bw/2+2,Math.min(w-bw/2-2,x)):x,y,w:bw,h:px+4}};
+  // Settlement names first (the capital always), then regions, lakes and icons.
+  const labels=[];for(const pl of lists.places){const q=S(pl.x,pl.z);if(q.x<-120||q.y<-60||q.x>w+120||q.y>h+60)continue;labels.push({pl,q,rank:pl.capital?0:pl.kind==='castle'?1:2})}labels.sort((a,b)=>a.rank-b.rank);
+  const drawLater=[];
+  for(const {pl,q} of labels){const lift=(k>2?22:14)*ui;
+   if(pl.capital){const px=Math.round(22*ui),y=q.y-lift-(k>2?14:8)*ui,font='bold '+px+'px '+SERIF,box=textBox(pl.name.toUpperCase(),q.x,y,font,px,2),sub=Math.round(12*ui);
+    box.y=y-6*ui;box.h+=Math.round(36*ui);placed.push(box);drawLater.push(()=>{drawCrownIcon(ctx,q.x,y-20*ui,18*ui);outlinedText(ctx,pl.name.toUpperCase(),box.x,y,{font,fill:'#ffd76a',stroke:'#2a1505',width:5*ui,spacing:2});outlinedText(ctx,pl.title||'Royal Capital',box.x,y+17*ui,{font:'italic '+sub+'px '+SERIF,fill:'#f3e2b5',width:3})});continue}
+   const big=pl.kind==='castle',px=Math.round((big?17:15)*ui),font='bold '+px+'px '+SERIF,y=q.y-lift,box=textBox(pl.name,q.x,y,font,px);
+   if(!claim(box))continue;drawLater.push(()=>{ctx.fillStyle='#1b1408';ctx.beginPath();ctx.arc(q.x,q.y,2.6,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff3d4';ctx.beginPath();ctx.arc(q.x,q.y,1.6,0,Math.PI*2);ctx.fill();outlinedText(ctx,pl.name,box.x,y,{font,fill:big?'#ffe7a8':'#fff3d4',width:4*ui})})}
   // Region names: large gold serif, faded out when zoomed in close.
-  const regionAlpha=1-smooth(1.6,3,k);if(regionAlpha>.02){ctx.globalAlpha=regionAlpha;const towns=placesNow().map(pl=>S(pl.x,pl.z));for(const r of regions){const p=S(r.x,r.z);for(let i=0;i<4&&towns.some(t=>Math.abs(t.x-p.x)<170&&Math.abs(t.y-p.y)<44);i++)p.y+=46;outlinedText(ctx,r.name.toUpperCase(),p.x,p.y,{font:'italic bold '+Math.round(Math.max(17,Math.min(30,w/36)))+'px '+SERIF,fill:'#f3a83a',stroke:'#2a1505',width:5,spacing:3})}ctx.globalAlpha=1}
-  // Lake and river names in pale blue italics.
-  if(k>1.1){for(const lake of source.lakes||[])if(lake.name){const p=S(lake.x,lake.z);outlinedText(ctx,lake.name,p.x,p.y+lake.rz*k+12,{font:'italic 13px '+SERIF,fill:'#d8ecff',stroke:'#123049',width:3,shadow:false})}}
-  // Points of interest, then settlement names, skipping icons that would overlap.
-  const placed=[];const free=(x,y,r)=>!placed.some(q=>Math.abs(q.x-x)<q.r+r&&Math.abs(q.y-y)<q.r+r);
-  const icon=Math.round(Math.max(8,Math.min(11,6+k*2.2)));
-  for(const p of poisNow()){const q=S(p.x,p.z);if(q.x<-10||q.y<-10||q.x>w+10||q.y>h+10||!free(q.x,q.y,icon))continue;placed.push({x:q.x,y:q.y,r:icon});drawPoiIcon(ctx,p.kind,q.x,q.y,icon)}
-  for(const pl of placesNow()){const q=S(pl.x,pl.z);if(q.x<-80||q.y<-30||q.x>w+80||q.y>h+30)continue;const big=pl.kind==='castle'||pl.capital,lift=k>2?24:16;
-   if(pl.capital){const y=q.y-lift-(k>2?14:10);drawCrownIcon(ctx,q.x,y-20,18);outlinedText(ctx,pl.name.toUpperCase(),q.x,y,{font:'bold 22px '+SERIF,fill:'#ffd76a',stroke:'#2a1505',width:5,spacing:2});outlinedText(ctx,pl.title||'Royal Capital',q.x,y+17,{font:'italic 12px '+SERIF,fill:'#f3e2b5',width:3});continue}
-   const font=(big?'bold ':'bold ')+Math.round(big?17:15)+'px '+SERIF;outlinedText(ctx,pl.name,q.x,q.y-lift,{font,fill:big?'#ffe7a8':'#fff3d4',width:4})}
+  const regionAlpha=1-smooth(1.6,3,k);if(regionAlpha>.02){const px=Math.round(Math.max(13,Math.min(30,w/36))*ui),font='italic bold '+px+'px '+SERIF;
+   for(const r of regions){const p=S(r.x,r.z);let box=textBox(r.name.toUpperCase(),p.x,p.y,font,px,3);
+    for(let i=0;i<4&&boxHits(placed,box);i++)box={...box,y:box.y+px*1.6};if(boxHits(placed,box))continue;placed.push(box);
+    ctx.globalAlpha=regionAlpha;outlinedText(ctx,r.name.toUpperCase(),box.x,box.y,{font,fill:'#f3a83a',stroke:'#2a1505',width:5*ui,spacing:3});ctx.globalAlpha=1}}
+  // Lake names in pale blue italics.
+  if(k>1.1){for(const lake of source.lakes||[])if(lake.name){const p=S(lake.x,lake.z),y=p.y+lake.rz*k+12,font='italic 13px '+SERIF,box=textBox(lake.name,p.x,y,font,13);if(claim(box))outlinedText(ctx,lake.name,p.x,y,{font,fill:'#d8ecff',stroke:'#123049',width:3,shadow:false})}}
+  for(const fn of drawLater)fn();
+  // Points of interest, skipping icons that would overlap a name or another icon.
+  const icon=Math.round(Math.max(7,Math.min(11,6+k*2.2))*Math.max(.85,ui));
+  for(const p of lists.pois){const q=S(p.x,p.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12||!claim({x:q.x,y:q.y,w:icon*2,h:icon*2}))continue;drawPoiIcon(ctx,p.kind,q.x,q.y,icon)}
+  // Quest givers: the same yellow ! and ? as over their heads in the world.
+  for(const g of lists.quests){const q=S(g.x,g.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12)continue;drawQuestGlyph(ctx,g.kind,q.x,q.y,Math.max(.85,ui))}
   // The player's death pile: skull with the time left beneath it.
-  const pile=source.deathPile?.();if(pile){const q=S(pile.x,pile.z),pulse=(Math.sin(performance.now()/420)+1)/2;
-   ctx.save();ctx.strokeStyle='rgba(224,38,29,'+(.35+.35*pulse)+')';ctx.lineWidth=2;ctx.beginPath();ctx.arc(q.x,q.y,14+pulse*3,0,Math.PI*2);ctx.stroke();ctx.restore();
+  const pile=source.deathPile?.();if(pile){const q=S(pile.x,pile.z);
+   ctx.save();ctx.strokeStyle='rgba(224,38,29,.6)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(q.x,q.y,15,0,Math.PI*2);ctx.stroke();ctx.restore();
    drawSkullIcon(ctx,q.x,q.y-1,22);outlinedText(ctx,pile.label,q.x,q.y+22,{font:'bold 13px '+SERIF,fill:'#ffe3d6',stroke:'#2a0b07',width:4})}
-  // Destination flag and the player's arrow.
+  // Destination flag.
   const flag=source.flag?.();if(flag){const q=S(flag.x,flag.z);ctx.save();ctx.translate(q.x,q.y);ctx.strokeStyle='#2b1a0e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,2);ctx.lineTo(0,-16);ctx.stroke();ctx.fillStyle='#e0261d';ctx.strokeStyle='#4a0d09';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(12,-12);ctx.lineTo(0,-8);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}
-  const me=source.player?.();if(me){const q=S(me.x,me.z),pulse=(Math.sin(performance.now()/260)+1)/2;ctx.save();ctx.translate(q.x,q.y);
-   ctx.strokeStyle='rgba(255,255,255,'+(.25+.35*pulse)+')';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,11+pulse*4,0,Math.PI*2);ctx.stroke();
-   ctx.rotate(Math.PI-me.heading);ctx.fillStyle='#ffffff';ctx.strokeStyle='#101a14';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-10);ctx.lineTo(7,7);ctx.lineTo(0,3);ctx.lineTo(-7,7);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}
+  // Current quest objective: a gold diamond, or an arrow on the frame edge when it is off screen.
+  const goal=source.objective?.();if(goal){const q=S(goal.x,goal.z),e=edgePoint(q.x,q.y,w,h,22);ctx.save();ctx.fillStyle='#ffd23a';ctx.strokeStyle='#2a1a04';ctx.lineWidth=2;
+   if(!e){ctx.strokeStyle='rgba(255,210,58,.75)';ctx.beginPath();ctx.arc(q.x,q.y,12,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#2a1a04';ctx.translate(q.x,q.y);ctx.rotate(Math.PI/4);ctx.fillRect(-5.5,-5.5,11,11);ctx.strokeRect(-5.5,-5.5,11,11)}
+   else{ctx.translate(e.x,e.y);ctx.rotate(e.angle);ctx.beginPath();ctx.moveTo(11,0);ctx.lineTo(-7,-9);ctx.lineTo(-3,0);ctx.lineTo(-7,9);ctx.closePath();ctx.fill();ctx.stroke()}ctx.restore()}
+  // The player's arrow, last so nothing covers it.
+  const me=source.player?.();if(me){const q=S(me.x,me.z);ctx.save();ctx.translate(q.x,q.y);
+   ctx.fillStyle='rgba(255,255,255,.18)';ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.stroke();
+   ctx.rotate(Math.PI-me.heading);ctx.fillStyle='#ffffff';ctx.strokeStyle='#101a14';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-10);ctx.lineTo(7,7);ctx.lineTo(0,3);ctx.lineTo(-7,7);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+   const e=edgePoint(q.x,q.y,w,h,16);if(e){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.angle);ctx.fillStyle='#ffffff';ctx.strokeStyle='#101a14';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(-6,-8);ctx.lineTo(-6,8);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}}
   // Compass rose.
   ctx.save();ctx.translate(w-30,h-30);ctx.fillStyle='rgba(20,16,10,.7)';ctx.beginPath();ctx.arc(0,0,17,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e8c56f';ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(4,0);ctx.lineTo(-4,0);ctx.closePath();ctx.fill();ctx.fillStyle='#9c8a62';ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(4,0);ctx.lineTo(-4,0);ctx.closePath();ctx.fill();ctx.font='bold 10px '+SERIF;ctx.textAlign='center';ctx.fillStyle='#fff3d4';ctx.fillText('N',0,-17);ctx.restore();
+  stats.lastDrawMs=performance.now()-t0;
  }
 
- function loop(now){if(!open)return;raf=win.requestAnimationFrame(loop);
-  if(target){const t=1-Math.exp(-(now-(loop.last||now))/90);view=clampView({x:view.x+(target.x-view.x)*t,z:view.z+(target.z-view.z)*t,scale:view.scale*Math.pow(target.scale/view.scale,t)},w,h,extent,MAX);dirty=true;if(Math.abs(target.scale/view.scale-1)<.002&&Math.hypot(target.x-view.x,target.z-view.z)*view.scale<.5){view=target;target=null}}
-  loop.last=now;if(dirty||now-lastDraw>120)draw()}
- function animateTo(v){target=clampView(v,w,h,extent,MAX);dirty=true}
+ function refreshLegend(){legend.replaceChildren();const title=doc.createElement('strong');title.textContent='Legend';legend.append(title);const kinds=new Set(lists.pois.map(p=>p.kind));
+  const row=(label,paint)=>{const r=doc.createElement('div'),c=doc.createElement('canvas');c.width=c.height=40;const g=c.getContext('2d');g.scale(2,2);paint(g);r.append(c,label);legend.append(r)};
+  for(const [kind,def] of Object.entries(POI_KINDS))if(kinds.has(kind))row(def.label,g=>drawPoiIcon(g,kind,10,10,8));
+  if(lists.quests.length)row('Quest giver',g=>drawQuestGlyph(g,'!',10,10,.8));
+  if(source.objective)row('Quest objective',g=>{g.translate(10,10);g.rotate(Math.PI/4);g.fillStyle='#ffd23a';g.strokeStyle='#2a1a04';g.lineWidth=1.5;g.fillRect(-4.5,-4.5,9,9);g.strokeRect(-4.5,-4.5,9,9)});
+  row('You',g=>{g.translate(10,10);g.fillStyle='#fff';g.strokeStyle='#101a14';g.lineWidth=1.5;g.beginPath();g.moveTo(0,-7);g.lineTo(5,5);g.lineTo(0,2);g.lineTo(-5,5);g.closePath();g.fill();g.stroke()});
+  row('Your death pile',g=>drawSkullIcon(g,10,10,17));
+  row('Destination',g=>{g.strokeStyle='#2b1a0e';g.lineWidth=1.5;g.beginPath();g.moveTo(7,17);g.lineTo(7,3);g.stroke();g.fillStyle='#e0261d';g.beginPath();g.moveTo(7,3);g.lineTo(16,6);g.lineTo(7,9);g.closePath();g.fill()})}
 
- function refreshLegend(){legend.replaceChildren();const title=doc.createElement('strong');title.textContent='Legend';legend.append(title);const kinds=new Set(poisNow().map(p=>p.kind));
-  for(const [kind,def] of Object.entries(POI_KINDS)){if(!kinds.has(kind))continue;const row=doc.createElement('div'),c=doc.createElement('canvas');c.width=c.height=40;const g=c.getContext('2d');g.scale(2,2);drawPoiIcon(g,kind,10,10,8);row.append(c,def.label);legend.append(row)}
-  for(const [label,draw2] of [['You',g=>{g.translate(10,10);g.fillStyle='#fff';g.strokeStyle='#101a14';g.lineWidth=1.5;g.beginPath();g.moveTo(0,-7);g.lineTo(5,5);g.lineTo(0,2);g.lineTo(-5,5);g.closePath();g.fill();g.stroke()}],['Your death pile',g=>drawSkullIcon(g,10,10,17)],['Destination',g=>{g.strokeStyle='#2b1a0e';g.lineWidth=1.5;g.beginPath();g.moveTo(7,17);g.lineTo(7,3);g.stroke();g.fillStyle='#e0261d';g.beginPath();g.moveTo(7,3);g.lineTo(16,6);g.lineTo(7,9);g.closePath();g.fill()}]]){const row=doc.createElement('div'),c=doc.createElement('canvas');c.width=c.height=40;const g=c.getContext('2d');g.scale(2,2);draw2(g);row.append(c,label);legend.append(row)}}
-
- // Pointer input: drag to pan, two fingers to pinch, tap to select.
- const pointers=new Map();let drag=null,moved=0;
+ // Pointer input: drag to pan (with momentum), two fingers to pinch, tap to
+ // select, double-tap to zoom in. Mouse, pen and touch share one path.
+ const pointers=new Map();let drag=null,moved=0,samples=[],lastTap=null;
  const local=e=>{const r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}};
- canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,local(e));target=null;moved=0;drag={view:{...view},start:local(e),pinch:pointers.size===2?pinchState():null};if(drag.pinch)drag.start=null;canvas.classList.add('dragging')});
- function pinchState(){const [a,b]=[...pointers.values()];return {d:Math.hypot(a.x-b.x,a.y-b.y)||1,mid:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},view:{...view}}}
+ const pinchStart=()=>{const [a,b]=[...pointers.values()];return {d:Math.hypot(a.x-b.x,a.y-b.y)||1,mid:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},view:{...view}}};
+ canvas.addEventListener('pointerdown',e=>{if(e.button>0)return;e.preventDefault();canvas.focus({preventScroll:true});try{canvas.setPointerCapture(e.pointerId)}catch{}
+  pointers.set(e.pointerId,local(e));target=null;inertia=null;
+  if(pointers.size===1){moved=0;samples=[{t:e.timeStamp,...local(e)}];drag={view:{...view},start:local(e),pinch:null,pinched:false}}
+  else if(drag){drag.pinch=pinchStart();drag.pinched=true;drag.start=null}
+  canvas.classList.add('dragging')});
  canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId)||!drag)return;const p=local(e),prev=pointers.get(e.pointerId);moved+=Math.hypot(p.x-prev.x,p.y-prev.y);pointers.set(e.pointerId,p);
-  if(pointers.size>=2){if(!drag.pinch)drag.pinch=pinchState();const [a,b]=[...pointers.values()],d=Math.hypot(a.x-b.x,a.y-b.y)||1,mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2},P=drag.pinch;
-   const at=screenToWorld(P.view,P.mid.x,P.mid.y,w,h),scale=P.view.scale*d/P.d;view=clampView({scale,x:at.x-(mid.x-w/2)/scale,z:at.z-(mid.y-h/2)/scale},w,h,extent,MAX)}
-  else if(drag.start){view=clampView({scale:drag.view.scale,x:drag.view.x-(p.x-drag.start.x)/drag.view.scale,z:drag.view.z-(p.y-drag.start.y)/drag.view.scale},w,h,extent,MAX)}
-  dirty=true});
- const end=e=>{if(!pointers.has(e.pointerId))return;const p=pointers.get(e.pointerId);pointers.delete(e.pointerId);if(pointers.size===0){canvas.classList.remove('dragging');if(drag&&!drag.pinch&&moved<8)select(p.x,p.y);drag=null}else if(drag){const [q]=[...pointers.values()];drag={view:{...view},start:q,pinch:null}}};
+  if(pointers.size>=2){if(!drag.pinch){drag.pinch=pinchStart();drag.pinched=true}const [a,b]=[...pointers.values()],P=drag.pinch;
+   view=pinchView(P.view,P.mid,P.d,{x:(a.x+b.x)/2,y:(a.y+b.y)/2},Math.hypot(a.x-b.x,a.y-b.y)||1,w,h,extent,MAX)}
+  else if(drag.start){view=panView(drag.view,p.x-drag.start.x,p.y-drag.start.y,w,h,extent,MAX);samples.push({t:e.timeStamp,...p});if(samples.length>12)samples.shift()}
+  invalidate()});
+ const end=e=>{if(!pointers.has(e.pointerId))return;const p=pointers.get(e.pointerId);pointers.delete(e.pointerId);
+  if(pointers.size===0){canvas.classList.remove('dragging');
+   if(drag&&!drag.pinched&&moved<8&&e.type==='pointerup'){const tap={t:e.timeStamp,x:p.x,y:p.y};if(isDoubleTap(lastTap,tap)){lastTap=null;animateTo(zoomAround(target||view,2,p.x,p.y,w,h,extent,MAX))}else{lastTap=tap;select(p.x,p.y)}}
+   else if(drag&&!drag.pinched&&e.type==='pointerup'){samples.push({t:e.timeStamp,...p});const v=releaseVelocity(samples);if(Math.hypot(v.vx,v.vy)>.25){inertia={vx:Math.max(-4,Math.min(4,v.vx)),vy:Math.max(-4,Math.min(4,v.vy))};schedule()}}
+   drag=null;invalidate()}
+  // One finger left after a pinch: carry on panning from where it is.
+  else if(drag){const [q]=[...pointers.values()];drag={view:{...view},start:q,pinch:null,pinched:true};samples=[]}};
  canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);
- canvas.addEventListener('wheel',e=>{e.preventDefault();const p=local(e),from=target||view;const factor=Math.exp(-Math.max(-300,Math.min(300,e.deltaY*(e.deltaMode===1?33:1)))*.0022);animateTo(zoomAround(from,factor,p.x,p.y,w,h,extent,MAX))},{passive:false});
- canvas.addEventListener('dblclick',e=>{const p=local(e);animateTo(zoomAround(target||view,2,p.x,p.y,w,h,extent,MAX))});
+ canvas.addEventListener('wheel',e=>{e.preventDefault();const p=local(e),from=target||view;const dy=e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?h:1)*(e.ctrlKey?2.5:1);const factor=Math.exp(-Math.max(-300,Math.min(300,dy))*.0022);animateTo(zoomAround(from,factor,p.x,p.y,w,h,extent,MAX))},{passive:false});
  canvas.addEventListener('keydown',e=>{const step=80/view.scale,from=target||view;const moves={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]};
-  if(moves[e.key]){e.preventDefault();animateTo({...from,x:from.x+moves[e.key][0],z:from.z+moves[e.key][1]})}else if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(1.5)}else if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(1/1.5)}});
+  if(moves[e.key]){e.preventDefault();animateTo({...from,x:from.x+moves[e.key][0],z:from.z+moves[e.key][1]})}else if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(1.6)}else if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(1/1.6)}else if(e.key==='0'||e.key==='f'||e.key==='F'){e.preventDefault();fit()}});
  // Clicks never walk: they only name what is under the pointer.
  canvas.addEventListener('click',e=>{e.preventDefault();e.stopPropagation()});
+ canvas.addEventListener('dblclick',e=>{e.preventDefault();e.stopPropagation()});
+ canvas.addEventListener('contextmenu',e=>e.preventDefault());
  function select(sx,sy){const at=screenToWorld(view,sx,sy,w,h),r=16/view.scale;
-  const hit=pickFeature(poisNow().map(p=>({...p,label:(p.name?p.name+' · ':'')+POI_KINDS[p.kind].label})),at.x,at.z,r)||pickFeature(placesNow().map(p=>({...p,label:p.name})),at.x,at.z,Math.max(r,28/view.scale))||pickFeature(buildingsNow().map(b=>({...b,label:b.name||'Building'})),at.x,at.z,Math.max(r,4));
+  const hit=pickFeature(lists.pois.map(p=>({...p,label:(p.name?p.name+' · ':'')+POI_KINDS[p.kind].label})),at.x,at.z,r)||pickFeature(lists.quests.map(q=>({...q,label:(q.name?q.name+' · ':'')+(q.kind==='?'?'Quest to hand in':'Quest available')})),at.x,at.z,r)||pickFeature(lists.places.map(p=>({...p,label:p.name})),at.x,at.z,Math.max(r,28/view.scale))||pickFeature(lists.buildings.map(b=>({...b,label:b.name||'Building'})),at.x,at.z,Math.max(r,4));
   const me=source.player?.();const youAre=me&&Math.hypot(me.x-at.x,me.z-at.z)<r;
   const pile=source.deathPile?.(),onPile=pile&&Math.hypot(pile.x-at.x,pile.z-at.z)<r;
-  selected=onPile?{label:pile.label+' left · your death pile'}:youAre?{label:'You are here'}:hit;info.hidden=!selected;if(selected)info.textContent=selected.label;win.clearTimeout(infoTimer);if(selected)infoTimer=win.setTimeout(()=>{info.hidden=true},4000)}
- function zoomBy(f){const from=target||view;animateTo(zoomAround(from,f,w/2,h/2,w,h,extent,MAX))}
- tool('+','Zoom in',()=>zoomBy(1.6));tool('−','Zoom out',()=>zoomBy(1/1.6));
- tool('◎','Centre on me',()=>{const me=source.player?.();if(me)animateTo({x:me.x,z:me.z,scale:Math.max(view.scale,2.2)})});
- const legendButton=tool('☰','Show or hide the legend',()=>{legend.hidden=!legend.hidden;legendButton.setAttribute('aria-pressed',String(!legend.hidden))});
- if(phone||(win.innerHeight||800)<500){legend.hidden=true}legendButton.setAttribute('aria-pressed',String(!legend.hidden));
+  const goal=source.objective?.(),onGoal=goal&&Math.hypot(goal.x-at.x,goal.z-at.z)<r;
+  selected=onPile?{label:pile.label+' left · your death pile'}:youAre?{label:'You are here'}:onGoal?{label:goal.label?'Objective · '+goal.label:'Quest objective'}:hit;info.hidden=!selected;if(selected)info.textContent=selected.label;win.clearTimeout(infoTimer);if(selected)infoTimer=win.setTimeout(()=>{info.hidden=true},4000)}
+ function zoomBy(f){animateTo(zoomAround(target||view,f,w/2,h/2,w,h,extent,MAX))}
+ function fit(){animateTo(fitView(w,h,extent))}
+ const zoomIn=tool('+','Zoom in','in',()=>zoomBy(1.6)),zoomOut=tool('−','Zoom out','out',()=>zoomBy(1/1.6)),fitButton=tool('Fit','Show the whole world','fit',fit);
+ tool('◎','Centre on me','me',()=>{const me=source.player?.();if(me)animateTo({x:me.x,z:me.z,scale:Math.max((target||view).scale,zoomRange(w,h,extent,MAX).min*3)})});
+ const legendButton=tool('☰','Show or hide the legend','legend',()=>{legend.hidden=!legend.hidden;legendButton.setAttribute('aria-pressed',String(!legend.hidden))});
+ if(phone||(win.innerHeight||800)<560||(win.innerWidth||800)<560){legend.hidden=true}legendButton.setAttribute('aria-pressed',String(!legend.hidden));
 
  function ensureBase(){const sig=source.signature?.()||'';if(base&&sig===signature)return;signature=sig;busy.hidden=false;paintBase();busy.hidden=true;refreshLegend()}
+ function close(){if(!open)return;open=false;if(raf)win.cancelAnimationFrame(raf);raf=0;win.clearInterval(watch);watch=0;pointers.clear();drag=null;target=null;inertia=null;info.hidden=true;canvas.classList.remove('dragging')}
  return {
   get isOpen(){return open},
-  open(){if(open)return;open=true;size();const first=!base;
+  // Every opening shows the whole world, fitted inside the visible screen.
+  open(){if(open)return;open=true;w=h=1;readLists();dynKey=dynamicKey();size();view=fitView(w,h,extent);
    // Paint after the panel has laid out (the "Drawing the map…" note shows first).
-   win.requestAnimationFrame(()=>{if(!open)return;ensureBase();if(first){const me=source.player?.();view=clampView({x:me?.x||0,z:me?.z||0,scale:Math.max(fitScale(w,h,extent)*1.8,Math.max(w,h)/extent)},w,h,extent,MAX)}dirty=true;draw();raf=win.requestAnimationFrame(loop)});
-  },
-  close(){open=false;win.cancelAnimationFrame(raf);pointers.clear();drag=null;info.hidden=true},
+   win.requestAnimationFrame(()=>{if(!open)return;ensureBase();size();view=fitView(w,h,extent);invalidate()});
+   watch=win.setInterval(poll,250)},
+  close,
   invalidate(){signature='';base=null},
-  get view(){return {...view}},setView(v){view=clampView(v,w,h,extent,MAX);target=null;dirty=true;if(open&&base)draw()},
+  get view(){return {...view}},setView(v){setNow(v)},
+  fit(){setNow(fitView(w,h,extent))},
+  get limits(){return zoomRange(w,h,extent,MAX)},
+  get size(){return {w,h,dpr}},
+  stats,
   draw(){if(base)draw()}
  };
 }
