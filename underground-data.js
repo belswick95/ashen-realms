@@ -23,7 +23,8 @@ export const TILE=1.58,UNDERGROUND_MIN=1000,LEVEL_GAP=400,PAD_TILES=3;
 export const THEMES={
  earth:{label:'Earth cave',floor:0x4b4034,floorAlt:0x5d5142,wall:0x5a4e43,wallAlt:0x463b31,fog:0x0b0907,fogNear:10,fogFar:58,ambient:0x8a7a66,ambientIntensity:.3,sun:.08,music:'cave',decor:'stalagmite'},
  crypt:{label:'Crypt',floor:0x474a4c,floorAlt:0x55585a,wall:0x5b5e60,wallAlt:0x3f4244,fog:0x08090c,fogNear:9,fogFar:52,ambient:0x8590a6,ambientIntensity:.38,sun:.06,music:'crypt',decor:'bones'},
- fire:{label:'Fire cavern',floor:0x3a2a24,floorAlt:0x4a3027,wall:0x3b2b26,wallAlt:0x2a1e1a,fog:0x1a0703,fogNear:11,fogFar:62,ambient:0xd08a5a,ambientIntensity:.4,sun:.1,music:'fire',decor:'basalt'}
+ fire:{label:'Fire cavern',floor:0x3a2a24,floorAlt:0x4a3027,wall:0x3b2b26,wallAlt:0x2a1e1a,fog:0x1a0703,fogNear:11,fogFar:62,ambient:0xd08a5a,ambientIntensity:.4,sun:.1,music:'fire',decor:'basalt'},
+ ice:{label:'Ice cavern',floor:0x8fa6b4,floorAlt:0xa4bccb,wall:0x7d97a8,wallAlt:0x667f90,fog:0x0b1820,fogNear:10,fogFar:60,ambient:0xa8c8e8,ambientIntensity:.42,sun:.1,music:'cave',decor:'stalagmite'}
 };
 export const LIGHT_KINDS={torch:{color:0xffa04a,intensity:5,distance:15},brazier:{color:0xff8a3a,intensity:7,distance:18},fungus:{color:0x6fe3c8,intensity:3,distance:11},crystal:{color:0x9ab8ff,intensity:3.5,distance:12},lava:{color:0xff5a1a,intensity:6.5,distance:17}};
 // Overworld entrances and the matching way out, ladders and stairs between levels.

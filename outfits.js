@@ -1,4 +1,5 @@
 import {GEAR_TIERS,PLATE_TIERS,PLATE_PIECES,PLATE_NAMES,TIER_PRICE,tierById,tierItemKey,outfitGear} from './gear-tiers.js?v=release-20261106-sweep104';
+import {UNIQUE_ITEMS} from './unique-gear.js?v=release-20261106-sweep104';
 // Wearable outfit items built from Quaternius' Modular Character Outfits -
 // Fantasy (CC0). One item works for both bodies: each piece names its male and
 // female part. Item keys are what saves, the server catalog and equipment use.
@@ -91,6 +92,10 @@ for(const tier of PLATE_TIERS)for(const piece of OUTFIT_PIECES.knight)if(PLATE_P
 // The blacksteel colour variant's metal also takes the blacksteel tier colour.
 for(const item of Object.values(outfitItems))if(item.outfit==='knight'&&item.variant===3&&PLATE_PIECES[item.piece])item.tint=tierById.blacksteel.color;
 for(const item of Object.values(outfitItems)){const g=outfitGear(item);item.bonuses=g.bonuses;item.req=g.req;if(g.tier&&!item.tier)item.tier=g.tier}
+// Unique armour (unique-gear.js): an existing piece's model, recoloured, with its own stats and an accent glow.
+for(const u of UNIQUE_ITEMS)if(u.kind==='armor'&&outfitItems[u.base]&&!outfitItems[u.id]){const b=outfitItems[u.base];
+ outfitItems[u.id]={...b,key:u.id,tier:'unique',unique:true,tint:u.tint,look:{accent:u.accent?.color??null,mode:u.tintMode||'metal'},accent:u.accent,name:u.name,desc:u.desc,bonuses:{...u.bonuses},req:{...(u.req||{})},
+  defence:Math.max(1,Math.round((u.bonuses.dstab+u.bonuses.dslash+u.bonuses.dcrush)/30)),buy:u.value,sell:Math.round(u.value*.3),tradeable:u.tradeable,quest:u.quest,shopless:true}}
 export function outfitPartFor(key,sex){const item=outfitItems[key];return item?item[sex==='female'?'female':'male']:null}
 // Default clothing for unarmoured body regions, in the player's chosen colours.
 export function defaultClothing(look={}){const shirt=Math.max(1,Math.min(3,Number(look.shirtVariant)||1)),pants=Math.max(1,Math.min(3,Number(look.pantsVariant)||1));return {chest:`peasantShirt${shirt}`,arms:`peasantSleeves${shirt}`,legs:`peasantTrousers${pants}`,boots:`peasantShoes${pants}`}}

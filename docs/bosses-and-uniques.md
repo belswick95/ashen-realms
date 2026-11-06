@@ -17,7 +17,7 @@ Source of truth in code: `bosses.js` (boss definitions, lairs), `unique-gear.js`
 | `hollow_king` | The Hollow King | 105 | `hollowmere_undercroft` "Hollowmere Undercroft" · L2 `throne` ("Hollow Throne") | crypt door (-118, -372), then stairs down twice |
 | `gloom_matriarch` | The Gloom Matriarch | 112 | `gloomweb_nest` "Gloomweb Nest" · L1 `cradle` | Nest mouth (-251, 393), Gloom hollow |
 | `frostmaw` | Frostmaw, the Glacier Wyrm | 115 | `rimecoil_cavern` "Rimecoil Cavern" · L1 `heart` | Ice cleft (370, -384), Frostmaw eyrie |
-| `ashen_colossus` | The Ashen Colossus | 120 | `cindervault_depths` "Cindervault Depths" · L1 `crucible` | Cindervault shaft (395, 72), then stairs down |
+| `ashen_colossus` | The Ashen Colossus | 120 | `cindervault_depths` "Cindervault Depths" · L2 `crucible` ("The Crucible") | Cindervault shaft (395, 72), stairs to Molten heart, then the crucible stair |
 | `twinflame_wyrm` | Vaelith, the Twinflame | 128 | `wyrmhold` "The Wyrmhold" · L2 `roost` | Wyrmhold maw (98, 390), Ashscale scar |
 
 The five roster bosses no longer stand in the open world: their overworld spawns are retired and each
@@ -83,17 +83,22 @@ Untradeable, kept on death, recoverable story items:
 JS: `import {QUEST_REWARD_ITEMS} from './unique-gear.js'`.
 
 ## Quest hooks (unlock ids)
-Each lair entrance can require a quest unlock (`requires.unlock`), **off by default** so lairs work today.
-The owner turns a gate on in the console (Lairs › "Require quest unlock") once the arc grants it.
+Boss-level gates (`requires.unlock` + `requires.gate`). The Hollow Throne, Glacier heart and Crucible stairs are **gated by default** (they ship with R3-J's arcs); the other lairs are open by default. Only the stair into the boss level is gated, so the training levels above stay open.
+The owner can open or close any gate in the console (Bosses › Lairs › gate). When a gate is on, entry needs `player_unlocked(uid, id)`.
 
 | Unlock id | Opens |
 |---|---|
 | `lair:bloodtusk_warhall` | Bloodtusk Warhall gate |
-| `lair:hollow_throne` | stairs to the Hollow Throne |
+| `lair:hollow_throne` | stairs from the cistern (L1) to the Hollow Throne (L2) — **on by default** |
 | `lair:gloomweb_nest` | Gloomweb Nest mouth |
-| `lair:rimecoil_cavern` | Rimecoil Cavern cleft |
-| `lair:cindervault_crucible` | stairs into the crucible level |
+| `lair:rimecoil_cavern` | stairs from the Frozen gallery (L0) to the Glacier heart (L1) — **on by default** |
+| `lair:cindervault_crucible` | crucible stair (L1 crucible room) to The Crucible (L2) — **on by default** |
 | `lair:wyrmhold` | Wyrmhold maw |
 
 Server helpers: `eldervale_private.boss_kc(uid, boss) → integer`, `eldervale_private.boss_pb(uid, boss) → ticks`.
 A quest finale can check `boss_kc(uid,'twinflame_wyrm') > 0`.
+
+## Underground origins used (keep other areas ≥ 600 away)
+`bloodtusk_warhall` (1200, 2200) · `gloomweb_nest` (4200, 2200) · `rimecoil_cavern` (4200, 1200) ·
+`wyrmhold` (3600, 1200, three levels to z ≈ 2020) · Hollow Throne = `hollowmere_undercroft` level 2 (2000, 2000); The Crucible = `cindervault_depths` level 2 (2800, 2000).
+Furthest south any lair reaches is z ≈ 2625, so quest arenas at z ≥ 3000 stay clear.

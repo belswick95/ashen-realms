@@ -53,7 +53,7 @@ export function buildHumanoid(T,root,look={}){
  // arrives the slot keeps its previous mesh, so nobody appears half-dressed.
  let worn={};
  function remove(slot){const s=slotMeshes[slot];if(!s)return;for(const m of s.meshes){m.removeFromParent();m.skeleton.dispose();const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1)}delete slotMeshes[slot]}
- function apply(slot,key,src){const item=outfitItems[key];remove(slot);slotMeshes[slot]={key,meshes:wear(src,name=>/Regular/.test(name)?skinMaterial('body',sex,skinTint):outfitMaterial(item.outfit,item.variant,item.tint??null))};for(const m of slotMeshes[slot].meshes)m.userData.outfitSlot=slot;refreshHair()}
+ function apply(slot,key,src){const item=outfitItems[key];remove(slot);slotMeshes[slot]={key,meshes:wear(src,name=>/Regular/.test(name)?skinMaterial('body',sex,skinTint):outfitMaterial(item.outfit,item.variant,item.tint??null,item.look??null))};for(const m of slotMeshes[slot].meshes)m.userData.outfitSlot=slot;refreshHair()}
  function setSlot(slot,key){
   if(slotMeshes[slot]?.key===key)return;const part=outfitItems[key]?.[sex];if(!part){remove(slot);return}
   if(store.parts[part])apply(slot,key,store.parts[part]);else ensurePart(part).then(src=>{if(worn[slot]===key&&slotMeshes[slot]?.key!==key){apply(slot,key,src);

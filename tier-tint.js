@@ -20,11 +20,14 @@ export function tintHeldItem(T,root,tint,mode='metal'){
  root.userData.tierTint=tint;return root;
 }
 // Shader hook for textured outfit materials: recolour metal texels to the tier colour.
-export function tintOutfitMaterial(T,base,tint){
- const m=base.clone(),color=new T.Color(tint);
- m.userData={...base.userData,eldervaleShared:true,tierTint:tint,programKey:'|tier-metal'};
+// Unique gear (unique-gear.js): mode 'all' recolours the whole texture (scale/leather), and an
+// accent colour adds a pulsing emissive trim (unique-look.js accentOutfitShader).
+export function tintOutfitMaterial(T,base,tint,{accent=null,mode='metal',accentShader=null}={}){
+ const m=base.clone(),color=new T.Color(tint),glow=accent!=null&&accentShader?new T.Color(accent):null,suffix=(mode==='all'?'-all':'')+(glow?'-accent':'');
+ m.userData={...base.userData,eldervaleShared:true,tierTint:tint,programKey:'|tier-metal'+suffix};
  m.onBeforeCompile=shader=>{shader.uniforms.tierTint={value:color};
-  shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 tierTint;').replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\n{float tierLum=dot(diffuseColor.rgb,vec3(.299,.587,.114));float tierW=smoothstep(.35,.75,metalnessFactor);diffuseColor.rgb=mix(diffuseColor.rgb,tierTint*clamp(tierLum*2.4,.15,1.6),tierW);}')};
- m.customProgramCacheKey=()=>'eldervale-tier-metal';
+  shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 tierTint;').replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\n{float tierLum=dot(diffuseColor.rgb,vec3(.299,.587,.114));float tierW='+(mode==='all'?'0.85':'smoothstep(.35,.75,metalnessFactor)')+';diffuseColor.rgb=mix(diffuseColor.rgb,tierTint*clamp(tierLum*2.4,.15,1.6),tierW);}');
+  if(glow)accentShader(shader,glow,mode)};
+ m.customProgramCacheKey=()=>'eldervale-tier-metal'+suffix;
  return m;
 }

@@ -12,7 +12,7 @@ export function armorItem(T,key){
  const item=outfitItems[key],part=item?.male;
  if(!item||!store.ready){root.userData.ready=Promise.resolve(root);return root}
  const fill=src=>{
-  const holder=new T.Group();src.traverse(o=>{if(!o.isSkinnedMesh||/Regular/.test(o.material?.name||''))return;const m=new T.Mesh(o.geometry,outfitMaterial(item.outfit,item.variant,item.tint??null));m.castShadow=true;m.receiveShadow=true;holder.add(m)});
+  const holder=new T.Group();src.traverse(o=>{if(!o.isSkinnedMesh||/Regular/.test(o.material?.name||''))return;const m=new T.Mesh(o.geometry,outfitMaterial(item.outfit,item.variant,item.tint??null,item.look??null));m.castShadow=true;m.receiveShadow=true;holder.add(m)});
   // Centre on the ground at a hand-held size regardless of where it sits on the body.
   holder.updateMatrixWorld(true);const box=new T.Box3().setFromObject(holder),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());
   const s=.85/Math.max(.01,size.x,size.y,size.z);holder.scale.setScalar(s);holder.position.set(-center.x*s,-box.min.y*s,-center.z*s);root.add(holder);return root;
