@@ -8170,5 +8170,95 @@
       105
     ],
     "sha256": "eadc8a200afcd4f38e30edef04b6a2d7defc035e1e3188df1bec45dc15767e7d"
+  },
+  {
+    "key": "item-antidote",
+    "id": "antidote",
+    "name": "Mosswort antidote",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "aec3806cb87aa2314c4b1d0e20467be3d2d61cac25c1db66942a1892b51e740a"
+  },
+  {
+    "key": "item-serpentbaneTonic",
+    "id": "serpentbaneTonic",
+    "name": "Serpentbane tonic",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "aec3806cb87aa2314c4b1d0e20467be3d2d61cac25c1db66942a1892b51e740a"
+  },
+  {
+    "key": "item-shrineDraught",
+    "id": "shrineDraught",
+    "name": "Shrine draught",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "aec3806cb87aa2314c4b1d0e20467be3d2d61cac25c1db66942a1892b51e740a"
+  },
+  {
+    "key": "item-briskTonic",
+    "id": "briskTonic",
+    "name": "Brisk tonic",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "aec3806cb87aa2314c4b1d0e20467be3d2d61cac25c1db66942a1892b51e740a"
+  },
+  {
+    "key": "item-windstepBrew",
+    "id": "windstepBrew",
+    "name": "Windstep brew",
+    "model": "potion",
+    "bounds": [
+      0.30000001192092896,
+      0.41250000685453414,
+      0.30000001192092896
+    ],
+    "pixelBounds": [
+      37,
+      22,
+      107,
+      118
+    ],
+    "sha256": "aec3806cb87aa2314c4b1d0e20467be3d2d61cac25c1db66942a1892b51e740a"
   }
 ]

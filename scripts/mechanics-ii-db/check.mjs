@@ -39,7 +39,7 @@ await run(`insert into eldervale_private.realm_catalog(id,data) values
 const pass=async()=>{for(const f of ['mechanics-ii-1-core.sql','mechanics-ii-2-combat.sql','mechanics-ii-3-hooks.sql']){const sql=readFileSync(repo+'db/'+f,'utf8');for(const w of ['delete','alter','drop'])assert.ok(!new RegExp('\\b'+w+'\\b','i').test(sql),f+' avoids '+w);await run(sql,f)}};
 await pass();await pass();
 console.log('ok mechanics-ii 1-3 apply twice (idempotent hooks)');
-for(const [fn,needle] of [['world_tick()','mech_tick(t)'],['world_tick()','mech_combat('],['world_tick()','mech_aggro_target('],['world_tick()','mech_player_attack('],['realm_request(uuid,text,jsonb,uuid,bigint)','mech_command('],['realm_request(uuid,text,jsonb,uuid,bigint)','mech_reply('],['realm_request_social_base(uuid,text,jsonb,uuid,bigint)','mech_eat_gate('],['realm_request_before_bank_notes(uuid,text,jsonb,uuid,bigint)','mech_eat_gate('],['realm_request_before_castle(uuid,text,jsonb,uuid,bigint)',"'block'"],['combat_xp_unscaled(uuid,integer,text,jsonb)',"style='block'"],['advance_player_motion(uuid,timestamp with time zone)','mech_energy('],['advance_player_tiles(uuid,timestamp with time zone)','mech_energy('],['admin_console(text,jsonb)','mech_console(']]){
+for(const [fn,needle] of [['world_tick()','mech_tick(t)'],['world_tick()','mech_combat('],['world_tick()','mech_aggro_target('],['world_tick()','mech_player_attack('],['realm_request(uuid,text,jsonb,uuid,bigint)','mech_command('],['realm_request(uuid,text,jsonb,uuid,bigint)','mech_reply('],['realm_request_social_base(uuid,text,jsonb,uuid,bigint)','mech_eat_gate('],['realm_request_before_bank_notes(uuid,text,jsonb,uuid,bigint)','mech_eat_gate('],['realm_request_before_castle(uuid,text,jsonb,uuid,bigint)','mech_set_defensive('],['combat_xp_unscaled(uuid,integer,text,jsonb)',"style='block'"],['advance_player_motion(uuid,timestamp with time zone)','mech_energy('],['advance_player_tiles(uuid,timestamp with time zone)','mech_energy('],['admin_console(text,jsonb)','mech_console(']]){
  const d=(await one(`select pg_get_functiondef('eldervale_private.${fn}'::regprocedure) d`)).d;
  assert.equal(d.split(needle).length-1,1,fn+' hooked once: '+needle);
 }
@@ -167,6 +167,12 @@ await run(`update eldervale_private.realm_actors set target='${P}',x=${13*1.58},
 await worldTick(1);assert.equal((await one(`select target from eldervale_private.realm_actors where id='wolf'`)).target,null,'leash: lost interest');
 console.log('ok leash / lose interest');
 
+// Defensive style: stored as lunge + the defensive flag (the live attack_style check allows stab/slash/lunge).
+await run(`set test.uid='${P}';select eldervale_private.realm_request_before_castle('${SESSION}','attack_style','{"style":"block"}',gen_random_uuid(),0)`,'block style');
+assert.equal((await one(`select attack_style s from eldervale_private.realm_players where user_id='${P}'`)).s,'lunge');
+assert.equal((await one(`select eldervale_private.mech_style('${P}','lunge') s`)).s,'block');assert.equal((await rq('sync')).mechanics.style,'block');
+await run(`select eldervale_private.realm_request_before_castle('${SESSION}','attack_style','{"style":"lunge"}',gen_random_uuid(),0)`,'controlled');assert.equal((await one(`select eldervale_private.mech_style('${P}','lunge') s`)).s,'lunge');
+console.log('ok Defensive style through the attack_style command');
 // Kill: always drop (bones) on the ground, kill count, gold/xp, death event.
 await run(`update eldervale_private.realm_actors set hp=5 where id='wolf'`);
 await run(`select eldervale_private.mech_apply('actor','wolf','{"src":"${P}","srcKind":"player","dmg":50,"style":"melee","xpStyle":"block","w":{}}','${at(tick)}')`,'kill');

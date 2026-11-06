@@ -1,0 +1,25 @@
+/* Combat & mechanics II HUD: prayer/special orbs, run energy ring, Prayer tab, poison tint. */
+.mech-orb{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:3px;min-width:46px;min-height:32px;padding:2px 7px;border-radius:16px;border:1px solid #6d6a5a;color:#f3e7c4;font:600 11px Arial,sans-serif;cursor:pointer;
+ background:linear-gradient(90deg,var(--orb-color,#2f6aa8) var(--fill,0%),#1d211d var(--fill,0%));box-shadow:inset 0 1px #ffffff22}
+.mech-orb[hidden]{display:none!important}
+.mech-prayer-orb{--orb-color:#2b7fb8}.mech-prayer-orb.active{border-color:#9be0ff;box-shadow:0 0 9px #67c6ff88}
+.mech-spec-orb{--orb-color:#3e8e3a}.mech-spec-orb.active{border-color:#ffe270;box-shadow:0 0 9px #ffd84d99}.mech-spec-orb.none{opacity:.6}
+.mech-orb-icon{font-size:13px;line-height:1}
+#run-toggle.mech-energy{background:linear-gradient(90deg,#8a6d1f55 var(--energy,100%),transparent var(--energy,100%)),var(--run-bg,#1f241f)}
+.mech-weight{margin:4px 8px;font:11px Arial,sans-serif;color:#cdbf98;text-align:right}
+.mech-weight[hidden]{display:none}
+#health-hud.poisoned .health-track,#health-hud.poisoned #health-fill{filter:hue-rotate(80deg) saturate(1.3)}
+#health-hud.venomed .health-track,#health-hud.venomed #health-fill{filter:hue-rotate(140deg) saturate(1.6) brightness(.85)}
+#prayer-tab{padding:6px 8px;overflow:auto;color:#f0e6c8;font:12px Arial,sans-serif}
+.mech-prayer-head{display:flex;justify-content:space-between;align-items:baseline}.mech-prayer-head h3{margin:0;font-size:15px}
+.mech-prayer-bar{height:7px;border-radius:4px;background:#232a26;border:1px solid #4d5446;margin:5px 0 4px;overflow:hidden}.mech-prayer-bar span{display:block;height:100%;background:linear-gradient(#7fd2ff,#2c7fb8)}
+.mech-hint{margin:2px 0 6px;color:#b9ae8d;font-size:11px}
+.mech-prayer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:4px}
+.mech-prayer{display:flex;flex-direction:column;align-items:center;gap:1px;min-height:58px;padding:4px 2px;border-radius:6px;border:1px solid #5b5847;background:#262a24;color:#efe5c6;font:10px Arial,sans-serif;cursor:pointer}
+.mech-prayer .mech-prayer-icon{font-size:18px}.mech-prayer .mech-prayer-name{text-align:center;line-height:1.1}
+.mech-prayer.on{background:#3b5a2a;border-color:#d7c160;box-shadow:inset 0 0 8px #ffe48f55}
+.mech-prayer.quick{outline:2px dashed #7fd2ff;outline-offset:-3px}
+.mech-prayer.locked{opacity:.45}
+.mech-prayer-actions{display:flex;gap:6px;margin-top:8px}.mech-prayer-actions button{flex:1;min-height:34px}
+body.mech-multi #map-widget::after{content:'⚔ Multi';position:absolute;top:4px;left:6px;font:700 10px Arial,sans-serif;color:#ffd77a;text-shadow:0 1px 2px #000}
+@media (max-width:700px){.mech-orb{min-width:38px;font-size:10px;padding:2px 5px}}

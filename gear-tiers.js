@@ -50,7 +50,10 @@ export const addBonuses=(...list)=>{const out=bonuses();for(const b of list)if(b
 //  stab  = Accurate   (+3 effective Attack / Ranged)
 //  slash = Aggressive (+3 effective Strength); with a bow: Rapid (one tick faster)
 //  lunge = Controlled (+1 Attack, Strength and Defence); with a bow: Longrange (+3 Defence)
-export const STYLE_BONUS={stab:{att:3,str:0,def:0},slash:{att:0,str:3,def:0},lunge:{att:1,str:1,def:1}};
+//  block = Defensive  (+3 effective Defence, Defence XP); with a bow: Longrange as well
+export const STYLE_BONUS={stab:{att:3,str:0,def:0},slash:{att:0,str:3,def:0},lunge:{att:1,str:1,def:1},block:{att:0,str:0,def:3}};
+// Defence style bonus for a weapon (docs/mechanics-spec.md 4.2): Longrange with a bow is +3.
+export const styleDefenceBonus=(style,weapon)=>style==='block'?3:style==='lunge'?(weapon?.ranged&&!weapon?.magic?3:weapon?.magic?0:1):0;
 const STAB={stab:'stab',slash:'slash',lunge:'stab'},SLASH={stab:'slash',slash:'slash',lunge:'stab'},CRUSH={stab:'crush',slash:'crush',lunge:'crush'},AXE={stab:'slash',slash:'slash',lunge:'crush'},HEAVY={stab:'slash',slash:'slash',lunge:'crush'},SPEAR={stab:'stab',slash:'slash',lunge:'crush'};
 
 // Weapon templates, with OSRS tier-40 (rune-equivalent) bonuses as the reference.
@@ -59,10 +62,10 @@ export const WEAPON_TEMPLATES={
  dagger:{label:'dagger',model:'dagger',bars:1,off:0,ticks:4,reach:1.7,a:[25,12,-4],str:24,styles:STAB},
  scimitar:{label:'scimitar',model:'scimitar',bars:2,off:5,ticks:4,reach:2.4,a:[7,45,-2],str:44,styles:SLASH},
  longsword:{label:'longsword',model:'longsword',bars:2,off:6,ticks:5,reach:2.5,a:[38,47,-2],str:49,styles:SLASH},
- hammer:{label:'hammer',model:'hammer',bars:1,off:2,ticks:5,reach:2.0,a:[20,-2,39],str:36,prayer:4,styles:CRUSH},
+ hammer:{label:'hammer',model:'hammer',bars:1,off:2,ticks:4,reach:2.0,a:[20,-2,39],str:36,prayer:4,styles:CRUSH},
  battleaxe:{label:'battleaxe',model:'battleaxe',bars:3,off:10,ticks:6,reach:2.2,a:[-2,48,43],str:64,styles:AXE},
  twohand:{label:'2h sword',model:'twohand',bars:3,off:14,ticks:7,reach:2.8,a:[-4,69,50],str:70,twoHanded:true,styles:HEAVY},
- spear:{label:'spear',model:'spear',bars:1,off:4,ticks:5,reach:3.2,a:[36,36,36],str:42,styles:SPEAR}
+ spear:{label:'spear',model:'spear',bars:1,off:4,ticks:4,reach:3.2,a:[36,36,36],str:42,styles:SPEAR}
 };
 // The iron tier keeps the original item keys, so saves and shops keep working.
 const IRON_KEYS={dagger:'dagger',scimitar:'scimitar',longsword:'longsword',hammer:'hammer',battleaxe:'battleaxe',twohand:'twohand',spear:'spear'};
@@ -74,7 +77,7 @@ export const ARMOUR_VERB={weaponsOwned:'wield',shieldsOwned:'wear',armorOwned:'w
 const SPECIAL_WEAPONS={
  shortsword:{t:{a:[38,26,-2],str:39,ticks:4,styles:STAB},tier:'iron'},
  waraxe:{t:WEAPON_TEMPLATES.battleaxe,tier:'iron'},
- warhammer:{t:{a:[-4,-4,82],str:79,ticks:7,styles:CRUSH},tier:'iron'},
+ warhammer:{t:{a:[-4,-4,82],str:79,ticks:6,styles:CRUSH},tier:'iron'},
  bronzeSword:{t:{a:[38,26,-2],str:39,ticks:4,styles:STAB},tier:'bronze'},
  bronzeAxe:{t:WEAPON_TEMPLATES.battleaxe,tier:'bronze'},
  goldenSword:{t:WEAPON_TEMPLATES.longsword,factor:.56,level:20},
@@ -237,9 +240,9 @@ export function playerAttackProfile({levels={},bonuses:b=bonuses(),weapon=null,s
  const type=weapon?.styles?.[style]||'crush',effA=effectiveLevel(lv('attack'),s.att),effS=effectiveLevel(lv('strength'),s.str);
  return {type,effAccuracy:effA,attackRoll:attackRoll(effA,b['a'+type]||0),maxHit:maxHit(effS,b.str,HIT_SCALE),osrsMaxHit:maxHit(effS,b.str)};
 }
-export function playerDefenceRoll({levels={},bonuses:b=bonuses(),style='slash',type='crush'}={}){
- const lv=k=>Math.max(1,Number(levels[k])||1),styleDef=(STYLE_BONUS[style]||STYLE_BONUS.slash).def;
- const eff=type==='magic'?magicDefenceLevel(lv('magic'),lv('defence'))+8:effectiveLevel(lv('defence'),styleDef);
+export function playerDefenceRoll({levels={},bonuses:b=bonuses(),style='slash',type='crush',weapon=null}={}){
+ const lv=k=>Math.max(1,Number(levels[k])||1),styleDef=styleDefenceBonus(style,weapon);
+ const eff=type==='magic'?magicDefenceLevel(lv('magic'),lv('defence'))+styleDef+8:effectiveLevel(lv('defence'),styleDef);
  return defenceRoll(eff,b['d'+(type==='ranged'?'range':type)]||0);
 }
 const defKey=type=>type==='ranged'?'ranged':type;
@@ -250,20 +253,20 @@ export function rollPlayerHit(profile,monster,rng=Math.random){
  if(rng()>=hitChance(profile.attackRoll,def))return 0;
  return Math.floor(rng()*(profile.maxHit+1));
 }
-export function rollMonsterHit(monster,{levels={},bonuses:b=bonuses(),style='slash'}={},rng=Math.random){
+export function rollMonsterHit(monster,{levels={},bonuses:b=bonuses(),style='slash',weapon=null}={},rng=Math.random){
  const ms=monsterStats(monster);if(ms.dummy||ms.maxHit<=0)return 0;
- const att=attackRoll(ms.attackLevel+9,ms.attackBonus),def=playerDefenceRoll({levels,bonuses:b,style,type:ms.attackStyle});
+ const att=attackRoll(ms.attackLevel+9,ms.attackBonus),def=playerDefenceRoll({levels,bonuses:b,style,type:ms.attackStyle,weapon});
  if(rng()>=hitChance(att,def))return 0;
  return Math.floor(rng()*(ms.maxHit+1));
 }
 // Attack period in seconds; Rapid (slash with a bow) is one tick faster.
 export const attackPeriod=(weapon,style)=>Math.max(TICK_SECONDS*2,(Number(weapon?.speed)||1.8)-(weapon?.ranged&&!weapon?.magic&&style==='slash'?TICK_SECONDS:0));
-// Labels for the three style buttons.
+// Labels for the four style buttons (block = Defensive; with a bow it is Longrange too).
 export function styleLabels(weapon){
- if(weapon?.magic)return {stab:['Accurate','Casts at full accuracy. Magic XP.'],slash:['Accurate','Casts at full accuracy. Magic XP.'],lunge:['Accurate','Casts at full accuracy. Magic XP.']};
- if(weapon?.ranged)return {stab:['Accurate','+3 effective Ranged. Ranged XP.'],slash:['Rapid','Shoots one tick faster. Ranged XP.'],lunge:['Longrange','+3 effective Defence. Ranged XP.']};
+ if(weapon?.magic)return {stab:['Accurate','Casts at full accuracy. Magic XP.'],slash:['Accurate','Casts at full accuracy. Magic XP.'],lunge:['Accurate','Casts at full accuracy. Magic XP.'],block:['Accurate','Casts at full accuracy. Magic XP.']};
+ if(weapon?.ranged)return {stab:['Accurate','+3 effective Ranged. Ranged XP.'],slash:['Rapid','Shoots one tick faster. Ranged XP.'],lunge:['Longrange','+3 effective Defence. Ranged and Defence XP.'],block:['Longrange','+3 effective Defence. Ranged and Defence XP.']};
  const t=k=>cap(weapon?.styles?.[k]||'crush');
- return {stab:['Accurate ('+t('stab')+')','+3 effective Attack. Awards Attack XP.'],slash:['Aggressive ('+t('slash')+')','+3 effective Strength. Awards Strength XP.'],lunge:['Controlled ('+t('lunge')+')','+1 Attack, Strength and Defence. Shares XP.']};
+ return {stab:['Accurate ('+t('stab')+')','+3 effective Attack. Awards Attack XP.'],slash:['Aggressive ('+t('slash')+')','+3 effective Strength. Awards Strength XP.'],lunge:['Controlled ('+t('lunge')+')','+1 Attack, Strength and Defence. Shares XP.'],block:['Defensive ('+t('lunge')+')','+3 effective Defence. Awards Defence XP.']};
 }
 
 // Human-readable bonus lines, OSRS equipment-screen order.

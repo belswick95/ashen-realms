@@ -291,9 +291,9 @@ create or replace function eldervale_private.mech_player_attack(uid uuid, actor_
 language plpgsql set search_path to '' as $fn$
 declare c jsonb:=eldervale_private.mech_config();now_tick bigint:=eldervale_private.tick_no(t);p eldervale_private.realm_players;s public.player_saves;a eldervale_private.realm_actors;am eldervale_private.actor_mech;pm eldervale_private.player_mech;
  mm jsonb;w jsonb;wkey text;spec jsonb;fx jsonb;m jsonb;hits integer:=1;acc float8:=1;mult float8:=1;kind text;delay integer;d integer;pend jsonb:='[]';dmg integer;stats jsonb;arrow text;
- lock_ticks integer:=eldervale_private.mech_num(c,'combat','single_lock_ticks',8)::integer;spec_left integer;armed boolean;i integer;sd integer;
+ lock_ticks integer:=eldervale_private.mech_num(c,'combat','single_lock_ticks',8)::integer;spec_left integer;armed boolean;i integer;sd integer;style text;
 begin
- select * into p from eldervale_private.realm_players where user_id=uid;
+ select * into p from eldervale_private.realm_players where user_id=uid;style:=eldervale_private.mech_style(uid,p.attack_style);
  select * into a from eldervale_private.realm_actors where id=actor_id;
  if a.id is null or a.deleted or a.hp<=0 then return null;end if;
  select * into s from public.player_saves where user_id=uid;
@@ -340,16 +340,16 @@ begin
    arrow:=eldervale_private.best_arrow(stats,w);exit when arrow is null;stats:=eldervale_private.spend_arrow(stats,w);
    if random()<eldervale_private.mech_num(c,'ammo','recover_chance',0.8) then perform eldervale_private.mech_ground_drop(uid,arrow,1,a.x,a.z,coalesce((a.data->>'floor')::integer,0));end if;
   end if;
-  dmg:=eldervale_private.mech_player_roll(s.skills,s.equipment,stats,p.attack_style,w,m,fx,acc,mult);
-  pend:=pend||jsonb_build_array(jsonb_build_object('at',now_tick+delay,'src',uid,'srcKind','player','dmg',dmg,'style',kind,'xpStyle',p.attack_style,
+  dmg:=eldervale_private.mech_player_roll(s.skills,s.equipment,stats,style,w,m,fx,acc,mult);
+  pend:=pend||jsonb_build_array(jsonb_build_object('at',now_tick+delay,'src',uid,'srcKind','player','dmg',dmg,'style',kind,'xpStyle',style,
    'w',jsonb_build_object('magic',coalesce((w->>'magic')::boolean,false),'ranged',coalesce((w->>'ranged')::boolean,false),'spellXp',w->'spellXp'),
    'spec',spec,'poison',eldervale_private.mech_rule('poison',array['weapon:'||wkey])));
  end loop;
  if kind='ranged' and stats is distinct from s.stats then update public.player_saves set stats=mech_player_attack.stats where user_id=uid;end if;
  update eldervale_private.actor_mech set pending=pending||pend where id=actor_id;
- update eldervale_private.player_mech set attack_tick=now_tick+eldervale_private.mech_weapon_ticks(wkey,w,p.attack_style),spec=spec_left,spec_armed=armed where user_id=uid;
+ update eldervale_private.player_mech set attack_tick=now_tick+eldervale_private.mech_weapon_ticks(wkey,w,style),spec=spec_left,spec_armed=armed where user_id=uid;
  update eldervale_private.realm_players set yaw=atan2(a.x-p.x,a.z-p.z) where user_id=uid;
- perform eldervale_private.emit(jsonb_build_object('type','windup','side','player','target',actor_id,'player',uid,'attackType',a.data->>'attackType','style',p.attack_style,'ranged',kind<>'melee','special',spec->>'name','delay',delay));
+ perform eldervale_private.emit(jsonb_build_object('type','windup','side','player','target',actor_id,'player',uid,'attackType',a.data->>'attackType','style',style,'ranged',kind<>'melee','special',spec->>'name','delay',delay));
  return intent;
 exception when others then
  perform eldervale_private.mech_fault('player attack',sqlerrm);return intent;
@@ -410,7 +410,7 @@ begin
   end if;
  end if;
  if am.attack_tick>now_tick or am.retreat then return;end if;
- dmg:=eldervale_private.mech_npc_roll(s.skills,s.equipment,p.attack_style,w,a.data,eldervale_private.mech_prayer_effects(pm.prayers));
+ dmg:=eldervale_private.mech_npc_roll(s.skills,s.equipment,eldervale_private.mech_style(uid,p.attack_style),w,a.data,eldervale_private.mech_prayer_effects(pm.prayers));
  update eldervale_private.actor_mech set attack_tick=now_tick+(mm->>'attackTicks')::integer where id=actor_id;
  update eldervale_private.realm_actors set yaw=atan2(p.x-a.x,p.z-a.z) where id=actor_id;
  perform eldervale_private.emit(jsonb_build_object('type','windup','side','enemy','target',actor_id,'player',uid,'attackType',a.data->>'attackType','style',p.attack_style,'ranged',kind<>'melee'));

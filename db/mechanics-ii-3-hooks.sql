@@ -103,7 +103,7 @@ begin
  if h is distinct from pm.weight_hash then wt:=coalesce(eldervale_private.mech_weight(uid),0);update eldervale_private.player_mech set weight=wt,weight_hash=h where user_id=uid;end if;
  plevel:=eldervale_private.gear_level(s.skills,'prayer');wkey:=coalesce(s.equipment->>'weapon','unarmed');
  sp:=eldervale_private.mech_rule('special',array[wkey]);
- res:=jsonb_build_object('enabled',true,'tick',now_tick,'weight',wt,
+ res:=jsonb_build_object('enabled',true,'tick',now_tick,'weight',wt,'style',(case when pm.defensive and p.attack_style='lunge' then 'block' else p.attack_style end),
   'prayer',jsonb_build_object('points',coalesce(pm.prayer_points,plevel),'max',plevel,'active',to_jsonb(pm.prayers),'quick',to_jsonb(pm.quick_prayers)),
   'spec',jsonb_build_object('energy',pm.spec,'armed',pm.spec_armed,'name',sp->>'name','cost',(sp->>'cost')::integer,'text',sp->>'text'),
   'poison',jsonb_build_object('severity',pm.poison,'venom',pm.venom,'immuneUntil',pm.immune_until),
@@ -296,8 +296,8 @@ begin
    "if p.consume_at>clock_timestamp()-interval '1.75 seconds' then raise exception 'You are already eating.';end if;",
    "if p.consume_at>clock_timestamp()-interval '1.75 seconds' and not eldervale_private.mech_on() then raise exception 'You are already eating.';end if;perform eldervale_private.mech_eat_gate(auth.uid(),payload->>'item',r,p.consume_at);"],
   ["eldervale_private.realm_request_before_castle(uuid,text,jsonb,uuid,bigint)",
-   "if payload->>'style' not in ('stab','slash','lunge')",
-   "if payload->>'style' not in ('stab','slash','lunge','block')"],
+   "if payload->>'style' not in ('stab','slash','lunge') or not(payload?'style') then raise exception 'Invalid attack style';end if;update eldervale_private.realm_players set attack_style=payload->>'style' where user_id=auth.uid();",
+   "if payload->>'style' not in ('stab','slash','lunge','block') or not(payload?'style') then raise exception 'Invalid attack style';end if;update eldervale_private.realm_players set attack_style=(case when payload->>'style'='block' then 'lunge' else payload->>'style' end) where user_id=auth.uid();perform eldervale_private.mech_set_defensive(auth.uid(),payload->>'style'='block');"],
   ["eldervale_private.combat_xp_unscaled(uuid,integer,text,jsonb)",
    "  when ranged then jsonb_build_object('rangedXP',4*d)\n",
    "  when ranged and style in ('lunge','block') then jsonb_build_object('rangedXP',2*d,'defenceXP',2*d)\n  when ranged then jsonb_build_object('rangedXP',4*d)\n  when style='block' then jsonb_build_object('defenceXP',4*d)\n"],

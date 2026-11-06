@@ -54,6 +54,7 @@ create table if not exists eldervale_private.player_mech(
  last_hit_by text,
  last_hit_tick bigint,
  tol jsonb,
+ defensive boolean not null default false,
  pending jsonb not null default '[]');
 
 create table if not exists eldervale_private.actor_mech(
@@ -218,6 +219,14 @@ create or replace function eldervale_private.mech_multi(x float8, z float8, fl i
   and coalesce((r.data->>'floor')::integer,0)=coalesce(fl,0)
   and x between least((r.data->>'x1')::float8,(r.data->>'x2')::float8) and greatest((r.data->>'x1')::float8,(r.data->>'x2')::float8)
   and z between least((r.data->>'z1')::float8,(r.data->>'z2')::float8) and greatest((r.data->>'z1')::float8,(r.data->>'z2')::float8))
+$fn$;
+-- The player's combat style. realm_players.attack_style allows stab/slash/lunge only, so the
+-- Defensive style is stored as lunge + player_mech.defensive (set by the attack_style command).
+create or replace function eldervale_private.mech_style(uid uuid, attack_style text) returns text language sql stable set search_path to '' as $fn$
+ select (case when attack_style='lunge' and coalesce((select defensive from eldervale_private.player_mech where user_id=uid),false) then 'block' else coalesce(attack_style,'slash') end)
+$fn$;
+create or replace function eldervale_private.mech_set_defensive(uid uuid, on_block boolean) returns void language sql set search_path to '' as $fn$
+ insert into eldervale_private.player_mech(user_id,defensive) values(uid,coalesce(on_block,false)) on conflict (user_id) do update set defensive=coalesce(on_block,false)
 $fn$;
 -- Active prayer effects: multipliers {att,str,def,ranged,magic,heal}, protection style, drain sum.
 create or replace function eldervale_private.mech_prayer_effects(active text[]) returns jsonb language sql stable set search_path to '' as $fn$

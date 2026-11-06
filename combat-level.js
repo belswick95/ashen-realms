@@ -33,7 +33,7 @@ export function migrateLegacyXp(xp,{hitpoints=false}={}){const v=Math.max(0,Math
 export const SPELL_BASE_XP=5.5,SHARED_XP_PER_DAMAGE=1.33;
 const xp2=n=>Math.round(n*100)/100;
 export function combatXp({damage=0,style='slash',ranged=false,magic=false,baseSpellXp=SPELL_BASE_XP}={}){const d=Math.max(0,Math.floor(damage)),out={},share=xp2(SHARED_XP_PER_DAMAGE*d);const add=(k,n)=>{if(n>0)out[k]=xp2((out[k]||0)+n)};
- if(magic){add('magicXP',2*d+baseSpellXp)}else if(ranged)add('rangedXP',4*d);else if(style==='stab')add('attackXP',4*d);else if(style==='lunge'){add('attackXP',share);add('strengthXP',share);add('defenceXP',share)}else add('strengthXP',4*d);
+ if(magic){add('magicXP',2*d+baseSpellXp)}else if(ranged){if(style==='lunge'||style==='block'){add('rangedXP',2*d);add('defenceXP',2*d)}else add('rangedXP',4*d)}else if(style==='stab')add('attackXP',4*d);else if(style==='block')add('defenceXP',4*d);else if(style==='lunge'){add('attackXP',share);add('strengthXP',share);add('defenceXP',share)}else add('strengthXP',4*d);
  add('hitpointsXP',share);return out}
 // OSRS skilling success for one attempt: low/high are chances out of 256 at levels 1 and 99,
 // interpolated linearly, capped at certainty. Mirrors eldervale_private.skilling_chance.

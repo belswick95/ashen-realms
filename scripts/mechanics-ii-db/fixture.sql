@@ -8,7 +8,7 @@ create function auth.uid() returns uuid language sql stable as $$select nullif(c
 create table public.player_saves(user_id uuid primary key,character_name text default 'Tester',skills jsonb default '{}',stats jsonb default '{}',inventory jsonb default '{}',equipment jsonb default '{}',game_flags jsonb default '{}',world_position jsonb default '{}',level integer default 3,health integer default 100,max_health integer default 100,gold bigint default 0,xp bigint default 0);
 create table eldervale_private.realm_objects(id text primary key,kind text,x float8,z float8,data jsonb default '{}',available_at timestamptz,open boolean default false);
 create table eldervale_private.town_zones(id text primary key,x float8,z float8,radius float8,square boolean default false);
-create table eldervale_private.realm_players(user_id uuid primary key,session_id uuid,x float8,z float8,yaw float8 default 0,path jsonb default '[]',intent jsonb,run boolean default false,energy float8 default 100,last_seen timestamptz default now(),last_command timestamptz default now(),attack_style text default 'slash',consume_at timestamptz,input_x float8 default 0,input_z float8 default 0,input_until timestamptz,floor integer default 0,building text,motion_at timestamptz default clock_timestamp());
+create table eldervale_private.realm_players(user_id uuid primary key,check(attack_style in ('stab','slash','lunge')),session_id uuid,x float8,z float8,yaw float8 default 0,path jsonb default '[]',intent jsonb,run boolean default false,energy float8 default 100,last_seen timestamptz default now(),last_command timestamptz default now(),attack_style text default 'slash',consume_at timestamptz,input_x float8 default 0,input_z float8 default 0,input_until timestamptz,floor integer default 0,building text,motion_at timestamptz default clock_timestamp());
 create table eldervale_private.realm_actors(id text primary key,data jsonb,x float8,z float8,yaw float8 default 0,hp integer,respawn_at timestamptz,target uuid,turn text default 'player',phase text default 'ready',due_at timestamptz,turn_at timestamptz,deleted boolean default false,roam_x float8,roam_z float8,roam_pause_until timestamptz,route_step integer);
 create table eldervale_private.realm_clock(id boolean primary key default true,tick_at timestamptz,enabled boolean default true);
 insert into eldervale_private.realm_clock values(true,clock_timestamp()-interval '5 seconds',true);
@@ -116,7 +116,7 @@ CREATE OR REPLACE FUNCTION eldervale_private.realm_request_before_castle(session
 declare result jsonb;
 begin
  if command='attack_style' then
-  if payload->>'style' not in ('stab','slash','lunge') or not(payload?'style') then raise exception 'Invalid attack style';end if;update eldervale_private.realm_players set attack_style=payload->>'style' where user_id=auth.uid();
+  if payload->>'style' not in ('stab','slash','lunge') or not(payload?'style') then raise exception 'Invalid attack style';end if;update eldervale_private.realm_players set attack_style=payload->>'style' where user_id=auth.uid();result:='{}';
  end if;
  return '{}';
 end $function$;
