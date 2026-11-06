@@ -1,7 +1,7 @@
 // Tick & tile engine, client half (mirrors db/tick-tile-engine-*.sql; the server is authoritative).
 // Tiles are 1.58 world units (one character-width, click-walk.js TILE); tile (i,j) is centred on
 // (i*TILE, j*TILE). One game tick is 600 ms: walkers step 1 tile per tick, runners 2.
-import {TILE,GAME_TICK} from './click-walk.js?v=release-20261106-boss108';
+import {TILE,GAME_TICK} from './click-walk.js?v=release-20261106-r3x109';
 export {TILE,GAME_TICK};
 export const FLAG={BLOCK:1,E:2,N:4,NE:8,NW:16,WATER:32,OBJECT:64};
 export const tileOf=v=>Math.floor(v/TILE+.5);

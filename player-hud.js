@@ -1,5 +1,5 @@
-import {cloneSpeaker} from './dialogue-portrait.js?v=release-20261106-boss108';
-import {texturesSettled} from './character-assets.js?v=release-20261106-boss108';
+import {cloneSpeaker} from './dialogue-portrait.js?v=release-20261106-r3x109';
+import {texturesSettled} from './character-assets.js?v=release-20261106-r3x109';
 // The portrait renders the actual equipped player meshes, using the existing GPU
 // context only when head equipment changes. No second animated renderer is needed.
 // Snapshot refreshes write the same values again; skip equal writes so the
