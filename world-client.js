@@ -1,5 +1,5 @@
 import {registerProfessions} from './professions.js?v=release-20261106-login85';
-import {registerWorldItems} from './economy.js?v=release-20261106-login85';
+import {registerWorldItems,registerCatalogOverrides} from './economy.js?v=release-20261106-login85';
 import {loading} from './loading-indicator.js?v=release-20261106-login85';
 // Requests the player waits on show the loading chip; background polling does not.
 const RPC_LABELS={world_pickup:'Picking up…',world_admin:'Working…',world_report:'Sending report…'};
@@ -11,7 +11,7 @@ export async function startWorld(db,user,{initial,flush,disconnect}){
  async function deliver(delivery){if(window.eldervaleAuthority){await window.eldervaleRealm.refresh();return}window.eldervaleWorldBridge.grant(delivery);if(!await flush())throw Error('Delivery kept locally until the character save succeeds');await rpc('world_ack',{delivery_id:delivery.id})}
  async function refresh(){if(polling||stopped)return;polling=true;try{
   snapshot=await rpc('world_snapshot',{cursor_revision:cursor});lastSyncError=null;loading.end('world-reconnect');offset=Date.parse(snapshot.serverTime)-Date.now();
-  registerWorldItems(snapshot.catalog);registerProfessions(snapshot.professions);const access=snapshot.access,now=Date.now()+offset;
+  registerWorldItems(snapshot.catalog);registerCatalogOverrides(snapshot.catalogOverrides);window.eldervaleGameConfig=snapshot.gameConfig||null;registerProfessions(snapshot.professions);const access=snapshot.access,now=Date.now()+offset;
   if(Date.parse(access?.banned_until)>now){stopped=true;await disconnect('Access suspended: '+access.reason);return}
   if(Date.parse(access?.kicked_at)>startedAt){stopped=true;await disconnect('Removed by the owner: '+access.reason);return}
   if(snapshot.settings.maintenance&&!snapshot.owner){stopped=true;await disconnect('Eldervale is in maintenance mode. Please try again later.');return}
@@ -30,7 +30,7 @@ export async function startWorld(db,user,{initial,flush,disconnect}){
  if(remaining===0&&!restarting){restarting=true;window.eldervaleWorldBridge.capture();void flush().then(ok=>{if(ok)location.reload();else{restarting=false;banner.textContent='Reconnecting paused — waiting for your character to save.'}})}
  }
  await refresh();if(!initialized)throw lastSyncError||Error('World access is unavailable');
- if(snapshot?.owner||snapshot?.staffRole==='moderator'){const {createAdminPanel}=await import('./admin-panel.js?v=release-20261106-login85');panel=createAdminPanel({userId:user.id,rpc,action,refresh,snapshot,bridge:window.eldervaleWorldBridge,storage:db.storage})}
+ if(snapshot?.owner||snapshot?.staffRole==='moderator'){const {createAdminPanel}=await import('./admin-panel.js?v=release-20261106-login85');panel=createAdminPanel({userId:user.id,rpc,action,refresh,snapshot,bridge:window.eldervaleWorldBridge,storage:db.storage,auth:db.auth})}
  const report=document.createElement('button');report.type='button';report.textContent='Report a player';report.id='world-report-button';report.style.cssText='position:fixed;bottom:4px;left:50%;transform:translateX(-50%);z-index:95;font:11px Arial;padding:4px 8px;background:#182620;color:#c8ba9a;border:1px solid #80704c;border-radius:4px';(document.body.classList.contains('phone-layout')?document.querySelector('#settings-tab')||document.body:document.body).append(report);
  // Also opened from a player's right-click menu with that player already filled in.
  window.eldervaleReportPlayer=(targetId=null,targetName='')=>{const form=document.createElement('dialog');form.innerHTML='<form method="dialog"><h2>Report a player</h2><p class="report-target" hidden></p><label>Player ID (optional)<input name="target" maxlength="36"></label><label>What happened?<textarea name="body" required minlength="5" maxlength="1000"></textarea></label><p role="status"></p><button type="submit">Send report</button><button type="button" data-close>Cancel</button></form>';document.body.append(form);form.querySelector('[data-close]').onclick=()=>form.close();form.addEventListener('close',()=>form.remove());form.querySelector('form').onsubmit=async e=>{e.preventDefault();try{await rpc('world_report',{target_id:form.querySelector('[name=target]').value.trim()||null,report_text:form.querySelector('textarea').value});form.close();window.eldervaleWorldBridge.notice('Report sent to the owner.')}catch(err){form.querySelector('[role=status]').textContent=err.message}};if(targetId){form.querySelector('[name=target]').value=String(targetId);if(targetName){const who=form.querySelector('.report-target');who.textContent='Reporting '+targetName;who.hidden=false}}form.showModal()};report.onclick=()=>window.eldervaleReportPlayer();
