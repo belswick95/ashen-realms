@@ -76,7 +76,9 @@ function* candidates(kind,A,B,o){
 export function frameShot(shot,{a,b,fov=55,aspect=16/9,rooms=[],clear=()=>true}){
  const kind=shot.two?'two':'over',o=shot.two||shot.over,A=subjectPoints(a,a.tall),B=subjectPoints(b,b.tall);
  const room=roomAround(rooms,[A.feet,B.feet]),margin=.86;
- const visible=[A.head,A.chest,B.head,B.chest];
+ // Two-shots keep both people whole across the shoulders, not just their faces.
+ const across=flat(A.head,B.head),wide=(P,k)=>({x:P.chest.x+across.x*k,y:P.chest.y,z:P.chest.z+across.z*k});
+ const visible=[A.head,A.chest,B.head,B.chest,wide(A,-.45),wide(B,.45)];
  let fallback=null,lastKey='';
  for(const c of candidates(kind,A,B,o)){
   let eye=c.eye;if(room)eye=clampToRoom(room,eye);

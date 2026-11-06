@@ -1,7 +1,7 @@
-import {createCape} from './cape.js?v=release-20261106-classic105';
-import {buildWarhorse} from './horse-model.js?v=release-20261106-classic105';
-import {characterStore as store,ensurePart,outfitMaterial} from './character-assets.js?v=release-20261106-classic105';
-import {outfitItems} from './outfits.js?v=release-20261106-classic105';
+import {createCape} from './cape.js?v=release-20261106-cut106';
+import {buildWarhorse} from './horse-model.js?v=release-20261106-cut106';
+import {characterStore as store,ensurePart,outfitMaterial} from './character-assets.js?v=release-20261106-cut106';
+import {outfitItems} from './outfits.js?v=release-20261106-cut106';
 // Canonical 3D models for wearable items: the same outfit part that a
 // character wears, shown on its own. Inventory icons, ground drops (which
 // flatten this model) and bank notes are all derived from it, so every outfit

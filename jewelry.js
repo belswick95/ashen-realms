@@ -1,4 +1,4 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261106-classic105';
+import {meshItemIcon} from './item-appearance.js?v=release-20261106-cut106';
 // Jewelry is stored in existing inventory/equipment JSON; rings have no character mesh.
 export const jewelryCatalog={
  woodlandAmulet:{name:'Woodland amulet',slot:'amulet',skill:'woodXP',bonus:1,icon:meshItemIcon('jewelry:woodlandAmulet'),description:'+1 Woodcutting level and +5% Woodcutting XP while worn.'},
