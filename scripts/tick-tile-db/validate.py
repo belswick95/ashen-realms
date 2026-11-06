@@ -1,4 +1,4 @@
-# Validate db/tick-tile-engine*.sql with pglast: the SQL itself, every plpgsql body, and the
+# Validate db/tick-tile-engine*.sql and db/tile-perf*.sql with pglast: the SQL itself, every plpgsql body, and the
 # repo rule that SQL files avoid the words DELETE/ALTER/DROP.
 # Usage: python3 scripts/tick-tile-db/validate.py
 import glob, re, sys
@@ -6,7 +6,7 @@ import pglast
 from pglast import parse_plpgsql
 
 bad = 0
-for path in sorted(glob.glob('db/tick-tile-engine*.sql')):
+for path in sorted(glob.glob('db/tick-tile-engine*.sql') + glob.glob('db/tile-perf*.sql')):
     text = open(path).read()
     for w in ('delete', 'alter', 'drop'):
         if re.search(r'\b' + w + r'\b', text, re.I):
