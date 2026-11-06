@@ -20,12 +20,13 @@ export function ambienceMix({day=1,water=0,town=0,forest=.5,snow=0,ember=0,indoo
  const sun=smoothstep(.2,.8,clamp(day));water=clamp(water);town=clamp(town);forest=clamp(forest);snow=clamp(snow);ember=clamp(ember);
  const w=weather||{},under=clamp(w.underground),inside=clamp(indoors),out=(1-.7*inside)*(1-under),rain=clamp(w.rain)*(1-under),gale=clamp(w.wind)*(1-under),fall=clamp(Math.max(w.snow||0,(w.ash||0)*.6))*(1-under);
  // Rain and snowfall quieten the wildlife.
- const calm=(1-.85*rain)*(1-.6*fall),wild=(1-.9*snow)*(1-.85*ember)*(1-.35*town)*out*calm;
+ // Towns: beds drop to a low hush so the town music carries; they fade back up on trails and in the woods.
+ const hush=1-.85*smoothstep(0,1,town),calm=(1-.85*rain)*(1-.6*fall),wild=(1-.9*snow)*(1-.85*ember)*hush*out*calm;
  return {
   birds:.55*sun*(.6+.4*forest)*wild,
   crickets:.45*(1-sun)*(.75+.25*forest)*wild,
-  wind:((.12+.55*snow+.1*(1-forest)+.1*ember)*(1-.4*town)+.5*gale*gale)*out,
-  water:.8*Math.pow(water,1.2)*out
+  wind:((.12+.55*snow+.1*(1-forest)+.1*ember)*hush+.5*gale*gale)*out,
+  water:.8*Math.pow(water,1.2)*(.4+.6*hush)*out
  };
 }
 // Low-pass per bed (Hz): indoors every bed is heard through the walls, and
