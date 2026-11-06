@@ -4,7 +4,8 @@ import {batchStaticMeshes} from './static-batch.js?v=release-20261106-r3x109';
 // stalls, street lanterns and wells, built from shared textured materials and
 // merged per material so each prop costs a handful of draw calls. Footprints
 // match the server collision sizes in can_step (bench 2.3×1, barrel r .6,
-// crate 1.4×1.2, market 2.7×1.9, well r 1.2).
+// crate 1.4×1.2, well r 1.2). A market stall blocks only its posts and counter
+// (2.4×1.5); its 2.7×1.9 awning hangs overhead and does not block.
 const caches=new WeakMap();
 function kit(T){
  let k=caches.get(T);if(k)return k;

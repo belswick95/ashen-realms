@@ -5,7 +5,7 @@ const world=JSON.parse(fs.readFileSync(new URL('../db/generated-world.json',impo
 const base=world.entities.filter(e=>e.generation!=='town-life-v1');
 
 // Mirrors eldervale_private.can_step for the town obstacles a route can meet.
-const SIZES={bench:[1.15,.5],barrel:[.6,.6],crate:[.7,.6],market:[1.35,.95]};
+const SIZES={bench:[1.15,.5],barrel:[.6,.6],crate:[.7,.6],market:[1.2,.75]};
 function blocked(x,z,obstacles){for(const o of obstacles){if(['bank','inn','forge','cottage'].includes(o.template)){const p=buildingLocal(o,x,z);if(Math.abs(p.x)<2.17&&Math.abs(p.z)<2.09)return o.template}
   else if(o.template==='fountain'){if(Math.hypot(x-o.x,z-o.z)<2.1)return 'fountain'}
   else if(SIZES[o.template]){const a=(o.yaw||0)*Math.PI/180,dx=(x-o.x)*Math.cos(a)-(z-o.z)*Math.sin(a),dz=(x-o.x)*Math.sin(a)+(z-o.z)*Math.cos(a),[hx,hz]=SIZES[o.template];if(o.template==='barrel'?Math.hypot(dx,dz)<hx+.2:Math.abs(dx)<hx+.2&&Math.abs(dz)<hz+.2)return o.template}}return null}

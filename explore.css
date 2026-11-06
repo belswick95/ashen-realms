@@ -37,4 +37,16 @@
 .explore-emotes,.explore-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .explore-riddle,.explore-lore{font-style:italic;line-height:1.45}
 .explore-reader canvas{display:block;width:100%;max-width:260px;margin:6px auto;border-radius:3px}
+.boss-log{list-style:none;margin:6px 0 8px;padding:0;display:flex;flex-direction:column;gap:6px}
+.boss-log-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 12px;padding:8px 10px;border:1px solid #b49a66;border-radius:5px;background:#f5ecd2}
+.boss-log-row.slain{border-left:4px solid #8a2f22}
+.boss-log-row.unslain{opacity:.8}
+.boss-log-who{display:flex;flex-direction:column;gap:2px;min-width:0}
+.boss-log-who strong{font-size:14px;overflow-wrap:anywhere}
+.boss-log-lair{font-size:12px;color:#6f5f45;overflow-wrap:anywhere}
+.boss-log-stats{display:grid;grid-template-columns:auto auto;gap:1px 8px;margin:0;font-size:12px;text-align:right;white-space:nowrap}
+.boss-log-stats dt{color:#6f5f45}
+.boss-log-stats dd{margin:0;font-weight:bold;font-variant-numeric:tabular-nums}
+.boss-log-stats dd.boss-log-none{grid-column:1/-1;font-weight:normal;font-style:italic;color:#8a7a5c}
+@media(max-width:420px){.boss-log-row{grid-template-columns:1fr}.boss-log-stats{justify-content:start;text-align:left}}
 @media(max-width:650px){#explore-toggle{top:auto;bottom:118px;right:8px}.explore-toasts{top:52px}}

@@ -1,5 +1,7 @@
 export const campObstacleSizes={fence:[.85,.12],tent:[2,1.95],bedroll:[.48,1.05],log_seat:[.35,1.1],cooking_tripod:[.55,.55],supply_wagon:[1.25,2.8],trail_sign:[.2,.2],woodpile:[.65,.65],rope_coil:[.48,.48],camp_lantern:[.18,.18],wooden_table:[1,.5],stool:[.3,.3],weapon_rack:[1.05,.25],campfire:[.65,.65],farm_hut:[2.2,1.8],chicken_coop:[.75,.55],hay_bale:[1.1,.45],water_trough:[.95,.4],stone_statue:[.55,.55],wheelbarrow:[.4,.7],scarecrow:[.15,.15],flower_bed:[1,.45]};
-const obstacleSizes={...campObstacleSizes,furnace:[1.2,.8],anvil:[.8,.8],workbench:[1.2,.8],spinning_wheel:[.8,.8],tanning_rack:[.8,.8],mill:[.8,.8],rune_altar:[.8,.8],thieving_stall:[1.2,.8],practice_chest:[.8,.8],essence_rock:[.8,.8],construction_site:[.8,.8],tree:[.7,.7],pine:[.7,.7],rock:[1.1,1.1],crate:[.7,.6],barrel:[.6,.6],fountain:[1.9,1.9],well:[1.2,1.2],market:[1.35,.95],bench:[1.15,.5]};
+const obstacleSizes={...campObstacleSizes,furnace:[1.2,.8],anvil:[.8,.8],workbench:[1.2,.8],spinning_wheel:[.8,.8],tanning_rack:[.8,.8],mill:[.8,.8],rune_altar:[.8,.8],thieving_stall:[1.2,.8],practice_chest:[.8,.8],essence_rock:[.8,.8],construction_site:[.8,.8],tree:[.7,.7],pine:[.7,.7],rock:[1.1,1.1],crate:[.7,.6],barrel:[.6,.6],fountain:[1.9,1.9],well:[1.2,1.2],market:[1.2,.75],bench:[1.15,.5]};
+// Market stall: the posts and counter at walking height (town-props.js, 2.4×1.5 m), not the
+// 2.7×1.9 awning overhead. db/polish-market-stalls.sql gives the server the same footprint.
 export const fixedObstacles=[{template:'fountain',x:1,z:-1},{template:'market',x:-10,z:6},{template:'market',x:10,z:5},{template:'well',x:-68,z:37}];
 // Same frame as the server's can_step: yaw is radians when the record carries
 // scaleX (seeded world) and degrees otherwise; fences stretch by scaleX/scaleZ.
