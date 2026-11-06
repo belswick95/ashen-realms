@@ -1,10 +1,10 @@
 // Owner console › full-control tabs: Catalog, Economy, Quests, Backup and Audit, plus the player
 // inspector shown inside Players. Reads use world_admin directly; writes go through ctx.invoke so
 // they are owner-checked and audited on the server (db/admin-full-control.sql, fc_* commands).
-import {goods} from './economy.js?v=release-20261106-ui94';
+import {goods} from './economy.js?v=release-20261106-classic95';
 import {SKILLS,skillLabel,xpKey,statsXpKey,levelForXp,CATALOG_GROUPS,catalogForm,buildCatalogData,validateCatalogDraft,catalogKind,catalogMatches,duplicateId,
  normalizeMultipliers,effectiveXp,validateTimeOverride,MULTIPLIER_LIMITS,OBJECTIVE_TYPES,QUEST_EVENTS,DIALOGUE_STAGES,validateQuestDraft,questPreview,objectiveText,
- auditLine,backupStats,MODERATION_PRESETS} from './admin-full-data.js?v=release-20261106-ui94';
+ auditLine,backupStats,MODERATION_PRESETS} from './admin-full-data.js?v=release-20261106-classic95';
 
 const QUEST_KEYS=['name','description','giver','key','chain','order','requires','questPoints','icon','finishes','published','hint','objectives','gold','items','startItems','xp','dialogue'];
 const download=(name,data)=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
@@ -85,9 +85,13 @@ export function createFullControlTabs(ctx){
    const sa=actions(per);sa.classList.add('console-primary-actions');btn('Save multipliers',async()=>{m=current();await invoke('fc_settings_save',{key:'multipliers',value:m});note('Multipliers saved. They apply to the next award, drop, respawn or trade.')},sa);
    const world=section('World clock',box),wf=el('form',null,{class:'console-inline'});wf.onsubmit=e=>e.preventDefault();world.append(el('p','Lock the sky to an hour for every player, or follow the real (Eastern) clock.',{class:'console-muted'}),wf);
    const hour=field(wf,'Hour (0–24, empty = real time)','timeOverride',cfg.world?.timeOverride??'','number');hour.min=0;hour.max=24;hour.step='0.5';
-   btn('Apply time',async()=>{const v=validateTimeOverride(hour.value);await invoke('fc_settings_save',{key:'world',value:{timeOverride:v}});note(v===null?'Sky follows the real clock.':'Sky locked to '+v+':00.')},wf);
+   btn('Apply time',async()=>{const v=validateTimeOverride(hour.value);await invoke('fc_settings_save',{key:'world',value:{timeOverride:v,classicLook:!!cfg.world?.classicLook}});cfg.world={...(cfg.world||{}),timeOverride:v};note(v===null?'Sky follows the real clock.':'Sky locked to '+v+':00.')},wf);
    const qa=actions(world);for(const [label,h] of [['Dawn',6],['Noon',12],['Dusk',19],['Midnight',0]])btn(label,()=>{hour.value=h},qa);btn('Real time',()=>{hour.value=''},qa);
    world.append(el('p','Weather: Eldervale has no weather system yet, so there is nothing to override.',{class:'console-muted'}));
+   // Graphics default (classic-look.js): players who never touched Settings › Classic look follow this.
+   const look=section('Classic look default',box),lf=el('form',null,{class:'console-inline'});lf.onsubmit=e=>e.preventDefault();look.append(el('p','Low-poly, flat-shaded retro renderer (faster on iPad and phones). Players can still switch it in Settings › Graphics; their own choice wins.',{class:'console-muted'}),lf);
+   const classicBox=el('input',null,{type:'checkbox','aria-label':'Classic look by default'});classicBox.checked=cfg.world?.classicLook===true;const classicLabel=el('label',' Classic look by default');classicLabel.prepend(classicBox);lf.append(classicLabel);
+   btn('Save look default',async()=>{const tv=cfg.world?.timeOverride??null;await invoke('fc_settings_save',{key:'world',value:{timeOverride:tv,classicLook:classicBox.checked}});cfg.world={...(cfg.world||{}),classicLook:classicBox.checked};note(classicBox.checked?'New sessions start in the classic look unless a player turned it off.':'Classic look is off by default.')},lf);
    const help=section('Where multipliers apply',box);help.append(el('p','XP: skill_xp (professions, fishing, farming, quests), combat XP and woodcutting. Hitpoints XP from taking damage and the legacy kill XP counter are not scaled. Drop rate: monster loot rolls. Respawn: monsters and NPCs after defeat. Shop price: every merchant quote.',{class:'console-muted'}));
   }).catch(e=>{wait.textContent='Settings unavailable: '+e.message});
  }

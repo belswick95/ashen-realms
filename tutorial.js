@@ -1,7 +1,7 @@
 // Castle training client: objective HUD, guide arrow, tutor dialogue, gate lock and the arrival cutscene.
 // Server state (quests + game_flags.tutorial) arrives with every realm sync; nothing here is authoritative.
-import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261106-ui94';
-import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261106-ui94';
+import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261106-classic95';
+import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261106-classic95';
 
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -10,7 +10,7 @@ const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 // npcDialogue (optional, npc-dialogue.js adapter {start(profile)->id,page,choose,close,owns}): tutor
 // conversations then use the game's one NPC conversation box instead of the cutscene chatbox.
 export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null}){
- document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-ui94'}));
+ document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261106-classic95'}));
  let quests=[],flags={},locked=false,step=null,talking=false,destroyed=false,selfName='';
  // ---- objective HUD
  const hud=el('section','tutorial-hud');hud.hidden=true;hud.setAttribute('aria-live','polite');

@@ -1,7 +1,7 @@
 // Pure quest guidance rules shared by the quest markers, the tracker under the minimap and the
 // NPC conversation (tests/quest-guide.test.js). Input is the quest snapshot the server sends with
 // every realm sync (eldervale_private.quest_snapshot): {id,data,accepted,completed,progress}.
-import {objectiveCount,questReady} from './tutorial-logic.js?v=release-20261106-ui94';
+import {objectiveCount,questReady} from './tutorial-logic.js?v=release-20261106-classic95';
 
 export const isTutorialQuest=q=>q?.data?.chain==='tutorial';
 const skillLevel=(ctx,skill)=>Number(ctx.skillLevel?.(skill))||1;

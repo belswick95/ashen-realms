@@ -40,7 +40,7 @@ export function surfaceTexture(T,kind,color){
   for(let i=0;i<320;i++){c.strokeStyle='rgba(20,30,35,'+(.015+rnd()*.025)+')';c.beginPath();const x=rnd()*256,y=rnd()*256;c.moveTo(x,y);c.lineTo(x+2+rnd()*24,y+(rnd()-.5)*2);c.stroke()}
  }
  const pixels=c.getImageData(0,0,256,256);for(let i=0;i<pixels.data.length;i+=4){const noise=(rnd()-.5)*(kind==='metal'?4:kind==='plaster'?6:13);for(let j=0;j<3;j++)pixels.data[i+j]+=noise}c.putImageData(pixels,0,0);
- const texture=new T.CanvasTexture(canvas);texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=4;texture.userData.eldervaleShared=true;cache.set(key,texture);return texture;
+ const texture=new T.CanvasTexture(canvas);texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=4;texture.userData.eldervaleShared=true;texture.userData.baseColor=base.getHex(T.SRGBColorSpace);cache.set(key,texture);return texture;
 }
 // Each box face uses world-sized repeats, so stone blocks and timber grain retain scale.
 export function scaleSurfaceUV(geometry,w,h,d){const uv=geometry.attributes.uv;for(let face=0;face<6;face++){const a=face<2?d:w,b=face<2?h:face<4?d:h;for(let j=0;j<4;j++){const i=face*4+j;uv.setXY(i,uv.getX(i)*a/2,uv.getY(i)*b/2)}}return geometry}
