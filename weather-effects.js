@@ -79,7 +79,7 @@ function quadGeometry(T,count,random){
 export function createWeatherEffects(T,{scene,camera,renderer,landscape,sun,skyLight,player,classic=()=>false,classicDome=()=>null,classicAmbient=()=>null,shelter=()=>({indoors:false,underground:false}),houses=()=>[],worldSeed=1,onThunder=()=>{},now=()=>window.eldervaleServerTime?.()||Date.now(),random=Math.random}={}){
  let tier=weatherTier('high'),preset='high',classicOn=false,rainCount=0,flakeCount=0;
  const group=new T.Group();group.name='weather';group.userData.classicIgnore=true;group.userData.weather=true;group.userData.terrainFixed=true;/* never distance-culled or re-seated on the terrain (game.js) */scene.add(group);
- const common={transparent:true,depthWrite:false,fog:false,toneMapped:false};
+ const common={transparent:true,depthWrite:false,fog:false,toneMapped:false,side:T.DoubleSide};
  const rainUniforms={uTime:{value:0},uBox:{value:46},uHeight:{value:26},uSpeed:{value:11},uLength:{value:.55},uWidth:{value:.012},uFlake:{value:0},uCam:{value:new T.Vector3()},uWind:{value:new T.Vector2()},uColor:{value:new T.Color(.6,.65,.72)},uOpacity:{value:.4},uClassic:{value:0}};
  const flakeUniforms={...Object.fromEntries(Object.entries(rainUniforms).map(([k,v])=>[k,{value:v.value?.clone?v.value.clone():v.value}])),uFlake:{value:1},uSpeed:{value:1.1},uWidth:{value:.045},uBox:{value:40},uHeight:{value:22}};
  flakeUniforms.uCam=rainUniforms.uCam;flakeUniforms.uTime=rainUniforms.uTime;
@@ -106,7 +106,7 @@ export function createWeatherEffects(T,{scene,camera,renderer,landscape,sun,skyL
  function setQuality(p='high'){preset=p;classicOn=!!classic();tier=weatherTier(p,classicOn);
   if(tier.rain!==rainCount){rain.geometry.dispose();rain.geometry=quadGeometry(T,tier.rain,random);rainCount=tier.rain}
   if(tier.flakes!==flakeCount){flakes.geometry.dispose();flakes.geometry=quadGeometry(T,tier.flakes,random);flakeCount=tier.flakes}
-  rainUniforms.uClassic.value=flakeUniforms.uClassic.value=classicOn?1:0;rainUniforms.uWidth.value=classicOn?.06:.026;rainUniforms.uLength.value=classicOn?.9:.85;flakeUniforms.uWidth.value=classicOn?.09:.045;
+  rainUniforms.uClassic.value=flakeUniforms.uClassic.value=classicOn?1:0;rainUniforms.uWidth.value=classicOn?.045:.026;rainUniforms.uLength.value=classicOn?.9:.85;flakeUniforms.uWidth.value=classicOn?.09:.045;
   if(!tier.materials)release();
  }
  // Values the sky clock set (updateWorldSky / classic applySky); weather scales from these.
@@ -170,7 +170,7 @@ export function createWeatherEffects(T,{scene,camera,renderer,landscape,sun,skyL
   color.copy(base.fog).lerp(overcast,veil).lerp(flashColor,flash*.45);scene.fog.color.copy(color);if(scene.background?.isColor)scene.background.copy(color);
   const fog=weatherFog(fogBase.near,fogBase.far,Math.min(1,cur.fog+cur.haze*.1));scene.fog.near=fog.near;scene.fog.far=fog.far;
   sun.intensity=base.sun*(1-.78*cloud)*(1-.3*cur.fog);skyLight.intensity=base.hemi*(1+.18*cloud-.38*dark)+flash*(1.4+2.2*(1-day));
-  renderer.toneMappingExposure=base.exposure*(1-.2*dark+.05*cur.haze)+flash*.35;
+  renderer.toneMappingExposure=base.exposure*(1-.3*dark+.05*cur.haze)+flash*.35;
   const amb=classicAmbient();if(amb&&classicOn)amb.intensity=base.ambient*(1-.3*dark)+flash*1.2;
   const dome=classicDome();if(dome&&base.dome&&classicOn)dome.material.color.copy(white).lerp(overcast.clone().multiplyScalar(1.4),veil*.8).multiplyScalar(1-.25*dark).lerp(white,flash*.6);
   weatherUniforms.weatherCloud.value=cloud;weatherUniforms.weatherOvercast.value=Math.min(1,dark*1.4+cur.fog*.3);weatherUniforms.weatherFlash.value=flash;weatherUniforms.weatherWind.value=cur.wind;
@@ -183,7 +183,7 @@ export function createWeatherEffects(T,{scene,camera,renderer,landscape,sun,skyL
   rainUniforms.uOpacity.value=(classicOn?.42:.3)+.25*rainAmount;rainUniforms.uColor.value.setRGB(.72*light,.77*light,.84*light);rainUniforms.uSpeed.value=9+5*rainAmount;
   const flakeAmount=open?Math.max(cur.snow,cur.ash):0,fn=Math.floor(flakeCount*Math.min(1,flakeAmount));flakes.visible=fn>8;flakes.geometry.setDrawRange(0,fn*6);
   const ashShare=cur.ash/Math.max(.001,cur.snow+cur.ash);flakeUniforms.uWind.value.set(wx,wz).multiplyScalar(cur.wind*(1.6-ashShare*.6));flakeUniforms.uSpeed.value=1.15-ashShare*.45;
-  flakeUniforms.uColor.value.setRGB(.95-.55*ashShare,.96-.6*ashShare,.98-.66*ashShare).multiplyScalar(Math.min(1.1,.35+.75*day+flash));flakeUniforms.uOpacity.value=.85-.2*ashShare;
+  flakeUniforms.uColor.value.setRGB(.95-.33*ashShare,.96-.38*ashShare,.98-.44*ashShare).multiplyScalar(Math.min(1.1,.35+.75*day+flash));flakeUniforms.uOpacity.value=.85-.2*ashShare;
   // Ripples on water, small splashes on the ground (medium and up).
   const want=open&&tier.ripples?Math.round(tier.ripples*Math.min(1,rainAmount*1.2)):0;ripples.visible=want>0;
   if(want){rippleUniforms.uTime.value=(perf-t0)/1000;const births=rippleGeometry.attributes.aBirth,m=new T.Matrix4(),now_s=rippleUniforms.uTime.value;let dirty=false;ripples.count=want;
