@@ -136,6 +136,18 @@ export function createStrideRig(rig){
   RSthigh:RS['thigh_'+x],RScalf:RS['calf_'+x],RSfoot:RS['foot_'+x],RSclav:RS['clavicle_'+x],
   Bthigh:BP['thigh_'+x],Bfoot:BP['foot_'+x],BQfoot:BQ['foot_'+x],BQball:BQ['ball_'+x],sign:x==='l'?1:-1});
  const S={l:sideOf('l'),r:sideOf('r')};
+ const hf=new T.Vector3(),invRoot=new T.Matrix4(),sh=new T.Vector3(),bk=new T.Vector3(),e1=new T.Vector3(),e2=new T.Vector3(),rf=new T.Vector3(),el=new T.Vector3(),qr=new T.Quaternion();
+ // The grip (hand socket) sits this far past the wrist along the fingers.
+ const GRIP=.082*CHARACTER_SCALE;
+ // Elbow fit for reach(): forearm at angle a about the knuckle line.
+ let reachGrip=null,reachSign=1;
+ // The wrist is cocked by WRIST so the item leans back toward the elbow (a
+ // sword on the shoulder cannot be square to the forearm).
+ const WRIST=.7,cw=Math.cos(WRIST),sw=Math.sin(WRIST);
+ function elbowScore(a){rf.copy(e1).multiplyScalar(Math.cos(a)).addScaledVector(e2,Math.sin(a));
+  el.copy(reachGrip).addScaledVector(rf,-GRIP);const inward=Math.max(0,rf.x*-reachSign);rf.multiplyScalar(cw).addScaledVector(bk,-sw);el.addScaledVector(rf,-bind.fore);
+  // Prefer fingers (and a crossguard) pointing forward, not in at the neck.
+  return Math.abs(el.distanceTo(sh)-bind.upper)+.3*Math.max(0,el.y-(sh.y-.15))+.2*Math.max(0,(el.x-sh.x)*-reachSign)+.25*inward}
  const hip={l:new T.Vector3(),r:new T.Vector3()},ankle={l:new T.Vector3(),r:new T.Vector3()},knee=new T.Vector3(),pelvisP=new T.Vector3(),hipW=new T.Vector3();
  const track={l:{z:0,y:0,toe:0,stance:true,toes:1},r:{z:0,y:0,toe:0,stance:true,toes:1}},g=mixGait(0),X=new T.Vector3(1,0,0),Y=new T.Vector3(0,1,0);
  const contacts={left:true,right:true},wrist={l:BQ.lowerarm_l.clone().invert().multiply(BQ.hand_l),r:BQ.lowerarm_r.clone().invert().multiply(BQ.hand_r)};
@@ -167,7 +179,10 @@ export function createStrideRig(rig){
   // Upper arm turned so the elbow bends toward the forearm (the knuckle line when straight).
   as.copy(af).addScaledVector(au,-af.dot(au)).multiplyScalar(3).add(ak);
   basisQ(au,as,qa).multiply(o.Cupper);
-  basisQ(af,ak,qb);q1.copy(qb).multiply(o.Cfore);q2.copy(qb).multiply(o.Chand);
+  basisQ(af,as.copy(ak),qb);q1.copy(qb).multiply(o.Cfore);
+  // Hand: knuckle line exactly along `knuckle`; fingers follow the forearm
+  // (a straight wrist, or a cocked one when the item is not square to it).
+  hf.copy(af).addScaledVector(ak.normalize(),-af.dot(ak)).normalize();basisQ(hf,ak,q2).multiply(o.Chand);
   put(o.upper,parentRS,qa,w);put(o.fore,qa,q1,w);put(o.hand,q1,q2,w);
  }
  const rot=(axis,angle,out)=>out.setFromAxisAngle(axis,angle);
@@ -227,6 +242,18 @@ export function createStrideRig(rig){
    rot(X,-(swing+flex),q2);const f=k.copy(v3).applyQuaternion(q2);c.set(0,0,1).applyQuaternion(q2);
    arm(s,v1.copy(d),v2.copy(f),c,parentRS,w)},
   arm(s,upper,fore,knuckle,parentRS,w){arm(s,upper,fore,knuckle,parentRS,w)},
+  // Root-space position of a shoulder joint in the live pose.
+  shoulderRS(s,out){const o=S[s].upper;o.updateWorldMatrix(true,false);invRoot.copy(rig.root.matrixWorld).invert();return out.setFromMatrixPosition(o.matrixWorld).applyMatrix4(invRoot)},
+  // Put the hand's grip (socket) at `grip` (root space) with the knuckle line
+  // (the held item) along `knuckle`: the forearm is square to the knuckle line
+  // and turned about it until the elbow sits at upper-arm length from the
+  // shoulder, preferring an elbow that hangs down and out.
+  reach(s,grip,knuckle,w){const o=S[s];this.shoulderRS(s,sh);bk.copy(knuckle).normalize();
+   e1.set(0,1,0).addScaledVector(bk,-bk.y);if(e1.lengthSq()<1e-6)e1.set(1,0,0).addScaledVector(bk,-bk.x);e1.normalize();e2.crossVectors(bk,e1);
+   reachGrip=grip;reachSign=o.sign;let best=Infinity,bestA=0;
+   for(let i=0;i<24;i++){const a=i/24*2*Math.PI,v=elbowScore(a);if(v<best){best=v;bestA=a}}
+   for(let i=-5;i<=5;i++){const a=bestA+i*Math.PI/120,v=elbowScore(a);if(v<best){best=v;bestA=a}}
+   elbowScore(bestA);v1.copy(el).sub(sh);arm(s,v1,rf,bk,this.clavicleRS(s,qr),w)},
   // Wrist straight in line with the forearm (as in the bind pose).
   straightWrist(s){S[s].hand.quaternion.copy(wrist[s])},
   // Root-space rotation of a clavicle in the live pose.

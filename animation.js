@@ -91,7 +91,7 @@ export function createHumanoidAnimator(rig){
   // carried while moving (an attacking arm is left to the attack clip); a
   // shield rides on the bent forearm, board upright, all the time.
   kindL=heldKind(rig.leftHand);kindR=heldKind(rig.rightHand);const able=!mounted&&!dead;
-  carryR+=((kindR&&able?gait.move*(1-oneW):0)-carryR)*k;if(carryR<.001)carryR=0;
+  carryR+=((kindR&&able?(kindR==='greatsword'?1:gait.move)*(1-oneW):0)-carryR)*k;if(carryR<.001)carryR=0;
   carryL+=((kindL&&able?(kindL==='shield'?1:gait.move*(1-oneW)):0)-carryL)*k;if(carryL<.001)carryL=0;
   if(strideRig){mixGait(gait.run,gaitStyle);if(carryR&&kindR)arms.carry("r",kindR,carryR,gait,gaitStyle);if(carryL&&kindL)arms.carry("l",kindL,carryL,gait,gaitStyle)}
   // Blocking raises the shield in front of the chest on top of whatever plays.
@@ -135,7 +135,7 @@ export function netDipPhase(u){u=((Number(u)%1)+1)%1||0;const ease=x=>x<=0?0:x>=
 //                 the string back toward the cheek as `draw` goes 0..1.
 function createArmLayers(rig,stride){
  const T=rig.T,b=rig.bones;
- const cU=new T.Vector3(),cF=new T.Vector3(),cK=new T.Vector3(),cQ=new T.Quaternion(),cR=new T.Quaternion(),cX=new T.Vector3(1,0,0),want=new T.Quaternion();
+ const cU=new T.Vector3(),cF=new T.Vector3(),cK=new T.Vector3(),cB=new T.Vector3(),cQ=new T.Quaternion(),cR=new T.Quaternion(),cX=new T.Vector3(1,0,0),want=new T.Quaternion();
  const forward=new T.Vector3(),up=new T.Vector3(),left=new T.Vector3(),a=new T.Vector3(),c=new T.Vector3(),to=new T.Vector3(),target=new T.Vector3();
  const q=new T.Quaternion(),wq=new T.Quaternion(),pq=new T.Quaternion(),id=new T.Quaternion(),rot=new T.Quaternion(),m=new T.Matrix4();
  const netShoulder=new T.Vector3(),netGoal=new T.Vector3(),netHand=new T.Vector3(),netDir=new T.Vector3(),netY=new T.Vector3(0,1,0),netParent=new T.Quaternion(),netWant=new T.Quaternion();
@@ -150,14 +150,27 @@ function createArmLayers(rig,stride){
   // hangs, the forearm and knuckle line (the item's long axis) point where the
   // kind wants them, and the whole arm swings a little with the stride.
   carry(s,kind,weight,gait,style){const pose=CARRY[kind];if(!pose||!stride)return;const o=s==='l'?1:-1;
-   const swing=(s==='l'?-1:1)*style.arm*Math.cos(2*Math.PI*(gait.phase-style.lag))*pose.swing*gait.move+pose.raise;
-   cR.setFromAxisAngle(cX,-swing);
+   if(pose.shoulder)return this.shoulder(s,pose,weight,gait);
+   const run=gait.run*gait.move,share=pose.swing+((pose.runSwing??pose.swing)-pose.swing)*run;
+   const swing=(s==='l'?-1:1)*style.arm*Math.cos(2*Math.PI*(gait.phase-style.lag))*share*gait.move,lift=pose.raise+(pose.runRaise||0)*run;
+   cR.setFromAxisAngle(cX,-(swing+lift));
    cU.set(o*Math.sin(pose.abd),-Math.cos(pose.abd),0).applyQuaternion(cR);
+   if(pose.level)cR.setFromAxisAngle(cX,-swing);
    cK.set(o*pose.knuckle[0],pose.knuckle[1],pose.knuckle[2]).normalize();
    // Forearm square to the knuckle line, so the item points exactly as set.
    cF.set(o*pose.fore[0],pose.fore[1],pose.fore[2]);cF.addScaledVector(cK,-cF.dot(cK)).normalize();
    cF.applyQuaternion(cR);cK.applyQuaternion(cR);
    stride.arm(s,cU,cF,cK,stride.clavicleRS(s,cQ),weight)},
+  // Two-handed sword on the shoulder: the hilt in the right fist in front of
+  // the chest, the blade resting on top of the right shoulder and pointing up
+  // and back, outward of the head. Running brings the left hand onto the hilt
+  // below the right and holds both arms still (a steady, braced run).
+  shoulder(s,pose,weight,gait){if(s!=='r')return;const run=gait.run*gait.move;
+   stride.shoulderRS('r',cU);cK.set(-pose.blade[0],pose.blade[1],pose.blade[2]).lerp(cB.set(-pose.runBlade[0],pose.runBlade[1],pose.runBlade[2]),run).normalize();
+   // Right side: inward is +x, outward -x.
+   cF.set(pose.rest[0],pose.rest[1],pose.rest[2]).add(cU).addScaledVector(cK,-pose.grip);
+   stride.reach('r',cF,cK,weight);
+   if(run>.01){cF.addScaledVector(cK,-.13);stride.reach('l',cF,cK,weight*run)}},
   // Block: the shield arm comes up in front of the chest, forearm across the
   // body, knuckles up, so the board stands upright facing forward.
   guard(weight){if(!stride)return;const g=CARRY.guard;cU.fromArray(g.upper).normalize();cF.fromArray(g.fore).normalize();cK.fromArray(g.knuckle).normalize();stride.arm('l',cU,cF,cK,stride.clavicleRS('l',cQ),weight)},
