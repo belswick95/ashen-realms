@@ -173,3 +173,11 @@ and landscape; verify at iPhone SE / iPhone 15 / iPad sizes with Playwright scre
   already live in cut106), classic aa936a982633af7f1 (030094b draw-call fix + final shots; merge after),
   R3-K exploration a3bea19ca215eefb7 (was at PGlite harness).
 - Then: terrain & forests rework agent, phone world-map fix agent, final live QA.
+
+## STATUS 06 Nov evening
+- LIVE: r3x109 (Round 3 complete: bosses, dragons, uniques, quest arcs, exploration, classic final). All 17 SQL applied.
+- Running: terrain & forests (a6d17f13eefe3e745, 463a731 ready, phone shots pending → deploy),
+  phone world map (adf78a483692878fb), polish (a534afe8db2e920f6: potion shops incl. Breathward tonic,
+  boss kill-count panel, capital stall collision).
+- Then: final live QA on fresh account at iPad/phone sizes; evaluate tile mode (owner switch) and report.
+- Email: owner handles (not us).
