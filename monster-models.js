@@ -38,6 +38,9 @@ function readClassic(){if(store.classic)return store.classic;let list=[];try{lis
 export function classicMonsterSpecies(){return [...readClassic()]}
 export function setClassicMonsterModel(species,on){if(!MONSTER_MODELS[species])return false;const set=readClassic();if(on)set.add(species);else set.delete(species);try{globalThis.localStorage?.setItem(CLASSIC_KEY,JSON.stringify([...set]))}catch{}store.version++;return true}
 export function setClassicMonsterModels(on){for(const s of Object.keys(MONSTER_MODELS))setClassicMonsterModel(s,on)}
+// Fit height during a death clip: from where the body stood (`from`, with any hover lift) to where
+// the corpse rests on the ground (`rest`, asset.deathY), eased over the clip's progress 0..1.
+export function corpseHeight(from,rest,progress){const k=Math.max(0,Math.min(1,Number(progress)||0)),e=k*k*(3-2*k);return from+(rest-from)*e}
 export const hasRiggedModel=species=>!!MONSTER_MODELS[species];
 const canLoad=()=>typeof document!=='undefined'&&typeof fetch==='function';
 
@@ -55,7 +58,12 @@ function loadAsset(T,species){
   const holder=new T.Group();holder.rotation.y=cfg.yaw||0;holder.add(probe);holder.updateMatrixWorld(true);
   const box=new T.Box3().setFromObject(holder,true),size=box.getSize(new T.Vector3());
   const scale=cfg.size.height?cfg.size.height/size.y:cfg.size.length/Math.max(size.z,size.x);
-  const asset={T,scene,clips,scale,offset:new T.Vector3(-(box.min.x+box.max.x)/2*scale,-box.min.y*scale+(cfg.lift||0),-(box.min.z+box.max.z)/2*scale),radius:size.length()*scale*.75};
+  const asset={T,scene,clips,scale,offset:new T.Vector3(-(box.min.x+box.max.x)/2*scale,-box.min.y*scale+(cfg.lift||0),-(box.min.z+box.max.z)/2*scale),radius:size.length()*scale*.75,deathY:null};
+  // Where the corpse rests: the fit height that puts the last death frame's lowest point on the
+  // ground. Fliers drop their hover lift, and clips whose body ends below (or above) the idle feet
+  // no longer leave it sunk into the ground (imp, ogre, troll) or hanging in the air (bat).
+  if(clips.death){mixer.stopAllAction();const a=mixer.clipAction(clips.death);a.setLoop(T.LoopOnce,1);a.clampWhenFinished=true;a.play();mixer.setTime(clips.death.duration);holder.updateMatrixWorld(true);
+   const end=new T.Box3().setFromObject(holder,true);if(!end.isEmpty())asset.deathY=-end.min.y*scale}
   store.assets.set(species,asset);store.pending.delete(species);store.version++;return asset;
  }).catch(e=>{console.warn('Monster model',species,e);store.pending.delete(species);store.assets.set(species,null)}));
  return null;
@@ -103,12 +111,14 @@ function riggedBody(T,group,d,asset){
  const mixer=new T.AnimationMixer(body),act={};for(const [name,clip] of Object.entries(asset.clips))act[name]=mixer.clipAction(clip);
  for(const k of ['attack','hit','death'])if(act[k]){act[k].setLoop(T.LoopOnce,1);act[k].clampWhenFinished=true}
  const walkDuration=asset.clips.walk?.duration||1,attackScale=act.attack?asset.clips.attack.duration/(cfg.attack||.8):1;
- let base=act.idle||null,oneShot=null,lastAttack=0,lastHit=0,dead=false,tick=0;base?.play();
+ let base=act.idle||null,oneShot=null,lastAttack=0,lastHit=0,dead=false,tick=0,fallFrom=0;base?.play();
  const effect=attackEffect(T,fit,d,asset);
  const to=(next,fade=.2)=>{if(next===base)return;next?.reset().setEffectiveWeight(1).fadeIn(fade).play();base?.fadeOut(fade);base=next};
  const shot=(a,scale=1,fade=.08)=>{if(!a)return false;if(oneShot&&oneShot!==a)oneShot.fadeOut(fade);a.reset().setEffectiveTimeScale(scale).setEffectiveWeight(1).fadeIn(fade).play();oneShot=a;return true};
  return {fit,update(dt,m){tick+=dt;
-   if(m.dead){if(!dead){dead=true;if(act.death){if(oneShot&&oneShot!==act.death)oneShot.fadeOut(.1);base?.fadeOut(.15);act.death.reset().fadeIn(.1).play();oneShot=act.death}}mixer.update(dt);return}
+   if(m.dead){if(!dead){dead=true;fallFrom=fit.position.y;if(act.death){if(oneShot&&oneShot!==act.death)oneShot.fadeOut(.1);base?.fadeOut(.15);act.death.reset().fadeIn(.1).play();oneShot=act.death}}mixer.update(dt);
+    // Settle onto the ground with the fall (see asset.deathY).
+    if(act.death&&asset.deathY!=null)fit.position.y=corpseHeight(fallFrom,asset.deathY,act.death.time/asset.clips.death.duration);return}
    if(dead){dead=false;act.death?.stop();oneShot=null;base?.reset().fadeIn(.1).play()}
    const attack=m.attack||0,hit=m.hit||0;
    if(attack>lastAttack+.05)shot(act.attack,attackScale)||(oneShot=null);

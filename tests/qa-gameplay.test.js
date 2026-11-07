@@ -36,3 +36,14 @@ test('cave torches and braziers burn with the animated torch flame, not a white 
  assert.equal(t.userData.flame.name,'torch-flame');assert.ok(Math.abs(t.userData.flame.position.y-.505)<1e-9);
  const loose=makeFlame(T);assert.equal(loose.userData.torchFlame,true);
 });
+
+test('rigged monster corpses settle on the ground: fliers drop their hover lift, deep death clips do not sink',async()=>{
+ const mm=await import('../monster-models.js'+V);
+ // Bat: hovering fit (lift .75) → corpse resting where the last death frame touches the ground.
+ assert.equal(mm.corpseHeight(1.2,.3,0),1.2);assert.ok(Math.abs(mm.corpseHeight(1.2,.3,1)-.3)<1e-12);assert.ok(Math.abs(mm.corpseHeight(1.2,.3,7)-.3)<1e-12);
+ const mid=mm.corpseHeight(1.2,.3,.5);assert.ok(mid<1.2&&mid>.3);assert.equal(mm.corpseHeight(1,2,NaN),1);
+ const src=readFileSync(new URL('../monster-models.js',import.meta.url),'utf8');
+ // Measured once per species from the last frame of its death clip (skinned bounds), applied while dead.
+ assert.match(src,/mixer\.setTime\(clips\.death\.duration\);holder\.updateMatrixWorld\(true\);\s*const end=new T\.Box3\(\)\.setFromObject\(holder,true\);if\(!end\.isEmpty\(\)\)asset\.deathY=-end\.min\.y\*scale/);
+ assert.match(src,/fallFrom=fit\.position\.y;/);assert.match(src,/fit\.position\.y=corpseHeight\(fallFrom,asset\.deathY,act\.death\.time\/asset\.clips\.death\.duration\)/);
+});
