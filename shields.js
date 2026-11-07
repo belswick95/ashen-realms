@@ -1,9 +1,9 @@
-import {heldItem} from './weapon-assets.js?v=release-20261107-bank153';
-import {tierShields,shieldGear,describeGear,bonuses} from './gear-tiers.js?v=release-20261107-bank153';
-import {tintHeldItem} from './tier-tint.js?v=release-20261107-bank153';
-import {UNIQUE_ITEMS,defenceOf} from './unique-gear.js?v=release-20261107-bank153';
-import {accentHeldItem} from './unique-look.js?v=release-20261107-bank153';
-import {makeTorch} from './torch.js?v=release-20261107-bank153';
+import {heldItem} from './weapon-assets.js?v=release-20261107-console154';
+import {tierShields,shieldGear,describeGear,bonuses} from './gear-tiers.js?v=release-20261107-console154';
+import {tintHeldItem} from './tier-tint.js?v=release-20261107-console154';
+import {UNIQUE_ITEMS,defenceOf} from './unique-gear.js?v=release-20261107-console154';
+import {accentHeldItem} from './unique-look.js?v=release-20261107-console154';
+import {makeTorch} from './torch.js?v=release-20261107-console154';
 // Off-hand shields: Quaternius CC0 models (assets/weapons) in the held-item
 // frame: the fist at the origin behind the board, face toward +Z, top toward +Y.
 const S=(name,defence,buy,sell,desc)=>({name,kind:'shield',defence,buy,sell,desc});

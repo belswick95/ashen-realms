@@ -1,5 +1,5 @@
-import {weaponCatalog} from './weapons.js?v=release-20261107-bank153';
-import {ARROW_SPEED,BOLT_SPEED} from './arrows.js?v=release-20261107-bank153';
+import {weaponCatalog} from './weapons.js?v=release-20261107-console154';
+import {ARROW_SPEED,BOLT_SPEED} from './arrows.js?v=release-20261107-console154';
 // How each weapon attacks: the motion kind, the clip under it, and when it strikes.
 // Pure data and maths (no Three.js) so the animator (animation.js), the combat
 // presentation timeline (combat-timeline.js, game.js) and the tests agree on one

@@ -4,7 +4,7 @@
 // only (assets/audio/combat, combat-audio.js). One shared AudioContext
 // (music.js), effects on the SFX bus, area sounds on the ambient bus.
 // Positional sounds fade and darken with distance and pan by camera bearing.
-import {COMBAT_SAMPLE_SETS} from './combat-audio.js?v=release-20261107-bank153';
+import {COMBAT_SAMPLE_SETS} from './combat-audio.js?v=release-20261107-console154';
 
 export const SAMPLE_SETS={
  chop:['chop'],treeFall:['tree-fall'],creak:['tree-creak'],rockBreak:['rock-break'],anvil:['anvil','hammer'],
