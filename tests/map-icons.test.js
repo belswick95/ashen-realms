@@ -55,12 +55,12 @@ test('clustering: six nearby copper and tin rocks show as one "Copper & tin mine
  const far=classifyEntity(at({template:'rock',resource:'runiteOre'},200,200));
  const out=clusterMarkers([...rocks,far]);
  assert.equal(out.length,2);const mine=out.find(c=>c.count===6);
- assert.equal(mine.name,'Copper & tin mine');assert.equal(markerLabel(mine),'Copper & tin mine (lvl 1 Mining)');
+ assert.equal(mine.name,'Copper & tin mine');assert.equal(markerLabel(mine),'Copper & tin mine (Mining 1)');
  assert.ok(Math.abs(mine.x-10)<.01,'count-weighted centre');
- assert.equal(out.find(c=>c.count===1).name,'Runite mine');
+ assert.equal(out.find(c=>c.count===1).name,'Tidestone mine');
  // Chains merge (single linkage) and the label gives the level range and best-tier tint.
  const trail=['copperOre','tinOre','ore','coal','silverOre','goldOre','mithrilOre','adamantOre','runiteOre'].map((r,i)=>classifyEntity(at({template:'rock',resource:r},i*5,0)));
- const [one]=clusterMarkers(trail);assert.equal(one.count,9);assert.equal(one.name,'Copper-to-runite mine');assert.equal(requirementText(one),'Mining 1–85');assert.equal(one.tierColor,ORE_TIERS.runiteOre.color);
+ const [one]=clusterMarkers(trail);assert.equal(one.count,9);assert.equal(one.name,'Copper-to-tidestone mine');assert.equal(requirementText(one),'Mining 1–85');assert.equal(one.tierColor,ORE_TIERS.runiteOre.color);
  // Different kinds never merge, order does not matter, custom markers never merge.
  const mixed=[classifyEntity(at({template:'anvil'},0,0)),classifyEntity(at({template:'furnace'},1,0)),{cat:'custom',x:0,z:0,name:'A'},{cat:'custom',x:0,z:0,name:'B'}];
  assert.equal(clusterMarkers(mixed).length,4);
@@ -68,7 +68,7 @@ test('clustering: six nearby copper and tin rocks show as one "Copper & tin mine
  // Trees by tier, sorted in tier order whatever the input order.
  const trees=clusterMarkers([['yewLogs',0],['oakLogs',5]].map(([l,x])=>classifyEntity(at({template:'tree',logItem:l},x,0))));
  assert.equal(trees[0].name,'Oak & yew trees');assert.equal(markerLabel(trees[0]),'Oak & yew trees (Woodcutting 15–60)');
- assert.equal(markerLabel(clusterMarkers([classifyEntity(at({template:'pine',logItem:'yewLogs'}))])[0]),'Yew trees (lvl 60 Woodcutting)');
+ assert.equal(markerLabel(clusterMarkers([classifyEntity(at({template:'pine',logItem:'yewLogs'}))])[0]),'Yew trees (Woodcutting 60)');
  // A building's name beats the NPC who works there.
  const bank=clusterMarkers([{...classifyEntity(at({template:'banker',name:'Odell the Banker'},1,1)),npc:true},classifyEntity(at({template:'bank',name:'West Bank'},0,0))]);
  assert.equal(bank.length,1);assert.equal(bank[0].name,'West Bank');

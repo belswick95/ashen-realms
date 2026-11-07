@@ -1,5 +1,6 @@
 -- A small persistent starter workshop and resource trail. Every node remains
--- editable/movable/deletable in World Studio; existing towns are untouched.
+-- editable/movable/deletable in World Studio; existing towns are untouched. The higher-tier
+-- rocks carry the Eldervale metal names ("legacy": their first names, still matched on re-runs).
 do $$declare row jsonb;d jsonb;rev bigint;dx float8;dz float8;ok boolean;i integer;begin
  perform pg_advisory_xact_lock(736211);update eldervale_private.settings set revision=revision+1 where id returning revision into rev;
  for row in select value from jsonb_array_elements('[
@@ -27,15 +28,15 @@ do $$declare row jsonb;d jsonb;rev bigint;dx float8;dz float8;ok boolean;i integ
  {"template":"rock","resource":"coal","name":"Coal rocks","x":-260,"z":-290},
  {"template":"rock","resource":"silverOre","name":"Silver rocks","x":-255,"z":-290},
  {"template":"rock","resource":"goldOre","name":"Gold rocks","x":-250,"z":-290},
- {"template":"rock","resource":"mithrilOre","name":"Mithril rocks","x":-245,"z":-290},
- {"template":"rock","resource":"adamantOre","name":"Adamantite rocks","x":-240,"z":-290},
- {"template":"rock","resource":"runiteOre","name":"Runite rocks","x":-235,"z":-290},
+ {"template":"rock","resource":"mithrilOre","name":"Moonsilver rocks","legacy":"Mithril rocks","x":-245,"z":-290},
+ {"template":"rock","resource":"adamantOre","name":"Verdite rocks","legacy":"Adamantite rocks","x":-240,"z":-290},
+ {"template":"rock","resource":"runiteOre","name":"Tidestone rocks","legacy":"Runite rocks","x":-235,"z":-290},
  {"template":"tree","logItem":"oakLogs","name":"Oak timber tree","x":-275,"z":-300},
  {"template":"tree","logItem":"willowLogs","name":"Willow timber tree","x":-270,"z":-300},
  {"template":"tree","logItem":"mapleLogs","name":"Maple timber tree","x":-265,"z":-300},
  {"template":"pine","logItem":"yewLogs","name":"Yew timber tree","x":-260,"z":-300}
  ]'::jsonb) loop
-  if exists(select 1 from eldervale_private.entities where data->>'blueprint'='professions-v1' and data->>'name'=row->>'name') then continue;end if;
+  if exists(select 1 from eldervale_private.entities where data->>'blueprint'='professions-v1' and data->>'name' in(row->>'name',coalesce(row->>'legacy',row->>'name'))) then continue;end if;
   dx:=(row->>'x')::float8;dz:=(row->>'z')::float8;ok:=false;
   -- Only place on dry, collision-free ground, clear of doors and other nodes.
   for i in 0..80 loop
@@ -45,7 +46,7 @@ do $$declare row jsonb;d jsonb;rev bigint;dx float8;dz float8;ok boolean;i integ
    if (select bool_and(eldervale_private.can_step(dx+v.x,dz+v.z,dx+v.x,dz+v.z)) from (values(0.,0.),(-1.6,-1.0),(-1.6,1.0),(1.6,-1.0),(1.6,1.0))v(x,z)) then ok:=true;exit;end if;
   end loop;
   if not ok then raise exception 'No clear position for %',row->>'name';end if;
-  d:='{"kind":"object","yaw":0,"scale":1,"level":1,"hp":1,"damage":0,"attackSpeed":2.4,"roam":0,"respawn":0,"attackable":false,"hostile":false,"blueprint":"professions-v1"}'::jsonb||row||jsonb_build_object('x',dx,'z',dz);
+  d:='{"kind":"object","yaw":0,"scale":1,"level":1,"hp":1,"damage":0,"attackSpeed":2.4,"roam":0,"respawn":0,"attackable":false,"hostile":false,"blueprint":"professions-v1"}'::jsonb||(row-'legacy')||jsonb_build_object('x',dx,'z',dz);
   insert into eldervale_private.entities(revision,data) values(rev,d);
  end loop;
 end $$;

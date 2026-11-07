@@ -48,12 +48,13 @@ export const MARKER_CATS={
 export const LINK={mining:16,woodcutting:16,fishing:14,farming:10,cooking:5,furnace:5,smithing:5,crafting:6,skill:6,general:8,apothecary:6,weapons:6,armour:6,inn:6,bank:6,altar:6,agility:3,boat:4,teleport:4,dungeon:3,boss:4,dragon:12,training:0,exploration:0,custom:0};
 
 // ---------------------------------------------------------------------------- tier tables
-// Ores in tier order (rank) with the Mining level from the recipes; rocks without a resource
-// give iron ore (the server's default). Trees: the server's log types (tree_log_item).
+// Ores in tier order (rank) with the Mining level from the recipes and the Eldervale metal names
+// players see (moonsilver, verdite, tidestone); rocks without a resource give iron ore (the
+// server's default). Trees: the server's log types (tree_log_item).
 const ORE_ORDER=['runeEssence','copperOre','tinOre','ore','silverOre','coal','goldOre','mithrilOre','adamantOre','runiteOre'];
 const hex=n=>'#'+Number(n).toString(16).padStart(6,'0');
 export const ORE_TIERS=Object.fromEntries(ORE_ORDER.map((id,rank)=>{const o=oreResources[id];
- return [id,id==='runeEssence'?{name:'Rune essence',short:'essence',level:1,color:'#b9c9d4',rank}:{name:o.name.replace(/ ore$/,''),short:o.name.replace(/ ore$/,'').replace(/^Adamantite$/,'adamantite').toLowerCase(),level:o.level,color:hex(o.color),rank}]}));
+ return [id,id==='runeEssence'?{name:'Rune essence',short:'essence',level:1,color:'#b9c9d4',rank}:{name:o.name.replace(/ ore$/,''),short:o.name.replace(/ ore$/,'').toLowerCase(),level:o.level,color:hex(o.color),rank}]}));
 export const TREE_TIERS={
  wood:{name:'Trees',short:'normal',level:1,color:'#4f7a35',rank:0},
  oakLogs:{name:'Oak',short:'oak',level:15,color:'#8a8f3a',rank:1},
@@ -98,12 +99,15 @@ export function shopKind(name='',items=[]){
  return 'general';
 }
 // The marker for one world entity (row data) or town building, or null when it is not one.
-// Ordinary scenery trees and monsters are not markers (tiered trees, rocks and dragons are).
+// Ordinary scenery trees and monsters are not markers (tiered trees, rocks and dragons are;
+// normal trees count when they belong to a named skilling site).
+// A node's skilling site ("Highmoor coal field"): the merged marker takes its name.
+const siteOf=d=>typeof d.site==='string'&&d.site.trim()?{site:d.site.trim().slice(0,60)}:{};
 export function classifyEntity(d){
  if(!d||typeof d!=='object')return null;const t=String(d.template||d.type||'').toLowerCase(),x=Number(d.x),z=Number(d.z);
  if(!Number.isFinite(x)||!Number.isFinite(z))return null;const at={x,z};
- if(t==='rock'||t==='essence_rock'){const id=t==='essence_rock'?'runeEssence':ORE_TIERS[d.resource]?d.resource:'ore',o=ORE_TIERS[id];return {...at,cat:'mining',tier:id,tierRank:o.rank,tierColor:o.color,tierNames:[o.short],skill:'Mining',min:o.level,max:o.level,name:d.name||o.name+' rocks'}}
- if(t==='tree'||t==='pine'){const id=TREE_TIERS[d.logItem]&&d.logItem!=='wood'?d.logItem:TREE_TYPE[String(d.treeType||'').toLowerCase()];if(!id)return null;const o=TREE_TIERS[id];return {...at,cat:'woodcutting',tier:id,tierRank:o.rank,tierColor:o.color,tierNames:[o.short],skill:'Woodcutting',min:o.level,max:o.level,name:d.name||o.name+' tree'}}
+ if(t==='rock'||t==='essence_rock'){const id=t==='essence_rock'?'runeEssence':ORE_TIERS[d.resource]?d.resource:'ore',o=ORE_TIERS[id];return {...at,cat:'mining',tier:id,tierRank:o.rank,tierColor:o.color,tierNames:[o.short],skill:'Mining',min:o.level,max:o.level,name:d.name||o.name+' rocks',...siteOf(d)}}
+ if(t==='tree'||t==='pine'){const id=TREE_TIERS[d.logItem]&&(d.logItem!=='wood'||siteOf(d).site)?d.logItem:TREE_TYPE[String(d.treeType||'').toLowerCase()];if(!id)return null;const o=TREE_TIERS[id];return {...at,cat:'woodcutting',tier:id,tierRank:o.rank,tierColor:o.color,tierNames:[o.short],skill:'Woodcutting',min:o.level,max:o.level,name:d.name||o.name+' tree',...siteOf(d)}}
  if(t==='fishing_spot'||t==='fishing'){const k=FISH_TIERS[d.spotType]?d.spotType:'legacy',o=FISH_TIERS[k];return {...at,cat:'fishing',tier:k,tierRank:o.rank,tierColor:o.color,tierNames:[o.short],skill:'Fishing',min:o.level,max:o.max,name:d.name||'Fishing spot'}}
  if(d.kind==='monster'||d.kind==='creature'){if(t!=='dragon'&&d.species!=='dragon')return null;const lv=Number(d.level)||null;return {...at,cat:'dragon',skill:'combat',min:lv,max:lv,name:d.name||'Dragon',names:[d.name||'Dragon']}}
  if(d.agility&&typeof d.agility==='object'){const lv=Number(d.agility.level)||1;return {...at,cat:'agility',skill:'Agility',min:lv,max:lv,name:d.name||'Agility shortcut'}}
@@ -181,7 +185,10 @@ function merge(items){
  // A building's or object's name beats the NPC who works there ("Birchford West Bank", not its banker).
  const placeNames=items.some(m=>m.npc)?[...new Set(items.filter(m=>!m.npc).flatMap(m=>m.names||[m.name]).filter(Boolean))]:null;if(placeNames?.length)c.names=placeNames;
  c.x/=c.count;c.z/=c.count;tiers.sort(tierOrder);c.tierNames=tiers.map(t=>t.n);c.tierRanks=Object.fromEntries(tiers.map(t=>[t.n,t.rank]));
- c.name=c.fixedName||clusterName(c);return c;
+ // Nodes of one named skilling site: the site's name (the most common one if sites touch).
+ const sites=new Map();for(const m of items)if(m.site)sites.set(m.site,(sites.get(m.site)||0)+(m.count||1));
+ if(sites.size)c.site=[...sites.entries()].sort((a,b)=>b[1]-a[1]||(a[0]<b[0]?-1:1))[0][0];
+ c.name=c.fixedName||c.site||clusterName(c);return c;
 }
 // Single-linkage clusters per category: markers of one kind closer than `link` (world units,
 // or a function of the category) end up in one group. Order-independent; returns new objects
@@ -209,12 +216,12 @@ export function applyOverrides(clusters,cfg){
 
 // --------------------------------------------------------------------------------- labels
 const range=(a,b)=>a==null?'':(b==null||a===b?String(a):a+'–'+b);
-// The requirement / level text: "lvl 60 Woodcutting", "Mining 1–85", "boss, combat 120", "combat 28–32".
+// The requirement / level text: "Woodcutting 60", "Mining 1–85", "boss, combat 120", "combat 28–32".
 export function requirementText(c){
  if(c.cat==='boss')return c.min!=null?'boss, combat '+range(c.min,c.max):'boss';
  if(c.min==null)return '';
  if(c.skill==='combat')return 'combat '+range(c.min,c.max);
- if(c.skill)return c.min===c.max||c.max==null?'lvl '+c.min+' '+c.skill:c.skill+' '+range(c.min,c.max);
+ if(c.skill)return c.skill+' '+range(c.min,c.max);
  return '';
 }
 // The tooltip / tap label: name (requirement), then what is inside a cave and notes.

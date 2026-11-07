@@ -45,3 +45,5 @@ for(const [id,resource,skill,tool,level,xp,respawn]of [['herb_patch','grimyHerb'
 export const oreResources=Object.fromEntries(ores.map(([id,name,color,level])=>[id,{name,color,level}]));
 // Gear tiers: tiered bars, arrows, smithing and fletching recipes (gear-recipes.js).
 registerGearProfessions(professionItems,professionRecipes);
+// Ore names follow the items (moonsilver, verdite and tidestone for the higher tiers).
+for(const [id,o] of Object.entries(oreResources))if(professionItems[id]?.name)o.name=professionItems[id].name;

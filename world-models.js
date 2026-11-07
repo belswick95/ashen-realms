@@ -4,7 +4,7 @@ import {campObject} from './camp-models.js?v=release-20261107-monsters135';
 import {professionStationModel} from './profession-models.js?v=release-20261107-monsters135';
 import {oreResources} from './profession-data.js?v=release-20261107-monsters135';
 import {fishingRipple} from './gathering-visuals.js?v=release-20261107-monsters135';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261107-monsters135';
+import {buildNaturalForest,TREE_SPECIES} from './natural-forest.js?v=release-20261107-monsters135';
 import {creatureMaterial} from './creature-material.js?v=release-20261107-monsters135';
 import {dragonModel} from './monster-dragon.js?v=release-20261107-monsters135';
 import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-monsters135';
@@ -14,6 +14,9 @@ import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-202611
 import {townProp,dressFountain} from './town-props.js?v=release-20261107-monsters135';
 import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-monsters135';
 import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-monsters135';
+// A placed tree's look: an explicit treeType, else willows for willow logs and dark evergreens
+// for yews, else the template's.
+export const treeSpeciesOf=(d,id=d?.template)=>TREE_SPECIES.includes(d?.treeType)?d.treeType:d?.logItem==='willowLogs'?'willow':d?.logItem==='yewLogs'?'spruce':id==='pine'?'pine':'oak';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);
@@ -97,7 +100,7 @@ export function objectModel(T,parent,id,d={}){const explore=exploreObjectModel(T
  if(id.startsWith('castle_')||['altar','hearth'].includes(id)){castleObject(T,g,id,d);Object.assign(parent.userData,g.userData);return g;}
  const box=(x,y,z,w,h,l,c)=>{const m=new T.Mesh(sharedGeometry(T,'box',w,h,l),plainMaterial(T,c));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m};
  const cyl=(x,y,z,r,h,c,r2=r)=>{const m=new T.Mesh(sharedGeometry(T,'cylinder',r2,r,h,12),plainMaterial(T,c));m.position.set(x,y,z);g.add(m);return m};
- if(id==='fountain'){cyl(0,.35,0,1.9,.7,stone);cyl(0,.72,0,1.65,.04,0x659bb7);cyl(0,1.5,0,.24,1.8,stone);cyl(0,2.3,0,.65,.25,stone);const streams=[],water=new T.MeshStandardMaterial({color:0x6b9da9,roughness:.22,metalness:.08,transparent:true,opacity:.65});for(let i=0;i<8;i++){const a=i*Math.PI/4,curve=new T.QuadraticBezierCurve3(new T.Vector3(Math.cos(a)*.52,2.36,Math.sin(a)*.52),new T.Vector3(Math.cos(a)*1.3,2.6,Math.sin(a)*1.3),new T.Vector3(Math.cos(a)*1.45,.76,Math.sin(a)*1.45));const stream=new T.Mesh(new T.TubeGeometry(curve,16,.016,5,false),water);g.add(stream);const drop=new T.Mesh(new T.SphereGeometry(.026,6,5),water);drop.scale.set(.7,1.8,.7);g.add(drop);streams.push({curve,drop,phase:i/8})}dressFountain(T,g);parent.userData.animateWater=time=>{for(const s of streams)s.drop.position.copy(s.curve.getPoint((time*.65+s.phase)%1))};}else if(id==='fishing_spot'){fishingRipple(T,parent);}else if(['tree','pine'].includes(id)){const canopy=new T.Group();g.add(canopy);const timber=creatureMaterial(T,0x75583e,'hide');buildNaturalForest(T,canopy,[{x:0,z:0}],{wood:timber,heightAt:()=>0,seed:(Math.floor((d.x||0)*137)^Math.floor((d.z||0)*317)^2419)>>>0,species:id==='pine'?'pine':'oak'});const stump=new T.Mesh(new T.CylinderGeometry(.29,.36,.26,10),timber);stump.position.y=.13;stump.visible=false;g.add(stump);parent.userData.harvestCanopy=canopy;parent.userData.harvestStump=stump;}
+ if(id==='fountain'){cyl(0,.35,0,1.9,.7,stone);cyl(0,.72,0,1.65,.04,0x659bb7);cyl(0,1.5,0,.24,1.8,stone);cyl(0,2.3,0,.65,.25,stone);const streams=[],water=new T.MeshStandardMaterial({color:0x6b9da9,roughness:.22,metalness:.08,transparent:true,opacity:.65});for(let i=0;i<8;i++){const a=i*Math.PI/4,curve=new T.QuadraticBezierCurve3(new T.Vector3(Math.cos(a)*.52,2.36,Math.sin(a)*.52),new T.Vector3(Math.cos(a)*1.3,2.6,Math.sin(a)*1.3),new T.Vector3(Math.cos(a)*1.45,.76,Math.sin(a)*1.45));const stream=new T.Mesh(new T.TubeGeometry(curve,16,.016,5,false),water);g.add(stream);const drop=new T.Mesh(new T.SphereGeometry(.026,6,5),water);drop.scale.set(.7,1.8,.7);g.add(drop);streams.push({curve,drop,phase:i/8})}dressFountain(T,g);parent.userData.animateWater=time=>{for(const s of streams)s.drop.position.copy(s.curve.getPoint((time*.65+s.phase)%1))};}else if(id==='fishing_spot'){fishingRipple(T,parent);}else if(['tree','pine'].includes(id)){const canopy=new T.Group();g.add(canopy);const timber=creatureMaterial(T,0x75583e,'hide');buildNaturalForest(T,canopy,[{x:0,z:0}],{wood:timber,heightAt:()=>0,seed:(Math.floor((d.x||0)*137)^Math.floor((d.z||0)*317)^2419)>>>0,species:treeSpeciesOf(d,id)});const stump=new T.Mesh(new T.CylinderGeometry(.29,.36,.26,10),timber);stump.position.y=.13;stump.visible=false;g.add(stump);parent.userData.harvestCanopy=canopy;parent.userData.harvestStump=stump;}
 
  else if(id==='rock'){
   parent.userData.oreVeins=[];const oreColor=oreResources[d.resource]?.color;if(oreColor)for(let i=0;i<5;i++){const vein=new T.Mesh(sharedGeometry(T,'dodecahedron',.15+i*.018,0),new T.MeshStandardMaterial({color:oreColor,metalness:.35,roughness:.6}));vein.position.set(Math.sin(i*2.4)*.65,.9+Math.cos(i)*.18,Math.cos(i*2.4)*.55);g.add(vein);parent.userData.oreVeins.push(vein)}
