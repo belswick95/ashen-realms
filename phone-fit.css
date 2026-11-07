@@ -183,27 +183,24 @@ html body.touch-controls.fantasy-hud:is(.npc-conversation,:has(.tutorial-dialogu
 
 /* ---- Minimap cluster, OSRS style ----
    The disc sits top-right with nothing on it. The compass caps a column of round orbs down its left
-   side (run energy, prayer, special attack); the journal and world-map buttons, then the zoom pair,
-   sit centred under the disc (phones pinch or scroll the disc instead). Every control is a 40px (44px on larger screens) circle. */
-html body.fantasy-hud{--mm-d:168px;--mm-o:44px;--mm-g:8px;--mm-top:max(12px,calc(env(safe-area-inset-top) + 8px));--mm-right:max(12px,calc(env(safe-area-inset-right) + 8px));--mm-h:calc(var(--mm-d) + 2 * (var(--mm-g) + var(--mm-o)))}
+   side (run energy, prayer, special attack); the journal and world-map buttons sit centred under the
+   disc. Zoom is scroll or pinch on the disc itself (game.js), so the +/− pair is gone. Every control is a 40px (44px on larger screens) circle. */
+html body.fantasy-hud{--mm-d:168px;--mm-o:44px;--mm-g:8px;--mm-top:max(12px,calc(env(safe-area-inset-top) + 8px));--mm-right:max(12px,calc(env(safe-area-inset-right) + 8px));--mm-h:calc(var(--mm-d) + var(--mm-g) + var(--mm-o))}
 html body.fantasy-hud.phone-layout{--mm-d:112px;--mm-o:40px;--mm-g:6px;--mm-top:var(--phone-top);--mm-right:var(--phone-right);--mm-h:calc(4 * var(--mm-o) + 3 * var(--mm-g))}
-/* Phones: pinch the minimap to zoom (game.js), so the +/− pair goes and the cluster stays short. */
-html body.fantasy-hud.phone-layout #map-widget#map-widget #map-controls>button:not(#run-toggle){display:none!important}
 html body.fantasy-hud #map-widget#map-widget{position:fixed!important;top:var(--mm-top)!important;right:var(--mm-right)!important;left:auto!important;bottom:auto!important;transform:none!important;width:calc(var(--mm-o) + var(--mm-g) + var(--mm-d))!important;max-width:none!important;height:var(--mm-h)!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;overflow:visible!important}
 html body.fantasy-hud #map-widget#map-widget :is(.map-head,#map-controls,#mech-orbs){display:contents!important}
 html body.fantasy-hud #map-widget#map-widget :is(.minimap-brand,.map-head>span,small,.map-north){display:none!important}
 html body.fantasy-hud #map-widget#map-widget #minimap{position:absolute!important;top:0!important;right:0!important;left:auto!important;width:var(--mm-d)!important;height:var(--mm-d)!important;margin:0!important;box-sizing:border-box}
-html body.fantasy-hud #map-widget#map-widget :is(#minimap-compass,#run-toggle,#prayer-orb,#spec-orb,#explore-toggle,#map-toggle),html body.fantasy-hud #map-widget#map-widget #map-controls>button:not(#run-toggle){position:absolute!important;inset:auto!important;transform:none!important;box-sizing:border-box!important;width:var(--mm-o)!important;min-width:var(--mm-o)!important;max-width:var(--mm-o)!important;height:var(--mm-o)!important;min-height:var(--mm-o)!important;max-height:var(--mm-o)!important;margin:0!important;padding:0!important;border-radius:50%!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:0!important;font-size:10px!important;line-height:1.05!important;z-index:3}
+html body.fantasy-hud #map-widget#map-widget :is(#minimap-compass,#run-toggle,#prayer-orb,#spec-orb,#explore-toggle,#map-toggle){position:absolute!important;inset:auto!important;transform:none!important;box-sizing:border-box!important;width:var(--mm-o)!important;min-width:var(--mm-o)!important;max-width:var(--mm-o)!important;height:var(--mm-o)!important;min-height:var(--mm-o)!important;max-height:var(--mm-o)!important;margin:0!important;padding:0!important;border-radius:50%!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:0!important;font-size:10px!important;line-height:1.05!important;z-index:3}
 html body.fantasy-hud #map-widget#map-widget :is(#prayer-orb,#spec-orb)[hidden]{display:none!important}
 html body.fantasy-hud #map-widget#map-widget #minimap-compass{left:0!important;top:0!important}
 html body.fantasy-hud #map-widget#map-widget #minimap-compass svg{width:100%!important;height:100%!important}
 html body.fantasy-hud #map-widget#map-widget #run-toggle{left:0!important;top:calc(var(--mm-o) + var(--mm-g))!important}
 html body.fantasy-hud #map-widget#map-widget #prayer-orb{left:0!important;top:calc(2 * (var(--mm-o) + var(--mm-g)))!important}
 html body.fantasy-hud #map-widget#map-widget #spec-orb{left:0!important;top:calc(3 * (var(--mm-o) + var(--mm-g)))!important}
-html body.fantasy-hud #map-widget#map-widget :is(#explore-toggle,#map-controls>button:nth-child(2)){right:calc((var(--mm-d) - var(--mm-g)) / 2)!important}
-html body.fantasy-hud #map-widget#map-widget :is(#map-toggle,#map-controls>button:nth-child(1)){right:calc((var(--mm-d) - var(--mm-g)) / 2 - var(--mm-o) - var(--mm-g))!important}
+html body.fantasy-hud #map-widget#map-widget #explore-toggle{right:calc((var(--mm-d) - var(--mm-g)) / 2)!important}
+html body.fantasy-hud #map-widget#map-widget #map-toggle{right:calc((var(--mm-d) - var(--mm-g)) / 2 - var(--mm-o) - var(--mm-g))!important}
 html body.fantasy-hud #map-widget#map-widget :is(#explore-toggle,#map-toggle){top:calc(var(--mm-d) + var(--mm-g))!important}
-html body.fantasy-hud #map-widget#map-widget #map-controls>button:not(#run-toggle){top:calc(var(--mm-d) + 2 * var(--mm-g) + var(--mm-o))!important;font-size:18px!important}
 html body.fantasy-hud #map-widget#map-widget #run-toggle svg{width:16px!important;height:16px!important}
 html body.fantasy-hud #map-widget#map-widget #map-toggle svg{width:24px!important;height:24px!important}
 html body.fantasy-hud #map-widget#map-widget #explore-toggle{font-size:18px!important}
