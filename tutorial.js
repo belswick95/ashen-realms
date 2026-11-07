@@ -23,6 +23,8 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
  const hud=el('section','tutorial-hud');hud.hidden=true;hud.setAttribute('aria-live','polite');
  const hudHead=el('div','tutorial-hud-head'),hudTitle=el('strong'),hudCount=el('small'),hudGoal=el('p','tutorial-hud-goal'),hudWay=el('p','tutorial-hud-way');
  hudHead.append(el('span','tutorial-hud-badge','Castle training'),hudCount);hud.append(hudHead,hudTitle,hudGoal,hudWay);document.body.append(hud);
+ // Phones: the card sits under the player frame and a tap folds it to its title line (kept for the session).
+ installHudFold(hud);
  // ---- guide arrow floating over the next target
  const arrow=new T.Group();arrow.visible=false;arrow.renderOrder=20;
  const arrowMat=new T.MeshBasicMaterial({color:0xffd34d,depthTest:false,transparent:true,opacity:.95});
@@ -243,4 +245,12 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
   playCutscene,
   destroy(){destroyed=true;hud.remove();box.remove();letterbox.remove();fader.remove();arrow.removeFromParent()}
  };
+}
+
+// Tap or click the objective card to fold it to the badge and title; the choice lasts for the session.
+export function installHudFold(hud,storage=globalThis.sessionStorage){
+ const key='eldervale-tutorial-hud-folded',set=folded=>{hud.classList.toggle('tutorial-hud-folded',folded);hud.setAttribute('aria-expanded',String(!folded));hud.title=folded?'Show the training objective':'Fold the training objective'};
+ let folded=false;try{folded=storage?.getItem(key)==='1'}catch{}set(folded);
+ hud.addEventListener('click',()=>{folded=!hud.classList.contains('tutorial-hud-folded');set(folded);try{storage?.setItem(key,folded?'1':'0')}catch{}});
+ return set;
 }

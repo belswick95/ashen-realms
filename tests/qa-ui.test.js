@@ -54,6 +54,20 @@ test('shop wells, trade columns and the trade request popup use the medieval the
  assert.ok(tail.includes('.map-card,#trade-request) :not(svg,svg *)'),'popup text uses the book face');
 });
 
+test('phone Castle Training card sits under the player frame, compact and foldable',async()=>{
+ const css=read('phone-fit.css'),rule=css.match(/body\.phone-layout \.tutorial-hud\{[^}]*\}/)[0];
+ assert.match(rule,/left:var\(--phone-left,8px\)!important/);assert.match(rule,/width:222px!important/);assert.match(rule,/top:calc\(var\(--phone-top,8px\) \+ 70px\)!important/);assert.match(rule,/pointer-events:auto/);
+ assert.ok(!/translateX|left:50%/.test(rule),'no longer centred over the view');
+ assert.match(css,/\.tutorial-hud\.tutorial-hud-folded :is\(\.tutorial-hud-goal,\.tutorial-hud-way\)\{display:none\}/);
+ const {installHudFold}=await import('../tutorial.js');
+ const classes=new Set(),attrs={},handlers={},store=new Map();
+ const hud={classList:{toggle:(c,on)=>on?classes.add(c):classes.delete(c),contains:c=>classes.has(c)},setAttribute:(k,v)=>attrs[k]=v,addEventListener:(n,f)=>handlers[n]=f,title:''};
+ const storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)};
+ installHudFold(hud,storage);assert.equal(classes.has('tutorial-hud-folded'),false);assert.equal(attrs['aria-expanded'],'true');
+ handlers.click();assert.equal(classes.has('tutorial-hud-folded'),true);assert.equal(attrs['aria-expanded'],'false');assert.equal(store.get('eldervale-tutorial-hud-folded'),'1');
+ classes.clear();installHudFold(hud,storage);assert.equal(classes.has('tutorial-hud-folded'),true,'remembered for the session');
+});
+
 test('settings dropdown labels fit the phone panel',()=>{
  const html=read('index.html'),select=html.match(/<select id="graphics-preset"[\s\S]*?<\/select>/)[0];
  for(const [,label] of select.matchAll(/<option[^>]*>([^<]*)<\/option>/g))assert.ok(label.length<=18,label);
