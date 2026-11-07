@@ -1,9 +1,9 @@
 // Castle training client: objective HUD, guide arrow, tutor dialogue, gate lock and the arrival cutscene.
 // Server state (quests + game_flags.tutorial) arrives with every realm sync; nothing here is authoritative.
-import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261107-perf146';
-import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261107-perf146';
-import {frameShot,roomFromGroup,glideClear} from './cutscene-camera.js?v=release-20261107-perf146';
-import {obstructionDistance} from './camera-obstruction.js?v=release-20261107-perf146';
+import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261107-qaui148';
+import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261107-qaui148';
+import {frameShot,roomFromGroup,glideClear} from './cutscene-camera.js?v=release-20261107-qaui148';
+import {obstructionDistance} from './camera-obstruction.js?v=release-20261107-qaui148';
 
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -17,12 +17,14 @@ const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 // people indoors stay inside that room (cutscene-camera.js). prewarm(eye,look) (optional): draws a
 // shot off-screen so its shaders compile while the prologue still covers the canvas (cutscene-boot.js).
 export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null,actorRoot=null,cameraOccluders=()=>[],rooms=()=>[],prewarm=null}){
- document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261107-perf146'}));
+ document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261107-qaui148'}));
  let quests=[],flags={},locked=false,step=null,talking=false,destroyed=false,selfName='';
  // ---- objective HUD
  const hud=el('section','tutorial-hud');hud.hidden=true;hud.setAttribute('aria-live','polite');
  const hudHead=el('div','tutorial-hud-head'),hudTitle=el('strong'),hudCount=el('small'),hudGoal=el('p','tutorial-hud-goal'),hudWay=el('p','tutorial-hud-way');
  hudHead.append(el('span','tutorial-hud-badge','Castle training'),hudCount);hud.append(hudHead,hudTitle,hudGoal,hudWay);document.body.append(hud);
+ // Phones: the card sits under the player frame and a tap folds it to its title line (kept for the session).
+ installHudFold(hud);
  // ---- guide arrow floating over the next target
  const arrow=new T.Group();arrow.visible=false;arrow.renderOrder=20;
  const arrowMat=new T.MeshBasicMaterial({color:0xffd34d,depthTest:false,transparent:true,opacity:.95});
@@ -243,4 +245,12 @@ export function createTutorial({T,scene,heightAt,locate,playerPosition,say,comma
   playCutscene,
   destroy(){destroyed=true;hud.remove();box.remove();letterbox.remove();fader.remove();arrow.removeFromParent()}
  };
+}
+
+// Tap or click the objective card to fold it to the badge and title; the choice lasts for the session.
+export function installHudFold(hud,storage=globalThis.sessionStorage){
+ const key='eldervale-tutorial-hud-folded',set=folded=>{hud.classList.toggle('tutorial-hud-folded',folded);hud.setAttribute('aria-expanded',String(!folded));hud.title=folded?'Show the training objective':'Fold the training objective'};
+ let folded=false;try{folded=storage?.getItem(key)==='1'}catch{}set(folded);
+ hud.addEventListener('click',()=>{folded=!hud.classList.contains('tutorial-hud-folded');set(folded);try{storage?.setItem(key,folded?'1':'0')}catch{}});
+ return set;
 }

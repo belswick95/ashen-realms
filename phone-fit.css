@@ -118,9 +118,11 @@ body.fantasy-hud.phone-layout #inventory .slot{min-height:40px}
  #level-up-panel .level-up-body{margin:2px 0}
 }
 /* Castle-training objective card sits between the vitals card and the minimap on phones. */
-body.phone-layout .tutorial-hud{left:calc(var(--phone-left,8px) + 186px)!important;right:calc(var(--phone-right,8px) + 138px)!important;width:auto!important;max-width:420px;margin:0 auto;transform:none!important;top:var(--phone-top,8px)!important;padding:5px 10px 6px!important;font-size:12px}
-body.phone-layout .tutorial-hud strong{font-size:13px;margin-top:1px}
-body.phone-layout .tutorial-hud-way{font-size:11px}
+body.phone-layout .tutorial-hud{left:var(--phone-left,8px)!important;right:auto!important;width:222px!important;max-width:222px;margin:0;transform:none!important;top:calc(var(--phone-top,8px) + 70px)!important;padding:4px 8px 5px!important;font-size:11px;line-height:1.3;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent}
+body.phone-layout .tutorial-hud strong{font-size:12px;margin-top:1px}
+body.phone-layout .tutorial-hud-way{font-size:10px}
+/* Folded (tap the card): only the badge, step count and objective title stay. */
+body.phone-layout .tutorial-hud.tutorial-hud-folded :is(.tutorial-hud-goal,.tutorial-hud-way){display:none}
 
 /* ---- Login on short landscape phones: the whole card fits without clipping the wordmark ---- */
 @media(max-height:500px) and (orientation:landscape){

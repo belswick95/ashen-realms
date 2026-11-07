@@ -1,6 +1,6 @@
-import {clipsFor,locomotionSpeed} from './character-assets.js?v=release-20261107-perf146';
-import {attackMotion,strikeTime,clipTime} from './attack-motion.js?v=release-20261107-perf146';
-import {EMOTE_SECONDS,emoteClip,emoteWeight,emotePose} from './emote-motion.js?v=release-20261107-perf146';
+import {clipsFor,locomotionSpeed} from './character-assets.js?v=release-20261107-qaui148';
+import {attackMotion,strikeTime,clipTime} from './attack-motion.js?v=release-20261107-qaui148';
+import {EMOTE_SECONDS,emoteClip,emoteWeight,emotePose} from './emote-motion.js?v=release-20261107-qaui148';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip and cross-fades. Walking and running use the owner's

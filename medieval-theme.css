@@ -251,3 +251,58 @@ html body #auth-screen .auth-card #auth-status{font-family:var(--mv-body)!import
 html body #auth-screen .login-card-foot{font-family:var(--mv-display)!important;color:var(--mv-ink-dim)!important;border-top-color:#d9ae5526!important}
 html body #auth-screen #login-sound-toggle{background:var(--mv-wood-face)!important;border:1px solid #120a04!important;border-radius:4px!important;color:var(--mv-gold-hi)!important;box-shadow:var(--mv-bevel-out)!important;min-height:44px}
 @media(max-width:480px){html body #auth-screen .login-tabs button{font-size:12px!important;letter-spacing:.01em!important;white-space:nowrap;padding:8px 4px!important}html body #auth-screen #auth-title{font-size:30px!important}}
+
+/* --------------------------------------------------------------------------
+   QA pass (portrait145): leftovers from the generic UI inside the medieval
+   panels. Old rules set 11–13px Arial on equipment stats, stance buttons,
+   skill names, settings rows, panel notes and the Log out button, and painted
+   green boxes (#0f1e18 / #23382d / #202c24) with thin outlines. Panel text
+   takes the book face; display (Cinzel) headings keep theirs.
+   -------------------------------------------------------------------------- */
+html body.fantasy-hud :is(#side,#social-panel,#contextmenu,#dialog,dialog,.map-card,#trade-request) :not(svg,svg *){font-family:var(--mv-body)!important}
+html body.fantasy-hud :is(#side,#social-panel,#dialog,dialog,.map-card) :is(h2,h3),
+html body.fantasy-hud #side :is(.skills-footer,.settings-nav button,#inventory-gold),
+html body.fantasy-hud #social-panel :is(.social-head strong,#social-toggle),
+html body.fantasy-hud #dialog :is(#dialog-name,.dialog-badge,#dialog-next){font-family:var(--mv-display)!important}
+html body.fantasy-hud #side .equipment-stats{background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important;color:var(--mv-ink)!important}
+html body.fantasy-hud #side .equipment-stats-group{background:#00000033!important;border:1px solid #d9ae5526!important}
+html body.fantasy-hud #side .equipment-stats-group h4{color:var(--mv-gold)!important;font-weight:700}
+html body.fantasy-hud #side .player-combat-level{background:var(--mv-wood-face)!important;border:1px solid #140c05!important;box-shadow:var(--mv-bevel-out),inset 0 0 0 1px #d9ae5540!important;color:var(--mv-gold-hi)!important;text-shadow:var(--mv-shadow-text)}
+html body.fantasy-hud #settings-tab label{background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important}
+/* Shop and trade windows: the green list wells and offer columns become recessed stone. */
+html body.fantasy-hud :is(#service-panel .service-wallet,#service-panel .service-items,#player-trade .trade-columns section){background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important}
+html body.fantasy-hud #player-trade form{border:1px solid #d9ae5533!important;border-radius:4px;background:#00000026!important}
+/* Trade request popup: a framed panel with the theme's plank buttons (it was a green card with green/red buttons). */
+html body.fantasy-hud #trade-request{border:5px solid transparent!important;border-radius:6px!important;background:var(--mv-leather-face) padding-box,var(--mv-stone-face) border-box!important;box-shadow:var(--mv-frame-shadow),inset 0 0 0 1px var(--mv-gold-lo)!important;color:var(--mv-ink)!important}
+html body.fantasy-hud #trade-request .trade-request-text{color:var(--mv-gold-hi)!important}
+html body.fantasy-hud #trade-request .trade-request-meter{background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in)!important}
+html body.fantasy-hud #trade-request .trade-request-buttons button.trade-accept:not(:disabled){background:var(--mv-grain),linear-gradient(180deg,#a8442a,var(--mv-ember) 55%,var(--mv-ember-lo))!important;border-color:var(--mv-gold-mid)!important}
+html body.fantasy-hud #trade-request .trade-request-buttons button.trade-decline:not(:disabled){background:var(--mv-wood-face)!important}
+html body.fantasy-hud #trade-request .trade-request-buttons button:disabled{background:var(--mv-stone-dark)!important;border-color:#0e0b08!important;color:#8f8470!important}
+/* Minimap orbs (run energy was Arial) and the Castle Training card (system-ui) take the theme faces. */
+html body.fantasy-hud :is(#map-widget,#mech-orbs,.tutorial-hud) :not(svg,svg *){font-family:var(--mv-body)!important}
+html body.fantasy-hud .tutorial-hud .tutorial-hud-badge{font-family:var(--mv-display)!important;letter-spacing:.06em}
+/* Quests, Friends, Blocked and Settings kept an old max-height:min(60vh,440px): on a 390px phone the quest
+   list stopped 40px above the tab bar with the last entry cut off. The open panel already bounds them. */
+html body.fantasy-hud.hud-panel-open #side>:is(#settings-tab,#friends-tab,#blocked-tab,#quests-tab){max-height:none!important}
+/* iPad and desktop: 6px side padding plus the old max-width:85% squeezed the 28px tab icons to ~17px wide
+   (half the size of the phone icons). Thin side padding lets every tab show its full icon. */
+html body.fantasy-hud:not(.phone-layout) #side>.tabs button[data-tab]{padding:6px 2px!important}
+html body.fantasy-hud #side>.tabs .fantasy-tab-icon{max-width:100%!important;margin:0 auto}
+/* Touch (iPad): Log out and the World Chat / Friends tabs were 24px tall, too small to tap reliably. */
+html body.fantasy-hud.touch-controls #social-panel .social-tabs button{min-height:36px!important}
+html body.fantasy-hud.touch-controls:not(.phone-layout) #account-bar{padding-block:2px!important}
+html body.fantasy-hud.touch-controls:not(.phone-layout) #account-bar #logout{min-height:32px!important;min-width:64px!important}
+/* Character creator (first sign-in): it kept the old green card, Arial labels and plain outlined
+   buttons. Same leather, stone, wood and gold as the login card. */
+html body #character-creator{background:radial-gradient(ellipse at 45% 20%,#3a2c1f,#0d0906 75%)!important}
+html body #character-creator :not(svg,svg *,canvas){font-family:var(--mv-body)!important}
+html body #character-creator .creator-card{border:5px solid transparent!important;border-radius:6px!important;background:var(--mv-leather-face) padding-box,var(--mv-stone-face) border-box!important;box-shadow:var(--mv-frame-shadow),inset 0 0 0 1px var(--mv-gold-lo)!important}
+html body #character-creator .creator-preview{background:radial-gradient(ellipse at 50% 45%,#5a4632,#2a1f15 72%)!important}
+html body #character-creator :is(.creator-heading,.creator-controls h2){font-family:var(--mv-display)!important;color:var(--mv-gold)!important;text-shadow:var(--mv-shadow-text)}
+html body #character-creator .creator-row label{color:var(--mv-gold)!important;font-weight:700}
+html body #character-creator :is(.creator-preview p,.creator-controls>p){color:var(--mv-ink-dim)!important}
+html body #character-creator select{background:var(--mv-stone-dark)!important;color:var(--mv-ink)!important;border:0!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important}
+html body #character-creator .creator-preview button{background:var(--mv-wood-face)!important;border:1px solid #140c05!important;border-radius:4px!important;color:var(--mv-gold-hi)!important;box-shadow:var(--mv-bevel-out)!important;text-shadow:var(--mv-shadow-text)}
+html body #character-creator .creator-preview button[aria-pressed=true]{background:var(--mv-grain),linear-gradient(180deg,#a8442a,var(--mv-ember) 55%,var(--mv-ember-lo))!important;border-color:var(--mv-gold-mid)!important}
+html body #character-creator #creator-finish{background:var(--mv-grain),linear-gradient(180deg,#a8442a,var(--mv-ember) 55%,var(--mv-ember-lo))!important;border:1px solid var(--mv-gold-mid)!important;color:#fff0c8!important;font-family:var(--mv-display)!important;font-weight:700;letter-spacing:.06em;box-shadow:var(--mv-bevel-out),inset 0 0 0 1px var(--mv-gold)!important}

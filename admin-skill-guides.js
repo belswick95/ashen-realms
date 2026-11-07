@@ -2,7 +2,7 @@
 // game data, so they need no editing: a new item, recipe, tier or recipe edit in the console shows up
 // in the guide by itself. This tab lists every guide with its tabs, row counts and data sources, and
 // opens any of them on this screen ("Preview") exactly as a player would see it.
-import {guideSummary} from './skill-guide-data.js?v=release-20261107-perf146';
+import {guideSummary} from './skill-guide-data.js?v=release-20261107-qaui148';
 
 export function createSkillGuideTab(ctx){
  const {el,btn}=ctx;
