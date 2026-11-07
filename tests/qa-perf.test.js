@@ -24,7 +24,8 @@ test('qa-perf.sql is one idempotent transaction without approval-prompt words',(
 });
 
 test('groundFeet helpers exist before the first frame() call',()=>{
- const src=read('game.js'),decl=src.indexOf('function groundHeightAt('),box=src.indexOf('const footBox=new T.Box3()'),first=src.indexOf("say('Welcome to Eldervale!');frame();");
+ const src=read('game.js'),decl=src.indexOf('function groundHeightAt('),box=src.indexOf('const footBox=new T.Box3()'),first=src.indexOf("say('Welcome to Eldervale!');");
+ assert.ok(!src.includes("say('Welcome to Eldervale!');frame();"),'the first frame waits for the module to finish');assert.match(src.slice(first,first+400),/\nrequestAnimationFrame\(frame\);/);
  assert.ok(decl>0&&box>0&&first>0);assert.ok(box<first,'footBox declared before the first frame');
 });
 
