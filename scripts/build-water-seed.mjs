@@ -6,7 +6,7 @@
 //  * the generated:catalog block of db/water-1-fishing.sql (fish-tiers.js: catalog, recipes, fish_table)
 // Usage: node scripts/build-water-seed.mjs   (tests/water-fishing.test.js checks the output is current)
 import fs from 'node:fs';
-const V='?v=release-20261107-mapicons133';
+const V='?v=release-20261107-attacks134';
 globalThis.eldervaleWorldConfig={enabled:true,seed:241916600,version:2};
 const root=new URL('../',import.meta.url);
 const {createLandscape}=await import('../landscape.js'+V);

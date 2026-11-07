@@ -2,8 +2,8 @@
 // "What's new in Eldervale" posts. Writes go through world_news_admin (owner-checked
 // and audited on the server, db/news-and-login.sql); images go to the public
 // `news-images` bucket after being downscaled here to ≤1600 px WebP (JPEG fallback).
-import {renderNewsPost,refreshReadMore,NEWS_IMAGE_PREFIX,normalizePost} from './login-news.js?v=release-20261107-mapicons133';
-import {safeHttpsUrl,NEWS_LIMITS,newsPlainText} from './news-markup.js?v=release-20261107-mapicons133';
+import {renderNewsPost,refreshReadMore,NEWS_IMAGE_PREFIX,normalizePost} from './login-news.js?v=release-20261107-attacks134';
+import {safeHttpsUrl,NEWS_LIMITS,newsPlainText} from './news-markup.js?v=release-20261107-attacks134';
 
 export const NEWS_IMAGE=Object.freeze({maxSide:1600,maxBytes:2*1024*1024,maxSourceBytes:20*1024*1024,types:['image/jpeg','image/png','image/webp','image/gif','image/avif']});
 export const emptyDraft=()=>({id:null,title:'',body:'',image_url:'',image_alt:'',links:[],published:false,pinned:false,published_at:new Date().toISOString()});
