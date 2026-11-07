@@ -1,4 +1,4 @@
-import {animateWork,createWorkKit,workFacing} from './npc-activities.js?v=release-20261107-invorder151';
+import {animateWork,createWorkKit,workFacing} from './npc-activities.js?v=release-20261107-canopy152';
 // Original townsfolk, small walking loops and visible work. Service NPCs keep their jobs.
 export function townResidents(settlements){
  const resident=(name,role,x,z,color,activity,patrol)=>({name,role,x,z,color,activity,behavior:patrol?'patrol':'stationary',patrol,lines:[`A good day for ${role.toLowerCase()}. There is always work to do around here.`,`The roads bring new faces to our town every day.`]});

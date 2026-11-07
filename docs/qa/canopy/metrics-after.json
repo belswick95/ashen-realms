@@ -1,0 +1,61 @@
+{
+ "tag": "after",
+ "forestCards": 696,
+ "shots": {
+  "willows": {
+   "calls": 143,
+   "triangles": 566955,
+   "programs": 51,
+   "frames": 1,
+   "faded": [
+    0.3,
+    0.3,
+    0.3
+   ],
+   "camera": [
+    -95.15,
+    7.44,
+    29.8
+   ],
+   "player": [
+    -97.6,
+    1.82,
+    19.8
+   ],
+   "recompiles": {
+    "programs": 0,
+    "programsAtUnfade": 0,
+    "callsUnfaded": 143,
+    "callsFaded": 143,
+    "refaded": 3
+   }
+  },
+  "forest": {
+   "calls": 81,
+   "triangles": 631249,
+   "programs": 57,
+   "frames": 14,
+   "faded": [
+    0.3
+   ],
+   "camera": [
+    -162.7,
+    16.92,
+    315.43
+   ],
+   "player": [
+    -162.7,
+    6.32,
+    305.93
+   ],
+   "recompiles": {
+    "programs": 0,
+    "programsAtUnfade": 0,
+    "callsUnfaded": 81,
+    "callsFaded": 81,
+    "refaded": 1
+   }
+  }
+ },
+ "errors": []
+}

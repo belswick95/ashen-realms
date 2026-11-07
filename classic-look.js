@@ -166,7 +166,7 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
  const pool=new Map();let revision=0;
  // Materials with their own shader hook (water ripples, swaying sign boards
  // with an atlas per instance) keep the hook and their texture on Lambert.
- const hooked=src=>typeof src.onBeforeCompile==='function'&&src.onBeforeCompile!==T.Material.prototype.onBeforeCompile;
+ const hooked=src=>!src.userData?.canopyFade&&typeof src.onBeforeCompile==='function'&&src.onBeforeCompile!==T.Material.prototype.onBeforeCompile;
  function variantOf(src,mesh){const map=src.map;if(src.alphaTest>0&&map)return 'cutout';if(map&&atlas(map)&&(mesh.isSkinnedMesh||map.flipY===false)&&!mesh.isInstancedMesh&&mesh.geometry.attributes.uv&&!mesh.userData.staticBatch)return 'bake';
   if(hooked(src))return 'hooked';
   if(map&&atlas(map))return 'decal';
@@ -174,7 +174,7 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
   return 'flat'}
  function signature(src,variant,avg,emissiveAvg,faceted){
   const color=variant==='flat'?quantizedLinear(src.color,avg).getHex():src.color.getHex(),emissive=src.emissive?new T.Color().copy(src.emissive).multiply(new T.Color(...emissiveAvg)).getHex():0;
-  return [variant,faceted?1:0,color,variant==='hooked'?src.uuid:variant==='cutout'||variant==='textured'||variant==='decal'?src.map.uuid:'',variant==='bake'||!!src.vertexColors,src.transparent,+src.opacity.toFixed(3),src.side,src.alphaTest,src.depthWrite,src.depthTest,src.fog,src.visible,src.polygonOffset,src.polygonOffsetFactor,src.polygonOffsetUnits,src.toneMapped,emissive,+(src.emissiveIntensity??1).toFixed(3)].join('|')}
+  return [variant,faceted?1:0,color,variant==='hooked'?src.uuid:variant==='cutout'||variant==='textured'||variant==='decal'?src.map.uuid:'',variant==='bake'||!!src.vertexColors,src.transparent,+src.opacity.toFixed(3),src.side,src.alphaTest,src.depthWrite,src.depthTest,src.fog,src.visible,src.polygonOffset,src.polygonOffsetFactor,src.polygonOffsetUnits,src.toneMapped,emissive,+(src.emissiveIntensity??1).toFixed(3),src.userData?.canopyFade?'canopy':''].join('|')}
  // Leaf cards and hair keep their texture for the cut-out shape; without the
  // environment light of the normal renderer they need a lift to stay readable.
  const CUTOUT_LIFT=1.35;
@@ -188,6 +188,9 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
   else if(variant==='hooked'){m.map=src.map;m.onBeforeCompile=src.onBeforeCompile;const key=src.customProgramCacheKey?.();m.customProgramCacheKey=()=>'classic|'+(key||src.uuid)}
   else if(variant==='textured'){m.map=src.map;gradeTexture(m,avg)}
   if(src.emissive){m.emissive.copy(src.emissive).multiply(new T.Color(...emissiveAvg));m.emissiveIntensity=src.emissiveIntensity}
+  // See-through canopies (canopy-fade.js): leaf cards and limbs keep their per-instance fade hook
+  // on top of the classic shading, one program per variant.
+  if(src.userData?.canopyFade){const inner=m.onBeforeCompile;m.onBeforeCompile=(shader,renderer)=>{inner.call(m,shader,renderer);src.onBeforeCompile(shader,renderer)};m.customProgramCacheKey=()=>'classic-canopy|'+variant;m.userData.canopyFade=true}
   m.userData.eldervaleShared=true;m.userData.classicOwn=true;pool.set(sig,m);return m}
  function classicMaterial(src,mesh,faceted=facetedGeometry(mesh?.geometry)){
   if(!LIT(src)||src.visible===false||src.userData?.classicKeep||src.userData?.classicOwn)return {material:src};

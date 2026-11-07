@@ -1,0 +1,41 @@
+{
+ "tag": "before",
+ "forestCards": 696,
+ "shots": {
+  "willows": {
+   "calls": 143,
+   "triangles": 566955,
+   "programs": 50,
+   "frames": 1,
+   "faded": [],
+   "camera": [
+    -95.15,
+    7.44,
+    29.8
+   ],
+   "player": [
+    -97.6,
+    1.82,
+    19.8
+   ]
+  },
+  "forest": {
+   "calls": 81,
+   "triangles": 564112,
+   "programs": 51,
+   "frames": 2,
+   "faded": [],
+   "camera": [
+    -162.7,
+    16.79,
+    315.29
+   ],
+   "player": [
+    -162.7,
+    6.32,
+    305.93
+   ]
+  }
+ },
+ "errors": []
+}
