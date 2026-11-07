@@ -4,7 +4,7 @@
 // per weapon, poison sources, per-monster aggression, single/multi combat zones, shared loot tables,
 // per-monster loot tables v2 and item weights/food classes. Writes go through console_mech_* commands
 // (owner-checked and audited on the server).
-import {DEFAULTS,effectiveRates} from './mechanics.js?v=release-20261107-skilling137';
+import {DEFAULTS,effectiveRates} from './mechanics.js?v=release-20261107-trapdoor138';
 
 export const RULE_KINDS=[
  ['prayer','Prayers','id = prayer key',{name:'New prayer',level:1,drain:1,groups:['attack'],effect:{att:1.05},icon:'✨',text:'+5% Attack.'}],

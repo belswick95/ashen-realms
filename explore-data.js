@@ -14,6 +14,7 @@
 //    tile stays below the world limit of 4500), x = 1200…4200 in steps of 600. Nothing else uses
 //    z ≥ 3800: R2-G caves sit at z 1200 (+400 per level), R3-I lairs at x 1200–4200 / z 1200–2625,
 //    R3-J arenas at x 1400–3800 / z 3000–3400.
+import {passageLook,ARRIVAL_OFFSET} from './underground-data.js?v=release-20261107-trapdoor138';
 export const EXPLORE_BLUEPRINT='explore-v1';
 export const AREA_Z=4250,AREA_XS=[1200,1800,2400,3000,3600,4200];
 export const TIERS=['easy','medium','hard'];
@@ -154,14 +155,17 @@ export const PLACES=[
 export const placeById=id=>PLACES.find(p=>p.id===id);
 DEFAULT_SETTINGS.milestones.place[DEFAULT_SETTINGS.milestones.place.length-1].at=PLACES.length;
 // Overworld point in front of an entrance (where the way out puts you); same arithmetic as the SQL.
-export const entranceFront=e=>{const a=(e.yaw||0)*Math.PI/180;return {x:Math.round((e.x+Math.sin(a)*3.2)*10)/10,z:Math.round((e.z+Math.cos(a)*3.2)*10)/10}};
+// A trapdoor puts you one tile from the hatch (OSRS style); natural ways in keep their 3.2 clearance.
+export const entranceOffset=model=>passageLook(model)==='trapdoor'?ARRIVAL_OFFSET:3.2;
+export const exitOffset=model=>passageLook(model||'cave_exit')==='ladder_up'?ARRIVAL_OFFSET:3.5;
+export const entranceFront=e=>{const a=(e.yaw||0)*Math.PI/180,r=entranceOffset(e.model);return {x:Math.round((e.x+Math.sin(a)*r)*10)/10,z:Math.round((e.z+Math.cos(a)*r)*10)/10}};
 // The two passage objects of a hidden place/region (entrance outside, way out inside).
 export function placePassages(p){
  const a=areaById(p.area);if(!a||!p.entrance)return [];const e=p.entrance,front=entranceFront(e),inside=areaPoint(a.id,p.inside.x,p.inside.z);
  const req={...(e.requires||{})};
  return [
   {key:'entrance',template:e.model,name:e.name,x:e.x,z:e.z,yaw:e.yaw||0,passage:{area:a.id,dest:[inside.x,inside.z],requires:req,depth:0,place:p.id}},
-  {key:'exit',template:p.exitModel||'cave_exit',name:p.exitName||('Way out to '+e.name),x:inside.x-3.5,z:inside.z,yaw:90,passage:{area:a.id,dest:[front.x,front.z],depth:-1,place:p.id}}
+  {key:'exit',template:p.exitModel||'cave_exit',name:p.exitName||('Way out to '+e.name),x:inside.x-exitOffset(p.exitModel),z:inside.z,yaw:90,passage:{area:a.id,dest:[front.x,front.z],depth:-1,place:p.id}}
  ];
 }
 

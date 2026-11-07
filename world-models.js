@@ -1,22 +1,23 @@
-import {undergroundObjectModel} from './underground-models.js?v=release-20261107-skilling137';
-import {exploreObjectModel} from './explore-models.js?v=release-20261107-skilling137';
-import {campObject} from './camp-models.js?v=release-20261107-skilling137';
-import {professionStationModel} from './profession-models.js?v=release-20261107-skilling137';
-import {oreResources} from './profession-data.js?v=release-20261107-skilling137';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261107-skilling137';
-import {buildNaturalForest,TREE_SPECIES} from './natural-forest.js?v=release-20261107-skilling137';
-import {creatureMaterial} from './creature-material.js?v=release-20261107-skilling137';
-import {dragonModel} from './monster-dragon.js?v=release-20261107-skilling137';
-import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-skilling137';
-import {castleObject} from './castle-models.js?v=release-20261107-skilling137';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261107-skilling137';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-skilling137';
-import {townProp,dressFountain} from './town-props.js?v=release-20261107-skilling137';
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-skilling137';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-skilling137';
+import {undergroundObjectModel} from './underground-models.js?v=release-20261107-trapdoor138';
+import {exploreObjectModel} from './explore-models.js?v=release-20261107-trapdoor138';
+import {campObject} from './camp-models.js?v=release-20261107-trapdoor138';
+import {professionStationModel} from './profession-models.js?v=release-20261107-trapdoor138';
+import {oreResources} from './profession-data.js?v=release-20261107-trapdoor138';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261107-trapdoor138';
+import {buildNaturalForest,TREE_SPECIES} from './natural-forest.js?v=release-20261107-trapdoor138';
+import {creatureMaterial} from './creature-material.js?v=release-20261107-trapdoor138';
+import {dragonModel} from './monster-dragon.js?v=release-20261107-trapdoor138';
+import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-trapdoor138';
+import {castleObject} from './castle-models.js?v=release-20261107-trapdoor138';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261107-trapdoor138';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-trapdoor138';
+import {townProp,dressFountain} from './town-props.js?v=release-20261107-trapdoor138';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-trapdoor138';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-trapdoor138';
 // A placed tree's look: an explicit treeType, else willows for willow logs and dark evergreens
 // for yews, else the template's.
 export const treeSpeciesOf=(d,id=d?.template)=>TREE_SPECIES.includes(d?.treeType)?d.treeType:d?.logItem==='willowLogs'?'willow':d?.logItem==='yewLogs'?'spruce':id==='pine'?'pine':'oak';
+import {passageLook} from './underground-data.js?v=release-20261107-trapdoor138';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);
@@ -93,7 +94,7 @@ function monsterAura(T,parent,d){if(!Number.isFinite(d.aura))return null;const m
 // in many places merges into one draw call per town cell (static-batch.js).
 const plainMaterials=new WeakMap();
 function plainMaterial(T,color){let cache=plainMaterials.get(T);if(!cache)plainMaterials.set(T,cache=new Map());let m=cache.get(color);if(!m){m=new T.MeshStandardMaterial({color,roughness:.9});m.userData.eldervaleShared=true;cache.set(color,m)}return m}
-export function objectModel(T,parent,id,d={}){const explore=exploreObjectModel(T,parent,id,d);if(explore)return explore;const underground=undergroundObjectModel(T,parent,id,d);if(underground)return underground;const camp=campObject(T,parent,id,d);if(camp)return camp;const farm=farmObjectModel(T,parent,id);if(farm)return farm;
+export function objectModel(T,parent,id,d={}){if(passageLook(id))return undergroundObjectModel(T,parent,id,d);const explore=exploreObjectModel(T,parent,id,d);if(explore)return explore;const underground=undergroundObjectModel(T,parent,id,d);if(underground)return underground;const camp=campObject(T,parent,id,d);if(camp)return camp;const farm=farmObjectModel(T,parent,id);if(farm)return farm;
  const station=professionStationModel(T,parent,id,d);if(station)return station;
  const prop=townProp(T,parent,id,d);if(prop)return prop;const training=tutorialObjectModel(T,parent,id,d);if(training)return training;
  const g=new T.Group();parent.add(g);const wood=0x745335,stone=0x92998e,metal=0x444b49;

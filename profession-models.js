@@ -1,4 +1,4 @@
-import {professionStations} from './profession-data.js?v=release-20261107-skilling137';
+import {professionStations} from './profession-data.js?v=release-20261107-trapdoor138';
 export function professionStationModel(T,parent,id,d={}){
  if(!professionStations[id])return null;const g=new T.Group();parent.add(g);const mat=(c,m=0)=>new T.MeshStandardMaterial({color:c,roughness:m?.45:.88,metalness:m}),stone=mat(0x848a89),wood=mat(0x79583d),metal=mat(0x6d7d85,.7),leaf=mat(0x718c4d);
  const mesh=(geo,m,x,y,z)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;g.add(o);return o},box=(w,h,l,x,y,z,m)=>mesh(new T.BoxGeometry(w,h,l),m,x,y,z),cyl=(r,h,x,y,z,m)=>mesh(new T.CylinderGeometry(r,r,h,16),m,x,y,z);

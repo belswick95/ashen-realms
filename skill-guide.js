@@ -6,9 +6,9 @@
 // window.eldervaleMapMarkers) and open the map there; with no matching marker the hint is left out.
 // A modal <dialog>: Esc closes it, focus stays inside, and it fits phones (safe areas, both
 // orientations) with the close button always in reach. Only the open tab is drawn, in small batches.
-import {skillGuide,GUIDE_SKILLS,hasGuide} from './skill-guide-data.js?v=release-20261107-skilling137';
-import {goods} from './economy.js?v=release-20261107-skilling137';
-import {ORE_TIERS} from './map-icons.js?v=release-20261107-skilling137';
+import {skillGuide,GUIDE_SKILLS,hasGuide} from './skill-guide-data.js?v=release-20261107-trapdoor138';
+import {goods} from './economy.js?v=release-20261107-trapdoor138';
+import {ORE_TIERS} from './map-icons.js?v=release-20261107-trapdoor138';
 
 const SKILL_NAMES=Object.fromEntries(GUIDE_SKILLS.map(s=>[s.id,s.name]));
 // Map markers name mines by their ore tier's short key ("Copper-to-runite mine"); the guide shows

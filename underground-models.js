@@ -1,8 +1,11 @@
-// Models for underground passages (cave mouths, crypt doors, mine shafts, trapdoors, ladders,
-// stairs, the way out), agility shortcuts and the fishing pier. Pooled geometry and materials
-// only (shared-geometry.js), a handful of meshes each, so they stream and batch cheaply.
+// Models for underground passages, agility shortcuts and the fishing pier. Every dungeon way down
+// is drawn as a wooden trapdoor set flush in the ground and every way back up as a ladder to the
+// open hatch above (passageLook in underground-data.js), whatever template the server stores.
+// Pooled geometry and materials only (shared-geometry.js), a handful of meshes each, so they
+// stream and batch cheaply.
 // world-models.js objectModel() asks here first.
-import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-skilling137';
+import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-trapdoor138';
+import {passageLook} from './underground-data.js?v=release-20261107-trapdoor138';
 const mat=(T,key,color,extra={})=>sharedMaterial(T,'ug:'+key,()=>new T.MeshStandardMaterial({color,roughness:.92,metalness:0,...extra}));
 const glow=(T,key,color,intensity=1.6)=>sharedMaterial(T,'ug-glow:'+key,()=>new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:intensity,roughness:.6}));
 function add(T,g,geometry,material,x=0,y=0,z=0,{rx=0,ry=0,rz=0,sx=1,sy=1,sz=1,shadow=true}={}){const m=new T.Mesh(geometry,material);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);m.scale.set(sx,sy,sz);m.castShadow=shadow;m.receiveShadow=true;g.add(m);return m}
@@ -10,33 +13,47 @@ const rock=T=>sharedGeometry(T,'dodecahedron',1,0),box=T=>sharedGeometry(T,'box'
 function ladder(T,g,height,{x=0,z=0,lean=0}={}){const wood=mat(T,'ladder',0x7a5634),h=new T.Group();h.position.set(x,0,z);h.rotation.x=lean;g.add(h);
  for(const s of [-.32,.32])add(T,h,box(T),wood,s,height/2,0,{sx:.08,sy:height,sz:.08});
  for(let y=.3;y<height;y+=.42)add(T,h,box(T),wood,0,y,0,{sx:.64,sy:.06,sz:.06,shadow:false});return h}
-function hole(T,g,r=1.1){const dark=sharedMaterial(T,'ug:hole',()=>new T.MeshBasicMaterial({color:0x050403}));const m=add(T,g,disc(T),dark,0,.04,0,{rx:-Math.PI/2,sx:r,sy:r,sz:r,shadow:false});m.receiveShadow=false;return m}
-function steps(T,g,down,stone){for(let k=0;k<5;k++){const y=down?-.05-k*.18:k*.22;add(T,g,box(T),stone,0,y+.1,(down?1:-1)*k*.42,{sx:1.6,sy:.2,sz:.5})}}
+const iron=T=>mat(T,'iron',0x3d3f42,{metalness:.6,roughness:.5});
+// A wooden trapdoor flush with the ground: a low stone rim on a dirt patch, a black square opening
+// with the ladder's top showing, and a planked hatch with two iron bands and a ring pull, hinged on
+// the far (-z) edge. Open, the hatch leans back past upright; closed (a locked way) it lies flat.
+// The player arrives on the +z side, one tile from the hatch.
+function trapdoor(T,g,{open=true}={}){const S=1.5,rim=mat(T,'hatchrim',0x77726a),dirt=mat(T,'hatchdirt',0x5a4632),plank=mat(T,'hatchwood',0x7a5536),seam=mat(T,'hatchseam',0x4a3220);
+ const patch=add(T,g,sharedGeometry(T,'circle',1,20),dirt,0,.025,0,{rx:-Math.PI/2,sx:1.55,sy:1.55,sz:1,shadow:false});patch.receiveShadow=true;
+ for(const s of [-1,1]){add(T,g,box(T),rim,0,.07,s*(S/2+.11),{sx:S+.44,sy:.16,sz:.22});add(T,g,box(T),rim,s*(S/2+.11),.07,0,{sx:.22,sy:.16,sz:S})}
+ const dark=sharedMaterial(T,'ug:hole',()=>new T.MeshBasicMaterial({color:0x050403}));
+ if(open){const pit=add(T,g,sharedGeometry(T,'plane',1,1),dark,0,.05,0,{rx:-Math.PI/2,sx:S,sy:S,shadow:false});pit.receiveShadow=false;
+  const top=mat(T,'ladder',0x7a5634);for(const s of [-.3,.3])add(T,g,box(T),top,s,.12,-S/2+.18,{sx:.08,sy:.34,sz:.08,shadow:false});add(T,g,box(T),top,0,.2,-S/2+.18,{sx:.66,sy:.05,sz:.05,shadow:false})}
+ const hinge=new T.Group();hinge.name='hatch';hinge.position.set(0,.15,-S/2);hinge.rotation.x=open?-1.82:0;g.add(hinge);
+ for(let k=0;k<4;k++)add(T,hinge,box(T),plank,-S/2+S/8+k*S/4,0,S/2,{sx:S/4-.03,sy:.08,sz:S});
+ for(let k=1;k<4;k++)add(T,hinge,box(T),seam,-S/2+k*S/4,-.005,S/2,{sx:.03,sy:.081,sz:S,shadow:false});
+ for(const z of [.28,S-.28])add(T,hinge,box(T),iron(T),0,.045,z,{sx:S+.04,sy:.03,sz:.13,shadow:false});
+ for(const x of [-S/2+.12,S/2-.12])for(const z of [.28,S-.28])add(T,hinge,sharedGeometry(T,'sphere',1,6,4),iron(T),x,.065,z,{sx:.035,sy:.025,sz:.035,shadow:false});
+ add(T,hinge,sharedGeometry(T,'torus',.11,.022,6,12),iron(T),0,.06,S-.14,{rx:Math.PI/2,shadow:false});
+ for(const x of [-S/2+.3,S/2-.3])add(T,g,cyl(T),iron(T),x,.15,-S/2,{rz:Math.PI/2,sx:.04,sy:.22,sz:.04,shadow:false});
+ return hinge}
+// A ladder up to the open hatch: the square of light (daylight on the way out, lamplight from the
+// level above) framed by planks, with a faint shaft of light falling to the floor.
+function ladderUp(T,g,{daylight=true}={}){const H=4.7,S=1.5,lean=-.1;ladder(T,g,H,{lean});
+ const frame=mat(T,'hatchwood',0x7a5536),y=H*Math.cos(lean)+.15,zc=H*Math.sin(lean);
+ add(T,g,sharedGeometry(T,'plane',1,1),sharedMaterial(T,'ug-glow:'+(daylight?'daylight-sq':'lamplight-sq'),()=>new T.MeshStandardMaterial({color:daylight?0xfff0c2:0xffc27a,emissive:daylight?0xfff0c2:0xffc27a,emissiveIntensity:daylight?1.3:.8,roughness:.6,side:T.DoubleSide})),0,y,zc,{rx:Math.PI/2,sx:S,sy:S,shadow:false});
+ for(const s of [-1,1]){add(T,g,box(T),frame,0,y+.02,zc+s*(S/2+.1),{sx:S+.4,sy:.14,sz:.2,shadow:false});add(T,g,box(T),frame,s*(S/2+.1),y+.02,zc,{sx:.2,sy:.14,sz:S,shadow:false})}
+ const shaft=sharedMaterial(T,'ug:lightshaft:'+(daylight?'day':'lamp'),()=>new T.MeshBasicMaterial({color:daylight?0xfff0c2:0xffc27a,transparent:true,opacity:daylight?.1:.06,depthWrite:false,side:T.DoubleSide}));
+ add(T,g,sharedGeometry(T,'cylinder',.62,1.05,1,4,1,true),shaft,0,y/2,zc/2,{ry:Math.PI/4,sy:y,shadow:false});
+ const pool=add(T,g,sharedGeometry(T,'plane',1,1),shaft,0,.03,0,{rx:-Math.PI/2,sx:S+.4,sy:S+.4,shadow:false});pool.receiveShadow=false}
+// A way that needs a quest unlock or a lore find shows its hatch shut.
+export function passageLocked(d){const r=d?.passage?.requires;return !!(r&&(r.unlock||r.lore))}
 export const UNDERGROUND_MODEL_TEMPLATES=['cave_mouth','crypt_door','mine_shaft','trapdoor','cave_exit','ladder_down','ladder_up','stairs_down','stairs_up','log_balance','rope_swing','wall_climb','stepping_stones','squeeze','pier'];
 export function undergroundObjectModel(T,parent,id,d={}){
+ const look=passageLook(id);
+ if(look){const g=new T.Group();g.name='ug-'+look;g.userData.passageLook=look;parent.add(g);
+  if(look==='trapdoor')trapdoor(T,g,{open:!passageLocked(d)});else ladderUp(T,g,{daylight:!d.passage||d.passage.depth===-1});return g}
  if(!UNDERGROUND_MODEL_TEMPLATES.includes(id))return null;
  const g=new T.Group();g.name='ug-'+id;parent.add(g);
  const stone=mat(T,'stone',0x7d7a72),dark=mat(T,'darkstone',0x4d4842),wood=mat(T,'wood',0x6e4d31),rope=mat(T,'rope',0xb59a62),moss=mat(T,'moss',0x4f6b3a);
  const gh=typeof d.groundHeight==='function'?d.groundHeight:null,h0=gh&&Number.isFinite(d.x)?gh(d.x,d.z):0;
  const len=Math.max(2,Number(d.length)||6);
- if(id==='cave_mouth'){// A rocky outcrop around a black opening facing +z.
-  for(const [x,y,z,s] of [[-2.1,.9,0,1.5],[2.1,.9,0,1.5],[-1.2,2.6,.2,1.3],[1.2,2.6,.2,1.3],[0,3.2,0,1.25],[-2.8,.4,-1.2,1.1],[2.8,.4,-1.2,1.1],[0,1.8,-1.6,2]])add(T,g,rock(T),dark,x,y,z,{sx:s,sy:s*.9,sz:s,ry:x+z});
-  add(T,g,sharedGeometry(T,'circle',1.35,18,0,Math.PI),sharedMaterial(T,'ug:hole-v',()=>new T.MeshBasicMaterial({color:0x040302,side:T.DoubleSide})),0,.05,.95,{sx:1,sy:1.55,shadow:false});
-  add(T,g,rock(T),moss,-1.9,.25,1.3,{sx:.5,sy:.3,sz:.5});
- }else if(id==='crypt_door'){
-  add(T,g,box(T),stone,0,.12,0,{sx:4.2,sy:.24,sz:2.6});add(T,g,box(T),stone,-1.35,1.6,0,{sx:.6,sy:3.2,sz:.7});add(T,g,box(T),stone,1.35,1.6,0,{sx:.6,sy:3.2,sz:.7});add(T,g,box(T),stone,0,3.35,0,{sx:3.4,sy:.55,sz:.85});
-  add(T,g,box(T),mat(T,'cryptdoor',0x3b2e25),0,1.45,-.05,{sx:2.1,sy:2.7,sz:.18});add(T,g,sharedGeometry(T,'torus',.18,.04,6,12),mat(T,'iron',0x3d3f42,{metalness:.6,roughness:.5}),.55,1.4,.07,{shadow:false});
- }else if(id==='mine_shaft'||id==='trapdoor'){
-  hole(T,g,id==='trapdoor'?.75:1.15);
-  if(id==='mine_shaft'){for(const s of [-1,1]){add(T,g,box(T),wood,s*1.3,1.4,0,{sx:.18,sy:2.9,sz:.18,rz:-s*.22})}add(T,g,box(T),wood,0,2.75,0,{sx:2,sy:.18,sz:.18});add(T,g,cyl(T),rope,0,1.8,0,{sx:.03,sy:1.9,sz:.03});
-   for(const [x,z] of [[-1.3,-1.3],[1.3,-1.3],[-1.3,1.3],[1.3,1.3]])add(T,g,box(T),wood,x,.12,z,{sx:.2,sy:.24,sz:.2});ladder(T,g,1.2,{lean:.15})}
-  else{add(T,g,box(T),wood,.85,.08,0,{sx:.08,sy:.06,sz:1.4,rz:-.9});ladder(T,g,.9)}
- }else if(id==='cave_exit'||id==='ladder_up'){
-  ladder(T,g,id==='cave_exit'?4.2:3.6,{lean:-.12});
-  if(id==='cave_exit')add(T,g,disc(T),glow(T,'daylight',0xfff0c2,1.2),0,4.4,-.4,{rx:Math.PI/2,sx:1.1,sy:1.1,shadow:false});
- }else if(id==='ladder_down'){hole(T,g,.95);ladder(T,g,1.4,{lean:.1})}
- else if(id==='stairs_down'||id==='stairs_up'){steps(T,g,id==='stairs_down',stone);for(const s of [-1,1])add(T,g,box(T),dark,s*1.05,.5,0,{sx:.35,sy:1,sz:2.4})}
- else if(id==='log_balance'){const hA=gh?gh(d.x-Math.sin((d.yaw||0)*Math.PI/180)*len/2,d.z-Math.cos((d.yaw||0)*Math.PI/180)*len/2)-h0:0,hB=gh?gh(d.x+Math.sin((d.yaw||0)*Math.PI/180)*len/2,d.z+Math.cos((d.yaw||0)*Math.PI/180)*len/2)-h0:0;
+ if(id==='log_balance'){const hA=gh?gh(d.x-Math.sin((d.yaw||0)*Math.PI/180)*len/2,d.z-Math.cos((d.yaw||0)*Math.PI/180)*len/2)-h0:0,hB=gh?gh(d.x+Math.sin((d.yaw||0)*Math.PI/180)*len/2,d.z+Math.cos((d.yaw||0)*Math.PI/180)*len/2)-h0:0;
   const y=Math.max(.35,(hA+hB)/2+.32);add(T,g,cyl(T),mat(T,'bark',0x5e4430),0,y,0,{rx:Math.PI/2,sx:.32,sy:len+1,sz:.32});add(T,g,cyl(T),mat(T,'logend',0xb8955f),0,y,(len+1)/2,{rx:Math.PI/2,sx:.3,sy:.02,sz:.3,shadow:false});
  }else if(id==='rope_swing'){const top=5.2;for(const s of [-1,1])add(T,g,cyl(T),wood,s*1.1,top/2,-len/2+.6,{sx:.14,sy:top,sz:.14});add(T,g,box(T),wood,0,top,-len/2+.6,{sx:2.4,sy:.18,sz:.18});
   add(T,g,cyl(T),rope,0,top-1.6,-len/2+.6+.6,{sx:.04,sy:3.2,sz:.04,rx:-.35});add(T,g,cyl(T),wood,len*0,.6,len/2-.4,{sx:.14,sy:1.2,sz:.14});
