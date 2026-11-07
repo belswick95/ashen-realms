@@ -8,8 +8,8 @@
 //    and the server-wide rare-drop banner.
 // Cheap on phones: shared geometries/materials, fixed pools, no allocation per frame, DOM updated
 // at 10 Hz. createBossFx() returns {event(e,selfId), frame(dt)}; game.js calls both.
-import {TILE,formatTicks} from './bosses.js?v=release-20261107-trapdoor138';
-import {tickUniqueLook} from './unique-look.js?v=release-20261107-trapdoor138';
+import {TILE,formatTicks} from './bosses.js?v=release-20261107-ui139';
+import {tickUniqueLook} from './unique-look.js?v=release-20261107-ui139';
 
 const MAX_TILES=320,TICK=.6;
 export const BOSS_EVENTS=new Set(['boss_start','boss_attack','boss_telegraph','boss_impact','boss_phase','boss_enrage','boss_summon','boss_flight','boss_breath','boss_reset','boss_defeated','boss_chest','boss_rare']);

@@ -2,7 +2,7 @@
 // paint, on/off; position and arms for signposts) and place new signposts. Reads the signs the
 // game is showing (window.eldervaleBuildingSigns) and the stored overrides (sign_list); writes go
 // through ctx.invoke -> world_admin, owner-checked and audited (db/building-signs.sql).
-import {SIGN_ICONS,SIGN_STYLES,SIGN_PAINTS,drawSignIcon,cleanSign} from './building-signs.js?v=release-20261107-trapdoor138';
+import {SIGN_ICONS,SIGN_STYLES,SIGN_PAINTS,drawSignIcon,cleanSign} from './building-signs.js?v=release-20261107-ui139';
 
 export const signFormData=(read)=>{const d={text:read.text.trim(),icon:read.icon,style:read.style,paint:read.paint,enabled:!!read.enabled};
  if(read.style==='post'){for(const k of ['x','z'])if(Number.isFinite(Number(read[k]))&&read[k]!=='')d[k]=Math.round(Number(read[k])*100)/100;

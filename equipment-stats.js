@@ -1,10 +1,10 @@
 // "Equipment stats" panel, like OSRS's equipment screen: the summed attack and
 // defence bonuses of everything worn, the other bonuses, and what they mean in a
 // fight (max hit, accuracy, attack speed, ammunition).
-import {BONUS_LABELS,playerAttackProfile,playerDefenceRoll,styleLabels,tierById,ARROWS,attackPeriod,TICK_SECONDS} from './gear-tiers.js?v=release-20261107-trapdoor138';
-import {equipmentBonuses,playerLevels,gearFor,equipRefusal} from './melee-stats.js?v=release-20261107-trapdoor138';
-import {bonusSummary,requirementText,speedLabel} from './gear-tiers.js?v=release-20261107-trapdoor138';
-import {weaponCatalog} from './weapons.js?v=release-20261107-trapdoor138';
+import {BONUS_LABELS,playerAttackProfile,playerDefenceRoll,styleLabels,tierById,ARROWS,attackPeriod,TICK_SECONDS} from './gear-tiers.js?v=release-20261107-ui139';
+import {equipmentBonuses,playerLevels,gearFor,equipRefusal} from './melee-stats.js?v=release-20261107-ui139';
+import {bonusSummary,requirementText,speedLabel} from './gear-tiers.js?v=release-20261107-ui139';
+import {weaponCatalog} from './weapons.js?v=release-20261107-ui139';
 const signed=v=>(v>=0?'+':'')+v;
 // The numbers shown in the panel (also used by tests).
 export function equipmentStats(state,style='slash'){

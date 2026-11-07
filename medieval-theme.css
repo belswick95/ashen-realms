@@ -1,0 +1,235 @@
+/* ==========================================================================
+   Eldervale medieval theme (ui-revamp).
+   One set of tokens for carved stone, dark wood, leather and parchment with
+   warm gold trim, applied to the HUD, the inventory, dialogs and the login.
+   The design approach follows classic old-school MMO side panels (stone frame,
+   borderless item slots, carved tab buttons, parchment chat), drawn from
+   scratch: every texture below is an original procedural SVG (feTurbulence)
+   or CSS gradient. No third-party art. Display font: Cinzel (SIL OFL 1.1,
+   Google Fonts, credited in credits.html).
+   Loaded last so it can restyle the older layered rules; it changes look only
+   (colours, textures, borders, fonts), never ids, positions or behaviour,
+   except where noted for the inventory header on small screens.
+   ========================================================================== */
+:root{
+ /* Palette */
+ --mv-stone-hi:#8a7f6c;--mv-stone:#5d554a;--mv-stone-mid:#463f36;--mv-stone-lo:#2c2722;--mv-stone-deep:#191613;
+ --mv-wood-hi:#8a5a32;--mv-wood:#5e3b20;--mv-wood-mid:#4a2e19;--mv-wood-lo:#2e1c0f;
+ --mv-leather:#3a2d20;--mv-leather-lo:#231a12;--mv-leather-deep:#17110b;
+ --mv-parch-hi:#efe0b8;--mv-parch:#dcc694;--mv-parch-lo:#bfa36c;--mv-parch-ink:#2e1d0e;--mv-parch-ink-soft:#5a4024;
+ --mv-gold-hi:#ffe7a3;--mv-gold:#d9ae55;--mv-gold-mid:#b88a3a;--mv-gold-lo:#7a5520;
+ --mv-ember:#8e2f1a;--mv-ember-lo:#4d160b;
+ --mv-ink:#f0e2bd;--mv-ink-dim:#c5b088;--mv-count:#ffd94a;
+ --mv-hp:#3f9e2f;--mv-hp-hi:#6fd04d;--mv-hp-back:#5c130d;
+ /* Type */
+ --mv-display:'Cinzel','Trajan Pro',Georgia,'Times New Roman',serif;
+ --mv-body:Georgia,'Palatino Linotype','Book Antiqua',serif;
+ --mv-shadow-text:1px 1px 0 #000,0 0 3px #000a;
+ /* Original procedural textures */
+ --mv-noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .6 -.12'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+ --mv-speck:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .85 0 0 0 .7 -.38'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23s)'/%3E%3C/svg%3E");
+ --mv-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='80'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006 .42' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .04 0 0 0 0 .01 0 0 0 1.1 -.42'/%3E%3C/filter%3E%3Crect width='320' height='80' filter='url(%23g)'/%3E%3C/svg%3E");
+ --mv-stone-face:var(--mv-speck),var(--mv-noise),linear-gradient(160deg,var(--mv-stone-hi) 0%,var(--mv-stone) 38%,var(--mv-stone-mid) 70%,var(--mv-stone-lo) 100%);
+ --mv-stone-dark:var(--mv-noise),linear-gradient(170deg,#3b352e,#26221d 70%,#1c1915);
+ --mv-wood-face:var(--mv-grain),linear-gradient(180deg,var(--mv-wood-hi) 0%,var(--mv-wood) 45%,var(--mv-wood-mid) 75%,var(--mv-wood-lo) 100%);
+ --mv-leather-face:var(--mv-noise),radial-gradient(ellipse at 50% 0%,#4a3a2a 0%,var(--mv-leather) 45%,var(--mv-leather-lo) 100%);
+ --mv-parch-face:var(--mv-noise),radial-gradient(ellipse at 50% 40%,var(--mv-parch-hi) 0%,var(--mv-parch) 60%,var(--mv-parch-lo) 100%);
+ /* Bevels */
+ --mv-bevel-out:inset 1px 1px 0 #ffffff2e,inset -1px -1px 0 #0000008c,0 2px 3px #000a;
+ --mv-bevel-in:inset 1px 1px 2px #000c,inset -1px -1px 0 #ffffff14;
+ --mv-frame-shadow:0 0 0 1px #000,0 8px 22px #000b;
+}
+
+/* --------------------------------------------------------------------------
+   Panels: a carved stone frame around a dark leather face, with a gold hairline.
+   -------------------------------------------------------------------------- */
+html body.fantasy-hud #side,
+html body.fantasy-hud #social-panel,
+html body.fantasy-hud #game-ui #health-hud,
+html body.fantasy-hud #contextmenu,
+html body.fantasy-hud dialog,
+html body.fantasy-hud .map-card{
+ border:5px solid transparent!important;border-radius:6px!important;
+ background:var(--mv-leather-face) padding-box,var(--mv-stone-face) border-box!important;
+ box-shadow:var(--mv-frame-shadow),inset 0 0 0 1px var(--mv-gold-lo),inset 0 0 0 2px #0009,inset 0 0 18px #000a!important;
+ color:var(--mv-ink)!important;
+}
+html body.fantasy-hud dialog::backdrop{background:#0b0805c4}
+html body.fantasy-hud :is(#side,#social-panel,#dialog,dialog,.map-card) :is(h2,h3){font-family:var(--mv-display);font-weight:700;letter-spacing:.04em;color:var(--mv-gold)!important;text-shadow:var(--mv-shadow-text)}
+html body.fantasy-hud #side :is(p,label){color:var(--mv-ink)}
+
+/* Every HUD button: a carved wooden plank with a bevel and gold lettering. */
+html body.fantasy-hud button:not(:disabled){
+ background:var(--mv-wood-face)!important;border:1px solid #140c05!important;border-radius:4px!important;
+ color:var(--mv-gold-hi)!important;text-shadow:var(--mv-shadow-text);box-shadow:var(--mv-bevel-out)!important;
+ font-family:var(--mv-body)}
+html body.fantasy-hud button:not(:disabled):hover{filter:brightness(1.15);box-shadow:var(--mv-bevel-out),0 0 8px #e0b25c55!important}
+html body.fantasy-hud button:not(:disabled):active{filter:brightness(.9);box-shadow:var(--mv-bevel-in)!important}
+html body.fantasy-hud button:focus-visible{outline:2px solid var(--mv-gold-hi)!important;outline-offset:2px}
+html body.fantasy-hud button:disabled{background:var(--mv-stone-dark)!important;border:1px solid #0e0b08!important;color:#8f8470!important;box-shadow:var(--mv-bevel-in)!important}
+html body.fantasy-hud :is(button[aria-selected=true],button.active):not(:disabled){background:var(--mv-grain),linear-gradient(180deg,#a8442a,var(--mv-ember) 55%,var(--mv-ember-lo))!important;border-color:var(--mv-gold-mid)!important;color:#fff0c8!important;box-shadow:inset 0 0 0 1px #f2c87a55,inset 0 2px 5px #0007!important}
+html body.fantasy-hud input:not([type=checkbox]):not([type=radio]):not([type=range]),html body.fantasy-hud select,html body.fantasy-hud textarea{
+ background:var(--mv-stone-dark)!important;color:var(--mv-ink)!important;border:0!important;border-radius:3px!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important;font-family:var(--mv-body)}
+html body.fantasy-hud input:focus-visible,html body.fantasy-hud select:focus-visible,html body.fantasy-hud textarea:focus-visible{outline:none!important;box-shadow:var(--mv-bevel-in),0 0 0 2px var(--mv-gold-mid)!important}
+html body.fantasy-hud input[type=checkbox],html body.fantasy-hud input[type=range]{accent-color:var(--mv-gold)}
+
+/* --------------------------------------------------------------------------
+   Side panel (inventory, equipment, skills, settings...)
+   -------------------------------------------------------------------------- */
+html body.fantasy-hud #side{
+ background:var(--mv-noise) padding-box,radial-gradient(ellipse at 50% 30%,#46382a 0%,#382c20 55%,#2a2017 100%) padding-box,var(--mv-stone-face) border-box!important;
+ border-width:6px!important}
+/* Collapsed: just the tab bar on stone. */
+html body.fantasy-hud:not(.hud-panel-open):not(.compact-panel-open) #side{background:var(--mv-stone-face) padding-box,var(--mv-stone-face) border-box!important}
+/* Tabs: carved stone buttons; the open one glows ember-red under gold trim. */
+html body.fantasy-hud #side>.tabs button[data-tab]{
+ background:var(--mv-speck),var(--mv-noise),linear-gradient(170deg,#7a705f 0%,#575043 45%,#3a342c 100%)!important;
+ border:1px solid #0d0b08!important;border-radius:3px!important;color:var(--mv-ink)!important;
+ box-shadow:inset 1px 1px 0 #ffffff33,inset -1px -2px 0 #00000080,0 1px 2px #000c!important;filter:none}
+html body.fantasy-hud #side>.tabs button[data-tab]:hover{filter:brightness(1.12)}
+html body.fantasy-hud #side>.tabs button[data-tab].selected,
+html body.fantasy-hud #side>.tabs button[data-tab][aria-expanded=true]{
+ background:var(--mv-noise),radial-gradient(ellipse at 50% 60%,#b34a2c 0%,#7e2a17 55%,#4a160b 100%)!important;
+ border-color:#0d0b08!important;box-shadow:inset 0 0 0 1px var(--mv-gold),inset 0 2px 6px #000a,0 0 6px #e0a45a55!important}
+html body.fantasy-hud #side>.tabs .fantasy-tab-icon{width:28px!important;height:28px!important;filter:drop-shadow(1px 1px 0 #000a)}
+html body.fantasy-hud.phone-layout #owner-studio-toggle{font-size:10px!important;padding:0 4px!important}
+html body.fantasy-hud #side .hud-panel-close{color:var(--mv-gold-hi)!important;background:transparent!important;border:0!important;box-shadow:none!important;opacity:.9}
+
+/* Header line: gold on the left, carried weight on the right, both small and
+   sharing one row with the collapse arrow, so the slots get the height. */
+html body.fantasy-hud.hud-panel-open #side{padding-top:36px!important}
+html body.fantasy-hud #side #inventory-gold{
+ position:absolute;top:7px;left:10px;right:auto;z-index:2;height:24px;margin:0;padding:0 6px 0 2px;
+ background:none!important;border:0!important;text-align:left;
+ font:700 13px/24px var(--mv-display)!important;color:var(--mv-gold-hi)!important;text-shadow:var(--mv-shadow-text);letter-spacing:.02em;white-space:nowrap}
+html body.fantasy-hud #side .mech-weight{
+ position:absolute;top:7px;right:48px;z-index:2;height:24px;margin:0;padding:0;
+ font:12px/24px var(--mv-body)!important;color:var(--mv-ink-dim)!important;text-shadow:var(--mv-shadow-text);white-space:nowrap;text-align:right}
+html body.fantasy-hud #side .mech-weight[hidden],html body.fantasy-hud #side #inventory-gold[hidden]{display:none!important}
+
+/* The 28-slot backpack: no slot buttons, just a faint recess under each item. */
+html body #side>#inventory{gap:3px 4px!important;padding:2px!important;margin-top:2px!important;border-radius:3px;
+ background:linear-gradient(#0000002e,#0000002e);box-shadow:inset 0 1px 4px #000a}
+html body #side>#inventory>.slot,
+html body.fantasy-hud #side>#inventory>.slot,
+html body.fantasy-hud #side>#inventory>.slot:not(:disabled){
+ position:relative;display:flex!important;align-items:center;justify-content:center;
+ padding:0!important;margin:0!important;overflow:visible!important;
+ border:0!important;border-radius:3px!important;outline-offset:-2px;
+ background:radial-gradient(ellipse at 50% 55%,#00000038 0%,#0000001a 60%,transparent 100%)!important;
+ box-shadow:inset 0 1px 2px #0005,inset 0 -1px 0 #ffffff08!important;
+ color:var(--mv-ink)!important;filter:none!important;transition:background .12s}
+html body.fantasy-hud #side>#inventory>.slot:disabled{background:radial-gradient(ellipse at 50% 55%,#00000030 0%,#00000014 60%,transparent 100%)!important;box-shadow:inset 0 1px 2px #0004!important;opacity:1!important}
+html body.fantasy-hud #side>#inventory>.slot:not(:disabled):hover{background:radial-gradient(ellipse at 50% 55%,#f3d58a2e 0%,#f3d58a10 65%,transparent 100%)!important;filter:none!important;box-shadow:inset 0 1px 2px #0005!important}
+html body.fantasy-hud #side>#inventory>.slot:not(:disabled):active{background:radial-gradient(ellipse at 50% 55%,#00000055,transparent 80%)!important}
+html body.fantasy-hud #side>#inventory>.slot:focus-visible{outline:2px solid var(--mv-gold)!important}
+/* Item art fills most of the slot: the square art is drawn to the slot's short
+   side and nudged up so the object itself covers about 85% of it. */
+html body #side>#inventory>.slot .item-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;width:100%!important;height:100%!important;pointer-events:none}
+html body #side>#inventory>.slot .item-icon>:is(img,svg){
+ width:auto!important;height:112%!important;max-width:112%!important;max-height:none!important;aspect-ratio:1;object-fit:contain;
+ filter:drop-shadow(1px 1px 0 #000b) drop-shadow(0 2px 2px #0009)!important;image-rendering:auto}
+html body #side>#inventory>.slot .item-icon>svg{height:86%!important;max-width:86%!important}
+/* Stack counts: bright yellow in the top-left corner with a black edge. */
+html body #side>#inventory>.slot .item-icon small{position:absolute;top:1px;left:4px;z-index:1;font:700 12px/1 var(--mv-body)!important;color:var(--mv-count)!important;text-shadow:1px 1px 0 #000,-1px 0 0 #000,0 -1px 0 #000,0 0 2px #000;letter-spacing:0;pointer-events:none}
+
+/* Equipment, skills and other tabs pick up the same recessed look. */
+html body.fantasy-hud #side :is(#skills,#equipment) .skill-tile{background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in)!important;color:var(--mv-ink)!important;border-radius:3px!important}
+html body.fantasy-hud #side .skills-footer{font-family:var(--mv-display);color:var(--mv-gold)}
+html body.fantasy-hud #side .settings-nav button{font-family:var(--mv-display)}
+
+/* --------------------------------------------------------------------------
+   Player frame: name, HP bar and combat level on a stone plaque.
+   -------------------------------------------------------------------------- */
+html body.fantasy-hud #game-ui #health-hud{border-left-width:5px!important;color:var(--mv-ink)!important}
+html body.fantasy-hud #health-hud #player-portrait{border:0!important;border-radius:3px!important;box-shadow:var(--mv-bevel-in),0 0 0 1px var(--mv-gold-lo)!important;background:var(--mv-stone-dark)!important}
+html body.fantasy-hud #health-hud #hud-name{font-family:var(--mv-display)!important;font-weight:700!important;font-size:13px!important;letter-spacing:.06em!important;color:var(--mv-gold-hi)!important;text-shadow:var(--mv-shadow-text)}
+html body.fantasy-hud #health-hud .health-track{height:14px!important;border:0!important;border-radius:2px!important;background:linear-gradient(#7a1a10,var(--mv-hp-back))!important;box-shadow:inset 0 1px 3px #000c,0 0 0 1px #000,0 0 0 2px var(--mv-gold-lo)!important}
+html body.fantasy-hud #health-hud #health-fill{background:linear-gradient(180deg,var(--mv-hp-hi),var(--mv-hp) 55%,#2a6f1e)!important;box-shadow:inset 0 1px 0 #ffffff40}
+html body.fantasy-hud #health-hud #hud-health{font:700 10px/14px var(--mv-body)!important;color:#fff!important;text-shadow:1px 1px 0 #000,0 0 2px #000!important;letter-spacing:.04em}
+html body.fantasy-hud #health-hud .xp-track{border:0!important;border-radius:2px!important;background:#1a140d!important;box-shadow:inset 0 1px 2px #000,0 0 0 1px #000!important}
+html body.fantasy-hud #health-hud #hud-xp-fill{background:linear-gradient(90deg,var(--mv-gold-lo),var(--mv-gold))!important}
+html body.fantasy-hud #health-hud #hud-info{font:600 10px var(--mv-body)!important;color:var(--mv-gold)!important;letter-spacing:.04em!important;text-shadow:1px 1px 0 #000}
+
+/* Game console button: a wooden plaque with gold lettering. */
+html body.fantasy-hud #owner-studio-toggle{font-family:var(--mv-display)!important;font-weight:700!important;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid #140c05!important;box-shadow:var(--mv-bevel-out),inset 0 0 0 1px #d9ae5544!important}
+html body.fantasy-hud #account-bar{background:var(--mv-stone-dark)!important;box-shadow:var(--mv-bevel-out)!important;color:var(--mv-ink)}
+
+/* --------------------------------------------------------------------------
+   Chat: parchment page in a wooden frame, dark ink, like a ledger.
+   -------------------------------------------------------------------------- */
+html body.fantasy-hud #social-panel#social-panel{border:5px solid transparent!important;border-radius:6px!important;background:var(--mv-wood-face) padding-box,var(--mv-stone-face) border-box!important;box-shadow:var(--mv-frame-shadow),inset 0 0 0 1px var(--mv-gold-lo),inset 0 0 14px #000a!important}
+html body.fantasy-hud #social-panel .social-head strong{font-family:var(--mv-display)!important;font-weight:700;color:var(--mv-gold-hi)!important;text-shadow:var(--mv-shadow-text);letter-spacing:.06em}
+html body.fantasy-hud #social-panel #world-chat-lines{background:var(--mv-parch-face)!important;color:var(--mv-parch-ink)!important;border:0!important;border-radius:2px!important;box-shadow:inset 0 1px 4px #4a2e1288,0 0 0 1px #1a0f06!important;padding:3px 6px!important}
+html body.fantasy-hud #social-panel #world-chat-lines :is(p,.world-line,span,b,strong){color:var(--mv-parch-ink)!important;text-shadow:none!important}
+html body.fantasy-hud #social-panel #world-chat-lines :is(b,strong,.world-name){color:#7a1d0e!important}
+html body.fantasy-hud #social-panel #world-chat-input{background:var(--mv-noise),linear-gradient(#cdb47f,#e2cd9c)!important;color:var(--mv-parch-ink)!important;box-shadow:inset 0 1px 3px #4a2e12aa,0 0 0 1px #1a0f06!important}
+html body.fantasy-hud #social-panel #world-chat-input::placeholder{color:#6f5634}
+html body.fantasy-hud #social-panel small,html body.fantasy-hud #social-note{color:var(--mv-ink-dim)!important}
+html body.fantasy-hud #social-toggle{font:700 11px var(--mv-display)!important;letter-spacing:.04em}
+html body.fantasy-hud.phone-layout #social-toggle{width:auto!important;min-width:40px!important;padding:0 7px!important}
+
+/* --------------------------------------------------------------------------
+   NPC dialogue: parchment scroll with a wooden frame and a red-ink speaker.
+   -------------------------------------------------------------------------- */
+html body.fantasy-hud #dialog{background:var(--mv-parch-face) padding-box,var(--mv-wood-face) border-box!important;border:6px solid transparent!important;border-left-width:6px!important;color:var(--mv-parch-ink)!important;
+ box-shadow:0 0 0 1px #000,0 12px 34px #000c,inset 0 0 0 1px var(--mv-gold-lo),inset 0 0 26px #7a52226b!important}
+html body.fantasy-hud #dialog .dialog-top{border-bottom:1px solid #7a5a2c88}
+html body.fantasy-hud #dialog #dialog-name{font:700 18px var(--mv-display)!important;color:#7a1d0e!important;letter-spacing:.04em;text-shadow:none}
+html body.fantasy-hud #dialog .dialog-badge{font:700 9px var(--mv-display)!important;color:var(--mv-parch-ink-soft)!important;letter-spacing:.18em}
+html body.fantasy-hud #dialog #dialog-text{font:15px/1.55 var(--mv-body)!important;color:var(--mv-parch-ink)!important}
+html body.fantasy-hud #dialog #dialog-portrait{border:0!important;border-radius:3px!important;box-shadow:0 0 0 2px var(--mv-wood-lo),0 0 0 3px var(--mv-gold-mid),0 3px 8px #0007!important;background:#2a2017}
+html body.fantasy-hud #dialog #dialog-choices button:not(:disabled){background:transparent!important;border:0!important;border-bottom:1px solid #7a5a2c55!important;border-radius:0!important;box-shadow:none!important;color:#1f3f7a!important;text-shadow:none;font:600 15px var(--mv-body)!important;min-height:40px}
+html body.fantasy-hud #dialog #dialog-choices button:not(:disabled):hover,html body.fantasy-hud #dialog #dialog-choices button:not(:disabled):focus-visible{background:#7a52221f!important;color:#7a1d0e!important;filter:none}
+html body.fantasy-hud #dialog #dialog-next{font-family:var(--mv-display)!important;font-weight:700;min-height:40px}
+
+/* Right-click menu: dark leather with gold verbs. */
+html body.fantasy-hud #contextmenu{padding:4px!important}
+html body.fantasy-hud #contextmenu button:not(:disabled){background:transparent!important;border:0!important;box-shadow:none!important;color:var(--mv-ink)!important;font:14px var(--mv-body)!important;min-height:36px}
+html body.fantasy-hud #contextmenu button:not(:disabled):hover{background:#d9ae5526!important;color:var(--mv-gold-hi)!important;filter:none}
+
+/* Minimap ring and orb buttons in stone. */
+html body.fantasy-hud #minimap{border:3px solid var(--mv-stone-mid)!important;box-shadow:0 0 0 1px #000,0 0 0 3px var(--mv-gold-lo),0 0 0 5px #000,0 5px 16px #0008!important}
+html body.fantasy-hud #map-controls>button:not(:disabled){background:var(--mv-speck),var(--mv-noise),radial-gradient(circle at 35% 30%,#8a8070,#4e463c 60%,#2a2520)!important;color:var(--mv-gold-hi)!important;box-shadow:inset 0 0 0 1px var(--mv-gold-lo),0 2px 4px #000a!important}
+
+/* ==========================================================================
+   Login: leather card face, inset parchment fields, carved tabs and button.
+   The scene, torches, stone frame and iron corners stay as they are.
+   ========================================================================== */
+html body #auth-screen .auth-card{background:var(--mv-noise),radial-gradient(ellipse at 50% 0%,#3d3022f2 0%,#2a2017f5 55%,#1b140df7 100%)!important}
+html body #auth-screen .login-wordmark,html body #auth-screen .login-kicker,html body #auth-screen .login-brand-line{font-family:var(--mv-display)!important}
+html body #auth-screen .login-wordmark{font-weight:700}
+html body #auth-screen #auth-title{font-family:var(--mv-display)!important;font-weight:700;letter-spacing:.02em;color:var(--mv-gold-hi)!important;text-shadow:0 2px 0 #000,0 0 18px #000}
+html body #auth-screen .auth-card-top p{color:var(--mv-ink-dim)!important;font-family:var(--mv-body)!important;font-style:italic;font-size:14px!important}
+/* Sign in / Create account: two carved wooden tabs. */
+html body #auth-screen .login-tabs{gap:6px!important;border-bottom:0!important;padding:4px;border-radius:5px;background:#0000004d;box-shadow:inset 0 1px 3px #000c,0 1px 0 #ffffff12}
+html body #auth-screen .login-tabs button{min-height:44px!important;border:1px solid #120a04!important;border-radius:3px!important;background:var(--mv-grain),linear-gradient(180deg,#4f321c,#3a2414 60%,#2a190d)!important;color:#bba27a!important;font:700 13px var(--mv-display)!important;letter-spacing:.05em!important;box-shadow:inset 1px 1px 0 #ffffff1c,inset -1px -1px 0 #0008!important;text-shadow:1px 1px 0 #000}
+html body #auth-screen .login-tabs button[aria-pressed=true]{background:var(--mv-grain),linear-gradient(180deg,#9a6534,#74461f 55%,#58331a)!important;color:var(--mv-gold-hi)!important;box-shadow:inset 0 0 0 1px var(--mv-gold-mid),inset 0 1px 0 #ffffff33,0 0 10px #d9a55a33!important}
+/* Field labels in small gilt capitals. */
+html body #auth-screen .login-field>label{font:700 11px/1.4 var(--mv-display)!important;letter-spacing:.12em!important;color:var(--mv-gold)!important;text-shadow:1px 1px 0 #000;text-transform:uppercase}
+/* Fields: parchment set into the leather, dark ink, no thin outlines. */
+html body #auth-screen .auth-card input{height:48px!important;border:0!important;border-radius:3px!important;
+ background:var(--mv-noise),linear-gradient(180deg,#cdb684 0%,#e4d1a2 30%,#ead9ae 100%)!important;
+ color:var(--mv-parch-ink)!important;font-family:var(--mv-body)!important;font-size:16px!important;
+ box-shadow:inset 0 2px 5px #4a2e12b3,inset 0 0 0 1px #5a3c1a66,0 0 0 2px #120a04,0 1px 0 2px #ffffff14!important;outline:none!important}
+html body #auth-screen .auth-card input::placeholder{color:#7d6644!important;font-style:italic}
+html body #auth-screen .auth-card input:focus,html body #auth-screen .auth-card input:focus-visible{outline:none!important;box-shadow:inset 0 2px 5px #4a2e12b3,0 0 0 2px #120a04,0 0 0 4px var(--mv-gold-mid),0 0 14px #e0b25c66!important}
+html body #auth-screen .auth-card input:-webkit-autofill{-webkit-text-fill-color:var(--mv-parch-ink);-webkit-box-shadow:0 0 0 40px #e4d1a2 inset,0 0 0 2px #120a04!important}
+html body #auth-screen #auth-password-toggle{height:48px!important;color:#5a4024!important;background:transparent!important;box-shadow:none!important}
+html body #auth-screen #auth-password-toggle:hover,html body #auth-screen #auth-password-toggle[aria-pressed=true]{color:#7a1d0e!important}
+/* The main button: a carved stone slab with gilt lettering and a gold rim. */
+html body #auth-screen .auth-card .login-submit,html body #auth-screen .auth-card button.login-submit[type=submit]{
+ height:54px!important;border:1px solid #070605!important;border-radius:4px!important;
+ background:var(--mv-speck),var(--mv-noise),linear-gradient(180deg,#8d8270 0%,#615849 40%,#463f35 75%,#2f2a24 100%)!important;
+ color:var(--mv-gold-hi)!important;font:700 16px var(--mv-display)!important;letter-spacing:.14em!important;text-transform:uppercase;
+ text-shadow:0 1px 0 #000,0 0 8px #000,0 0 14px #e8b0503a!important;
+ box-shadow:inset 0 0 0 2px #00000059,inset 0 0 0 3px var(--mv-gold-mid),inset 0 2px 0 3px #ffffff22,inset 0 -3px 0 3px #0000004d,0 4px 10px #000c!important}
+html body #auth-screen .auth-card .login-submit:hover{filter:brightness(1.12);box-shadow:inset 0 0 0 2px #00000059,inset 0 0 0 3px var(--mv-gold),inset 0 2px 0 3px #ffffff2a,0 0 18px #e0b25c55,0 4px 10px #000c!important}
+html body #auth-screen .auth-card .login-submit:active{filter:brightness(.92);transform:translateY(1px)}
+html body #auth-screen .auth-card .login-submit::after{color:var(--mv-gold)}
+html body #auth-screen .auth-card #auth-mode{font:600 14px var(--mv-body)!important;color:var(--mv-gold)!important;text-decoration:underline;text-decoration-color:#d9ae5566;text-underline-offset:4px;min-height:44px!important}
+html body #auth-screen .auth-card #auth-mode:hover{color:var(--mv-gold-hi)!important}
+html body #auth-screen .auth-card #auth-status{font-family:var(--mv-body)!important;font-size:14px!important;color:var(--mv-gold-hi)!important}
+html body #auth-screen .login-card-foot{font-family:var(--mv-display)!important;color:var(--mv-ink-dim)!important;border-top-color:#d9ae5526!important}
+html body #auth-screen #login-sound-toggle{background:var(--mv-wood-face)!important;border:1px solid #120a04!important;border-radius:4px!important;color:var(--mv-gold-hi)!important;box-shadow:var(--mv-bevel-out)!important;min-height:44px}
+@media(max-width:480px){html body #auth-screen .login-tabs button{font-size:12px!important;letter-spacing:.01em!important;white-space:nowrap;padding:8px 4px!important}html body #auth-screen #auth-title{font-size:30px!important}}
