@@ -2,9 +2,9 @@
 // progress and hand-ins, tutor lessons and services. Drives the HUD's #dialog panel (portrait,
 // name, text, choices, continue) so quest text never opens a second box on top of it.
 // Flow: greeting line -> options (Talk / quest topics / Trade / Bank / Bye) -> pages -> accept/decline.
-import {dialogueTopics,questPages,trackerStep} from './quest-guide.js?v=release-20261107-walls155';
-import {rewardEntries} from './quests.js?v=release-20261107-walls155';
-import {npcGreeting,npcDisplayName} from './npc-options.js?v=release-20261107-walls155';
+import {dialogueTopics,questPages,trackerStep} from './quest-guide.js?v=release-20261107-music156';
+import {rewardEntries} from './quests.js?v=release-20261107-music156';
+import {npcGreeting,npcDisplayName} from './npc-options.js?v=release-20261107-music156';
 
 export const CLOSED=Symbol('closed');
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
