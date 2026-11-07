@@ -1,14 +1,14 @@
-import {spawnCatalog,searchCatalog,catalogEntity,consoleCategories,bestiary,lootSummary,normalizeLoot,behaviorPatch,normalizePatrol,transformGroup,aheadOf,ringPositions,mergePlayers,matchesQuery,wrapYaw} from './bestiary.js?v=release-20261107-monsters135';
-import {MONSTER_MODELS,classicMonsterSpecies,setClassicMonsterModel} from './monster-models.js?v=release-20261107-monsters135';
-import {worldTemplates,attackTypes} from './world-templates.js?v=release-20261107-monsters135';
-import {goods} from './economy.js?v=release-20261107-monsters135';
-import {professionSkills} from './profession-data.js?v=release-20261107-monsters135';
-import {SKINS,HAIRS,HAIRSTYLES} from './appearance.js?v=release-20261107-monsters135';
-import {showPreview} from './admin-preview.js?v=release-20261107-monsters135';
-import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261107-monsters135';
-import {engineSection} from './admin-engine.js?v=release-20261107-monsters135';
-import {mechanicsSection} from './admin-mechanics.js?v=release-20261107-monsters135';
-import {bossesSection} from './admin-bosses.js?v=release-20261107-monsters135';
+import {spawnCatalog,searchCatalog,catalogEntity,consoleCategories,bestiary,lootSummary,normalizeLoot,behaviorPatch,normalizePatrol,transformGroup,aheadOf,ringPositions,mergePlayers,matchesQuery,wrapYaw} from './bestiary.js?v=release-20261107-skillguide136';
+import {MONSTER_MODELS,classicMonsterSpecies,setClassicMonsterModel} from './monster-models.js?v=release-20261107-skillguide136';
+import {worldTemplates,attackTypes} from './world-templates.js?v=release-20261107-skillguide136';
+import {goods} from './economy.js?v=release-20261107-skillguide136';
+import {professionSkills} from './profession-data.js?v=release-20261107-skillguide136';
+import {SKINS,HAIRS,HAIRSTYLES} from './appearance.js?v=release-20261107-skillguide136';
+import {showPreview} from './admin-preview.js?v=release-20261107-skillguide136';
+import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261107-skillguide136';
+import {engineSection} from './admin-engine.js?v=release-20261107-skillguide136';
+import {mechanicsSection} from './admin-mechanics.js?v=release-20261107-skillguide136';
+import {bossesSection} from './admin-bosses.js?v=release-20261107-skillguide136';
 // Owner game console tabs: Dashboard, Spawn, Placed, NPCs, Monsters, Players and World.
 // Every write goes through world_admin, where the server re-checks owner access.
 const svg=p=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
@@ -19,6 +19,7 @@ export const consoleIcons={
  Players:svg('<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c.6-3.5 3-5.5 6-5.5s5.4 2 6 5.5M15 15c2.8-.4 5 1.4 6 4"/>'),World:svg('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>'),
  Editor:svg('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>'),Items:svg('<path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/>'),Recipes:svg('<path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h6"/>'),Quests:svg('<path d="M6 3h9l3 3v15H6z"/><path d="M9 9l2 2 4-4M9 15h6"/>'),
  Weather:svg('<path d="M7 15a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8.5a3.5 3.5 0 0 1-.5 6.5z"/><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"/>'),
+ 'Skill guides':svg('<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/><path d="M7 9h2M15 9h2M7 13h2M15 13h2"/>'),
  'Map markers':svg('<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'),
  Signs:svg('<path d="M12 3v18M8 21h8"/><path d="M5 6h12l3 2.5L17 11H5z"/><path d="M19 13H8l-3 2.5L8 18h11z"/>'),
  Actors:svg('<circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20c1-3.5 3.3-5 6-5s5 1.5 6 5M14 15c3 0 5.4 1.6 6 5"/>'),Server:svg('<rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/>'),
