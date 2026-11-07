@@ -84,7 +84,7 @@ test('ground clutter: preset budgets, phone cap, one shared program and repeatab
  for(const kind of CLUTTER_KINDS)assert.ok(CLUTTER_BUDGET.low[kind]<CLUTTER_BUDGET.high[kind]&&CLUTTER_BUDGET.high[kind]<=CLUTTER_BUDGET.ultra[kind]);
  const seq=s=>{let n=s;return ()=>{n=(n*16807)%2147483647;return n/2147483647}},lush={grass:1,castle:0,snow:0,dry:0};
  const count=(cover,edge)=>{const r=seq(9),out={};for(let i=0;i<4000;i++){const k=clutterKind(cover,edge,lush,r);out[k]=(out[k]||0)+1}return out};
- const onPath=count(.9,.9),verge=count(.2,.3),grass=count(0,0);assert.ok(!onPath.tuft&&!onPath.flower&&onPath.pebble>40,'stones, never grass, on the trail');assert.ok(verge.pebble>1000,'gravel along the edges');assert.ok(grass.tuft>900&&grass.flower>60&&grass.twig>10);
+ const onPath=count(.9,.9),verge=count(.2,.3),grass=count(0,0);assert.ok(!onPath.tuft&&!onPath.flower&&onPath.pebble>20&&onPath.pebble<120,'a few stones, never grass, on the trail');assert.ok(verge.pebble>200&&verge.pebble<600,'some gravel along the edges, not a band');assert.ok(grass.tuft>900&&grass.flower>60&&grass.twig>10);
  const scene=new T.Scene(),land={heightAt:()=>0,waterAt:()=>0},clutter=createGroundClutter(T,scene,land,{seed:5});
  const meshes=Object.values(clutter.meshes);assert.equal(meshes.length,4);assert.ok(meshes.every(m=>m.material===clutter.material),'one material, one program for every kind');
  assert.equal(clutter.material.customProgramCacheKey(),'ground-clutter');assert.equal(clutter.material.userData.classicKeep,true,'Classic keeps the clutter material as is');
