@@ -2,7 +2,7 @@
 // stairs, the way out), agility shortcuts and the fishing pier. Pooled geometry and materials
 // only (shared-geometry.js), a handful of meshes each, so they stream and batch cheaply.
 // world-models.js objectModel() asks here first.
-import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-skillguide136';
+import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-skilling137';
 const mat=(T,key,color,extra={})=>sharedMaterial(T,'ug:'+key,()=>new T.MeshStandardMaterial({color,roughness:.92,metalness:0,...extra}));
 const glow=(T,key,color,intensity=1.6)=>sharedMaterial(T,'ug-glow:'+key,()=>new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:intensity,roughness:.6}));
 function add(T,g,geometry,material,x=0,y=0,z=0,{rx=0,ry=0,rz=0,sx=1,sy=1,sz=1,shadow=true}={}){const m=new T.Mesh(geometry,material);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);m.scale.set(sx,sy,sz);m.castShadow=shadow;m.receiveShadow=true;g.add(m);return m}

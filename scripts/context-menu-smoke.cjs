@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('fs'),http=require('http'),path=require('path'),{chromium}=require('playwright-core'),root=path.resolve(__dirname,'..');
 const game=fs.readFileSync(path.join(root,'game.js'),'utf8'),bubble=game.slice(game.indexOf('window.eldervaleShowChatBubble='),game.indexOf('\nfunction updateOverheadChat'));
 const html=`<!doctype html><html><head><link rel="stylesheet" href="/gameplay.css"></head><body style="background:#16221c;color:#e9ddbc;font:16px Arial"><div id="world-chat-lines"></div><div id="labels"></div><script>const chatBubbles=new Map(),bubbleLayer=document.createElement('div');document.body.append(bubbleLayer);${bubble}</script><script type="module">
-import {actorMenuLabel} from '/context-label.js';import {setChatMessages} from '/chat-feed.js?v=release-20261107-skillguide136';
+import {actorMenuLabel} from '/context-label.js';import {setChatMessages} from '/chat-feed.js?v=release-20261107-skilling137';
 const host=document.querySelector('#labels');for(const level of [20,30,31,35,36]){const p=document.createElement('p');p.append(actorMenuLabel({prefix:'Attack ',name:'Great Stag',level,playerLevel:30}));host.append(p)}
 host.append(actorMenuLabel({name:'Devilbound1',level:100,playerLevel:30,player:true,accountId:'91c5b7f0-7018-4290-a190-c2bba0ca492d'}));
 host.append(actorMenuLabel({name:'<img src=x onerror=alert(1)>',level:30,playerLevel:30,player:true,accountId:'other'}));
