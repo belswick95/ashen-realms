@@ -45,7 +45,7 @@ export function startMusic({scene='world'}={}){
   if(!desired||!enabled||!musicEnabled||disposed)return;const epoch=generation,deck=decks[active];try{await deck.play();if(epoch!==generation){deck.pause();return}ramp(gains?.[active],1,2.6);waiting=false;unavailable=false;notify()}catch(error){if(epoch!==generation)return;if(error.name==='NotAllowedError'){waiting=true}else if(error.name!=='AbortError'){unavailable=true}notify()}
  }
  async function unlock(){
-  if(!enabled||disposed)return;try{initialize();const resume=ctx.resume();const playback=desired&&musicEnabled?playActive():Promise.resolve();await Promise.all([resume,playback]);started=ctx.state==='running';waiting=!started;applyVolume();if(started)sfx.preload(['hoof','chop','crunch','splashCast','splashCatch']);environment();notify()}catch{unavailable=true;notify()}
+  if(!enabled||disposed)return;try{initialize();const resume=ctx.resume();const playback=desired&&musicEnabled?playActive():Promise.resolve();await Promise.all([resume,playback]);started=ctx.state==='running';waiting=!started;applyVolume();if(started)sfx.preload(['hoof','chop','crunch','splashCast','splashCatch','combat']);environment();notify()}catch{unavailable=true;notify()}
  }
  function environment(){
   if(!ctx||!started||document.hidden||mode==='login'||!ambience)return;let env=null;try{env=window.eldervaleAmbientState?.()||null}catch{}

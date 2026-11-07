@@ -65,7 +65,9 @@ export function createBossFx({T,scene,getActor=()=>null,player=()=>null,say=()=>
  // ---- fight state (the nearest boss the player is fighting).
  let fight=null,now=0,lastUi=0,titleT=-1,rareT=-1;const lifts=new Map();
  const near=(id,r=45)=>{const a=getActor(id),p=player();if(!a?.root||!p)return null;return a.root.position.distanceTo(p.position)<r?a:null};
- const sfx=(name,at,gain=.8)=>{const fx=sound();if(!fx)return;const where=at?{x:at.x,z:at.z}:null;if(['whoosh','hit','block'].includes(name))fx.proc?.(name,{at:where,gain});else fx.sample?.(name,{at:where,gain,far:60})};
+ // Combat beats use the recorded combat set (combat-audio.js); no synthesis.
+ const COMBAT={whoosh:'swingHeavy',hit:'hitBlunt',block:'block'};
+ const sfx=(name,at,gain=.8)=>{const fx=sound();if(!fx)return;const where=at?{x:at.x,z:at.z}:null;if(COMBAT[name])fx.sample?.(COMBAT[name],{at:where,gain,far:60,vary:.05,group:'combat',priority:1,rate:name==='whoosh'?.85:1});else fx.sample?.(name,{at:where,gain,far:60})};
  const SOUND={rumble:'thunderRoll',slam:'rockBreak',frost:'ripple',web:'ripple',swipe:'whoosh',charge:'thunderRoll',breath:'crackle'};
  function addMarks(list,color,ticks,source){const start=now,impact=now+Math.max(.3,ticks*TICK);for(const [i,j] of list||[])if(canWalk(i*TILE,j*TILE))marks.push({i,j,color,start,impact,source});if(marks.length>MAX_TILES)marks.splice(0,marks.length-MAX_TILES)}
  function showTitle(html,secs=3.5){const u=dom();if(!u)return;u.title.innerHTML=html;u.title.style.opacity='1';titleT=now+secs}
