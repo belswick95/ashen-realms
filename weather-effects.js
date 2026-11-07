@@ -9,7 +9,7 @@
 // (window.eldervaleUndergroundArea, set by the cave system while inside a cave): no weather at all.
 // Tiers: low draws few particles and skips wet shading and ripples; classic
 // look gets chunky, flat rain streaks and square flakes.
-import {weatherAt,weatherLook,weatherLabel,lightningAt,thunderFor,weatherUniforms,LOOK_FIELDS} from './weather.js?v=release-20261107-perf146';
+import {weatherAt,weatherLook,weatherLabel,lightningAt,thunderFor,weatherUniforms,LOOK_FIELDS} from './weather.js?v=release-20261107-qa147';
 
 export const WEATHER_TIERS={
  low:{rain:1400,flakes:1000,ripples:0,wetShading:false,materials:false},
@@ -22,6 +22,10 @@ export function weatherTier(preset='high',classic=false){const t=WEATHER_TIERS[p
 export function weatherFog(baseNear,baseFar,amount){const f=Math.max(0,Math.min(1,amount))**1.15;return {near:baseNear*(1-f)+1.5*f,far:baseFar*(1-f)+Math.min(baseFar,46)*f}}
 // Wetness and settled snow chase their targets slowly: rain soaks in over ~30 s,
 // the ground dries over a few minutes; snow settles over ~80 s and melts slower.
+// Fog distances this frame: the surface base thinned by the weather, or a cave's own fog while
+// underground.js publishes one (scene.userData.undergroundFog). Weather used to overwrite the cave
+// fog with the surface distances every frame, so caves never faded into their dark.
+export function sceneFogDistances(base,cave,amount){if(cave&&Number.isFinite(cave.near)&&Number.isFinite(cave.far))return {near:cave.near,far:cave.far};return weatherFog(base.near,base.far,amount)}
 export function soak(value,target,dt,{up=30,down=160}={}){return target>value?Math.min(target,value+dt/up):Math.max(target,value-dt/down)}
 // Flash brightness for a strike that began `t` seconds ago with `pulses` flickers.
 export function flashLevel(t,pulses=2){if(t<0||t>1.2)return 0;let v=0;for(let i=0;i<pulses;i++){const s=t-i*.14-(i>1?.12:0);if(s>=0)v=Math.max(v,Math.exp(-s*14)*(i?.75:1))}return v}
@@ -168,7 +172,7 @@ export function createWeatherEffects(T,{scene,camera,renderer,landscape,sun,skyL
   const lum=base.fog?(base.fog.r*.3+base.fog.g*.59+base.fog.b*.11):.5;overcast.setRGB(cur.tint[0],cur.tint[1],cur.tint[2],T.SRGBColorSpace).multiplyScalar(Math.min(1.25,(lum*1.2+.04)/Math.max(.2,(cur.tint[0]*.3+cur.tint[1]*.59+cur.tint[2]*.11)))*(1-.35*dark));
   const veil=Math.min(1,cloud*.7+cur.fog*.75+cur.haze*.5);
   color.copy(base.fog).lerp(overcast,veil).lerp(flashColor,flash*.45);scene.fog.color.copy(color);if(scene.background?.isColor)scene.background.copy(color);
-  const fog=weatherFog(fogBase.near,fogBase.far,Math.min(1,cur.fog+cur.haze*.1));scene.fog.near=fog.near;scene.fog.far=fog.far;
+  const fog=sceneFogDistances(fogBase,scene.userData.undergroundFog,Math.min(1,cur.fog+cur.haze*.1));scene.fog.near=fog.near;scene.fog.far=fog.far;
   sun.intensity=base.sun*(1-.78*cloud)*(1-.3*cur.fog);skyLight.intensity=base.hemi*(1+.18*cloud-.38*dark)+flash*(1.4+2.2*(1-day));
   renderer.toneMappingExposure=base.exposure*(1-.3*dark+.05*cur.haze)+flash*.35;
   const amb=classicAmbient();if(amb&&classicOn)amb.intensity=base.ambient*(1-.3*dark)+flash*1.2;

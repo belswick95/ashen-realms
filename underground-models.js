@@ -4,8 +4,9 @@
 // Pooled geometry and materials only (shared-geometry.js), a handful of meshes each, so they
 // stream and batch cheaply.
 // world-models.js objectModel() asks here first.
-import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-perf146';
-import {passageLook} from './underground-data.js?v=release-20261107-perf146';
+import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-qa147';
+import {passageLook} from './underground-data.js?v=release-20261107-qa147';
+import {makeFlame} from './torch.js?v=release-20261107-qa147';
 const mat=(T,key,color,extra={})=>sharedMaterial(T,'ug:'+key,()=>new T.MeshStandardMaterial({color,roughness:.92,metalness:0,...extra}));
 const glow=(T,key,color,intensity=1.6)=>sharedMaterial(T,'ug-glow:'+key,()=>new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:intensity,roughness:.6}));
 function add(T,g,geometry,material,x=0,y=0,z=0,{rx=0,ry=0,rz=0,sx=1,sy=1,sz=1,shadow=true}={}){const m=new T.Mesh(geometry,material);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);m.scale.set(sx,sy,sz);m.castShadow=shadow;m.receiveShadow=true;g.add(m);return m}
@@ -69,8 +70,12 @@ export function undergroundObjectModel(T,parent,id,d={}){
 // Underground lights also mark the spot with a small emissive mesh (torch head, fungus cap,
 // crystal, lava pool) so the cave reads even where the 4-light pool does not reach.
 export function lightMarker(T,kind,color){const g=new T.Group(),c=glow(T,'l:'+kind,color,kind==='lava'?1.4:1.8);
- if(kind==='torch'){add(T,g,cyl(T),mat(T,'torchwood',0x4a3322),0,.9,0,{sx:.06,sy:1.8,sz:.06});add(T,g,sharedGeometry(T,'cone',.16,.42,6),c,0,1.95,0,{shadow:false})}
- else if(kind==='brazier'){add(T,g,cyl(T),mat(T,'iron',0x3d3f42,{metalness:.6,roughness:.5}),0,.5,0,{sx:.45,sy:1,sz:.45});add(T,g,sharedGeometry(T,'cone',.4,.5,7),c,0,1.25,0,{shadow:false})}
+ // Torches and braziers burn with the held torch's animated flame (torch.js): the old solid
+ // emissive cone tone-mapped to a flat white spike that read as a spear head, not a fire.
+ if(kind==='torch'){add(T,g,cyl(T),mat(T,'torchwood',0x4a3322),0,.9,0,{sx:.06,sy:1.8,sz:.06});add(T,g,cyl(T),mat(T,'torchwrap',0x3b2c20,{roughness:.95}),0,1.86,0,{sx:.1,sy:.22,sz:.1,shadow:false});
+  const f=makeFlame(T);f.name='light-flame';f.position.y=1.94;f.scale.setScalar(2.2);g.add(f)}
+ else if(kind==='brazier'){add(T,g,cyl(T),mat(T,'iron',0x3d3f42,{metalness:.6,roughness:.5}),0,.5,0,{sx:.45,sy:1,sz:.45});add(T,g,cyl(T),mat(T,'coals',0x2a140a,{emissive:0x7a2a08,emissiveIntensity:.9}),0,1.02,0,{sx:.4,sy:.06,sz:.4,shadow:false});
+  const f=makeFlame(T);f.name='light-flame';f.position.y=1.02;f.scale.setScalar(3.6);g.add(f)}
  else if(kind==='fungus'){for(const [x,z,s] of [[0,0,.42],[.5,.3,.3],[-.4,.35,.24]]){add(T,g,cyl(T),mat(T,'stalk',0xcfc7b0),x,s*.6,z,{sx:.06,sy:s*1.2,sz:.06,shadow:false});add(T,g,sharedGeometry(T,'sphere',1,8,5,0,Math.PI*2,0,Math.PI/2),c,x,s*1.2,z,{sx:s,sy:s*.6,sz:s,shadow:false})}}
  else if(kind==='crystal'){for(const [x,z,s,r] of [[0,0,.9,0],[.35,.2,.6,.4],[-.3,.25,.5,-.4]])add(T,g,sharedGeometry(T,'cone',.2,1,5),c,x,s/2,z,{sy:s,rz:r,shadow:false})}
  else if(kind==='lava'){const m=add(T,g,disc(T),c,0,.03,0,{rx:-Math.PI/2,sx:2.2,sy:1.6,sz:1,shadow:false});m.receiveShadow=false}

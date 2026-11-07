@@ -10,24 +10,24 @@
 //  {level, item?: catalog id (goods) for the icon and name, glyph?: emoji when no item exists
 //   (prayers, spells, shortcuts), name, detail, also?: {skill: level} other requirements,
 //   where?: {cat, tier?, tiers?, name?} a map-icons.js marker kind to point at}.
-import {professionRecipes,professionSkills,professionStations} from './profession-data.js?v=release-20261107-perf146';
-import {fullFishTable,allMethods,LEGACY_CATCHES,LEGACY_METHODS,allFoodLadder} from './fish-tiers.js?v=release-20261107-perf146';
-import {SPOT_TYPES} from './water-data.js?v=release-20261107-perf146';
-import {GEAR_TIERS,tierById,tierIndex,tierWeapons,tierShields,WEAPON_TEMPLATES,SHIELD_TEMPLATES,PLATE_PIECES,BOWS,STAFFS,SPELLS,ARROWS,HIT_SCALE,STYLE_BONUS,maxHit,effectiveLevel,bonusSummary} from './gear-tiers.js?v=release-20261107-perf146';
-import {weaponCatalog} from './weapons.js?v=release-20261107-perf146';
-import {shieldCatalog} from './shields.js?v=release-20261107-perf146';
-import {outfitItems,OUTFIT_VARIANTS} from './outfits.js?v=release-20261107-perf146';
-import {UNIQUE_ITEMS} from './unique-gear.js?v=release-20261107-perf146';
-import {BOSSES} from './bosses.js?v=release-20261107-perf146';
-import {PRAYERS} from './mechanics.js?v=release-20261107-perf146';
-import {BONES,ALTAR_OFFER_MULTIPLIER} from './monster-roster.js?v=release-20261107-perf146';
-import {shortcuts as AGILITY_SHORTCUTS,AGILITY_TEMPLATES} from './agility-data.js?v=release-20261107-perf146';
-import {SHORTCUTS as EXPLORE_SHORTCUTS,PLACES,areaById} from './explore-data.js?v=release-20261107-perf146';
-import {ORE_TIERS,TREE_TIERS,classifyEntity} from './map-icons.js?v=release-20261107-perf146';
-import {skillingChance,HITPOINTS_START,MAX_LEVEL} from './combat-level.js?v=release-20261107-perf146';
-import {goods} from './economy.js?v=release-20261107-perf146';
-import {WOODCUTTING_TREES,WOODCUTTING_AXES} from './skill-guide-sql-data.js?v=release-20261107-perf146';
-import {SKILL_PANEL,skillId} from './skill-list.js?v=release-20261107-perf146';
+import {professionRecipes,professionSkills,professionStations} from './profession-data.js?v=release-20261107-qa147';
+import {fullFishTable,allMethods,LEGACY_CATCHES,LEGACY_METHODS,allFoodLadder} from './fish-tiers.js?v=release-20261107-qa147';
+import {SPOT_TYPES} from './water-data.js?v=release-20261107-qa147';
+import {GEAR_TIERS,tierById,tierIndex,tierWeapons,tierShields,WEAPON_TEMPLATES,SHIELD_TEMPLATES,PLATE_PIECES,BOWS,STAFFS,SPELLS,ARROWS,HIT_SCALE,STYLE_BONUS,maxHit,effectiveLevel,bonusSummary} from './gear-tiers.js?v=release-20261107-qa147';
+import {weaponCatalog} from './weapons.js?v=release-20261107-qa147';
+import {shieldCatalog} from './shields.js?v=release-20261107-qa147';
+import {outfitItems,OUTFIT_VARIANTS} from './outfits.js?v=release-20261107-qa147';
+import {UNIQUE_ITEMS} from './unique-gear.js?v=release-20261107-qa147';
+import {BOSSES} from './bosses.js?v=release-20261107-qa147';
+import {PRAYERS} from './mechanics.js?v=release-20261107-qa147';
+import {BONES,ALTAR_OFFER_MULTIPLIER} from './monster-roster.js?v=release-20261107-qa147';
+import {shortcuts as AGILITY_SHORTCUTS,AGILITY_TEMPLATES} from './agility-data.js?v=release-20261107-qa147';
+import {SHORTCUTS as EXPLORE_SHORTCUTS,PLACES,areaById} from './explore-data.js?v=release-20261107-qa147';
+import {ORE_TIERS,TREE_TIERS,classifyEntity} from './map-icons.js?v=release-20261107-qa147';
+import {skillingChance,HITPOINTS_START,MAX_LEVEL} from './combat-level.js?v=release-20261107-qa147';
+import {goods} from './economy.js?v=release-20261107-qa147';
+import {WOODCUTTING_TREES,WOODCUTTING_AXES} from './skill-guide-sql-data.js?v=release-20261107-qa147';
+import {SKILL_PANEL,skillId} from './skill-list.js?v=release-20261107-qa147';
 
 // ------------------------------------------------------------------------------------ helpers
 const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
