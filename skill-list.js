@@ -1,0 +1,5 @@
+// The Skills panel, in display order: [icon, name, save key]. game.js draws the panel from this
+// list and the skill guide (skill-guide.js) opens one guide per entry, so the two never drift.
+export const SKILL_PANEL=[['⚔','Attack','attackXP'],['💪','Strength','strengthXP'],['🛡','Defence','defenceXP'],['❤️','Hitpoints','hitpointsXP'],['🏹','Ranged','rangedXP'],['✨','Magic','magicXP'],['🙏','Prayer','prayerXP'],['🌳','Woodcutting','woodXP'],['⛏','Mining','miningXP'],['🔥','Firemaking','firemakingXP'],['🎣','Fishing','fishingXP'],['🍳','Cooking','cookingXP'],['🔨','Smithing','smithingXP'],['🛠','Crafting','craftingXP'],['🌿','Herblore','herbloreXP'],['🌱','Farming','farmingXP'],['🏃','Agility','agilityXP'],['🗝','Thieving','thievingXP'],['🏹','Fletching','fletchingXP'],['✧','Runecrafting','runecraftingXP'],['🏠','Construction','constructionXP'],['🪤','Hunter','hunterXP']];
+// The guide id of a panel entry: its name in lower case ("Woodcutting" -> "woodcutting").
+export const skillId=name=>String(name).toLowerCase();
