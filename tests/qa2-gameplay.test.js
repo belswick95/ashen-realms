@@ -78,3 +78,20 @@ test('tile flags: a door or gate change marks them stale, and a stale cache is r
  assert.match(g,/if\(gate\.userData\.gateOpen!==undefined&&gate\.userData\.gateOpen!==open\)walkTiles\.invalidate\(\);/);
  assert.match(g,/if\(house\)\{if\(house\.open!==undefined&&!!house\.open!==!!object\.open\)walkTiles\.invalidate\(\);house\.open=object\.open;/);
 });
+
+// Read-only probe (Nov 2026): an Orc warchief inside its camp tent, a Marsh wight inside an obstacle
+// and a Kindled cinder-sworn spawned inside one stand on blocked tiles and can never move again.
+test('db/qa2-gameplay.sql: monsters on blocked tiles go to the open tile nearest their spawn; idempotent, no DELETE/ALTER/DROP, rolled-back dry run',()=>{
+ const sql=src('db/qa2-gameplay.sql');
+ assert.doesNotMatch(sql,/\b(delete|alter|drop)\b/i);
+ assert.match(sql,/^begin;\nset local lock_timeout='5s';/m);assert.match(sql,/\ncommit;\n/);
+ assert.doesNotMatch(sql,/'\s*\n\s*E'/,'adjacent E literals are joined with ||');
+ const live=sql.slice(sql.indexOf('begin;'),sql.indexOf('commit;')),dry=sql.slice(sql.indexOf('do $dry$'));
+ assert.match(live,/tile_flags_at\(eldervale_private\.tile_of\(a\.x\),eldervale_private\.tile_of\(a\.z\)\)&1<>0/,'only monsters now on a blocked tile (a second run updates nothing)');
+ assert.match(live,/a\.target is null/,'never a monster in a fight');
+ assert.match(dry,/raise exception 'DRY RUN, rolled back\./);
+ // The dry run makes the same update.
+ const body=s=>s.slice(s.indexOf('with stuck as ('),s.indexOf('from spot where spot.id=a.id')).replace(/\s+/g,' ').replace(/\), done as \( /,') ');
+ assert.equal(body(dry),body(live));
+ assert.match(src('db/quest-arc-3-forge-a.sql'),/"id":"a3c0a000-0003-4000-9000-000000000005"[^}]*"x":314\.42,"z":118\.5/,'the cinder-sworn seed spawns on the open tile');
+});
