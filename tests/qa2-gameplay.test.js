@@ -42,3 +42,14 @@ test('a left click on a held-open door or open gate walks into the doorway, not 
  const g=src('game.js');
  assert.match(g,/else if\(examineHit&&\['door','castleGate'\]\.includes\(examineHit\.object\.userData\.kind\)&&throughOpenDoorway\(examineHit\.distance,groundHit\?\.distance\)\)\{const a=examineHit\.object\.userData;[^}]*setWalkDestination\(a\.kind==='door'\?housePoint\(a\.house,0,1\):new T\.Vector3\(a\.x,0,a\.z\)\)\}else if\(hitGround\)/);
 });
+
+// Live (castle training, walking south 18 tiles into a new region): the server stopped 3 tiles in
+// (path [], no intent) while the local walker went on to the end of the click, then was snapped
+// 15 tiles back. A blocking area load sent 'stop' to pause the walk and resume it afterwards; with
+// movement v3 the local walker walks the click by itself, so the pause only split it from the
+// server (and the resume re-planned from a tile the server never reached). In tile mode the server
+// keeps the full collision, so the walk simply carries on while the area loads.
+test('tile mode: a blocking area load does not stop the server walk under the local walker',()=>{
+ const g=src('game.js');
+ assert.match(g,/regionTicket=areaLoading\.begin\('Loading nearby area…'\);regionResume=!window\.eldervaleTileMode&&!realmInCombat&&!routePending&&mapDestination\?\{[^}]*\}:null;if\(regionResume\)void window\.eldervaleRealm\?\.command\('stop'\)/);
+});
