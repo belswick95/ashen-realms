@@ -1,6 +1,6 @@
-import {goods,inventoryEntries,quantity,inventoryUsed,isWorn,INVENTORY_SLOTS} from './economy.js?v=release-20261107-horse126';
-import {morphChildren,setMarkup,setText} from './ui-stable.js?v=release-20261107-horse126';
-import {fitToViewport} from './touch-menus.js?v=release-20261107-horse126';
+import {goods,inventoryEntries,quantity,inventoryUsed,isWorn,INVENTORY_SLOTS} from './economy.js?v=release-20261107-kingdoms127';
+import {morphChildren,setMarkup,setText} from './ui-stable.js?v=release-20261107-kingdoms127';
+import {fitToViewport} from './touch-menus.js?v=release-20261107-kingdoms127';
 const setDisabled=(b,on)=>{if(b.disabled!==!!on)b.disabled=!!on},setPressed=(b,on)=>{const v=String(!!on);if(b.getAttribute('aria-pressed')!==v)b.setAttribute('aria-pressed',v)},element=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n},compact=n=>n>=1e6?(n/1e6).toFixed(n%1e6?1:0)+'m':n>=1e4?Math.floor(n/1000)+'k':n.toLocaleString();
 function category(g){if(g.noteOf)return 'notes';if(g.field)return 'equipment';if(g.heal>0)return 'provisions';if(g.category==='Tools'||g.unique)return 'tools';if(['Ores','Bars','Timber','Materials','Ingredients','Herbs','Seeds','Runes'].includes(g.category)||['Logs','Iron ore','Raw river fish','Fishing bait'].includes(g.name))return 'resources';return 'other'}
 export function createBankView(state,{onTransfer}){

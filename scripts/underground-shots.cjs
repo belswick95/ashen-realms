@@ -3,7 +3,7 @@
 // Usage: ELDERVALE_CHROMIUM=/usr/bin/google-chrome node scripts/underground-shots.cjs [outDir]
 const fs=require('fs'),http=require('http'),path=require('path'),{chromium}=require('playwright-core'),root=path.resolve(__dirname,'..'),manifest=JSON.parse(fs.readFileSync(path.join(root,'db/generated-world.json')));
 const out=path.resolve(process.argv[2]||path.join(root,'test-results/underground-shots'));fs.mkdirSync(out,{recursive:true});
-const V='?v=release-20261107-horse126';
+const V='?v=release-20261107-kingdoms127';
 const server=http.createServer((req,res)=>{try{const name=new URL(req.url,'http://local').pathname,file=path.join(root,name==='/'?'index.html':name);res.setHeader('content-type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.html')?'text/html':file.endsWith('.webp')?'image/webp':file.endsWith('.json')?'application/json':'application/octet-stream');res.end(fs.readFileSync(file))}catch{res.statusCode=404;res.end()}});
 (async()=>{
  globalThis.eldervaleWorldConfig=manifest.config;
