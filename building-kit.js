@@ -46,7 +46,33 @@ function extract(T,scene){
    else for(const group of o.geometry.groups){const sub=o.geometry.clone();sub.clearGroups();const index=sub.index.array.slice(group.start,group.start+group.count);sub.setIndex(Array.from(index));parts.push({geometry:plainGeometry(T,sub,rel),material:share(materials[group.materialIndex])})}});
   const box=new T.Box3();for(const p of parts)box.union(p.geometry.boundingBox);
   kit.pieces.set(root.name,{parts,box});
+  if(CASTLE_PIECES.has(root.name))stoneTrim(kit.pieces.get(root.name));
  }
+}
+// KayKit's castle pieces paint their wall walk and tower roof with the atlas's salmon/brick
+// cells (columns 5-6 of the top row). Seen from the courtyard that walkway reads as a red band
+// along every wall top, so at load time those faces are moved to the dark stone cell (column 3)
+// - a capstone grey. Only faces above TRIM_Y (piece space, metres) change: tower doors stay wood.
+const CASTLE_PIECES=new Set(['hex_wall','hex_wall_gate','hex_tower_base']);
+const ATLAS_COLS=8,ATLAS_ROWS=4,SALMON_COLS=[5,6],CAPSTONE_COL=3,TRIM_Y=4.8;
+export function stoneTrim(piece){
+ let moved=0;
+ for(const {geometry:g} of piece.parts){
+  const uv=g.attributes.uv,pos=g.attributes.position;if(!uv||!pos)continue;
+  // Classify every face on the original UVs first, then shift each vertex once.
+  const index=g.index?g.index.array:Array.from({length:pos.count},(_,i)=>i),shift=new Map();
+  for(let t=0;t<index.length;t+=3){
+   const tri=[index[t],index[t+1],index[t+2]];let u=0,v=0,y=0;
+   for(const i of tri){u+=uv.getX(i)/3;v+=uv.getY(i)/3;y+=pos.getY(i)/3}
+   const col=Math.floor((u-Math.floor(u))*ATLAS_COLS),row=Math.floor((v-Math.floor(v))*ATLAS_ROWS);
+   if(row!==0||!SALMON_COLS.includes(col)||y<TRIM_Y)continue;
+   for(const i of tri)shift.set(i,(col-CAPSTONE_COL)/ATLAS_COLS);
+   moved++;
+  }
+  for(const [i,du] of shift)uv.setX(i,uv.getX(i)-du);
+  uv.needsUpdate=true;
+ }
+ return moved;
 }
 export function loadBuildingKit(T){
  if(kit.promise)return kit.promise;
@@ -154,9 +180,17 @@ let hidden=null;function hiddenMaterial(T){if(!hidden){hidden=new T.MeshBasicMat
 const WALL_PIECE=16,WALL_HIGH=8.8;
 // Masonry is sunk SINK m into the ground (same top) so slopes never show a gap under it.
 const SINK=.6;
+// The KayKit wall is one-sided: its +z face is coursed stone with merlons, its -z face a plain
+// slab under an overhanging wall walk. Entities face either way round (Eldervale's north and
+// south runs show the slab to the courtyard, its east and west runs the stone), so every run is
+// built from two back-to-back half-depth pieces: dressed stone and crenels on both faces.
+// Piece z: walk overhang -3.2, slab back -2.4, stone face +3.2 (per unit sz). Each half puts its
+// face on ±depth/2 and its slab back on the centre line, so nothing is hollow between them.
+export const WALL_HALF_SZ=depth=>depth/11.2;
 function wallRun(T,g,x0,x1,{height=8.8,depth=3.1,y=-SINK}={}){
- const len=x1-x0;if(len<=.05)return;const n=Math.max(1,Math.round(len/WALL_PIECE)),w=len/n;
- for(let i=0;i<n;i++)placePiece(T,g,'hex_wall',{x:x0+w*(i+.5),y,sx:w/WALL_PIECE,sy:height/WALL_HIGH,sz:depth/6.4});
+ const len=x1-x0;if(len<=.05)return;const n=Math.max(1,Math.round(len/WALL_PIECE)),w=len/n,sz=WALL_HALF_SZ(depth),z=2.4*sz;
+ for(let i=0;i<n;i++)for(const side of [1,-1])
+  placePiece(T,g,'hex_wall',{x:x0+w*(i+.5),y,z:side*z,rot:side>0?0:Math.PI,sx:w/WALL_PIECE,sy:height/WALL_HIGH,sz});
 }
 export function kitCastle(T,g,id,d={},{gateLeaves}={}){
  if(!buildingKitReady())return false;
