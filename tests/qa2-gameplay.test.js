@@ -53,3 +53,9 @@ test('tile mode: a blocking area load does not stop the server walk under the lo
  const g=src('game.js');
  assert.match(g,/regionTicket=areaLoading\.begin\('Loading nearby area…'\);regionResume=!window\.eldervaleTileMode&&!realmInCombat&&!routePending&&mapDestination\?\{[^}]*\}:null;if\(regionResume\)void window\.eldervaleRealm\?\.command\('stop'\)/);
 });
+
+// Live: every left-click attack printed "Approaching creature..." to the chat (the internal kind,
+// not the monster's name). Attacking says nothing (OSRS); the fight is the feedback.
+test('a left-click attack does not print "Approaching creature..."',()=>{
+ const g=src('game.js');assert.match(g,/followActionTarget\(action\);if\(action\.kind!=='npc'&&action\.kind!=='creature'\)say\(/);
+});
