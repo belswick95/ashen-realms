@@ -126,7 +126,7 @@ test('frame rate does not change the pose after the same time',()=>{
  assert.ok(pose(30).distanceTo(pose(120))<1e-6);
 });
 
-test('attacks, hits and jumps play one-shots that hand back to the base loop',()=>{
+test('attacks and hits play one-shots that hand back to the base loop',()=>{
  const r=character(),a=createHumanoidAnimator(r);
  assert.equal(a.update(1/60,{attack:.5,armed:true}).clip,'Sword_Attack');
  let pose;for(let i=0;i<90;i++)pose=a.update(1/60,{armed:true});assert.equal(pose.clip,'Sword_Idle','armed attacks hold the combat stance for a while');
@@ -134,8 +134,7 @@ test('attacks, hits and jumps play one-shots that hand back to the base loop',()
  assert.equal(a.update(1/60,{attack:.5,style:'magic'}).clip,'Spell_Simple_Shoot');for(let i=0;i<90;i++)a.update(1/60);
  assert.match(a.update(1/60,{attack:.4}).clip,/^Punch_/,'unarmed attacks punch');for(let i=0;i<90;i++)a.update(1/60);
  assert.match(a.update(1/60,{hit:1}).clip,/^Hit_/);for(let i=0;i<60;i++)pose=a.update(1/60,{hit:0});assert.equal(pose.clip,'Idle_Loop');
- assert.equal(a.update(1/60,{airborne:true}).clip,'Jump_Start');for(let i=0;i<30;i++)pose=a.update(1/60,{airborne:true});assert.equal(pose.clip,'Jump_Loop');assert.equal(pose.flight,true);
- assert.equal(a.update(1/60,{airborne:false}).clip,'Jump_Land');for(let i=0;i<40;i++)pose=a.update(1/60);assert.equal(pose.clip,'Idle_Loop');assert.equal(pose.flight,false);
+ for(let i=0;i<30;i++)pose=a.update(1/60,{airborne:true});assert.equal(pose.clip,'Idle_Loop','there is no jump: a stale airborne flag is ignored');assert.equal(pose.flight,false);
 });
 
 test('bad frame input is ignored and the pose stays finite',()=>{

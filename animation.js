@@ -30,11 +30,11 @@ const ACTIVITY={smith:'Fixing_Kneeling',fix:'Fixing_Kneeling',garden:'Fixing_Kne
  hammer:'Idle_Loop',broom:'Idle_Loop',haul:'Idle_Loop',ledger:'Idle_Loop',trade:'Idle_Talking_Loop',chat:'Idle_Talking_Loop',fetch:'PickUp_Table@loop',pray:'Idle_Loop',watch:'Idle_Loop',rest:'Idle_Loop',sitread:'Sitting_Idle_Loop'};
 export const ACTIVITY_CLIPS=ACTIVITY;
 const LOW_POSE=new Set(['Fixing_Kneeling','Sitting_Idle_Loop']);
-const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_Shoot','Hit_Chest','Hit_Head','Jump_Start','Jump_Land','Death01','Interact','PickUp_Table','Roll']);
+const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_Shoot','Hit_Chest','Hit_Head','Death01','Interact','PickUp_Table','Roll']);
 
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
- const actions=new Map(),weights=new Map(),mids=new Map();let settle=0,gaitFade=0,deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,swing=null,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
+ const actions=new Map(),weights=new Map(),mids=new Map();let settle=0,gaitFade=0,deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,swing=null,lastAttack=0,lastHit=0,punch=0,time=0,guard=0,fightUntil=-1;
  const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0,netting=0;const held={left:{w:0,kind:null},right:{w:0,kind:null}};
  const holding=socket=>!!socket&&socket.children.some(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);
  const loops={};
@@ -43,7 +43,7 @@ export function createHumanoidAnimator(rig){
  function startOneShot(name,duration){const a=action(name);a.reset();a.play();const length=clips[name]?.duration||1;a.timeScale=duration?length/duration:1;oneShot=name;oneShotLeft=duration||length;}
  action('Idle_Loop').setEffectiveWeight(1);weights.set('Idle_Loop',1);
  const eating=createEatLayer(rig,arms);
- return {mixer,update(dt,{eat=0,food=null,distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,airborne:air=false,activity=null,dead=false,ranged=false,magic=false,combat=false}={}){
+ return {mixer,update(dt,{eat=0,food=null,distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,activity=null,dead=false,ranged=false,magic=false,combat=false}={}){
   if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);time+=dt;
   speed=Number.isFinite(speed)?Math.max(0,speed):0;distance=Number.isFinite(distance)?Math.max(0,distance):0;
   const moving=distance>1e-5&&speed>.15&&!mounted;
@@ -68,7 +68,6 @@ export function createHumanoidAnimator(rig){
   if(armed&&attack>0||block>0)fightUntil=time+FIGHT_HOLD;else if(combat)fightUntil=Math.max(fightUntil,time+COMBAT_HOLD);lastAttack=attack;
   // A fresh hit (the timer jumps up; callers start it at .3-.45 s) flinches once.
   const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>lastHit+.05&&hitNow>.1&&!oneShot&&!dead)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
-  if(air&&!airborne)startOneShot('Jump_Start',.3);else if(!air&&airborne)startOneShot('Jump_Land',.35);airborne=!!air;
   // Base loop for the current state.
   let base;const work=ACTIVITY[activity||rig.activity];
   // Death: drop to the knees with the head bowed (Fixing_Kneeling, held), then collapse (Death01
@@ -76,7 +75,6 @@ export function createHumanoidAnimator(rig){
   if(dead){if(deadAt<0)deadAt=time;oneShot=null}else deadAt=-1;
   if(dead)base=clips.Fixing_Kneeling&&time-deadAt<DEATH_KNEEL?'Fixing_Kneeling':'Death01';
   else if(mounted)base=clips.Driving_Loop?'Driving_Loop':'Sitting_Idle_Loop';
-  else if(airborne)base='Jump_Loop';
   else if(moving)base=gaitFor(locomotion,speed);
   // Relaxed by default; the fighting stance is for an explicit combat stance or
   // a few seconds after armed melee attacks and blocks.
@@ -111,7 +109,7 @@ export function createHumanoidAnimator(rig){
   // Blocking raises the shield across the chest on top of whatever clip plays.
   guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
   // Held weapon / shield ride steady at the side while running (gently while walking).
-  carry+=((LOCOMOTION.has(base)&&moving&&!airborne&&!oneShot&&!swing&&!mounted&&!dead?1:0)-carry)*k;if(carry<.001)carry=0;
+  carry+=((LOCOMOTION.has(base)&&moving&&!oneShot&&!swing&&!mounted&&!dead?1:0)-carry)*k;if(carry<.001)carry=0;
   // Each hand fades its carry in and out on its own, so an item that appears or is put away
   // (a townsperson's trowel, eating) never snaps the arm.
   for(const side of ['left','right']){const h=held[side],item=(side==='left'?rig.leftHand:rig.rightHand)?.children.find(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);if(item)h.kind=item.userData.shieldMount?'shield':'weapon';h.w+=((item?1:0)-h.w)*k;if(h.w<.001)h.w=0;
@@ -136,7 +134,7 @@ export function createHumanoidAnimator(rig){
   // both hands on the pole, dip the net into the water, scoop and lift.
   const dip=rig.netDip;netting+=((dip&&!moving&&!mounted&&!dead&&!oneShot?1:0)-netting)*k;if(netting<.001)netting=0;if(netting&&dip)arms.net(netting,dip);
   const run=base===RUN_CLIP?1:0;
-  return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite,
+  return {blend:moving?1:0,run,gait:base,flight:false,contacts:{left:true,right:true},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite,
    swing:swing?{kind:swing.motion.kind,t:swing.t,strikeAt:swing.strikeAt,struck:swing.struck}:null,strike:strikeNow,strikeWeight};
  },dispose(){eating.dispose();mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
 }
