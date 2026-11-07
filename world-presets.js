@@ -1,5 +1,5 @@
-import {adventurePeople,campObjects} from './adventure-catalog.js?v=release-20261107-polish150';
-import {entityDefaults} from './world-templates.js?v=release-20261107-polish150';
+import {adventurePeople,campObjects} from './adventure-catalog.js?v=release-20261107-invorder151';
+import {entityDefaults} from './world-templates.js?v=release-20261107-invorder151';
 export const worldPresets={
  castle_keep:{label:'Castle keep · three stories, hall and bedrooms',template:'cottage',name:'Castle keep',room:'hall',upperRoom:'home',stories:3,stone:true,scale:3.5,roof:0x485d68},
  timber_home:{label:'Timber cottage · furnished home',template:'cottage',name:'Timber cottage',room:'home',stone:false,scale:1.2,roof:0x70503c},

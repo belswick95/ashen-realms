@@ -2,7 +2,7 @@
 // walkable, dry land inside the world, clear of roads, towns, buildings and other objects; the
 // areas are spread by level; the map shows one named marker per area; the SQL matches the data.
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {initializeGeography,distanceToRoad} from '../geography.js?v=release-20261107-polish150';
+import {initializeGeography,distanceToRoad} from '../geography.js?v=release-20261107-invorder151';
 import {createLandscape} from '../landscape.js';
 import {safeZoneDistance} from '../monster-roster.js';
 import {monsterSpawns} from '../monster-spawns.js';
