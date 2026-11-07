@@ -1,4 +1,4 @@
-import {crownSVG,hasStaffCrown} from './chat-feed.js?v=release-20261107-trail160';
+import {crownSVG,hasStaffCrown} from './chat-feed.js?v=release-20261107-move3v161';
 export function levelRelation(playerLevel,targetLevel){const difference=targetLevel-playerLevel;return difference<0?'lower':difference===0?'equal':difference<=5?'near':'danger';}
 export function actorMenuLabel({name,level,playerLevel,prefix='',accountId=null,player=false}){
  const row=document.createElement('span');row.className='actor-menu-label'+(player?' player-menu-heading':'');

@@ -1,11 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';import fs from 'node:fs';
-import {initializeGeography,worldRoads,roadPoints,roadLines,distanceToRoad} from '../geography.js?v=release-20261107-trail160';
+import {initializeGeography,worldRoads,roadPoints,roadLines,distanceToRoad} from '../geography.js?v=release-20261107-move3v161';
 const world=JSON.parse(fs.readFileSync(new URL('../db/generated-world.json',import.meta.url)));initializeGeography(world.config);
 const {meander,roadStroke,entityStroke,discStroke,surfaceStrokes,paintPathMask,sampleMask,pathCover,patchGroundShader,createGroundPaths,halfWidthAt,PATH_MASK}=await import('../ground-paths.js');
 const {clutterBudget,clutterKind,createGroundClutter,CLUTTER_KINDS,CLUTTER_BUDGET}=await import('../ground-clutter.js');
 const {createClassicLook}=await import('../classic-look.js');
-const {castleBlueprint,inCastle,castle}=await import('../castle-layout.js?v=release-20261107-trail160');
-const {capitalBlueprint,inCapital}=await import('../capital-layout.js?v=release-20261107-trail160');
+const {castleBlueprint,inCastle,castle}=await import('../castle-layout.js?v=release-20261107-move3v161');
+const {capitalBlueprint,inCapital}=await import('../capital-layout.js?v=release-20261107-move3v161');
 const read=f=>fs.readFileSync(new URL('../'+f,import.meta.url),'utf8');
 const size=PATH_MASK.size,extent=840,texel=extent/size;
 const segDist=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t)};

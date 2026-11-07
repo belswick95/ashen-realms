@@ -1,115 +1,213 @@
-import {slideStep} from './movement-collision.js?v=release-20261107-trail160';
-import {projectTilePose,tileSteps,TILE,GAME_TICK} from './tile-grid.js?v=release-20261107-trail160';
+import {slideStep} from './movement-collision.js?v=release-20261107-move3v161';
+import {projectTilePose,tileSteps,bfsRoute,TILE,GAME_TICK} from './tile-grid.js?v=release-20261107-move3v161';
 // Timestamped presentation buffer: no position authority or damage is decided here.
 // When snapshots arrive later than `delay` (a slow reply on a phone or tablet
 // connection) the buffer runs dry and the actor would freeze, then jump. The
 // delay then grows by itself (presentation slows to half speed rather than
 // stopping) up to `maxExtra` ms, and shrinks back slowly once replies keep up.
-export function createMotionTrack({delay=350,maxExtra=600}={}){let tile=false,playback=null,frames=[],epoch=null,lastTime=-Infinity,extra=0,lastNow=null;return {get extraDelay(){return extra},push(time,pose,now=performance.now()){if(!Number.isFinite(time))return;if(epoch===null)epoch={server:time,local:now};const prev=frames.at(-1);if(prev&&Math.hypot(pose.x-prev.x,pose.z-prev.z)>12){frames=[];epoch={server:time,local:now};lastTime=-Infinity}if(prev&&time<=prev.time)return;frames.push({...pose,time});if(frames.length>32)frames.shift()},sample(now=performance.now()){if(tile)return playback.sample(now);if(!frames.length)return null;const step=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow));lastNow=now;const newest=frames.at(-1).time,raw=epoch.server+now-epoch.local-delay-extra;if(frames.length>1||raw>newest){if(raw>newest)extra=Math.min(maxExtra,extra+step*.5);else if(raw<newest-delay*.5)extra=Math.max(0,extra-step*.02)}const t=Math.max(lastTime,epoch.server+now-epoch.local-delay-extra);lastTime=t;while(frames.length>2&&frames[1].time<t)frames.shift();const a=frames[0],b=frames[1];if(!b||t<=a.time)return {...a};const f=Math.max(0,Math.min(1,(t-a.time)/(b.time-a.time)));const yaw=a.yaw+Math.atan2(Math.sin(b.yaw-a.yaw),Math.cos(b.yaw-a.yaw))*f;return {...b,x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f,yaw}},clear(){playback?.clear();frames=[];epoch=null;lastTime=-Infinity;extra=0;lastNow=null},
- // Tile walkers (tick & tile engine) are played back along their tiles by createTilePlayback,
- // not by the server tick stamps (`time`, `serverNow` and `tick` are kept for callers).
+export function createMotionTrack({delay=350,maxExtra=600,tileOptions={}}={}){let tile=false,playback=null,frames=[],epoch=null,lastTime=-Infinity,extra=0,lastNow=null;return {get extraDelay(){return extra},push(time,pose,now=performance.now()){if(!Number.isFinite(time))return;if(epoch===null)epoch={server:time,local:now};const prev=frames.at(-1);if(prev&&Math.hypot(pose.x-prev.x,pose.z-prev.z)>12){frames=[];epoch={server:time,local:now};lastTime=-Infinity}if(prev&&time<=prev.time)return;frames.push({...pose,time});if(frames.length>32)frames.shift()},sample(now=performance.now()){if(tile)return playback.sample(now);if(!frames.length)return null;const step=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow));lastNow=now;const newest=frames.at(-1).time,raw=epoch.server+now-epoch.local-delay-extra;if(frames.length>1||raw>newest){if(raw>newest)extra=Math.min(maxExtra,extra+step*.5);else if(raw<newest-delay*.5)extra=Math.max(0,extra-step*.02)}const t=Math.max(lastTime,epoch.server+now-epoch.local-delay-extra);lastTime=t;while(frames.length>2&&frames[1].time<t)frames.shift();const a=frames[0],b=frames[1];if(!b||t<=a.time)return {...a};const f=Math.max(0,Math.min(1,(t-a.time)/(b.time-a.time)));const yaw=a.yaw+Math.atan2(Math.sin(b.yaw-a.yaw),Math.cos(b.yaw-a.yaw))*f;return {...b,x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f,yaw}},clear(){playback?.clear();frames=[];epoch=null;lastTime=-Infinity;extra=0;lastNow=null},
+ // Tile walkers (tick & tile engine) are played back by createTilePlayback: `time` is the tick
+ // time of the pose (server ms), `serverNow` the server clock when it arrived.
  get tile(){return tile},
- pushTile(time,pose,now=performance.now()){if(!pose)return;if(!tile){tile=true;playback=createTilePlayback()}playback.push(pose,now)}}}
+ pushTile(time,pose,now=performance.now(),serverNow){if(!pose)return;if(!tile){tile=true;playback=createTilePlayback(tileOptions)}playback.push(pose,now,time,serverNow)}}}
 
-// Tile-walker playback. The world tick moves a walker one tile per 600 ms tick (runners two), but the
-// tiles do not reach the client evenly: the cron tick runs about once a second and catches up two
-// ticks at once, polls add up to a tick, and a stalled tick delivers several tiles in one burst.
-// Playing the tick stamps back as they came made walkers dash two tiles in one tick, stand for a
-// tick, dash again (and run a jog cycle at the doubled speed), or freeze and then race to catch up.
-// Instead the tiles received are queued as a path and walked at the walker's true pace:
-//  - a buffer of about two tiles (just over a tick at the cron cadence) is kept behind the newest tile while more are due, so a late tile
-//    slows the walker a little (never below SLOW x pace) instead of stopping it;
-//  - a backlog is caught up at no more than CATCH_UP x pace;
-//  - lag is counted in tile steps (a diagonal step is one tick, as on the server, so diagonals play at
-//    their true 1.41x ground speed instead of falling behind);
-//  - further behind than SNAP_TILES the walker is placed quietly at the buffer distance (sample().snapped,
-//    so the caller animates no stride for that frame); a jump over 12 units is a teleport.
-// OSRS rules: a tick position several tiles on (a runner's 2, a rider's 3) is walked tile by tile in
-// the route's shape (diagonal first, then straight: tileSteps), at a constant pace, facing the step
-// being walked; the facing turns fast (turnToward, ~70 ms) and only at a bend.
-// sample(now) returns {x,z,yaw,moving,run,speed,snapped}; one object is reused (no allocation).
-export const TILE_WALK_SPEED=TILE/GAME_TICK,CATCH_UP=1.3,SLOW=.6,SNAP_TILES=4,BUFFER_TILES=2,DUE_MS=1800,START_WAIT_MS=900,TELEPORT=12;
-export function createTilePlayback({buffer=BUFFER_TILES,slow=SLOW,gain=.2,ease=.4}={}){
- const path=[],out={x:0,z:0,yaw:0,moving:false,run:false,speed:0,snapped:false};let ready=false,walking=false,startAt=0,stand=0,lastStep=NaN,heading=0,steps=1,rate=1,lastNow=null,lastTile=-Infinity,snapNext=false;
- // Distances are in tile steps (a diagonal step is one step, as on the server: one tick), not units.
- const stepsOf=(dx,dz)=>Math.max(Math.abs(dx),Math.abs(dz))/TILE;
- const len=()=>{let d=0,px=out.x,pz=out.z;for(const p of path){d+=stepsOf(p.x-px,p.z-pz);px=p.x;pz=p.z}return d};
- // Walk `d` tile steps along the queued path from the presented point; returns the ground covered.
- function advance(d){let ground=0;while(path.length&&d>0){const p=path[0],dx=p.x-out.x,dz=p.z-out.z,seg=stepsOf(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){ground+=Math.hypot(dx,dz);out.x=p.x;out.z=p.z;d-=seg;path.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}return ground}
- return {get backlog(){return len()},
-  push(pose,now=performance.now()){if(!Number.isFinite(pose.x)||!Number.isFinite(pose.z))return;
-   if(!ready){ready=true;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand=Number.isFinite(pose.yaw)?pose.yaw:0;return}
-   const last=path.at(-1)||out,d=Math.hypot(pose.x-last.x,pose.z-last.z);if(Number.isFinite(pose.yaw))stand=pose.yaw;
-   if(d<1e-6)return;// same tile: only the facing (an NPC turning to talk)
-   if(d>TELEPORT){path.length=0;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand;snapNext=true;return}
-   const legs=tileSteps(last,pose),from=legs.length>1?legs.at(-2):last;lastStep=Math.atan2(pose.x-from.x,pose.z-from.z);steps=pose.stepTiles>0?pose.stepTiles:pose.run?2:1;if(!path.length&&!walking)startAt=now;for(const p of legs)path.push(p);lastTile=now},
-  sample(now=performance.now()){if(!ready)return null;const dt=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow))/1000;lastNow=now;
-   out.snapped=snapNext;snapNext=false;let lag=len();
-   if(lag>SNAP_TILES){advance(lag-buffer);out.snapped=true;lag=len()}
-   const due=now-lastTile<DUE_MS,over=lag-buffer;
-   const want=due?Math.max(slow,Math.min(CATCH_UP,1+gain*over)):Math.max(1,Math.min(CATCH_UP,1+.15*over));
-   rate+=(want-rate)*(1-Math.exp(-dt/ease));
-   // A walk starts once the buffer has filled (or a short wait has passed: a single step aside).
-   if(!walking&&path.length&&(lag>=buffer*.99||now-startAt>=START_WAIT_MS||!due))walking=true;
-   out.moving=walking&&path.length>0;out.run=steps>1;
-   out.speed=out.moving&&dt>0?advance(steps*rate*dt/GAME_TICK)/dt:0;if(!path.length){out.moving=false;walking=false;
-    // The queue ran dry while tiles are still due (a late reply): keep facing along the walk; the
-    // stand yaw is only the last step's. A walk that has ended, or a real facing (talk), turns to it.
-    if(!due||Math.abs(Math.atan2(Math.sin(stand-lastStep),Math.cos(stand-lastStep)))>1e-3)heading=stand}
-   // Turn toward the heading (the bend, the facing at rest) fast, OSRS-like (~70 ms), not in one frame.
-   out.yaw=dt>0&&!out.snapped?turnToward(out.yaw,heading,dt):heading;
-   return out},
-  clear(){path.length=0;ready=false;walking=false;lastNow=null;lastTile=-Infinity;rate=1}};
+// ---- Movement v3: OSRS tile walking at an exactly constant pace ------------------------------------
+// A tile walker crosses `steps` tiles per 600 ms tick (walk 1, run 2, ride 3). A diagonal tile is one
+// step like a straight one (OSRS), so all pace here is counted in tile steps (Chebyshev distance /
+// TILE), never in ground units. Nothing below speeds up or slows down to chase the server: the only
+// corrections are a straight re-route onto the server's route (a real divergence) and, far off, a snap.
+export const TILE_WALK_SPEED=TILE/GAME_TICK,TICK_MS=GAME_TICK*1000;
+// Gait clamp for NPC strides (game.js); playback itself never runs faster than the true pace.
+export const CATCH_UP=1.3;
+// Verification tolerance and snap distance, in tile steps; remote buffer in ms (about one tick).
+export const VERIFY_TILES=2,SNAP_TILES=4,BUFFER_MS=TICK_MS,JITTER_MS=300,TELEPORT=12;
+const stepLen=(ax,az,bx,bz)=>Math.max(Math.abs(bx-ax),Math.abs(bz-az))/TILE;
+const cheb=(a,b)=>stepLen(a.x,a.z,b.x,b.z);
+const asPoint=p=>{const x=Number(p?.[0]??p?.x),z=Number(p?.[1]??p?.z);return Number.isFinite(x)&&Number.isFinite(z)?{x,z}:null};
+const pointsOf=path=>{const out=[];for(const p of Array.isArray(path)?path:[]){const q=asPoint(p);if(!q)break;out.push(q)}return out};
+
+// How late tick data reaches this client: for each snapshot whose tick moved on, the server time it
+// arrived minus the time of the first tick it is the first to report. pg_cron bunching (two ticks in
+// one run), poll spacing and latency all show up here. `value` is the worst over the last `span` ms.
+export function createTickLateness({span=30000,initial=400,max=2400}={}){
+ const seen=[];
+ return {
+  observe(prevAt,at,serverNow){if(!Number.isFinite(at)||!Number.isFinite(serverNow))return;
+   if(Number.isFinite(prevAt)&&(!(at>prevAt)||at-prevAt>2*TICK_MS+1))return;// no new tick, or an idle gap (not lateness)
+   const first=Number.isFinite(prevAt)?prevAt+TICK_MS:at,l=Math.max(0,Math.min(max,serverNow-first));seen.push({t:serverNow,l});
+   while(seen.length&&seen[0].t<serverNow-span)seen.shift()},
+  get value(){if(!seen.length)return initial;let m=0;for(const s of seen)m=Math.max(m,s.l);return m},
+  get samples(){return seen.length}};
+}
+export const realmLateness=createTickLateness();
+
+// The tile steps a walker took between two tick positions: tileSteps (the route's own shape, diagonal
+// first). When the ticks between them held more steps than that (it went round a wall corner), the
+// way round comes from the tile flags (a small BFS); without them a diagonal is split into its two
+// straight steps, so each step still takes one step's time.
+export function stepsBetween(from,to,expected=0,flagsAt=null){
+ const legs=tileSteps(from,to,8);if(!(expected>legs.length)||expected>legs.length+4)return legs;
+ const fi=Math.round(from.x/TILE),fj=Math.round(from.z/TILE),ti=Math.round(to.x/TILE),tj=Math.round(to.z/TILE);
+ if(Math.abs(from.x-fi*TILE)>.02||Math.abs(from.z-fj*TILE)>.02||Math.abs(to.x-ti*TILE)>.02||Math.abs(to.z-tj*TILE)>.02)return legs;
+ if(typeof flagsAt==='function'){const r=bfsRoute({start:[fi,fj],goal:[ti,tj],radius:Math.max(2,Math.min(8,expected+1)),alt:0,flagsAt});
+  if(r.reached&&r.path.length>legs.length&&r.path.length<=expected){const out=r.path.map(([x,z])=>({x,z}));out[out.length-1]={x:to.x,z:to.z};return out}}
+ const out=legs.slice();for(let k=out.length-1;k>=0&&out.length<expected;k--){const a=k?out[k-1]:from,b=out[k];if(Math.abs(b.x-a.x)>.01&&Math.abs(b.z-a.z)>.01)out.splice(k,0,{x:b.x,z:a.z})}
+ return out;
 }
 
-// The local tile walker (game.js), OSRS-style: it walks ITS OWN queue of the route's tile centres,
-// leg by leg, at the walk/run/ride pace, facing the leg it is on, and keeps level with where the
-// server walker is now (presentPose) by pace alone: up to CATCH_UP x when behind, down to SLOW x
-// when ahead, eased over ~0.3 s. heading144 chased the presented point instead (reconcileLocalPose):
-// that point runs a tile or more ahead from the first snapshot of a walk (latency, plus the chase
-// was capped at 1.15 x the STRAIGHT pace, so it fell further behind on every diagonal), so the body
-// cut each bend on a curve that took ~2 s (a sideways slide), while the facing, taken from the
-// presented point, had already turned a tile early.
-// A new snapshot is merged into the queue: the tiles already queued up to the server's tick tile
-// are kept, so the walker never jumps back or cuts across to it; a new route (a fresh click) starts
-// from the walker's tile. update() returns {x,z,yaw,moving,speed} (one object, reused), or null
-// while the player steers by keys or a move command is pending.
-export function createTileFollower({slow=SLOW,catchUp=CATCH_UP,gain=.4,ease=.3,snapTiles=SNAP_TILES}={}){
- const queue=[],out={x:0,z:0,yaw:0,moving:false,speed:0};let ready=false,lastPose=null,lastPassed=null,rate=1,steps=1,heading=0;
- const stepsOf=(dx,dz)=>Math.max(Math.abs(dx),Math.abs(dz))/TILE,near=(a,b)=>!!a&&!!b&&Math.abs(a.x-b.x)+Math.abs(a.z-b.z)<.05;
- const ahead=()=>{let d=0,px=out.x,pz=out.z;for(const p of queue){d+=stepsOf(p.x-px,p.z-pz);px=p.x;pz=p.z}return d};
- function advance(d){let ground=0;while(queue.length&&d>0){const p=queue[0],dx=p.x-out.x,dz=p.z-out.z,seg=stepsOf(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){ground+=Math.hypot(dx,dz);out.x=p.x;out.z=p.z;d-=seg;lastPassed=queue.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}return ground}
- function merge(pose){
-  const route=[{x:pose.x,z:pose.z}];for(const p of Array.isArray(pose.path)?pose.path:[]){const x=Number(p?.[0]??p?.x),z=Number(p?.[1]??p?.z);if(Number.isFinite(x)&&Number.isFinite(z))route.push({x,z})}
-  const j=queue.length?route.findIndex(p=>near(p,queue[0])):-1;
-  if(j>=0){queue.length=0;queue.push(...route.slice(j));return}// the same route, the server further on (or behind)
-  const k=queue.findIndex(p=>near(p,route[0]));
-  if(k>=0){queue.length=k;queue.push(...route);return}// the server is still ahead on our queue
-  // The tile just left, or stood on, is on the route (a late snapshot, or a new route from here):
-  // carry on from there, never back over it.
-  let m=-1;for(let i=route.length-1;i>=0&&m<0;i--)if(near(route[i],lastPassed)||near(route[i],out))m=i;
-  queue.length=0;
-  if(m>=0){queue.push(...route.slice(m+1));return}
-  // A new route elsewhere: a short step to its first tile; far off (a missed stretch) placed on it.
-  if(stepsOf(route[0].x-out.x,route[0].z-out.z)>1.5){out.x=route[0].x;out.z=route[0].z;route.shift()}
-  queue.push(...route);
+// Remote players and NPCs (tile walkers seen from outside). Each server tick position becomes tile
+// steps scheduled at their tick time (a step into a tile ends at the tick that reports it; a
+// runner's 2 or a rider's 3 tiles split that tick evenly, diagonal first: tileSteps), played back a
+// fixed delay later: BUFFER_MS (one tick: a step that ends at a tick must start a tick earlier)
+// plus how late tick data is reaching this client (createTickLateness: poll spacing, latency and
+// pg_cron's two-tick runs) plus JITTER_MS, so bunched or late snapshots are already here when their
+// step starts. The delay is fixed for a whole walk (set when it starts from rest). The walker then
+// moves at exactly its pace, one step after another. Data later than that holds the walker on its
+// tile (it never runs to catch up); further than SNAP_TILES behind it is placed (sample().snapped,
+// no stride that frame); more tiles than two ticks can cover is a teleport (placed at once). A tile
+// step round a wall corner is resolved with `flagsAt` (stepsBetween).
+// push(pose,now,at,serverNow): pose {x,z,yaw,stepTiles?,run?}, `at` its tick time (server ms).
+// sample(now) returns {x,z,yaw,moving,run,speed,snapped}; one object is reused.
+export function createTilePlayback({buffer=BUFFER_MS,margin=JITTER_MS,maxDelay=3000,lateness=realmLateness,snapTiles=SNAP_TILES,flagsAt=null}={}){
+ const queue=[],out={x:0,z:0,yaw:0,moving:false,run:false,speed:0,snapped:false};
+ let ready=false,moved=false,heading=0,stand=0,steps=1,lastAt=NaN,lastNow=null,snapNext=false,delay=buffer,inStep=false,lastServerDue=-Infinity,from={x:0,z:0};
+ const tail=()=>queue.at(-1)||out;
+ return {get backlog(){return queue.length},get delay(){return delay},
+  push(pose,now=performance.now(),at=NaN,serverNow){if(!pose||!Number.isFinite(pose.x)||!Number.isFinite(pose.z))return;
+   if(!Number.isFinite(serverNow))serverNow=globalThis.eldervaleServerTime?.()??Date.now();if(!Number.isFinite(at))at=serverNow;
+   if(pose.stepTiles>0)steps=pose.stepTiles;else if(pose.run===true)steps=2;
+   if(Number.isFinite(pose.yaw))stand=pose.yaw;
+   if(!ready){ready=true;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand;lastAt=at;from={x:pose.x,z:pose.z};return}
+   if(Number.isFinite(lastAt)&&at<lastAt)return;// an older snapshot
+   if(Number.isFinite(lastAt)&&at>lastAt)lateness?.observe(lastAt,at,serverNow);
+   const prevAt=lastAt,walked=moved;lastAt=at;
+   const last=tail(),d=Math.hypot(pose.x-last.x,pose.z-last.z);if(d<1e-6){if(at>prevAt)moved=false;return}// same tile: only the facing (an NPC turning to talk)
+   moved=true;
+   // More tiles than two ticks can cover (a catch-up run reports two at once) is a teleport.
+   if(stepLen(last.x,last.z,pose.x,pose.z)>2*Math.max(1,steps)+1.01){queue.length=0;inStep=false;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand;snapNext=true;lastServerDue=at;return}
+   // A walk starting from rest takes the delay it keeps: the buffer plus the current lateness.
+   if(!queue.length&&!inStep)delay=Math.min(maxDelay,buffer+margin+(lateness?lateness.value:0));
+   const stepMs=TICK_MS/Math.max(1,steps),offset=now-serverNow,legs=stepsBetween(last,pose,walked&&Number.isFinite(prevAt)?Math.round((at-prevAt)/stepMs):0,flagsAt);let prev=last;
+   // Each step takes its length at the walker's pace (an off-centre first step 1.2 steps, say).
+   // A walk under way stepped on from its last tick (a route that ends inside a two-tick report ended
+   // early in it); a walk from rest is anchored at the tick that reports it.
+   const ahead=walked&&Number.isFinite(prevAt);
+   legs.forEach((p,k)=>{const dur=stepMs*Math.max(.05,stepLen(prev.x,prev.z,p.x,p.z)),due=Math.max(ahead?prevAt+(k+1)*stepMs:at-(legs.length-1-k)*stepMs,lastServerDue+dur);lastServerDue=due;
+    prev=p;queue.push({x:p.x,z:p.z,due:due+offset+delay,dur})})},
+  sample(now=performance.now()){if(!ready)return null;const dtMs=lastNow===null?0:Math.max(0,Math.min(1500,now-lastNow));lastNow=now;
+   out.snapped=snapNext;snapNext=false;
+   // Far behind the schedule (a stalled tab, a long freeze): placed on the tile it should be on.
+   let late=0;for(const q of queue)if(q.due<=now)late++;else break;
+   if(late>snapTiles){const q=queue[late-1];out.x=q.x;out.z=q.z;queue.splice(0,late);inStep=false;out.snapped=true}
+   let budget=dtMs,ground=0;
+   while(budget>1e-9&&queue.length){const q=queue[0];
+    if(!inStep){const start=q.due-q.dur;if(start>now)break;// not due yet: hold on this tile
+     budget=Math.min(budget,now-start);inStep=true;from={x:out.x,z:out.z}}
+    const dx=q.x-out.x,dz=q.z-out.z,left=stepLen(out.x,out.z,q.x,q.z),full=Math.max(1e-9,stepLen(from.x,from.z,q.x,q.z));
+    if(left>1e-9)heading=Math.atan2(dx,dz);
+    const can=budget/q.dur*full;// tile steps this frame at this step's pace
+    if(can>=left-1e-12){ground+=Math.hypot(dx,dz);out.x=q.x;out.z=q.z;budget-=left/full*q.dur;queue.shift();inStep=false}
+    else{const f=can/left;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;budget=0}
+   }
+   out.moving=inStep||queue.length>0&&queue[0].due-queue[0].dur<=now;out.run=steps>1;out.speed=dtMs>0?ground/(dtMs/1000):0;
+   if(!queue.length&&!inStep)heading=stand;
+   out.yaw=dtMs>0&&!out.snapped?turnToward(out.yaw,heading,dtMs/1000):heading;
+   return out},
+  clear(){queue.length=0;ready=false;inStep=false;lastNow=null;lastAt=NaN;lastServerDue=-Infinity}};
+}
+
+// The local tile walker (game.js), OSRS-style. A click is planned here at once with the server's own
+// BFS (tile-grid.js planTileMove / bfsRoute) from the tile the player is visibly on, and walked at
+// exactly the walk/run/ride pace: one tile step per 600 ms / steps, straight between tile centres,
+// diagonals one step like straight tiles, facing the step (turnToward, ~70 ms). An off-centre player
+// walks straight to the first route tile. Server snapshots only verify (verify()):
+//  - while the server's tile is within VERIFY_TILES of where this walk says it should be at that
+//    server tick, and the server's route ends on a tile of this walk, nothing changes (latency and
+//    tick timing never touch the pace);
+//  - otherwise (blocked, a door, a different route, a stop, combat, a teleport) the walker re-routes:
+//    it takes the server's route, walks straight onto it at the same pace, or is placed on it when
+//    more than SNAP_TILES off.
+// update(position,now,hold) returns {x,z,yaw,moving,speed,snapped,steps} (one object, reused), or
+// null while the player steers by keys.
+export function createLocalWalker({tolerance=VERIFY_TILES,snapTiles=SNAP_TILES}={}){
+ const out={x:0,z:0,yaw:0,moving:false,speed:0,snapped:false,steps:1},queue=[],stats={reroutes:0,snaps:0,verified:0};
+ let ready=false,heading=0,steps=1,track=null,shownX=NaN,shownZ=NaN,awaiting=false,lastNow=null,snapNext=false,standYaw=null,passed=null;
+ // track: the walk's schedule {pts:[{x,z}],cum:[steps along],at:server ms of pts[0],steps}.
+ const makeTrack=(pts,at,s)=>{const cum=[0];for(let k=1;k<pts.length;k++)cum.push(cum[k-1]+cheb(pts[k-1],pts[k]));return {pts,cum,at,steps:s}};
+ const pointAt=(tr,e)=>{const {pts,cum}=tr;if(e<=0)return pts[0];for(let k=1;k<pts.length;k++)if(cum[k]>=e){const a=pts[k-1],b=pts[k],f=(e-cum[k-1])/Math.max(1e-9,cum[k]-cum[k-1]);return {x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f}}return pts.at(-1)};
+ const indexAt=(tr,t)=>Math.max(0,Math.min(tr.cum.at(-1),tr.steps*(t-tr.at)/TICK_MS));
+ function setQueue(pts){queue.length=0;for(const p of pts)queue.push({x:p.x,z:p.z})}
+ // Take the server's route [S,...path] (stood on S at server time `at`): walk straight onto it from
+ // here, or be placed on it when far off.
+ function adopt(pose,serverNow){const S={x:pose.x,z:pose.z},pts=[S,...pointsOf(pose.path)];if(pose.stepTiles>0)steps=pose.stepTiles;
+  track=makeTrack(pts,Number.isFinite(pose.at)?pose.at:serverNow,steps);stats.reroutes++;
+  const e=pts.length>1?indexAt(track,serverNow):0,X=pointAt(track,e);
+  if(cheb(out,X)>snapTiles){out.x=X.x;out.z=X.z;snapNext=true;stats.snaps++;let k=1;while(k<pts.length&&track.cum[k]<=e+1e-9)k++;setQueue(pts.slice(k));return}
+  // Join at the route tile nearest to here (from a little before the server's tile now on),
+  // skipping one already reached: never walk back over the route.
+  const lo=Math.max(0,Math.floor(e)-snapTiles);let m=lo,best=Infinity;for(let k=lo;k<pts.length;k++){const d=cheb(out,pts[k]);if(d<best-1e-9){best=d;m=k}}
+  if(best<1e-6)m++;else if(m+1<pts.length&&cheb(out,pts[m+1])<=1+1e-6)m++;
+  setQueue(pts.slice(m));
  }
- return {get queue(){return queue},
-  update(position,pose,now,dt,{active=false,pending=false}={}){
-   if(active||pending||!pose){lastPose=null;return null}
-   if(!ready||Math.hypot(position.x-out.x,position.z-out.z)>.3){ready=true;out.x=position.x;out.z=position.z;queue.length=0;lastPassed=null;lastPose=null;rate=1;heading=Number.isFinite(pose.yaw)?pose.yaw:0}
-   if(pose!==lastPose){lastPose=pose;merge(pose)}
-   const moving=pose.moving&&Array.isArray(pose.path)&&pose.path.length>0;if(pose.stepTiles>0)steps=pose.stepTiles;
-   // How far the server walker still has to go now (tile steps), against what is queued here.
-   let total=0,px=pose.x,pz=pose.z;for(const p of pose.path||[]){const x=Number(p?.[0]??p?.x),z=Number(p?.[1]??p?.z);if(!Number.isFinite(x)||!Number.isFinite(z))break;total+=stepsOf(x-px,z-pz);px=x;pz=z}
-   const used=moving&&Number.isFinite(pose.at)?Math.max(0,Math.min(3,(now-pose.at)/(GAME_TICK*1000)))*steps:0,gap=ahead()-Math.max(0,total-used);
-   if(gap>snapTiles)advance(gap-1);
-   const want=queue.length?gap>=0?Math.min(catchUp,1+gain*gap):Math.max(slow,1+gain*gap):1;
-   const was=out.moving;out.moving=queue.length>0;if(!was&&out.moving)rate=Math.min(1,want);
-   rate+=(want-rate)*(1-Math.exp(-Math.max(0,dt)/ease));
-   out.speed=out.moving&&dt>0?advance(steps*rate*dt/GAME_TICK)/dt:0;
-   if(!queue.length){out.moving=false;if(!moving&&Number.isFinite(pose.yaw))heading=pose.yaw}
-   out.yaw=heading;position.x=out.x;position.z=out.z;return out}};
+ function advance(d){let ground=0;while(queue.length&&d>1e-12){const q=queue[0],dx=q.x-out.x,dz=q.z-out.z,seg=stepLen(out.x,out.z,q.x,q.z);if(seg>1e-9)heading=Math.atan2(dx,dz);
+   if(seg<=d){ground+=Math.hypot(dx,dz);out.x=q.x;out.z=q.z;d-=seg;passed=queue.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}return ground}
+ return {get queue(){return queue},get track(){return track},get stats(){return stats},get steps(){return steps},get awaiting(){return awaiting},get ready(){return ready},
+  // The tile the player is visibly on: where a click is planned from.
+  startTile(){return [Math.floor(out.x/TILE+.5),Math.floor(out.z/TILE+.5)]},
+  // Where a click is planned from: the tile the player is visibly on or, mid-step, the tile just
+  // left or the one being stepped onto, whichever makes the walk from here shortest (so the first
+  // move never goes on along the old step, or back over it, only to turn round). planFrom([i,j])
+  // returns a path [[x,z],...] of tile centres (the start excluded) or null. Returns {from,path}.
+  plan(planFrom){const tiles=[this.startTile()];
+   const add=p=>{if(!p)return;const t=[Math.floor(p.x/TILE+.5),Math.floor(p.z/TILE+.5)];if(Math.abs(p.x-t[0]*TILE)>.02||Math.abs(p.z-t[1]*TILE)>.02||stepLen(out.x,out.z,p.x,p.z)>1+1e-6)return;if(!tiles.some(q=>q[0]===t[0]&&q[1]===t[1]))tiles.push(t)};
+   if(queue.length){add(passed);add(queue[0])}
+   let best=null;for(const t of tiles){const path=planFrom(t);if(!Array.isArray(path))continue;const pts=pointsOf(path);
+    const cost=pts.length?stepLen(out.x,out.z,pts[0].x,pts[0].z)+pts.length-1:stepLen(out.x,out.z,t[0]*TILE,t[1]*TILE);
+    if(!best||cost<best.cost-1e-6)best={from:t,path,cost}}
+   return best},
+  // A click-walk planned here: path [[x,z],...] tile centres (from startTile()), walked at once.
+  // A new click while walking continues the same schedule: the server is still on the old walk
+  // (it gets the click a little later), so the walk so far stays the head of the track.
+  walk(path,{serverNow,steps:s}={}){const pts=pointsOf(path),now=Number.isFinite(serverNow)?serverNow:Date.now();if(s>0)steps=s;awaiting=true;standYaw=null;
+   if(track&&queue.length&&track.steps===steps&&cheb(queue.at(-1),track.pts.at(-1))<1e-6){
+    let left=0,px=out.x,pz=out.z;for(const q of queue){left+=stepLen(px,pz,q.x,q.z);px=q.x;pz=q.z}
+    const e=track.cum.at(-1)-left,head=[];for(let k=0;k<track.pts.length&&track.cum[k]<e-1e-6;k++)head.push(track.pts[k]);
+    track=makeTrack([...head,{x:out.x,z:out.z},...pts],track.at,steps)}
+   else track=makeTrack([{x:out.x,z:out.z},...pts],now,steps);
+   setQueue(pts);return pts.length>0},
+  // The move command was answered (or failed): snapshots verify the walk again.
+  ack(){awaiting=false},
+  verify(pose,serverNow,{stale=false}={}){if(!pose||!ready||awaiting||stale)return 'skip';
+   const S={x:pose.x,z:pose.z},path=pointsOf(pose.path),srvMoving=path.length>0,F=path.at(-1)||S;
+   standYaw=!srvMoving&&Number.isFinite(pose.yaw)?pose.yaw:null;
+   if(pose.stepTiles>0&&pose.stepTiles!==steps){if(track){const e=indexAt(track,serverNow);track.steps=pose.stepTiles;track.at=serverNow-e*TICK_MS/pose.stepTiles}steps=pose.stepTiles}
+   if(!track){if(!srvMoving&&cheb(out,S)<1e-3)return 'rest';adopt(pose,serverNow);return 'adopt'}
+   if(!queue.length&&!srvMoving&&cheb(out,S)<1e-3){track=null;return 'rest'}
+   // Where this walk says the server should be at its tick (e), against where it is. Tick timing
+   // alone moves the server against e by whole ticks: it starts on the first tick after the move
+   // arrives (up to a tick behind), and a catch-up run credits up to two ticks at once (up to two
+   // ahead). Beyond that, `tolerance` tiles are ignored.
+   const e=indexAt(track,Number.isFinite(pose.at)?pose.at:serverNow),w=track.steps,lo=e-w,hi=e+2*w;let d=Infinity;
+   for(let k=0;k<track.pts.length;k++){const c=track.cum[k];if(c<lo-1e-9||c>hi+1e-9)continue;d=Math.min(d,cheb(S,track.pts[k]))}
+   d=Math.min(d,cheb(S,pointAt(track,Math.max(0,lo))),cheb(S,pointAt(track,e)),cheb(S,pointAt(track,hi)));
+   // The server's route must end on this walk (the same goal, or one of its leg ends), at or after its tile.
+   let endOk=false;for(let k=0;k<track.pts.length&&!endOk;k++)if(track.cum[k]>=lo-1-1e-9&&cheb(F,track.pts[k])<1e-3)endOk=true;
+   // A server that has stopped short of this walk's end has stopped for good (blocked, stop, combat).
+   if(!srvMoving&&cheb(S,track.pts.at(-1))>1e-3)endOk=false;
+   if(d<=tolerance+1e-6&&endOk){stats.verified++;return 'ok'}
+   adopt(pose,serverNow);return 'adopt'},
+  update(position,now,{active=false,pending=false}={}){
+   if(active||pending){ready=false;queue.length=0;track=null;lastNow=null;return null}
+   if(!ready||!(Math.hypot(position.x-shownX,position.z-shownZ)<=.3)){ready=true;out.x=position.x;out.z=position.z;queue.length=0;track=null;lastNow=null}
+   // Real elapsed time (a long frame on a slow GPU still moves the walker its true distance).
+   const dt=lastNow===null?0:Math.max(0,Math.min(5000,now-lastNow))/1000;lastNow=now;
+   out.snapped=snapNext;snapNext=false;
+   out.speed=queue.length&&dt>0?advance(steps*dt/GAME_TICK)/dt:0;out.moving=queue.length>0||out.speed>0;out.steps=steps;
+   if(!queue.length&&standYaw!==null)heading=standYaw;
+   out.yaw=dt>0&&!out.snapped?turnToward(out.yaw,heading,dt):heading;
+   position.x=shownX=out.x;position.z=shownZ=out.z;return out},
+  // The body's current facing (game.js), so a walk turns from where the player looks.
+  face(yaw){if(Number.isFinite(yaw)){out.yaw=yaw;if(!queue.length)heading=yaw}}};
 }
 
 // OSRS facing: a walker faces its tile step and turns essentially at once, with a short visual

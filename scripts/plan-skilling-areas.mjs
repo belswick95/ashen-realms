@@ -4,7 +4,7 @@
 // scripts/build-skilling-world-sql.mjs; tests/skilling-world.test.js checks both.
 // usage: node --import ./tests/helpers/preload.js scripts/plan-skilling-areas.mjs
 import fs from 'node:fs';
-import {initializeGeography,distanceToRoad} from '../geography.js?v=release-20261107-trail160';
+import {initializeGeography,distanceToRoad} from '../geography.js?v=release-20261107-move3v161';
 import {createLandscape} from '../landscape.js';
 import {safeZoneDistance} from '../monster-roster.js';
 import {capitalBlueprint} from '../capital-layout.js';

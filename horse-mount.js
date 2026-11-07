@@ -1,4 +1,4 @@
-import {buildWarhorse} from './horse-model.js?v=release-20261107-trail160';
+import {buildWarhorse} from './horse-model.js?v=release-20261107-move3v161';
 // Shared local/remote mount model. Hoof contacts and sounds use the same phase.
 // The baked gallop covers GALLOP_STRIDE units per cycle at full reach; it is at
 // full reach from GALLOP_PACE units/s (a mounted tile walk is 7.9 straight).
