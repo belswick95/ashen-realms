@@ -1,7 +1,7 @@
-import {installChatShortcut,releaseChatFocus} from './chat-shortcuts.js?v=release-20261107-music156';
-import {startMultiplayer} from './multiplayer.js?v=release-20261107-music156';
-import {setChatMessages,setFeedIdentity,addSystemMessage} from './chat-feed.js?v=release-20261107-music156';
-import {loading} from './loading-indicator.js?v=release-20261107-music156';
+import {installChatShortcut,releaseChatFocus} from './chat-shortcuts.js?v=release-20261107-move157';
+import {startMultiplayer} from './multiplayer.js?v=release-20261107-move157';
+import {setChatMessages,setFeedIdentity,addSystemMessage} from './chat-feed.js?v=release-20261107-move157';
+import {loading} from './loading-indicator.js?v=release-20261107-move157';
 // Eldervale social panel. Only authenticated players can use these features.
 export function startSocial(db,user){
 const panel=document.querySelector('#social-panel'),tabs=panel.querySelectorAll('[data-social-tab]'),chatList=panel.querySelector('#world-chat-lines'),chatForm=panel.querySelector('#world-chat-form'),chatInput=panel.querySelector('#world-chat-input'),friendList=panel.querySelector('#friend-list'),search=panel.querySelector('#friend-search'),searchResult=panel.querySelector('#friend-results'),note=panel.querySelector('#social-note');

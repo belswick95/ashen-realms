@@ -1,4 +1,4 @@
-import {installLocalSkinning} from './local-skinning.js?v=release-20261107-music156';
+import {installLocalSkinning} from './local-skinning.js?v=release-20261107-move157';
 // A separate pose of the actual NPC, using the world's existing WebGL context.
 // Never clone interaction userData: it points back to the live world root.
 export function cloneSpeaker(source,T){

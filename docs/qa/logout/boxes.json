@@ -1,0 +1,783 @@
+{
+ "desktop-1440x900": {
+  "#world-clock": [
+   645,
+   14,
+   150,
+   21
+  ],
+  "#logout-toast": null,
+  "#prayer-orb": [
+   1208,
+   116,
+   44,
+   44
+  ],
+  "#spec-orb": [
+   1208,
+   168,
+   44,
+   44
+  ],
+  "#minimap-compass": [
+   1208,
+   12,
+   44,
+   44
+  ],
+  "#explore-toggle": [
+   1304,
+   222,
+   44,
+   44
+  ],
+  "#map-toggle": [
+   1356,
+   222,
+   44,
+   44
+  ],
+  "#logout-x": [
+   1384,
+   12,
+   44,
+   44
+  ],
+  "#map-widget": [
+   1208,
+   12,
+   220,
+   254
+  ],
+  "#minimap": [
+   1260,
+   46,
+   168,
+   168
+  ],
+  "#mech-orbs": null,
+  "#map-controls": null,
+  "#quest-tracker": null,
+  "#health-hud": [
+   14,
+   50,
+   244,
+   95
+  ],
+  "#side": [
+   1096,
+   826,
+   330,
+   60
+  ],
+  "#social-panel": [
+   12,
+   688,
+   320,
+   200
+  ],
+  "#combat-notice": null,
+  "#account-bar": [
+   14,
+   14,
+   75,
+   32
+  ],
+  "overlaps": [],
+  "xDiscGap": 8,
+  "inViewport": true,
+  "safe": null
+ },
+ "desktop-1440x900-in-combat": {
+  "#world-clock": [
+   645,
+   14,
+   150,
+   21
+  ],
+  "#logout-toast": [
+   528,
+   56,
+   383,
+   43
+  ],
+  "#prayer-orb": [
+   1208,
+   116,
+   44,
+   44
+  ],
+  "#spec-orb": [
+   1208,
+   168,
+   44,
+   44
+  ],
+  "#minimap-compass": [
+   1208,
+   12,
+   44,
+   44
+  ],
+  "#explore-toggle": [
+   1304,
+   222,
+   44,
+   44
+  ],
+  "#map-toggle": [
+   1356,
+   222,
+   44,
+   44
+  ],
+  "#logout-x": [
+   1384,
+   12,
+   44,
+   44
+  ],
+  "#map-widget": [
+   1208,
+   12,
+   220,
+   254
+  ],
+  "#minimap": [
+   1260,
+   46,
+   168,
+   168
+  ],
+  "#mech-orbs": null,
+  "#map-controls": null,
+  "#quest-tracker": null,
+  "#health-hud": [
+   14,
+   50,
+   244,
+   95
+  ],
+  "#side": [
+   1096,
+   826,
+   330,
+   60
+  ],
+  "#social-panel": [
+   12,
+   688,
+   320,
+   200
+  ],
+  "#combat-notice": null,
+  "#account-bar": [
+   14,
+   14,
+   75,
+   32
+  ],
+  "overlaps": [],
+  "xDiscGap": 8,
+  "inViewport": true,
+  "safe": null
+ },
+ "iphone-844x390": {
+  "#world-clock": null,
+  "#logout-toast": null,
+  "#prayer-orb": [
+   633,
+   100,
+   40,
+   40
+  ],
+  "#spec-orb": [
+   633,
+   146,
+   40,
+   40
+  ],
+  "#minimap-compass": [
+   633,
+   8,
+   40,
+   40
+  ],
+  "#explore-toggle": [
+   698,
+   166,
+   40,
+   40
+  ],
+  "#map-toggle": [
+   744,
+   166,
+   40,
+   40
+  ],
+  "#logout-x": [
+   751,
+   8,
+   40,
+   40
+  ],
+  "#map-widget": [
+   633,
+   8,
+   158,
+   198
+  ],
+  "#minimap": [
+   679,
+   48,
+   112,
+   112
+  ],
+  "#mech-orbs": null,
+  "#map-controls": null,
+  "#quest-tracker": null,
+  "#health-hud": [
+   53,
+   8,
+   222,
+   62
+  ],
+  "#side": [
+   475,
+   315,
+   316,
+   54
+  ],
+  "#social-panel": [
+   53,
+   309,
+   84,
+   60
+  ],
+  "#combat-notice": null,
+  "#account-bar": null,
+  "overlaps": [],
+  "xDiscGap": 8,
+  "inViewport": true,
+  "safe": null
+ },
+ "iphone-844x390-in-combat": {
+  "#world-clock": null,
+  "#logout-toast": [
+   230,
+   78,
+   383,
+   43
+  ],
+  "#prayer-orb": [
+   633,
+   100,
+   40,
+   40
+  ],
+  "#spec-orb": [
+   633,
+   146,
+   40,
+   40
+  ],
+  "#minimap-compass": [
+   633,
+   8,
+   40,
+   40
+  ],
+  "#explore-toggle": [
+   698,
+   166,
+   40,
+   40
+  ],
+  "#map-toggle": [
+   744,
+   166,
+   40,
+   40
+  ],
+  "#logout-x": [
+   751,
+   8,
+   40,
+   40
+  ],
+  "#map-widget": [
+   633,
+   8,
+   158,
+   198
+  ],
+  "#minimap": [
+   679,
+   48,
+   112,
+   112
+  ],
+  "#mech-orbs": null,
+  "#map-controls": null,
+  "#quest-tracker": null,
+  "#health-hud": [
+   53,
+   8,
+   222,
+   62
+  ],
+  "#side": [
+   475,
+   315,
+   316,
+   54
+  ],
+  "#social-panel": [
+   53,
+   309,
+   84,
+   60
+  ],
+  "#combat-notice": null,
+  "#account-bar": null,
+  "overlaps": [],
+  "xDiscGap": 8,
+  "inViewport": true,
+  "safe": null
+ },
+ "iphone-932x430": {
+  "#world-clock": null,
+  "#logout-toast": null,
+  "#prayer-orb": [
+   709,
+   100,
+   40,
+   40
+  ],
+  "#spec-orb": [
+   709,
+   146,
+   40,
+   40
+  ],
+  "#minimap-compass": [
+   709,
+   8,
+   40,
+   40
+  ],
+  "#explore-toggle": [
+   774,
+   166,
+   40,
+   40
+  ],
+  "#map-toggle": [
+   820,
+   166,
+   40,
+   40
+  ],
+  "#logout-x": [
+   827,
+   8,
+   40,
+   40
+  ],
+  "#map-widget": [
+   709,
+   8,
+   158,
+   198
+  ],
+  "#minimap": [
+   755,
+   48,
+   112,
+   112
+  ],
+  "#mech-orbs": null,
+  "#map-controls": null,
+  "#quest-tracker": null,
+  "#health-hud": [
+   65,
+   8,
+   222,
+   62
+  ],
+  "#side": [
+   551,
+   355,
+   316,
+   54
+  ],
+  "#social-panel": [
+   65,
+   349,
+   84,
+   60
+  ],
+  "#combat-notice": null,
+  "#account-bar": null,
+  "overlaps": [],
+  "xDiscGap": 8,
+  "inViewport": true,
+  "safe": null
+ },
+ "iphone-932x430-in-combat": {
+  "#world-clock": null,
+  "#logout-toast": [
+   274,
+   78,
+   383,
+   43
+  ],
+  "#prayer-orb": [
+   709,
+   100,
+   40,
+   40
+  ],
+  "#spec-orb": [
+   709,
+   146,
+   40,
+   40
+  ],
+  "#minimap-compass": [
+   709,
+   8,
+   40,
+   40
+  ],
+  "#explore-toggle": [
+   774,
+   166,
+   40,
+   40
+  ],
+  "#map-toggle": [
+   820,
+   166,
+   40,
+   40
+  ],
+  "#logout-x": [
+   827,
+   8,
+   40,
+   40
+  ],
+  "#map-widget": [
+   709,
+   8,
+   158,
+   198
+  ],
+  "#minimap": [
+   755,
+   48,
+   112,
+   112
+  ],
+  "#mech-orbs": null,
+  "#map-controls": null,
+  "#quest-tracker": null,
+  "#health-hud": [
+   65,
+   8,
+   222,
+   62
+  ],
+  "#side": [
+   551,
+   355,
+   316,
+   54
+  ],
+  "#social-panel": [
+   65,
+   349,
+   84,
+   60
+  ],
+  "#combat-notice": null,
+  "#account-bar": null,
+  "overlaps": [],
+  "xDiscGap": 8,
+  "inViewport": true,
+  "safe": null
+ },
+ "ipad-1180x820": {
+  "#world-clock": [
+   515,
+   12,
+   150,
+   21
+  ],
+  "#logout-toast": null,
+  "#prayer-orb": [
+   948,
+   116,
+   44,
+   44
+  ],
+  "#spec-orb": [
+   948,
+   168,
+   44,
+   44
+  ],
+  "#minimap-compass": [
+   948,
+   12,
+   44,
+   44
+  ],
+  "#explore-toggle": [
+   1044,
+   222,
+   44,
+   44
+  ],
+  "#map-toggle": [
+   1096,
+   222,
+   44,
+   44
+  ],
+  "#logout-x": [
+   1124,
+   12,
+   44,
+   44
+  ],
+  "#map-widget": [
+   948,
+   12,
+   220,
+   254
+  ],
+  "#minimap": [
+   1000,
+   46,
+   168,
+   168
+  ],
+  "#mech-orbs": null,
+  "#map-controls": null,
+  "#quest-tracker": null,
+  "#health-hud": [
+   12,
+   50,
+   244,
+   95
+  ],
+  "#side": [
+   838,
+   748,
+   330,
+   60
+  ],
+  "#social-panel": [
+   12,
+   608,
+   320,
+   200
+  ],
+  "#combat-notice": null,
+  "#account-bar": [
+   12,
+   12,
+   90,
+   36
+  ],
+  "overlaps": [],
+  "xDiscGap": 8,
+  "inViewport": true,
+  "safe": null
+ },
+ "ipad-1180x820-in-combat": {
+  "#world-clock": [
+   515,
+   12,
+   150,
+   21
+  ],
+  "#logout-toast": [
+   398,
+   56,
+   383,
+   43
+  ],
+  "#prayer-orb": [
+   948,
+   116,
+   44,
+   44
+  ],
+  "#spec-orb": [
+   948,
+   168,
+   44,
+   44
+  ],
+  "#minimap-compass": [
+   948,
+   12,
+   44,
+   44
+  ],
+  "#explore-toggle": [
+   1044,
+   222,
+   44,
+   44
+  ],
+  "#map-toggle": [
+   1096,
+   222,
+   44,
+   44
+  ],
+  "#logout-x": [
+   1124,
+   12,
+   44,
+   44
+  ],
+  "#map-widget": [
+   948,
+   12,
+   220,
+   254
+  ],
+  "#minimap": [
+   1000,
+   46,
+   168,
+   168
+  ],
+  "#mech-orbs": null,
+  "#map-controls": null,
+  "#quest-tracker": null,
+  "#health-hud": [
+   12,
+   50,
+   244,
+   95
+  ],
+  "#side": [
+   838,
+   748,
+   330,
+   60
+  ],
+  "#social-panel": [
+   12,
+   608,
+   320,
+   200
+  ],
+  "#combat-notice": null,
+  "#account-bar": [
+   12,
+   12,
+   90,
+   36
+  ],
+  "overlaps": [],
+  "xDiscGap": 8,
+  "inViewport": true,
+  "safe": null
+ },
+ "ipad-1024x1366": {
+  "#world-clock": [
+   437,
+   12,
+   150,
+   21
+  ],
+  "#logout-toast": null,
+  "#prayer-orb": [
+   792,
+   116,
+   44,
+   44
+  ],
+  "#spec-orb": [
+   792,
+   168,
+   44,
+   44
+  ],
+  "#minimap-compass": [
+   792,
+   12,
+   44,
+   44
+  ],
+  "#explore-toggle": [
+   888,
+   222,
+   44,
+   44
+  ],
+  "#map-toggle": [
+   940,
+   222,
+   44,
+   44
+  ],
+  "#logout-x": [
+   968,
+   12,
+   44,
+   44
+  ],
+  "#map-widget": [
+   792,
+   12,
+   220,
+   254
+  ],
+  "#minimap": [
+   844,
+   46,
+   168,
+   168
+  ],
+  "#mech-orbs": null,
+  "#map-controls": null,
+  "#quest-tracker": null,
+  "#health-hud": [
+   12,
+   50,
+   244,
+   95
+  ],
+  "#side": [
+   682,
+   1294,
+   330,
+   60
+  ],
+  "#social-panel": [
+   12,
+   1154,
+   320,
+   200
+  ],
+  "#combat-notice": null,
+  "#account-bar": [
+   12,
+   12,
+   90,
+   36
+  ],
+  "overlaps": [],
+  "xDiscGap": 8,
+  "inViewport": true,
+  "safe": null
+ }
+}

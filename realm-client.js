@@ -1,6 +1,7 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
-import {loading,commandLabel} from './loading-indicator.js?v=release-20261107-music156';
-import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261107-music156';
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261107-move157';
+import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261107-move157';
+import {combatClock,isLogoutRefusal,isLegacyLogoutReply} from './logout-guard.js?v=release-20261107-move157';
 const MOTION_COMMANDS=new Set(['move','stop']);
 // A hidden tab (nothing is drawn) polls every 3 s instead of four times a second: it still counts as
 // online (the server's presence window is 8-15 s) but stops costing the database a world reply
@@ -20,6 +21,8 @@ export async function startRealm(db,user,session){
   // Lean replies (db/sync-diet.sql) skip what this client already holds; a server
   // without the lean RPC gets the original call.
   try{const args={session_id:session,command,payload,request_id:id,event_cursor:cursor};if(lean){({data,error}=await db.rpc('world_command_lean',{...args,have:diet.have()}));if(missingRpc(error)){lean=false;diet.reset();({data,error}=await db.rpc('world_command',args))}}else({data,error}=await db.rpc('world_command',args))}catch(e){error=e}finally{slow.end()}
+  // A refused logout (still in combat) is a game message, not a connection problem.
+  if(error&&command==='logout'&&isLogoutRefusal(error.message))throw Error(error.message);
   if(error){badge.hidden=false;badge.textContent='World connection: '+error.message;failures++;
    // Signing in elsewhere replaces this world session: stop polling a dead session (it would fail
    // four times a second forever) and hand over to the sign-in screen.
@@ -30,7 +33,7 @@ export async function startRealm(db,user,session){
   const serverTime=Date.parse(data.time);if(serverTime<latestSnapshotTime)return true;latestSnapshotTime=serverTime;data=diet.expand(data).data;
   const finished=Date.now(),sample=finished-started;roundtrip=clockReady?roundtrip*.8+sample*.2:sample;const clockOffset=Date.parse(data.time)-(started+finished)/2;offset=clockReady?offset*.9+clockOffset*.1:clockOffset;clockReady=true;window.eldervaleServerTime=()=>Date.now()+offset;badge.hidden=true;failures=0;
   // A snapshot taken before a queued click-walk/stop reached the server must not cancel the local walk.
-  window.eldervaleRealmBridge.snapshot(data,user.id,{motionStale:movesPending-(MOTION_COMMANDS.has(command)?1:0)>0});if(!first)for(const event of data.events||[])if(Number(event.id)>cursor)window.eldervaleRealmBridge.event(event.data,user.id);first=false;cursor=Math.max(cursor,Number(data.eventCursor)||0);return true;
+  window.eldervaleRealmBridge.snapshot(data,user.id,{motionStale:movesPending-(MOTION_COMMANDS.has(command)?1:0)>0});combatClock.observeActors(data.actors,user.id);if(!first)for(const event of data.events||[])if(Number(event.id)>cursor){combatClock.observeEvent(event.data,user.id);window.eldervaleRealmBridge.event(event.data,user.id)}first=false;cursor=Math.max(cursor,Number(data.eventCursor)||0);return true;
  }
  function enqueue(command='sync',payload={}){const id=command==='sync'?null:crypto.randomUUID(),motion=MOTION_COMMANDS.has(command);pending++;if(motion)movesPending++;const result=queue.then(()=>request(command,payload,id));queue=result.catch(()=>{}).finally(()=>{pending--;if(motion)movesPending--});return result;}
  let commandError='',latestSteer=null,steerInFlight=0,issued=0,acknowledged=0;
@@ -45,6 +48,9 @@ export async function startRealm(db,user,session){
  // steerPending: only unacknowledged WASD input holds the local walker; a click-walk in flight
  // does not (the walker keeps presenting its current path until the new one arrives).
  const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued||movesPending>0,steerPending:()=>acknowledged<issued,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=playerFacingError(e.message);window.eldervaleWorldBridge.notice(commandError);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
+  // Logout (logout-guard.js, db/logout-combat.sql): the server refuses while the 10 s combat timer
+  // runs; on success it ends this world session, so polling stops here.
+  leave:async()=>{const stop=()=>{disposed=true;clearInterval(timer)};try{await enqueue('logout',{});stop();return {ok:true}}catch(e){const m=e.message||'';if(isLogoutRefusal(m))return {refused:m};if(isLegacyLogoutReply(m)){stop();return {ok:true,legacy:true}}return {error:playerFacingError(m)}}},
   // Cosmetic commands (level-up fireworks) fail silently: no chat notice.
   quietCommand:(c,p)=>enqueue(c,p).then(r=>r??true).catch(()=>false),
   // Quest guidance trail: the server tile grid around a point (db/quests-v2.sql quest_guide_tiles).

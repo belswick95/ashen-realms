@@ -2,7 +2,7 @@
 // waiting for a hand-in. One InstancedMesh with a billboard shader (one draw call for every marker),
 // gentle bob in the shader, no fog so they read at distance, and hidden whenever the NPC itself is
 // culled by the character LOD. The same markers are drawn on the minimap.
-import {giverMarkers} from './quest-guide.js?v=release-20261107-music156';
+import {giverMarkers} from './quest-guide.js?v=release-20261107-move157';
 
 export const MARKER_GLYPHS=['!','?'];
 export const MARKER_MAX_DISTANCE=160;

@@ -1,5 +1,5 @@
-import {surfaceTexture} from './surface-textures.js?v=release-20261107-music156';
-import {batchStaticMeshes} from './static-batch.js?v=release-20261107-music156';
+import {surfaceTexture} from './surface-textures.js?v=release-20261107-move157';
+import {batchStaticMeshes} from './static-batch.js?v=release-20261107-move157';
 // Detailed street furniture for towns: benches, barrels, crates, market
 // stalls, street lanterns and wells, built from shared textured materials and
 // merged per material so each prop costs a handful of draw calls. Footprints
