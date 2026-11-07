@@ -259,7 +259,7 @@ html body #auth-screen #login-sound-toggle{background:var(--mv-wood-face)!import
    green boxes (#0f1e18 / #23382d / #202c24) with thin outlines. Panel text
    takes the book face; display (Cinzel) headings keep theirs.
    -------------------------------------------------------------------------- */
-html body.fantasy-hud :is(#side,#social-panel,#contextmenu,#dialog,dialog,.map-card) :not(svg,svg *){font-family:var(--mv-body)!important}
+html body.fantasy-hud :is(#side,#social-panel,#contextmenu,#dialog,dialog,.map-card,#trade-request) :not(svg,svg *){font-family:var(--mv-body)!important}
 html body.fantasy-hud :is(#side,#social-panel,#dialog,dialog,.map-card) :is(h2,h3),
 html body.fantasy-hud #side :is(.skills-footer,.settings-nav button,#inventory-gold),
 html body.fantasy-hud #social-panel :is(.social-head strong,#social-toggle),
@@ -269,3 +269,13 @@ html body.fantasy-hud #side .equipment-stats-group{background:#00000033!importan
 html body.fantasy-hud #side .equipment-stats-group h4{color:var(--mv-gold)!important;font-weight:700}
 html body.fantasy-hud #side .player-combat-level{background:var(--mv-wood-face)!important;border:1px solid #140c05!important;box-shadow:var(--mv-bevel-out),inset 0 0 0 1px #d9ae5540!important;color:var(--mv-gold-hi)!important;text-shadow:var(--mv-shadow-text)}
 html body.fantasy-hud #settings-tab label{background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important}
+/* Shop and trade windows: the green list wells and offer columns become recessed stone. */
+html body.fantasy-hud :is(#service-panel .service-wallet,#service-panel .service-items,#player-trade .trade-columns section){background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important}
+html body.fantasy-hud #player-trade form{border:1px solid #d9ae5533!important;border-radius:4px;background:#00000026!important}
+/* Trade request popup: a framed panel with the theme's plank buttons (it was a green card with green/red buttons). */
+html body.fantasy-hud #trade-request{border:5px solid transparent!important;border-radius:6px!important;background:var(--mv-leather-face) padding-box,var(--mv-stone-face) border-box!important;box-shadow:var(--mv-frame-shadow),inset 0 0 0 1px var(--mv-gold-lo)!important;color:var(--mv-ink)!important}
+html body.fantasy-hud #trade-request .trade-request-text{color:var(--mv-gold-hi)!important}
+html body.fantasy-hud #trade-request .trade-request-meter{background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in)!important}
+html body.fantasy-hud #trade-request .trade-request-buttons button.trade-accept:not(:disabled){background:var(--mv-grain),linear-gradient(180deg,#a8442a,var(--mv-ember) 55%,var(--mv-ember-lo))!important;border-color:var(--mv-gold-mid)!important}
+html body.fantasy-hud #trade-request .trade-request-buttons button.trade-decline:not(:disabled){background:var(--mv-wood-face)!important}
+html body.fantasy-hud #trade-request .trade-request-buttons button:disabled{background:var(--mv-stone-dark)!important;border-color:#0e0b08!important;color:#8f8470!important}

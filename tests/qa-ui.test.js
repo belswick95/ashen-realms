@@ -44,6 +44,16 @@ test('Enter starts chat even after a HUD tab was clicked with the mouse (keyboar
  }finally{for(const [k,v] of Object.entries(prior))globalThis[k]=v}
 });
 
+test('bank backpack rows are a full cell tall (slots no longer overlap)',()=>{
+ assert.match(read('bank.css'),/#service-panel\.bank-mode \.bank-inventory-grid\{grid-auto-rows:var\(--bank-cell\)\}\s*$/);
+});
+
+test('shop wells, trade columns and the trade request popup use the medieval theme',()=>{
+ const css=read('medieval-theme.css'),tail=css.slice(css.lastIndexOf('QA pass (portrait145)'));
+ for(const sel of ['#service-panel .service-items','#player-trade .trade-columns section','#player-trade form{','#trade-request{','button.trade-accept:not(:disabled)','#trade-request .trade-request-buttons button:disabled'])assert.ok(tail.includes(sel),sel);
+ assert.ok(tail.includes('.map-card,#trade-request) :not(svg,svg *)'),'popup text uses the book face');
+});
+
 test('settings dropdown labels fit the phone panel',()=>{
  const html=read('index.html'),select=html.match(/<select id="graphics-preset"[\s\S]*?<\/select>/)[0];
  for(const [,label] of select.matchAll(/<option[^>]*>([^<]*)<\/option>/g))assert.ok(label.length<=18,label);
