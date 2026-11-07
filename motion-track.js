@@ -20,15 +20,19 @@ export function createMotionTrack({delay=350,maxExtra=600}={}){let tile=false,pl
 //  - a buffer of about two tiles (just over a tick at the cron cadence) is kept behind the newest tile while more are due, so a late tile
 //    slows the walker a little (never below SLOW x pace) instead of stopping it;
 //  - a backlog is caught up at no more than CATCH_UP x pace;
-//  - further behind than SNAP_TILES the walker is placed quietly one tile behind (sample().snapped,
+//  - lag is counted in tile steps (a diagonal step is one tick, as on the server, so diagonals play at
+//    their true 1.41x ground speed instead of falling behind);
+//  - further behind than SNAP_TILES the walker is placed quietly at the buffer distance (sample().snapped,
 //    so the caller animates no stride for that frame); a jump over 12 units is a teleport.
 // sample(now) returns {x,z,yaw,moving,run,speed,snapped}; one object is reused (no allocation).
 export const TILE_WALK_SPEED=TILE/GAME_TICK,CATCH_UP=1.3,SLOW=.6,SNAP_TILES=4,BUFFER_TILES=2,DUE_MS=1800,START_WAIT_MS=900,TELEPORT=12;
 export function createTilePlayback({buffer=BUFFER_TILES,slow=SLOW,gain=.2,ease=.4}={}){
  const path=[],out={x:0,z:0,yaw:0,moving:false,run:false,speed:0,snapped:false};let ready=false,walking=false,startAt=0,stand=0,heading=0,steps=1,rate=1,lastNow=null,lastTile=-Infinity,snapNext=false;
- const len=()=>{let d=0,px=out.x,pz=out.z;for(const p of path){d+=Math.hypot(p.x-px,p.z-pz);px=p.x;pz=p.z}return d};
- // Walk `d` along the queued path from the presented point.
- function advance(d){while(path.length&&d>0){const p=path[0],dx=p.x-out.x,dz=p.z-out.z,seg=Math.hypot(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){out.x=p.x;out.z=p.z;d-=seg;path.shift()}else{out.x+=dx/seg*d;out.z+=dz/seg*d;d=0}}}
+ // Distances are in tile steps (a diagonal step is one step, as on the server: one tick), not units.
+ const stepsOf=(dx,dz)=>Math.max(Math.abs(dx),Math.abs(dz))/TILE;
+ const len=()=>{let d=0,px=out.x,pz=out.z;for(const p of path){d+=stepsOf(p.x-px,p.z-pz);px=p.x;pz=p.z}return d};
+ // Walk `d` tile steps along the queued path from the presented point; returns the ground covered.
+ function advance(d){let ground=0;while(path.length&&d>0){const p=path[0],dx=p.x-out.x,dz=p.z-out.z,seg=stepsOf(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){ground+=Math.hypot(dx,dz);out.x=p.x;out.z=p.z;d-=seg;path.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}return ground}
  return {get backlog(){return len()},
   push(pose,now=performance.now()){if(!Number.isFinite(pose.x)||!Number.isFinite(pose.z))return;
    if(!ready){ready=true;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand=Number.isFinite(pose.yaw)?pose.yaw:0;return}
@@ -38,14 +42,14 @@ export function createTilePlayback({buffer=BUFFER_TILES,slow=SLOW,gain=.2,ease=.
    steps=pose.stepTiles>0?pose.stepTiles:pose.run?2:1;if(!path.length&&!walking)startAt=now;path.push({x:pose.x,z:pose.z});lastTile=now},
   sample(now=performance.now()){if(!ready)return null;const dt=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow))/1000;lastNow=now;
    out.snapped=snapNext;snapNext=false;let lag=len();
-   if(lag>SNAP_TILES*TILE){advance(lag-buffer*TILE);out.snapped=true;lag=len()}
-   const pace=steps*TILE_WALK_SPEED,due=now-lastTile<DUE_MS,over=(lag-buffer*TILE)/TILE;
+   if(lag>SNAP_TILES){advance(lag-buffer);out.snapped=true;lag=len()}
+   const due=now-lastTile<DUE_MS,over=lag-buffer;
    const want=due?Math.max(slow,Math.min(CATCH_UP,1+gain*over)):Math.max(1,Math.min(CATCH_UP,1+.15*over));
    rate+=(want-rate)*(1-Math.exp(-dt/ease));
    // A walk starts once the buffer has filled (or a short wait has passed: a single step aside).
-   if(!walking&&path.length&&(lag>=buffer*TILE*.99||now-startAt>=START_WAIT_MS||!due))walking=true;
-   out.moving=walking&&path.length>0;out.run=steps>1;out.speed=out.moving?pace*rate:0;
-   if(out.moving)advance(pace*rate*dt);if(!path.length){out.moving=false;walking=false;heading=stand}
+   if(!walking&&path.length&&(lag>=buffer*.99||now-startAt>=START_WAIT_MS||!due))walking=true;
+   out.moving=walking&&path.length>0;out.run=steps>1;
+   out.speed=out.moving&&dt>0?advance(steps*rate*dt/GAME_TICK)/dt:0;if(!path.length){out.moving=false;walking=false;heading=stand}
    // Turn toward the heading (a corner, a diagonal tile step, the facing at rest) over ~0.1 s, not in one frame.
    const turn=Math.atan2(Math.sin(heading-out.yaw),Math.cos(heading-out.yaw));out.yaw=dt>0&&!out.snapped?out.yaw+turn*Math.min(1,1-Math.exp(-dt/.1)):heading;
    return out},

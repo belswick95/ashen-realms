@@ -41,6 +41,16 @@ test('tile playback: a backlog is caught up at no more than 1.3x pace, beyond 4 
  p.push({x:40,z:10*TILE,yaw:1},t+48);const tp=p.sample(t+64);assert.equal(tp.snapped,true);assert.equal(tp.x,40);
 });
 
+test('tile playback: a diagonal walk keeps the server pace (one diagonal tile per tick) and never snaps',()=>{
+ // Lag counted in units made diagonal walkers fall behind (a diagonal tile is 1.41 units long but one
+ // tick on the server) until a two-tile burst pushed them past the snap distance (Corin, Birchford).
+ const track=createMotionTrack({delay:650});
+ const speeds=cronWalk(t=>track.sample(t),(s,t)=>track.pushTile(s.at,{x:s.z,z:s.z,yaw:0,moving:true},t),{seed:5,ms:30000});
+ assert.equal(speeds.filter(s=>s.snapped).length,0,'no snaps on a steady diagonal walk');
+ const mid=window100(speeds.filter(s=>s.t>4000&&s.t<20000)),mean=mid.reduce((a,c)=>a+c,0)/mid.length;
+ assert.ok(Math.abs(mean-TILE_WALK_SPEED*Math.SQRT2)<.35,'diagonal ground speed '+mean.toFixed(2));
+});
+
 test('tile playback: stopping turns to the server facing smoothly; runners play at two tiles a tick',()=>{
  const p=createTilePlayback();p.push({x:0,z:0,yaw:0},0);p.sample(0);p.push({x:0,z:0,yaw:Math.PI/2},10);
  const first=p.sample(16).yaw;assert.ok(first>0&&first<Math.PI/2*.3,'turns over a few frames, not in one: '+first);
