@@ -1,22 +1,26 @@
-import {undergroundObjectModel} from './underground-models.js?v=release-20261107-combatsfx130';
-import {exploreObjectModel} from './explore-models.js?v=release-20261107-combatsfx130';
-import {campObject} from './camp-models.js?v=release-20261107-combatsfx130';
-import {professionStationModel} from './profession-models.js?v=release-20261107-combatsfx130';
-import {oreResources} from './profession-data.js?v=release-20261107-combatsfx130';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261107-combatsfx130';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261107-combatsfx130';
-import {creatureMaterial} from './creature-material.js?v=release-20261107-combatsfx130';
-import {dragonModel} from './monster-dragon.js?v=release-20261107-combatsfx130';
-import {castleObject} from './castle-models.js?v=release-20261107-combatsfx130';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261107-combatsfx130';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-combatsfx130';
-import {townProp,dressFountain} from './town-props.js?v=release-20261107-combatsfx130';
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-combatsfx130';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-combatsfx130';
+import {undergroundObjectModel} from './underground-models.js?v=release-20261107-monsters131';
+import {exploreObjectModel} from './explore-models.js?v=release-20261107-monsters131';
+import {campObject} from './camp-models.js?v=release-20261107-monsters131';
+import {professionStationModel} from './profession-models.js?v=release-20261107-monsters131';
+import {oreResources} from './profession-data.js?v=release-20261107-monsters131';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261107-monsters131';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261107-monsters131';
+import {creatureMaterial} from './creature-material.js?v=release-20261107-monsters131';
+import {dragonModel} from './monster-dragon.js?v=release-20261107-monsters131';
+import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-monsters131';
+import {castleObject} from './castle-models.js?v=release-20261107-monsters131';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261107-monsters131';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-monsters131';
+import {townProp,dressFountain} from './town-props.js?v=release-20261107-monsters131';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-monsters131';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-monsters131';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);
  if(d.species==='dragon')return dragonModel(T,parent,d);
+ // Rigged, animated models (monster-models.js) for the species that have one; the procedural
+ // body below stays as the classic model, the fallback while loading, and in Node.
+ if(hasRiggedModel(d.species)&&d.kind!=='npc'&&!d.classicBody)return riggedActorModel(T,parent,d,p=>actorModel(T,p,{...d,classicBody:true}));
  const animal=farmAnimalModel(T,parent,d);if(animal)return animal;
  if(['human','goblin','skeleton','zombie','orc'].includes(d.species)||d.kind==='npc'){
   // Monsters reuse the human body with their own skin, hair and clothing.

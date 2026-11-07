@@ -1,13 +1,14 @@
-import {spawnCatalog,searchCatalog,catalogEntity,consoleCategories,bestiary,lootSummary,normalizeLoot,behaviorPatch,normalizePatrol,transformGroup,aheadOf,ringPositions,mergePlayers,matchesQuery,wrapYaw} from './bestiary.js?v=release-20261107-combatsfx130';
-import {worldTemplates,attackTypes} from './world-templates.js?v=release-20261107-combatsfx130';
-import {goods} from './economy.js?v=release-20261107-combatsfx130';
-import {professionSkills} from './profession-data.js?v=release-20261107-combatsfx130';
-import {SKINS,HAIRS,HAIRSTYLES} from './appearance.js?v=release-20261107-combatsfx130';
-import {showPreview} from './admin-preview.js?v=release-20261107-combatsfx130';
-import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261107-combatsfx130';
-import {engineSection} from './admin-engine.js?v=release-20261107-combatsfx130';
-import {mechanicsSection} from './admin-mechanics.js?v=release-20261107-combatsfx130';
-import {bossesSection} from './admin-bosses.js?v=release-20261107-combatsfx130';
+import {spawnCatalog,searchCatalog,catalogEntity,consoleCategories,bestiary,lootSummary,normalizeLoot,behaviorPatch,normalizePatrol,transformGroup,aheadOf,ringPositions,mergePlayers,matchesQuery,wrapYaw} from './bestiary.js?v=release-20261107-monsters131';
+import {MONSTER_MODELS,classicMonsterSpecies,setClassicMonsterModel} from './monster-models.js?v=release-20261107-monsters131';
+import {worldTemplates,attackTypes} from './world-templates.js?v=release-20261107-monsters131';
+import {goods} from './economy.js?v=release-20261107-monsters131';
+import {professionSkills} from './profession-data.js?v=release-20261107-monsters131';
+import {SKINS,HAIRS,HAIRSTYLES} from './appearance.js?v=release-20261107-monsters131';
+import {showPreview} from './admin-preview.js?v=release-20261107-monsters131';
+import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261107-monsters131';
+import {engineSection} from './admin-engine.js?v=release-20261107-monsters131';
+import {mechanicsSection} from './admin-mechanics.js?v=release-20261107-monsters131';
+import {bossesSection} from './admin-bosses.js?v=release-20261107-monsters131';
 // Owner game console tabs: Dashboard, Spawn, Placed, NPCs, Monsters, Players and World.
 // Every write goes through world_admin, where the server re-checks owner access.
 const svg=p=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
@@ -129,7 +130,10 @@ export function createConsoleTabs(ctx){
  function Monsters(){actorManager('monster',monsterState,monsterEditor)}
  function actorManager(kind,state,editor){
   const {left,right,focus}=split(true);
-  if(kind==='monster'){const bar=el('div',null,{class:'console-chips'});left.append(bar);for(const [k,l] of [['','All'],['hostile','Aggressive'],['peaceful','Peaceful'],['farm','Livestock']])chip(l,state.filter===k,()=>{state.filter=k;ctx.redraw()},bar)}
+  if(kind==='monster'){const bar=el('div',null,{class:'console-chips'});left.append(bar);for(const [k,l] of [['','All'],['hostile','Aggressive'],['peaceful','Peaceful'],['farm','Livestock']])chip(l,state.filter===k,()=>{state.filter=k;ctx.redraw()},bar)
+   // Rigged models (monster-models.js): a highlighted chip means the species uses its classic model on this device.
+   const models=el('details',null,{class:'console-subcard'});models.append(el('summary','Monster models — tap a species to use its classic model'));const mb=el('div',null,{class:'console-chips'});models.append(mb);left.append(models);
+   const classic=new Set(classicMonsterSpecies());for(const s of Object.keys(MONSTER_MODELS))chip(s.charAt(0).toUpperCase()+s.slice(1)+(classic.has(s)?' · classic':''),classic.has(s),()=>{setClassicMonsterModel(s,!classic.has(s));ctx.redraw()},mb)}
   const search=el('input',null,{type:'search',class:'console-search',placeholder:kind==='npc'?'Search NPC name or role…':'Search creature, species or level…','aria-label':'Search'});search.value=state.query;left.append(search);
   const list=el('div',null,{class:'console-list'});left.append(list);const a=actions(left);btn(kind==='npc'?'Spawn a new NPC':'Spawn monsters',()=>{spawnState.category=kind==='npc'?'NPCs':'Monsters';ctx.show('Spawn')},a);
   const draw=()=>{list.replaceChildren();const p=pos();const all=entityRows(kind).filter(r=>!r.deleted).filter(r=>kind!=='monster'||!state.filter||(state.filter==='hostile'?r.data.hostile:state.filter==='farm'?worldTemplates[r.data.template]?.farm:!r.data.hostile)).filter(r=>matchesQuery([r.data.name,r.data.role,r.data.template,r.data.species,'level '+r.data.level].join(' '),state.query)).sort((a,b)=>Math.hypot(a.data.x-p.x,a.data.z-p.z)-Math.hypot(b.data.x-p.x,b.data.z-p.z));for(const r of all.slice(0,250)){const row=entityRow(r,()=>{state.selected=r.id;draw();right.replaceChildren();editor(r,right);focus()},state.selected===r.id);const la=live?.actors?.find(x=>x.id===r.id);row.querySelector('small').textContent=(kind==='npc'?(r.data.role||'resident'):'Lv '+r.data.level+' '+(r.data.species||r.data.template))+' · '+Math.round(Math.hypot(r.data.x-p.x,r.data.z-p.z))+' m'+(la&&la.hp<=0?' · defeated':'');list.append(row)}if(!all.length)list.append(el('p','None placed yet.',{class:'console-muted'}))};
