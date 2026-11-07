@@ -40,8 +40,10 @@ recreated. What we take is the general approach that games of that era shared.
   depth read clearly.
 - **Simple shadows.** A soft dark disc under each character instead of cast
   shadow maps. Static scenery is shaded only by its own lighting.
-- **No ground clutter.** There are no grass blades or tiny pebbles. Detail
-  comes from objects placed with intent: trees, fences, rocks, crates.
+- **Simple ground detail.** No dense grass fields, but the ground is never
+  bare: chunky low-poly tufts, a few flowers, sticks and pebbles, and paths
+  with a visible pattern (cobbles in towns, warm packed earth in the country)
+  whose edges wander softly into the grass.
 
 ## How Eldervale applies it (`classic-look.js`)
 
@@ -54,11 +56,12 @@ recreated. What we take is the general approach that games of that era shared.
 | Characters | Atlas textures are baked into per-vertex colour regions on the existing bodies. |
 | Signs, water | Their own shader hooks (sign atlas and sway, water ripples) carry over to Lambert. Water uses its cheap tier with no reflection pass. |
 | Round primitives | Spheres, cylinders, cones, rings and similar shapes are rebuilt with fewer segments. Shapes whose vertices were sculpted or transformed after creation keep their own geometry. |
-| Terrain | One smooth vertex colour per 3 m grid point, taken from the heightfield's own biome colour. Broad lush/dry patches, a small per-point light variation and darker steep slopes are added. The colour is re-baked when the game rebuilds the heightfield. |
+| Terrain | One smooth vertex colour per 3 m grid point, taken from the heightfield's own biome colour, in rich earthy olive greens. Broad lush/dry patches, a small per-point light variation, gently darker slopes and rock on steep ones are added. The colour is re-baked when the game rebuilds the heightfield. The shared ground shader (`ground-paths.js`, `GROUND_CLASSIC`) adds soft painterly light/dark and olive/yellow patches over tens of metres. |
+| Paths | Splatted into the same terrain shader from a world path mask: big flat-coloured cobbles with dark grout in the castle, the capital and towns, warm brown dirt with lighter worn patches and pebbles in the country. Edges are broken up by noise, the route meanders gently, stones drop out one by one at the rim. |
 | Light | The game's sun plus a warm ambient fill that dims and cools at night. No shadow maps. |
 | Shadows | Soft blob shadows under every character, drawn as one instanced mesh. |
-| Sky / weather | The normal sky dome, fog colour and weather are left to the normal renderer. Fog starts closer. |
-| Grass | The instanced grass field is hidden. |
+| Sky / weather | The normal sky dome, fog colour and weather are left to the normal renderer. Fog starts a little closer (42 % of the view distance instead of 45 %), never washing the near ground out. |
+| Grass | The instanced grass field is hidden. Low-poly tufts, flowers, twigs and pebbles (`ground-clutter.js`, one shared program, density by graphics preset) take its place. Tree canopies are toned deeper green. |
 
 Classic is cheaper than normal mode: no shadow pass, no grass field, no PBR
 or environment lighting, a cheaper water tier and fewer triangles on round

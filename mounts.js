@@ -1,7 +1,7 @@
-import {meshItemIcon} from './item-appearance.js?v=release-20261107-move157';
-import {castle} from './castle-layout.js?v=release-20261107-move157';
-import {isBuilding,localPoint} from './world-surfaces.js?v=release-20261107-move157';
-import {MOUNT_SPEED,travelSpeed} from './click-walk.js?v=release-20261107-move157';
+import {meshItemIcon} from './item-appearance.js?v=release-20261107-ground158';
+import {castle} from './castle-layout.js?v=release-20261107-ground158';
+import {isBuilding,localPoint} from './world-surfaces.js?v=release-20261107-ground158';
+import {MOUNT_SPEED,travelSpeed} from './click-walk.js?v=release-20261107-ground158';
 export const mountIcon=meshItemIcon('mount:armoredWhiteHorse');
 export const mountCatalog={armoredWhiteHorse:{name:'Armored white horse',icon:mountIcon,multiplier:1.85,description:'Gallop at nearly twice running speed without using run energy. Automatically dismounts in buildings, castles, combat and while gathering.'}};
 export {MOUNT_SPEED};
