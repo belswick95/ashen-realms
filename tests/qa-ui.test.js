@@ -17,7 +17,7 @@ test('sign-in and sign-up errors read as plain sentences, not raw API codes',()=
 
 test('medieval theme restyles the generic-UI leftovers inside panels (Arial text, green boxes)',()=>{
  const css=read('medieval-theme.css'),tail=css.slice(css.lastIndexOf('QA pass (portrait145)'));
- assert.ok(tail.includes(':is(#side,#social-panel,#contextmenu,#dialog,dialog,.map-card) :not(svg,svg *){font-family:var(--mv-body)!important}'));
+ assert.ok(tail.includes(':is(#side,#social-panel,#contextmenu,#dialog,dialog,.map-card,#trade-request) :not(svg,svg *){font-family:var(--mv-body)!important}'));
  for(const sel of ['.equipment-stats{','.equipment-stats-group{','.player-combat-level{','#settings-tab label{'])assert.ok(tail.includes(sel),sel+' restyled');
  // Display headings keep Cinzel after the blanket body-face rule.
  assert.ok(tail.indexOf('.settings-nav button')>tail.indexOf(':not(svg,svg *)'));
