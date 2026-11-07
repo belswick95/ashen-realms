@@ -1,8 +1,8 @@
-import {itemModelKind as kindForItem,itemColor} from './item-appearance.js?v=release-20261107-console154';
-import {armorItem,horseItem} from './equipment-items.js?v=release-20261107-console154';
-import {goods} from './economy.js?v=release-20261107-console154';
-import {makeWeapon} from './weapons.js?v=release-20261107-console154';
-import {makeShield} from './shields.js?v=release-20261107-console154';
+import {itemModelKind as kindForItem,itemColor} from './item-appearance.js?v=release-20261107-walls155';
+import {armorItem,horseItem} from './equipment-items.js?v=release-20261107-walls155';
+import {goods} from './economy.js?v=release-20261107-walls155';
+import {makeWeapon} from './weapons.js?v=release-20261107-walls155';
+import {makeShield} from './shields.js?v=release-20261107-walls155';
 export function itemModelKind(id){return kindForItem(id,goods[id]||{})}
 export function makeItemModel(T,id){const d=goods[id]||{},kind=itemModelKind(id),root=new T.Group();root.userData.itemModel=kind;const material=(color,metalness=0)=>new T.MeshStandardMaterial({color,metalness,roughness:metalness?.45:.82}),wood=material(0x8c6945),metal=material(d.color||0xa8b7bd,.6),body=material(d.color||0xc8a775),add=(geo,mat,x=0,y=0,z=0)=>{const m=new T.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;root.add(m);return m},box=(w,h,l,x,y,z,mat=body)=>add(new T.BoxGeometry(w,h,l),mat,x,y,z),sphere=(r,x,y,z,mat=body)=>add(new T.SphereGeometry(r,12,8),mat,x,y,z),cyl=(r,h,x,y,z,mat=wood)=>add(new T.CylinderGeometry(r,r,h,12),mat,x,y,z);
  if(kind==='note'){box(.5,.025,.60,0,.03,0,new T.MeshStandardMaterial({color:0xe5d7a4,roughness:.95}));const emblem=makeItemModel(T,d.noteOf);emblem.scale.set(.55,.10,.55);emblem.position.y=.06;root.add(emblem);if(emblem.userData.ready)root.userData.ready=emblem.userData.ready.then(()=>root);}
