@@ -1,0 +1,218 @@
+{
+ "shots": [
+  "overhead-markers-lineup.png",
+  "overhead-markers-close-left.png",
+  "overhead-markers-close-right.png",
+  "minimap-quest-icons.png",
+  "minimap-quest-icons-zoomed.png",
+  "world-map-quest-chains.png",
+  "world-map-quest-tooltip.png",
+  "castle-gate-guards-before.png",
+  "birchford-ember-gate-before.png",
+  "birchford-north-gate-before.png",
+  "castle-gate-guards-after.png",
+  "birchford-ember-gate-after.png",
+  "birchford-north-gate-after.png"
+ ],
+ "errors": [],
+ "heads": [
+  {
+   "name": "Mira the Gardener",
+   "look": "plain",
+   "kind": "!",
+   "headTop": 1.54,
+   "foot": 1.86,
+   "clearance": 0.32
+  },
+  {
+   "name": "Perrin the Porter",
+   "look": "scale 1.35",
+   "kind": "!",
+   "headTop": 3.83,
+   "foot": 4.24,
+   "clearance": 0.42
+  },
+  {
+   "name": "Hale the Groundskeeper",
+   "look": "scale 0.8",
+   "kind": "?",
+   "headTop": 2.16,
+   "foot": 2.42,
+   "clearance": 0.26
+  },
+  {
+   "name": "Elsa the Quartermaster",
+   "look": "seated",
+   "kind": "!",
+   "headTop": 3.77,
+   "foot": 4.08,
+   "clearance": 0.31
+  },
+  {
+   "name": "Bren the Provisioner",
+   "look": "helm",
+   "kind": "!",
+   "headTop": 2.83,
+   "foot": 3.14,
+   "clearance": 0.31
+  },
+  {
+   "name": "Cook Rowan",
+   "look": "knightHornedHelm2",
+   "kind": "!",
+   "headTop": 2.83,
+   "foot": 3.14,
+   "clearance": 0.31
+  },
+  {
+   "name": "Master Smith Torren",
+   "look": "rangerHood1",
+   "kind": "!",
+   "headTop": 2.84,
+   "foot": 3.15,
+   "clearance": 0.31
+  }
+ ],
+ "chain": {
+  "givers": [
+   {
+    "id": "a3c0a000-0001-4000-8000-000000000001",
+    "x": -214.4,
+    "z": 136,
+    "giverName": "Odo Penwhistle",
+    "quests": [
+     "Wax and Whispers"
+    ],
+    "started": false
+   },
+   {
+    "id": "a3c0a000-0002-4000-8000-000000000001",
+    "x": 214,
+    "z": -236,
+    "giverName": "Marshal Ingrid Vossberg",
+    "quests": [
+     "Ashes on the Wardfires"
+    ],
+    "started": false
+   },
+   {
+    "id": "a3c0a000-0003-4000-8000-000000000001",
+    "x": 262,
+    "z": 198,
+    "giverName": "Forgemistress Oriel Kade",
+    "quests": [
+     "Sparks in the Ashpit"
+    ],
+    "started": false
+   },
+   {
+    "id": "a3c0a000-0004-4000-8000-000000000001",
+    "x": 306,
+    "z": 340,
+    "giverName": "Harbourmaster Corwen Tidewell",
+    "quests": [
+     "Bells Beneath the Tide"
+    ],
+    "started": true
+   }
+  ],
+  "items": [
+   {
+    "id": "quest:-214:136",
+    "name": "Wax and Whispers",
+    "giver": "Odo Penwhistle",
+    "x": -214,
+    "z": 136
+   },
+   {
+    "id": "quest:214:-236",
+    "name": "Ashes on the Wardfires",
+    "giver": "Marshal Ingrid Vossberg",
+    "x": 214,
+    "z": -236
+   },
+   {
+    "id": "quest:262:198",
+    "name": "Sparks in the Ashpit",
+    "giver": "Forgemistress Oriel Kade",
+    "x": 262,
+    "z": 198
+   }
+  ],
+  "base": 4
+ },
+ "worldMapQuestMarkers": [
+  {
+   "label": "Quest: Wax and Whispers · ask Odo Penwhistle",
+   "cat": "quest",
+   "x": 402.9501714285715,
+   "y": 454.86742857142855
+  },
+  {
+   "label": "Quest: Ashes on the Wardfires · ask Marshal Ingrid Vossberg",
+   "cat": "quest",
+   "x": 742.7325714285714,
+   "y": 159.81828571428574
+  },
+  {
+   "label": "Quest: Sparks in the Ashpit · ask Forgemistress Oriel Kade",
+   "cat": "quest",
+   "x": 780.8034285714285,
+   "y": 504.0422857142857
+  }
+ ],
+ "tooltip": null,
+ "tooltipLabel": "Quest: Wax and Whispers · ask Odo Penwhistle",
+ "guards_before": [
+  {
+   "name": "White Knight gatekeeper",
+   "x": -345,
+   "z": -240,
+   "yawDeg": 0
+  },
+  {
+   "name": "White Knight gatekeeper",
+   "x": -335,
+   "z": -240,
+   "yawDeg": 0
+  }
+ ],
+ "guards_after": [
+  {
+   "name": "Birchford Gate Warden",
+   "x": -172,
+   "z": 138.1,
+   "yawDeg": 90
+  },
+  {
+   "name": "Birchford Gate Warden",
+   "x": -172,
+   "z": 131.7,
+   "yawDeg": 90
+  },
+  {
+   "name": "Birchford Gate Warden",
+   "x": -198.8,
+   "z": 90.9,
+   "yawDeg": 135
+  },
+  {
+   "name": "Birchford Gate Warden",
+   "x": -241.6,
+   "z": 84,
+   "yawDeg": 180
+  },
+  {
+   "name": "Birchford Gate Warden",
+   "x": -248,
+   "z": 84,
+   "yawDeg": 180
+  },
+  {
+   "name": "Birchford Gate Warden",
+   "x": -264,
+   "z": 159.2,
+   "yawDeg": -90
+  }
+ ]
+}

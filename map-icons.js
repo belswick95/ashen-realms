@@ -42,10 +42,13 @@ export const MARKER_CATS={
  boat:{label:'Boat',plural:'Boats',group:'travel',prio:64,color:'#2f5f8a',zoom:1},
  teleport:{label:'Teleport',plural:'Teleports',group:'travel',prio:63,color:'#7a3fb0',zoom:1},
  exploration:{label:'Exploration',plural:'Places',group:'places',prio:30,color:'#8a6f2f',zoom:1},
+ // Quest givers who start a quest chain or a big quest (quest-guide.js chainStarts); hidden once
+ // this player has started that chain. The minimap draws every giver with this badge ('!' / '?').
+ quest:{label:'Quest chain start',plural:'Quest chains',group:'places',prio:88,color:'#24418f',zoom:1},
  custom:{label:'Marker',plural:'Markers',group:'places',prio:99,color:'#c0392b',zoom:1}
 };
 // Markers within this many world units (single linkage) of another of the same kind join it.
-export const LINK={mining:16,woodcutting:16,fishing:14,farming:10,cooking:5,furnace:5,smithing:5,crafting:6,skill:6,general:8,apothecary:6,weapons:6,armour:6,inn:6,bank:6,altar:6,agility:3,boat:4,teleport:4,dungeon:3,boss:4,dragon:12,training:0,exploration:0,custom:0};
+export const LINK={mining:16,woodcutting:16,fishing:14,farming:10,cooking:5,furnace:5,smithing:5,crafting:6,skill:6,general:8,apothecary:6,weapons:6,armour:6,inn:6,bank:6,altar:6,agility:3,boat:4,teleport:4,dungeon:3,boss:4,dragon:12,training:0,exploration:0,quest:0,custom:0};
 
 // ---------------------------------------------------------------------------- tier tables
 // Ores in tier order (rank) with the Mining level from the recipes and the Eldervale metal names
@@ -133,8 +136,9 @@ const RANK_BOSS=new Set(['Boss','Legendary']);
 //  dungeon badges that dungeon's marker instead); roster: rosterBeasts; spawns: monsterSpawns
 //  (training areas and dragon nests by spawn group; the roster bosses live in their lairs);
 //  shortcuts: agility shortcut entities; fishing: extra fishing spots; places: explore PLACES
-//  (only ferry boats are always shown; hidden places stay hidden until discovered).
-export function collectMarkers({rows=[],buildings=[],areas=[],bosses=[],lairs=[],roster={},spawns=[],shortcuts=[],fishing=[],places=[]}={}){
+//  (only ferry boats are always shown; hidden places stay hidden until discovered); quests: givers
+//  who start a quest chain or a big quest ({x,z,name,quests:[names],giverName,started}).
+export function collectMarkers({rows=[],buildings=[],areas=[],bosses=[],lairs=[],roster={},spawns=[],shortcuts=[],fishing=[],places=[],quests=[]}={}){
  const out=[],push=m=>{if(onMap(m))out.push(m);return m};
  for(const d of rows){const m=classifyEntity(d);if(m&&d.kind==='npc')m.npc=true;push(m)}
  for(const b of buildings)push(classifyBuilding(b));
@@ -158,6 +162,9 @@ export function collectMarkers({rows=[],buildings=[],areas=[],bosses=[],lairs=[]
  for(const g of groups.values()){const mobs=[...g.mobs.entries()].sort((a,b)=>b[1]-a[1]).map(([n])=>n);push({x:g.xs/g.n,z:g.zs/g.n,cat:g.kind,skill:'combat',min:g.min,max:g.max,name:g.name,names:[g.name],mobs})}
  // Boats: public ferry entrances (exploration regions reached by boat).
  for(const p of places){const e=p.entrance;if(e&&(e.model==='ferry_boat'||e.model==='boat'))push({x:e.x,z:e.z,cat:'boat',name:e.name||'Boat to '+p.name})}
+ // Quest chain starts: one marker per giver, named after the (first) quest they start.
+ for(const q of quests){const x=Number(q?.x),z=Number(q?.z),list=(q?.quests||[]).filter(Boolean);if(!Number.isFinite(x)||!Number.isFinite(z)||!list.length)continue;
+  push({x,z,cat:'quest',name:list[0],quests:list,giverName:q.giverName||null,started:!!q.started})}
  return out;
 }
 
@@ -181,7 +188,7 @@ function merge(items){
   if(m.min!=null)c.min=c.min==null?m.min:Math.min(c.min,m.min);if(m.max!=null)c.max=c.max==null?m.max:Math.max(c.max,m.max);
   if((m.tierRank??-1)>c.tierRank){c.tierRank=m.tierRank;c.tierColor=m.tierColor}for(const t of m.tierNames||[])if(!tiers.some(x=>x.n===t))tiers.push({n:t,rank:m.tierNames.length===1?m.tierRank:(m.tierRanks?.[t]??0)});
   if(m.badge)c.badge=m.badge;for(const b of m.bosses||[])if(!c.bosses.some(x=>x.name===b.name))c.bosses.push(b);for(const mob of m.mobs||[])if(!c.mobs.includes(mob))c.mobs.push(mob);
-  if(m.id)c.ids.push(m.id);if(m.areaName&&!c.areaName)c.areaName=m.areaName;if(m.entrance&&!c.entrance)c.entrance=m.entrance;if(m.requires&&!c.requires)c.requires=m.requires;if(m.note&&!c.note)c.note=m.note;if(m.dragon)c.dragon=true;if(m.fixedName&&items.length===1)c.fixedName=m.fixedName}
+  if(m.id)c.ids.push(m.id);if(m.areaName&&!c.areaName)c.areaName=m.areaName;if(m.entrance&&!c.entrance)c.entrance=m.entrance;if(m.requires&&!c.requires)c.requires=m.requires;if(m.note&&!c.note)c.note=m.note;if(m.dragon)c.dragon=true;if(m.started)c.started=true;if(m.giverName&&!c.giverName)c.giverName=m.giverName;for(const q of m.quests||[])if(!(c.quests||=[]).includes(q))c.quests.push(q);if(m.fixedName&&items.length===1)c.fixedName=m.fixedName}
  // A building's or object's name beats the NPC who works there ("Birchford West Bank", not its banker).
  const placeNames=items.some(m=>m.npc)?[...new Set(items.filter(m=>!m.npc).flatMap(m=>m.names||[m.name]).filter(Boolean))]:null;if(placeNames?.length)c.names=placeNames;
  c.x/=c.count;c.z/=c.count;tiers.sort(tierOrder);c.tierNames=tiers.map(t=>t.n);c.tierRanks=Object.fromEntries(tiers.map(t=>[t.n,t.rank]));
@@ -219,6 +226,7 @@ const range=(a,b)=>a==null?'':(b==null||a===b?String(a):a+'–'+b);
 // The requirement / level text: "Woodcutting 60", "Mining 1–85", "boss, combat 120", "combat 28–32".
 export function requirementText(c){
  if(c.cat==='boss')return c.min!=null?'boss, combat '+range(c.min,c.max):'boss';
+ if(c.cat==='quest')return '';
  if(c.min==null)return '';
  if(c.skill==='combat')return 'combat '+range(c.min,c.max);
  if(c.skill)return c.skill+' '+range(c.min,c.max);
@@ -230,6 +238,7 @@ export function markerLabel(c){
  const needs=r=>(r?.combat?' · needs combat '+r.combat:'')+(r?.agility?' · needs Agility '+r.agility:'')+(r?.unlock&&r.gate!==false?' · opened by a quest':'');
  if(c.cat==='dungeon'){if(c.areaName&&c.areaName!==c.name)s=c.name+' · '+c.areaName+(req?' ('+req+')':'');if(c.bosses?.length)s+=' · Boss inside: '+c.bosses.map(b=>b.name+' (combat '+b.level+')').join(', ');s+=needs(c.requires)}
  else if(c.cat==='boss'&&c.entrance){const full=c.bosses?.[0]?.name||'';s+=(full&&!s.startsWith(full.replace(/^The /,''))?' · '+full:'')+(c.dragon?' · dragon':'')+' · '+c.entrance+needs(c.requires)}
+ else if(c.cat==='quest'){const qs=(c.quests||[]).filter(q=>q!==c.name);s='Quest: '+c.name+(qs.length?' · '+qs.slice(0,3).join(', '):'')+(c.giverName?' · ask '+c.giverName:'')}
  else if(c.cat==='training'||c.cat==='dragon'){if(c.mobs?.length)s+=' · '+c.mobs.slice(0,3).join(', ')+(c.mobs.length>3?' …':'')}
  else if(c.count>1&&c.names?.length>1&&!['mining','woodcutting','fishing'].includes(c.cat))s+=' · '+c.names.slice(0,4).join(', ')+(c.names.length>4?' …':'');
  if(c.note&&!s.includes(c.note))s+=' · '+c.note;
@@ -282,27 +291,30 @@ const GLYPHS={
  boat(g,ink){shape(g,()=>{g.beginPath();g.moveTo(-8.4,2.4);g.lineTo(8.4,2.4);g.lineTo(5.4,7);g.lineTo(-5.4,7);g.closePath()},'#9a6a3a');line(g,[[0,2.4],[0,-8.4]],ink,1.3);shape(g,()=>{g.beginPath();g.moveTo(.8,-7.8);g.lineTo(7,.8);g.lineTo(.8,.8);g.closePath()},ink,.9);shape(g,()=>{g.beginPath();g.moveTo(-.8,-6);g.lineTo(-5.6,.8);g.lineTo(-.8,.8);g.closePath()},ink,.9)},
  teleport(g,ink){for(const [r,c] of [[7.4,'#d7b8ff'],[5,'#a77bff'],[2.6,'#fff6dc']]){shape(g,()=>{g.beginPath();g.ellipse(0,0,r*.7,r,0,0,Math.PI*2)},c,.8)}},
  exploration(g,ink){shape(g,()=>{g.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?3.2:8;g.lineTo(Math.cos(a)*r,Math.sin(a)*r)}g.closePath()},'#ffe07a')},
+ // A gold exclamation (quest to start) or question mark (hand in), like the one over the giver's head.
+ quest(g,ink,mark='!'){g.font='900 23px Georgia,"Times New Roman",serif';g.textAlign='center';g.textBaseline='middle';g.lineJoin='round';const y=mark==='?'?1.4:1.2;
+  g.strokeStyle=DARK;g.lineWidth=4.6;g.strokeText(mark,0,y);const grad=g.createLinearGradient?.(0,-8,0,8);if(grad){grad.addColorStop(0,'#fff3a6');grad.addColorStop(.5,'#ffd23a');grad.addColorStop(1,'#e09a12')}g.fillStyle=grad||'#ffd23a';g.fillText(mark,0,y)},
  custom(g,ink){line(g,[[-3,8],[-3,-8]],ink,1.4);shape(g,()=>{g.beginPath();g.moveTo(-3,-8);g.lineTo(7,-5);g.lineTo(-3,-1.6);g.closePath()},'#ffd23a',.9)}
 };
 export const GLYPH_KINDS=Object.keys(GLYPHS);
-// Draws one marker icon centred at (x,y), `size` px across. opts: {tint, badge:'boss'}.
-export function drawMarkerIcon(ctx,cat,x,y,size=18,{tint=null,badge=null}={}){
+// Draws one marker icon centred at (x,y), `size` px across. opts: {tint, badge:'boss', mark:'!'|'?' (quest)}.
+export function drawMarkerIcon(ctx,cat,x,y,size=18,{tint=null,badge=null,mark=null}={}){
  const def=MARKER_CATS[cat];if(!def||!GLYPHS[cat])return;const k=size/24,plate=tint||def.color;ctx.save();ctx.translate(x,y);ctx.scale(k,k);ctx.lineCap='round';ctx.lineJoin='round';
  ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.arc(1,1.6,11.4,0,Math.PI*2);ctx.fill();
  ctx.fillStyle=plate;ctx.strokeStyle=DARK;ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke();
  ctx.strokeStyle='rgba(255,255,255,.32)';ctx.lineWidth=1.1;ctx.beginPath();ctx.arc(0,0,9.2,Math.PI*1.1,Math.PI*1.9);ctx.stroke();
- GLYPHS[cat](ctx,inkFor(plate));
+ GLYPHS[cat](ctx,inkFor(plate),...(mark?[mark]:[]));
  if(badge==='boss'){ctx.save();ctx.translate(8.4,-8.4);ctx.scale(.42,.42);ctx.fillStyle='#9e1b1b';ctx.strokeStyle=DARK;ctx.lineWidth=2.4;ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();ctx.stroke();GLYPHS.boss(ctx,'#fff');ctx.restore()}
  ctx.restore();
 }
 // Pre-rendered sprites (one per kind / tint / size / badge / pixel ratio) so a redraw is one drawImage per icon.
 const sprites=new Map();
-export function markerSprite(cat,size,{tint=null,badge=null,dpr=1,doc=globalThis.document}={}){
- const key=cat+'|'+size+'|'+(tint||'')+'|'+(badge||'')+'|'+dpr;let s=sprites.get(key);if(s)return s;if(!doc?.createElement)return null;
- const px=Math.ceil((size+6)*dpr);s=doc.createElement('canvas');s.width=s.height=px;const g=s.getContext('2d');if(!g)return null;g.scale(dpr,dpr);drawMarkerIcon(g,cat,(size+6)/2,(size+6)/2,size,{tint,badge});
+export function markerSprite(cat,size,{tint=null,badge=null,mark=null,dpr=1,doc=globalThis.document}={}){
+ const key=cat+'|'+size+'|'+(tint||'')+'|'+(badge||'')+'|'+(mark||'')+'|'+dpr;let s=sprites.get(key);if(s)return s;if(!doc?.createElement)return null;
+ const px=Math.ceil((size+6)*dpr);s=doc.createElement('canvas');s.width=s.height=px;const g=s.getContext('2d');if(!g)return null;g.scale(dpr,dpr);drawMarkerIcon(g,cat,(size+6)/2,(size+6)/2,size,{tint,badge,mark});
  if(sprites.size>400)sprites.clear();sprites.set(key,s);return s;
 }
 // Draws a marker (cluster) through the sprite cache, falling back to direct drawing.
-export function drawMarker(ctx,c,x,y,size,dpr=1){const opts={tint:c.tierColor||null,badge:c.badge||null,dpr},s=markerSprite(c.cat,size,opts);if(s){const d=size+6;ctx.drawImage(s,x-d/2,y-d/2,d,d)}else drawMarkerIcon(ctx,c.cat,x,y,size,opts)}
+export function drawMarker(ctx,c,x,y,size,dpr=1){const opts={tint:c.tierColor||null,badge:c.badge||null,mark:c.mark||null,dpr},s=markerSprite(c.cat,size,opts);if(s){const d=size+6;ctx.drawImage(s,x-d/2,y-d/2,d,d)}else drawMarkerIcon(ctx,c.cat,x,y,size,opts)}
 // The tint a legend row shows for a kind (best tier present, if any).
 export const legendTint=(cat,clusters)=>{let best=null;for(const c of clusters)if(c.cat===cat&&c.tierColor&&(!best||c.tierRank>best.tierRank))best=c;return best?.tierColor||null};

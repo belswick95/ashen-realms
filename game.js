@@ -84,7 +84,7 @@ import {mapPoint,worldToMinimap,minimapRotation,cameraHeading,compassRotation,ne
 import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261107-music156';
 import {heldOpen,heldOpenExamine} from './business-doors.js?v=release-20261107-music156';
 import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus,actorsFirst,withWalkHere,followGoal,TILE,GAME_TICK,REDIRECT_PAUSE_MS,trimPassedWaypoints} from './click-walk.js?v=release-20261107-music156';
-import {townResidents,animateTownActivity,createWorkKit,carriesWeapon,workFacing,spreadStanding} from './town-life.js?v=release-20261107-music156';
+import {townResidents,animateTownActivity,createWorkKit,carriesWeapon,workFacing,spreadStanding,postedYaw} from './town-life.js?v=release-20261107-music156';
 import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-music156';
 import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261107-music156';
 import {createPlayerHUD,portraitLook} from './player-hud.js?v=release-20261107-music156';
@@ -1062,12 +1062,12 @@ sizeMinimap();addEventListener('resize',sizeMinimap);
 function refreshMinimapCache(){sizeMinimap();minimapCacheCtx.setTransform(minimapRes,0,0,minimapRes,0,0);drawMap(minimapCacheCtx,minimapCache,false,{w:minimapCacheSpan,h:minimapCacheSpan,extent:minimapExtent*minimapCacheSpan/MINIMAP_SIZE});minimapCached.x=player.position.x;minimapCached.z=player.position.z;minimapCached.extent=minimapExtent;minimapCached.ready=true;minimapStamp++;refreshMinimapMarkers()}
 // Map markers near the player (map-icons.js), refreshed with the cache; drawn upright by composeMinimap.
 let minimapMarkers=[],minimapMarkerKey='';
-function refreshMinimapMarkers(){let list=[];try{list=mapMarkers.near(player.position.x,player.position.z,minimapExtent*.75,new Set(worldMap.hiddenKinds))}catch{/* before the map is set up */}const key=list.map(c=>c.id).join('|');if(key!==minimapMarkerKey){minimapMarkerKey=key;minimapMarkers=list;minimapDrawn.stamp=-1}}
+function refreshMinimapMarkers(){let list=[];try{list=mapMarkers.near(player.position.x,player.position.z,minimapExtent*.75,new Set([...worldMap.hiddenKinds,'quest']))}catch{/* before the map is set up */}const key=list.map(c=>c.id).join('|');if(key!==minimapMarkerKey){minimapMarkerKey=key;minimapMarkers=list;minimapDrawn.stamp=-1}}
 function composeMinimap(force=false){
  const px=player.position.x,pz=player.position.z,ppu=MINIMAP_SIZE/minimapExtent;
  if(!minimapCached.ready||minimapCached.extent!==minimapExtent||Math.hypot(minimapCached.x-px,minimapCached.z-pz)*ppu>MINIMAP_PAD*.8)refreshMinimapCache();
- if(!force&&minimapDrawn.stamp===minimapStamp&&minimapDrawn.yaw===yaw&&minimapDrawn.x===px&&minimapDrawn.z===pz)return;
- minimapDrawn.stamp=minimapStamp;minimapDrawn.yaw=yaw;minimapDrawn.x=px;minimapDrawn.z=pz;
+ const questStamp=questUiRef?.markers.stamp??-1;if(!force&&minimapDrawn.stamp===minimapStamp&&minimapDrawn.quests===questStamp&&minimapDrawn.yaw===yaw&&minimapDrawn.x===px&&minimapDrawn.z===pz)return;
+ minimapDrawn.stamp=minimapStamp;minimapDrawn.quests=questStamp;minimapDrawn.yaw=yaw;minimapDrawn.x=px;minimapDrawn.z=pz;
  const ctx=mapCtx,S=MINIMAP_SIZE,c=S/2;
  ctx.setTransform(minimapRes,0,0,minimapRes,0,0);ctx.clearRect(0,0,S,S);ctx.save();ctx.beginPath();ctx.arc(c,c,c,0,Math.PI*2);ctx.clip();
  ctx.fillStyle='#415d39';ctx.fillRect(0,0,S,S);
@@ -1079,7 +1079,8 @@ function composeMinimap(force=false){
  if(minimapMarkers.length){const placed=[],size=15;for(const m of minimapMarkers){const p=worldToMinimap(m.x,m.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(Math.hypot(p.x-c,p.y-c)>c-6||placed.some(q=>Math.abs(q.x-p.x)<size-2&&Math.abs(q.y-p.y)<size-2))continue;placed.push({x:p.x,y:p.y});drawMarker(ctx,m,p.x,p.y,size,minimapRes)}}
  ctx.textAlign='left';
  questUiRef?.trail.drawMinimap(ctx,(x,z)=>worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch),c,c);
- questUiRef?.markers.drawMinimap(ctx,(x,z)=>{const p=worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch);return p.x>5&&p.x<S-5&&p.y>5&&p.y<S-5&&Math.hypot(p.x-c,p.y-c)<c-5?p:null});
+ // Quest givers ('!' to start, '?' to hand in; the world map's chain-start markers are skipped above).
+ questUiRef?.markers.drawMinimap(ctx,(x,z)=>{const p=worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch);return p.x>7&&p.x<S-7&&p.y>7&&p.y<S-7&&Math.hypot(p.x-c,p.y-c)<c-7?p:null},{size:13,dpr:minimapRes});
  const pile=deathFlow.pile();if(pile){const p=worldToMinimap(pile.x,pile.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(p.x>6&&p.x<S-6&&p.y>6&&p.y<S-6)drawSkullIcon(ctx,p.x,p.y,13)}
  const flagAt=walkFlagState||mapDestination;if(flagAt){const p=worldToMinimap(flagAt.x,flagAt.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(p.x>3&&p.x<S-3&&p.y>3&&p.y<S-3)drawMapFlag(ctx,p.x,p.y)}
  ctx.fillStyle='#ffffff';ctx.strokeStyle='#15251d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c,c,3.2,0,Math.PI*2);ctx.fill();ctx.stroke();
@@ -1103,7 +1104,7 @@ const worldMapRegions=()=>generatedWorld?regionAnchors(regionDefinitions,(x,z)=>
 const worldMapRows=()=>{try{return [...persistentRows.values()].filter(r=>!r.deleted&&r.data)}catch{return []}};
 // Map markers (map-markers.js / map-icons.js): mines, trees, fishing, stations, shops, caves, lairs,
 // dragons, training areas, shortcuts, boats — shared by the world map, the minimap and the console.
-const mapMarkers=createMapMarkers({rows:()=>worldMapRows().filter(r=>!(r.data.floor>0)).map(r=>r.data),buildings:()=>houseInteriors.map(h=>({type:h.type,name:h.name,x:h.group.position.x,z:h.group.position.z})),config:()=>window.eldervaleGameConfig?.mapMarkers});
+const mapMarkers=createMapMarkers({quests:()=>questUiRef?.markers.chainGivers()||[],rows:()=>worldMapRows().filter(r=>!(r.data.floor>0)).map(r=>r.data),buildings:()=>houseInteriors.map(h=>({type:h.type,name:h.name,x:h.group.position.x,z:h.group.position.z})),config:()=>window.eldervaleGameConfig?.mapMarkers});
 window.eldervaleMapMarkers=mapMarkers;
 const worldMap=createWorldMap({canvas:largeMap,source:{extent:840,phone:matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<700,
  heightAt:(x,z)=>landscape.heightAt(x,z),waterAt:(x,z)=>landscape.waterAt(x,z),biome:generatedWorld?(x,z)=>biomeWeights(x,z,generatedWorld.seed):null,regions:worldMapRegions,
@@ -1112,7 +1113,7 @@ const worldMap=createWorldMap({canvas:largeMap,source:{extent:840,phone:matchMed
  buildings:()=>houseInteriors.map(h=>({x:h.group.position.x,z:h.group.position.z,halfW:2*h.group.scale.x,halfD:1.85*h.group.scale.z,rot:h.group.rotation.y,roof:'#'+Number(h.roofColor||0x8a4b33).toString(16).padStart(6,'0'),type:h.type,name:h.name})),
  places:()=>places.map(([name,x,z])=>({name,x,z,kind:name.includes('Castle')?'castle':'town',...(isCapitalTown({x,z})&&name===capital.name?{capital:true,title:capital.title}:{})})),walls:()=>capitalActive()?[capitalMapWalls()]:[],
  pois:()=>explore.mapPois(),markers:()=>mapMarkers.items(),
- quests:()=>questUiRef?.markers.givers?.()||[],objective:()=>{const t=questUiRef?.trail?.target;return t?{x:t.x,z:t.z,label:questUiRef.tracker?.step?.label||''}:null},
+ objective:()=>{const t=questUiRef?.trail?.target;return t?{x:t.x,z:t.z,label:questUiRef.tracker?.step?.label||''}:null},
  player:()=>({x:player.position.x,z:player.position.z,heading:player.rotation.y}),flag:()=>walkFlagState||mapDestination,deathPile:()=>deathFlow.pile(),
  signature:()=>forestTrees.length+':'+townStreets.length+':'+worldMapRows().filter(r=>r.data.template==='plaza').length}});
 function setMapOpen(next){mapOpen=next;mapPanel.hidden=!mapOpen;if(mapOpen)worldMap.open();else worldMap.close()}
@@ -1808,7 +1809,7 @@ function spreadTownsfolk(dt){spreadPeople.length=0;const P=player.position;
  for(const other of remotePlayers.values()){const e=other.spreadEntry||={key:'p',spread:null,moving:false};e.x=other.root.position.x;e.z=other.root.position.z;e.radius=other.mounted?1.6:0;spreadPeople.push(e)}
  const me=spreadOwn;me.x=P.x;me.z=P.z;me.radius=mounted?1.6:0;spreadPeople.push(me);spreadStanding(spreadPeople,dt)}
 const spreadOwn={key:'me',spread:null,moving:false};
-function interpolateRealm(actor,dt){if(actor.motion){const sample=actor.motion.sample();if(sample){const moved=Math.abs(sample.x-actor.root.position.x)+Math.abs(sample.z-actor.root.position.z)>.001;actor.root.position.x=sample.x;actor.root.position.z=sample.z;actor.root.rotation.y=workFacing(actor.rig,sample.yaw,moved,dt);actor.motionRun=sample.run===true;return sample.snapped===true}return false}if(!actor.serverPose)return;const target=new T.Vector3(actor.serverPose.x,actor.root.position.y,actor.serverPose.z);if(actor.root.position.distanceToSquared(target)>100)actor.root.position.copy(target);else actor.root.position.lerp(target,1-Math.exp(-14*dt));actor.root.rotation.y=actor.serverPose.yaw;}
+function interpolateRealm(actor,dt){if(actor.motion){const sample=actor.motion.sample();if(sample){const moved=Math.abs(sample.x-actor.root.position.x)+Math.abs(sample.z-actor.root.position.z)>.001;actor.root.position.x=sample.x;actor.root.position.z=sample.z;actor.root.rotation.y=workFacing(actor.rig,postedYaw(actor.profile,sample.yaw,moved),moved,dt);actor.motionRun=sample.run===true;return sample.snapped===true}return false}if(!actor.serverPose)return;const target=new T.Vector3(actor.serverPose.x,actor.root.position.y,actor.serverPose.z);if(actor.root.position.distanceToSquared(target)>100)actor.root.position.copy(target);else actor.root.position.lerp(target,1-Math.exp(-14*dt));actor.root.rotation.y=postedYaw(actor.profile,actor.serverPose.yaw);}
 const realmActorCache=new Map(),realmObjectState=new Map(),realmObjectTargets=new Map(),realmMerchant={root:merchant,profile:{level:5,hp:45,maxHp:45}};
 const baseRealmId=(kind,x,z)=>'base:'+kind+':'+Number(x).toFixed(1)+':'+Number(z).toFixed(1);
 creatures.forEach((m,i)=>m.realmId='base:creature:'+i);
@@ -1816,11 +1817,13 @@ houseInteriors.forEach((h,i)=>h.realmId='base:door:'+i);
 for(const target of targets){const a=target.userData;if(['tree','rock','chest','merchant'].includes(a.kind)&&(!generatedWorld||!['chest','merchant'].includes(a.kind)))a.realmId=baseRealmId(a.kind,a.x,a.z);else if(a.kind==='door')a.realmId=a.house.realmId;else if(a.kind==='npc')a.realmId=a.profile.realmId;else if(a.kind==='creature')a.realmId=a.mob.realmId;if(a.realmId)realmObjectTargets.set(a.realmId,target);}
 // Quest markers over givers and the tracker under the minimap (quest-markers.js, quest-tracker.js).
 let questUiRef=null;const markerActors=new Map();
+// A quest giver's home position (its world entity row), for the world map's chain-start markers.
+function giverHome(id){const d=persistentRows.get(id)?.data;return d&&Number.isFinite(+d.x)?{x:+d.x,z:+d.z,name:d.name}:questLocate(id)}
 function markerActor(id){let a=markerActors.get(id);if(!a||a.deleted||!a.root?.parent){a=realmActor(id)||null;markerActors.set(id,a)}return a}
 // Quest guidance (quest-trail.js): breadcrumb trail + minimap path toward the tracked step (or the
 // castle training's current step), and quest cutscenes (quest-cutscenes.js) on the tutorial engine.
 function questLocate(id){const a=realmActor(id),root=a?.root||worldInstances.get(id)?.root;if(root)return {x:root.position.x,y:root.position.y,z:root.position.z,name:a?.profile?.name||a?.name};const d=persistentRows.get(id)?.data;return d?{x:d.x,y:landscape.walkHeight(d.x,d.z),z:d.z,name:d.name}:null}
-function questUi(){if(questUiRef)return questUiRef;const markers=createQuestMarkers(T,scene,{actorFor:markerActor}),tracker=createQuestTracker({openJournal:id=>window.eldervaleQuestJournal?.show?.(id)});
+function questUi(){if(questUiRef)return questUiRef;const markers=createQuestMarkers(T,scene,{actorFor:markerActor,locate:giverHome}),tracker=createQuestTracker({openJournal:id=>window.eldervaleQuestJournal?.show?.(id)});
  const trail=createQuestTrail(T,scene,{heightAt:(x,z)=>landscape.walkHeight(x,z),player:()=>player.position,locate:questLocate,fetchTiles:(x,z,radius)=>window.eldervaleRealm?.guideTiles?.({x,z,radius}),floor:()=>currentInterior?.floor||0,owner:()=>window.eldervaleQuestState?.guidance||{}});
  tracker.onTarget(e=>{if(!questContext().trainee)trail.setStep(e)});mountGuidanceSettings(document.querySelector('[data-settings-panel="gameplay"]'),v=>trail.configure(v));
  const cutscenes=createQuestCutscenes({play:(name,options)=>window.eldervaleTutorial?.playCutscene(name,options),busy:()=>document.body.classList.contains('npc-conversation')||!!window.eldervaleCutscene?.active||window.eldervaleWorldLoading===true});
