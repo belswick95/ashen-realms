@@ -3,6 +3,7 @@
 // tint on the health bar, and drinking potions. State comes from the server's per-request
 // `mechanics` block (db/mechanics-ii-3-hooks.sql mech_reply); commands are mech_*.
 import {PRAYERS,formatWeight} from './mechanics.js?v=release-20261107-hud142';
+import {PRAYER_ICON,SPECIAL_ICON} from './hud-icons.js?v=release-20261107-hud142';
 
 const h=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 export function prayerRows(list,{level=1,active=[],quick=[]}={}){
@@ -15,8 +16,8 @@ export function createMechanicsHud({command=(n,p)=>window.eldervaleRealm?.comman
  let mech=null,prayers=PRAYERS,catalogAsked=false,editingQuick=false,quickDraft=[],busy=false,lastSig='';
  const host=doc.querySelector('#prayer-tab');
  const controls=doc.querySelector('#map-controls');
- const prayerOrb=h('button','mech-orb mech-prayer-orb');prayerOrb.type='button';prayerOrb.id='prayer-orb';prayerOrb.innerHTML='<span class="mech-orb-icon" aria-hidden="true">✦</span><span class="mech-orb-value">–</span>';
- const specOrb=h('button','mech-orb mech-spec-orb');specOrb.type='button';specOrb.id='spec-orb';specOrb.innerHTML='<span class="mech-orb-icon" aria-hidden="true">⚡</span><span class="mech-orb-value">100</span>';
+ const prayerOrb=h('button','mech-orb mech-prayer-orb');prayerOrb.type='button';prayerOrb.id='prayer-orb';prayerOrb.innerHTML='<span class="mech-orb-icon" aria-hidden="true">'+PRAYER_ICON+'</span><span class="mech-orb-value">–</span>';prayerOrb.title='Prayer · click: quick prayers · right-click: Prayer tab';prayerOrb.setAttribute('aria-label',prayerOrb.title);
+ const specOrb=h('button','mech-orb mech-spec-orb');specOrb.type='button';specOrb.id='spec-orb';specOrb.innerHTML='<span class="mech-orb-icon" aria-hidden="true">'+SPECIAL_ICON+'</span><span class="mech-orb-value">100</span>';specOrb.title='Special attack energy';specOrb.setAttribute('aria-label',specOrb.title);
  prayerOrb.hidden=specOrb.hidden=true;
  // The orbs get their own row under the minimap buttons: inside #map-controls the fixed-width button
  // rules made the row wider than the widget, pushing the spec orb off-screen and, on phones, widening

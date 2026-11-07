@@ -9,6 +9,9 @@
 // Idempotent: the bones it bends are restored on the next call if the animator did not pose them
 // again (LOD frames), so corrections never accumulate. No allocations per call.
 export const FOOT_SHIFT_LIMIT=.3, FOOT_LIFT_LIMIT=.4, FOOT_EPSILON=.004;
+// Kneeling (rig.kneeGround 0..1, animation.js: the kneel emote): the knee joints rest this far
+// (in ankle heights) above the ground so the kneecaps touch it instead of sinking in.
+export const KNEE_CLEARANCE=.75;
 
 const SIDES=['left','right'];
 const scratchByThree=new WeakMap();
@@ -64,7 +67,9 @@ export function plantFeet(T,rig,visual,groundAt,contacts=null){
  // the body's base (run flight, walk bob), so only terrain differences under the feet move the body.
  const authored=Math.max(0,Math.min(1,Number(rig.footAuthored)||0));if(authored)visual.getWorldPosition(s.V);
  for(const side of SIDES){const ankle=rig[side+'Ankle'];errors[side]=NaN;if(!ankle||contacts&&!contacts[side])continue;ankle.getWorldPosition(s.A);const lift=(rig.footLift?.[side]||0)+(authored?authored*(s.A.y-s.V.y-rig.footHeight):0);errors[side]=groundAt(s.A.x,s.A.z)+rig.footHeight+lift-s.A.y}
- const shift=footShift(errors,contacts);
+ let shift=footShift(errors,contacts);
+ const kneel=Math.max(0,Math.min(1,Number(rig.kneeGround)||0));
+ if(kneel)for(const side of SIDES){const knee=rig[side+'Knee'];if(!knee)continue;knee.getWorldPosition(s.K);shift=Math.max(shift,Math.min(FOOT_SHIFT_LIMIT,kneel*(groundAt(s.K.x,s.K.z)+KNEE_CLEARANCE*rig.footHeight-s.K.y)))}
  if(shift){visual.position.y+=shift;visual.updateWorldMatrix(false,true)}
  for(const side of SIDES){const e=errors[side];if(!Number.isFinite(e))continue;const residual=Math.min(FOOT_LIFT_LIMIT,e-shift);if(residual<=FOOT_EPSILON)continue;
   const thigh=rig[side+'Leg'],calf=rig[side+'Knee'],foot=rig[side+'Ankle'];if(!thigh?.parent||!calf?.parent||!foot?.parent)continue;

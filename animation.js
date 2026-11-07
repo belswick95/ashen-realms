@@ -1,5 +1,6 @@
 import {clipsFor,locomotionSpeed} from './character-assets.js?v=release-20261107-hud142';
 import {attackMotion,strikeTime,clipTime} from './attack-motion.js?v=release-20261107-hud142';
+import {EMOTE_SECONDS,emoteClip,emoteWeight,emotePose} from './emote-motion.js?v=release-20261107-hud142';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip and cross-fades. Walking and running use the owner's
@@ -43,7 +44,7 @@ export function createHumanoidAnimator(rig){
  function startOneShot(name,duration){const a=action(name);a.reset();a.play();const length=clips[name]?.duration||1;a.timeScale=duration?length/duration:1;oneShot=name;oneShotLeft=duration||length;}
  action('Idle_Loop').setEffectiveWeight(1);weights.set('Idle_Loop',1);
  const eating=createEatLayer(rig,arms);
- return {mixer,update(dt,{eat=0,food=null,distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,activity=null,dead=false,ranged=false,magic=false,combat=false}={}){
+ return {mixer,update(dt,{eat=0,food=null,distance=0,speed=0,attack=0,hit=0,armed=false,weapon=null,block=0,locomotion=null,style=null,mounted=false,activity=null,dead=false,ranged=false,magic=false,combat=false,emote=null}={}){
   if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(dt,.1);time+=dt;
   speed=Number.isFinite(speed)?Math.max(0,speed):0;distance=Number.isFinite(distance)?Math.max(0,distance):0;
   const moving=distance>1e-5&&speed>.15&&!mounted;
@@ -70,12 +71,15 @@ export function createHumanoidAnimator(rig){
   const hitNow=Number.isFinite(hit)?hit:0;if(hitNow>lastHit+.05&&hitNow>.1&&!oneShot&&!dead)startOneShot(Math.random()<.5?'Hit_Chest':'Hit_Head',.45);lastHit=hitNow;
   // Base loop for the current state.
   let base;const work=ACTIVITY[activity||rig.activity];
+  const emoting=!!(emote&&EMOTE_SECONDS[emote.kind]&&emoteWeight(emote.kind,emote.t)>0&&!moving&&!mounted&&!dead);
   // Death: drop to the knees with the head bowed (Fixing_Kneeling, held), then collapse (Death01
   // joined mid-fall). About 2.7 s in all; the pose holds until `dead` clears.
   if(dead){if(deadAt<0)deadAt=time;oneShot=null}else deadAt=-1;
   if(dead)base=clips.Fixing_Kneeling&&time-deadAt<DEATH_KNEEL?'Fixing_Kneeling':'Death01';
   else if(mounted)base=clips.Driving_Loop?'Driving_Loop':'Sitting_Idle_Loop';
   else if(moving)base=gaitFor(locomotion,speed);
+  // An emote (emote-motion.js) plays in place on its body clip; walking off ends it.
+  else if(emoting)base=emoteClip(emote.kind);
   // Relaxed by default; the fighting stance is for an explicit combat stance or
   // a few seconds after armed melee attacks and blocks.
   else base=work||(block>0||!ranged&&time<fightUntil?'Sword_Idle':'Idle_Loop');
@@ -90,6 +94,7 @@ export function createHumanoidAnimator(rig){
   if(work&&base===work&&rig.activityPhase!=null){loop.time=rig.activityPhase*loop.getClip().duration;loop.timeScale=0}
   // Net fishing holds the kneel (the arms and spine are posed by arms.net), so the body does not bob each loop.
   else if(base===work&&(activity||rig.activity)==='net'&&base==='Fixing_Kneeling'){loop.time=Math.min(KNEEL_HOLD,loop.getClip().duration);loop.timeScale=0}
+  if(emoting&&base==='Fixing_Kneeling')loop.timeScale=loop.time>=KNEEL_HOLD?0:1;
   if(dead&&base==='Fixing_Kneeling')loop.timeScale=loop.time>=KNEEL_HOLD?0:1;else if(dead&&base==='Death01')loop.timeScale=DEATH_FALL_SPEED;
   // Cross-fade: the active one-shot (if any) takes over, then hands back.
   if(oneShot){oneShotLeft-=dt;if(oneShotLeft<=0&&!(oneShot==='Death01'))oneShot=null}
@@ -105,7 +110,10 @@ export function createHumanoidAnimator(rig){
   mixer.update(dt);
   // How much of the pose is a locomotion loop: its feet are seated as authored
   // (flight and hip bob kept), so ground contact only follows slopes (foot-ground.js).
-  rig.footAuthored=(weights.get(WALK_CLIP)||0)+(weights.get(RUN_CLIP)||0);
+  // The kneel emote too: its toes rest behind on the ground with the ankles raised, so planting
+  // the ankles would push the kneeling body (and the knees) into the ground.
+  rig.footAuthored=Math.min(1,(weights.get(WALK_CLIP)||0)+(weights.get(RUN_CLIP)||0)+(emoting&&base==='Fixing_Kneeling'?weights.get('Fixing_Kneeling')||0:0));
+  rig.kneeGround=emoting&&base==='Fixing_Kneeling'?weights.get('Fixing_Kneeling')||0:0;
   // Blocking raises the shield across the chest on top of whatever clip plays.
   guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
   // Held weapon / shield ride steady at the side while running (gently while walking).
@@ -138,8 +146,10 @@ export function createHumanoidAnimator(rig){
   // Net fishing (gathering-visuals.js sets rig.netDip): lean over the bank,
   // both hands on the pole, dip the net into the water, scoop and lift.
   const dip=rig.netDip;netting+=((dip&&!moving&&!mounted&&!dead&&!oneShot?1:0)-netting)*k;if(netting<.001)netting=0;if(netting&&dip)arms.net(netting,dip);
+  // Emote arms and spine, after the clip like the other layers (not over a swing, shot or bite).
+  let emoteW=0;if(emoting&&!swing&&!shot&&!bite&&!guard){emoteW=emoteWeight(emote.kind,emote.t);const pose=emotePose(emote.kind,emote.t);if(pose&&emoteW>0)arms.emote(pose,emoteW)}
   const run=base===RUN_CLIP?1:0;
-  return {blend:moving?1:0,run,gait:base,flight:false,contacts:{left:true,right:true},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite,
+  return {emote:emoteW,blend:moving?1:0,run,gait:base,flight:false,contacts:{left:true,right:true},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite,
    swing:swing?{kind:swing.motion.kind,t:swing.t,strikeAt:swing.strikeAt,struck:swing.struck}:null,strike:strikeNow,strikeWeight};
  },dispose(){eating.dispose();mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
 }
@@ -224,6 +234,15 @@ function createArmLayers(rig){
     to.set(0,0,0).addScaledVector(forward,s.blade[0]).addScaledVector(up,s.blade[1]).addScaledVector(left,-s.blade[2]).normalize();turn(b.hand_r,rot.setFromUnitVectors(a,to),weight)}
    // Off hand on the grip, a little below the weapon hand along the haft.
    if(twoHanded||layer==='twoHand'){rig.rightHand.getWorldPosition(target);const item=rig.rightHand.children.find(o=>o.userData.weaponMount&&o.visible);if(item){item.getWorldQuaternion(pq);a.set(0,-1,0).applyQuaternion(pq);target.addScaledVector(a,.2)}reach('left',target,weight*.9)}},
+  // Emote pose (emote-motion.js): spine lean and chest twist, then each hand to its goal
+  // ([forward, up, out] in arm lengths from that shoulder), or the right hand to the chin.
+  emote(pose,weight){frame();const n=[b.spine_01,b.spine_02,b.spine_03].filter(Boolean).length||1;
+   if(pose.lean)for(const bone of [b.spine_01,b.spine_02,b.spine_03])if(bone)turn(bone,rot.setFromAxisAngle(left,pose.lean/n),weight);
+   if(pose.twist)for(const bone of [b.spine_02,b.spine_03])if(bone)turn(bone,rot.setFromAxisAngle(up,pose.twist/2),weight);
+   for(const side of ['right','left']){const h=pose[side];if(!h)continue;const s=side==='left'?'l':'r',sh=b['upperarm_'+s],el=b['lowerarm_'+s],hand=b['hand_'+s];if(!sh||!el||!hand)continue;
+    frame();sh.getWorldPosition(c);el.getWorldPosition(a);const L=c.distanceTo(a)+a.distanceTo(hand.getWorldPosition(to));
+    target.copy(c).addScaledVector(forward,h[0]*L).addScaledVector(up,h[1]*L).addScaledVector(left,(side==='left'?1:-1)*h[2]*L);reach(side,target,weight)}
+   if(pose.chin){frame();(b.Head||b.head).getWorldPosition(target).addScaledVector(forward,.12).addScaledVector(up,-.1).addScaledVector(left,-.02);reach('right',target,weight)}},
   aim(weight,draw){frame();
    // Bow arm: straight out from the left shoulder at shoulder height.
    b.upperarm_l.getWorldPosition(target).addScaledVector(forward,.78).addScaledVector(left,-.06).addScaledVector(up,.04);reach('left',target,weight);

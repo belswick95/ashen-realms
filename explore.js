@@ -7,6 +7,8 @@
 // game.js wiring: createExplore({...}) once; tagHit/click for world objects, talk() when an NPC
 // dialogue opens, useItem/itemChoices for inventory items, event() for realm events, frame() each
 // frame, mapPois() for the world map and drawMinimap() for the minimap.
+import {EMOTE_SECONDS} from './emote-motion.js?v=release-20261107-hud142';
+import {JOURNAL_ICON} from './hud-icons.js?v=release-20261107-hud142';
 import {ITEMS,CLUE_ITEM,CASKET_ITEM,TIERS,TIER_LABEL,EMOTES,PLACES,LORE,KEEPSAKES,TOTALS,areaById,LORE_MODELS} from './explore-data.js?v=release-20261107-hud142';
 import {worldRivers,roadLines,landscapeLakes} from './geography.js?v=release-20261107-hud142';
 import {undergroundAt,undergroundAreas} from './underground.js?v=release-20261107-hud142';
@@ -75,7 +77,7 @@ export function createExplore({T=null,camera=null,player=null,say=()=>{},command
  function toast(title,text='',kind=''){if(!toastBox)return say(title+(text?' — '+text:''));const t=el('div',null,{class:'explore-toast '+kind});t.append(el('strong',title));if(text)t.append(el('span',text));toastBox.append(t);setTimeout(()=>t.classList.add('out'),3800);setTimeout(()=>t.remove(),4400)}
  // HUD button beside the world-map toggle.
  let counter=null;
- if(doc?.body){const b=el('button','✦',{id:'explore-toggle',type:'button',title:'Journal: lore, places, clues, boss kills','aria-label':'Exploration journal'});b.onclick=()=>openPanel();const map=doc.getElementById('map-toggle');if(map?.parentNode)map.parentNode.insertBefore(b,map.nextSibling);else doc.body.append(b);counter=el('span','',{class:'explore-counter'});b.append(counter)}
+ if(doc?.body){const b=el('button',null,{id:'explore-toggle',type:'button',title:'Journal (lore, places, clues, boss kills)','aria-label':'Open journal: lore, places, clues and boss kills'});b.innerHTML=JOURNAL_ICON;b.onclick=()=>openPanel();const map=doc.getElementById('map-toggle');if(map?.parentNode)map.parentNode.insertBefore(b,map.nextSibling);else doc.body.append(b);counter=el('span','',{class:'explore-counter'});b.append(counter)}
  // Emote dock: a small button above the bottom-right tab bar opens a compact grid beside it. The grid stays
  // open after an emote so you can watch your character perform it (the journal would cover the screen).
  let emoteBar=null,emoteToggle=null;
@@ -142,7 +144,7 @@ export function createExplore({T=null,camera=null,player=null,say=()=>{},command
   itemChoices(id){const t=tierOfItem(id);if(t&&CLUE_ITEM[t]===id)return [['Read '+goods[id].name,()=>readClue(t)]];if(t)return [['Open '+goods[id].name,()=>openCasket(t)]];if(id==='spade')return [['Dig',dig]];return []},
   useItem(id){const t=tierOfItem(id);if(t&&CLUE_ITEM[t]===id){readClue(t);return true}if(t){openCasket(t);return true}if(id==='spade'&&(activeStep('dig')||activeStep('map')||activeStep('bearing'))){dig();return true}return false},
   event(e,selfId,{player:self,remoteRoot=()=>null}={}){if(e?.type!=='explore')return false;const mine=e.player===selfId;
-   if(e.what==='emote'){const root=mine?self||player:remoteRoot(e.player);if(root)emotes.push({root,kind:e.emote,start:now()});if(mine&&!e.clue)say('You '+(EMOTES[e.emote]||e.emote).toLowerCase()+'.')}
+   if(e.what==='emote'){const root=mine?self||player:remoteRoot(e.player);if(root){for(let i=emotes.length-1;i>=0;i--)if(emotes[i].root===root)emotes.splice(i,1);emotes.push({root,kind:e.emote,start:now(),x:root.position.x,z:root.position.z})}if(mine&&!e.clue)say('You '+(EMOTES[e.emote]||e.emote).toLowerCase()+'.')}
    if(!mine)return true;
    if(e.what==='read'){toast(e.name,e.new?'Lore '+e.count+'/'+((journal?.lore||[]).length||TOTALS.lore):'',e.new?'lore':'');if(doc?.body){showLore(e)}milestoneToasts(e.milestones)}
    else if(e.what==='visit'){if(e.new){toast('Area discovered',e.name,'place');milestoneToasts(e.milestones)}}
@@ -156,9 +158,11 @@ export function createExplore({T=null,camera=null,player=null,say=()=>{},command
   frame(dt,self=player){const p=self?.position;if(!p)return;const t=now();
    if(t>=nextScan&&journal?.on){nextScan=t+1000;for(const id of placeAt(PLACES,p))if(!found('place',id)&&(asked.get(id)||0)<t){asked.set(id,t+15000);void globalThis.eldervaleRealm?.quietCommand?.('explore_visit',{id}).then(r=>{if(r)void refresh()})}}
    const time=t*.001;for(let i=0;i<loreRoots.length;i++){const r=loreRoots[i];if(!r.parent){loreRoots.splice(i--,1);continue}const dx=r.position.x-p.x,dz=r.position.z-p.z;if(dx*dx+dz*dz<3600)animateExploreModel(r,time)}
-   for(let i=emotes.length-1;i>=0;i--){const m=emotes[i],k=(t-m.start)/1600;const lift=k>=1?0:m.kind==='dance'||m.kind==='cheer'?Math.abs(Math.sin(k*Math.PI*4))*.35:m.kind==='kneel'||m.kind==='bow'?-Math.sin(k*Math.PI)*.25:m.kind==='wave'||m.kind==='clap'?Math.abs(Math.sin(k*Math.PI*6))*.08:0;
-    // The game may re-place the root each frame; only undo our own last lift if it did not.
-    const base=m.root.position.y===m.lastY?m.root.position.y-(m.lift||0):m.root.position.y;m.root.position.y=base+lift;m.lift=lift;m.lastY=m.root.position.y;if(k>=1||!m.root.parent){emotes.splice(i,1);continue}if(m.kind==='dance')m.root.rotation.y+=dt*6}},
+   // Emotes are played by the character's animator (emoteFor, emote-motion.js); the root is
+   // never moved or turned here. One ends when it has played or when its character walks off.
+   for(let i=emotes.length-1;i>=0;i--){const m=emotes[i];if(!m.root.parent||(t-m.start)/1000>=(EMOTE_SECONDS[m.kind]||2)||Math.hypot(m.root.position.x-m.x,m.root.position.z-m.z)>.3)emotes.splice(i,1)}},
+  // The emote a character is performing: {kind, t (s since it began)}, or null.
+  emoteFor(root){if(!root)return null;for(const m of emotes)if(m.root===root){const t=(now()-m.start)/1000;return t<(EMOTE_SECONDS[m.kind]||2)?{kind:m.kind,t}:null}return null},
   // World map: discovered places (and hidden entrances once found).
   mapPois(){return (journal?.places||[]).filter(p=>p.found&&Number.isFinite(p.x)&&Math.abs(p.x)<=420&&Math.abs(p.z)<=420).map(p=>({kind:p.type==='hidden'||p.type==='region'?'hidden':'discovered',x:p.x,z:p.z,name:p.name}))},
   // Minimap: a small gold diamond on each discovered place in view.

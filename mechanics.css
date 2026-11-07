@@ -5,6 +5,7 @@
 .mech-prayer-orb{--orb-color:#2b7fb8}.mech-prayer-orb.active{border-color:#9be0ff;box-shadow:0 0 9px #67c6ff88}
 .mech-spec-orb{--orb-color:#3e8e3a}.mech-spec-orb.active{border-color:#ffe270;box-shadow:0 0 9px #ffd84d99}.mech-spec-orb.none{opacity:.6}
 .mech-orb-icon{font-size:13px;line-height:1}
+.mech-orb-icon svg{display:block;width:15px;height:15px}
 #run-toggle.mech-energy{background:linear-gradient(90deg,#8a6d1f55 var(--energy,100%),transparent var(--energy,100%)),var(--run-bg,#1f241f)}
 .mech-weight{margin:4px 8px;font:11px Arial,sans-serif;color:#cdbf98;text-align:right}
 .mech-weight[hidden]{display:none}

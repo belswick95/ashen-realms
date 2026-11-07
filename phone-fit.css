@@ -204,4 +204,6 @@ html body.fantasy-hud #map-widget#map-widget :is(#explore-toggle,#map-toggle){to
 html body.fantasy-hud #map-widget#map-widget #run-toggle svg{width:16px!important;height:16px!important}
 html body.fantasy-hud #map-widget#map-widget #map-toggle svg{width:24px!important;height:24px!important}
 html body.fantasy-hud #map-widget#map-widget #explore-toggle{font-size:18px!important}
+html body.fantasy-hud #map-widget#map-widget #explore-toggle svg{width:22px!important;height:22px!important}
+html body.fantasy-hud #map-widget#map-widget :is(#prayer-orb,#spec-orb) .mech-orb-icon svg{width:14px;height:14px}
 html body.fantasy-hud #map-widget#map-widget #explore-toggle .explore-counter{right:-8px;bottom:-4px}

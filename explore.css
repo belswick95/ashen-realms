@@ -2,6 +2,7 @@
 #explore-toggle{position:fixed;top:206px;right:12px;z-index:60;width:38px;height:38px;display:grid;place-items:center;font:bold 20px Georgia,serif;color:#f2d36b;background:linear-gradient(#3b4a44,#18241f);border:1px solid #c9a55a;border-radius:7px;box-shadow:0 2px 6px #0008;cursor:pointer;touch-action:manipulation;padding:0}
 /* Beside the map toggle, on its left: to its right it sat outside the right-anchored widget, past the screen edge (QA fix113). */#map-toggle+#explore-toggle{position:absolute;top:50%;right:calc(100% + 4px);transform:translateY(-50%);margin:0;width:34px;height:34px;font-size:18px}
 #explore-toggle:hover{border-color:#f1d087}
+#explore-toggle .journal-icon{display:block;width:24px;height:24px;pointer-events:none}
 #explore-toggle .explore-counter{position:absolute;right:-6px;bottom:-6px;font:bold 9px Arial;color:#1c1810;background:#f2d36b;border-radius:7px;padding:1px 4px;pointer-events:none}
 #explore-toggle .explore-counter:empty{display:none}
 .explore-toasts{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:240;display:flex;flex-direction:column;gap:6px;pointer-events:none;width:min(360px,calc(100vw - 32px))}
