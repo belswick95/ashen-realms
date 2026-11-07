@@ -131,7 +131,7 @@ export function createTilePlayback({buffer=BUFFER_MS,margin=JITTER_MS,maxDelay=3
 // null while the player steers by keys.
 export function createLocalWalker({tolerance=VERIFY_TILES,snapTiles=SNAP_TILES}={}){
  const out={x:0,z:0,yaw:0,moving:false,speed:0,snapped:false,steps:1},queue=[],stats={reroutes:0,snaps:0,verified:0};
- let ready=false,heading=0,steps=1,track=null,shownX=NaN,shownZ=NaN,awaiting=false,lastNow=null,snapNext=false,standYaw=null,passed=null;
+ let ready=false,heading=0,steps=1,track=null,shownX=NaN,shownZ=NaN,awaiting=false,lastNow=null,snapNext=false,standYaw=null,passed=null,startAt=null;
  // track: the walk's schedule {pts:[{x,z}],cum:[steps along],at:server ms of pts[0],steps}.
  const makeTrack=(pts,at,s)=>{const cum=[0];for(let k=1;k<pts.length;k++)cum.push(cum[k-1]+cheb(pts[k-1],pts[k]));return {pts,cum,at,steps:s}};
  const pointAt=(tr,e)=>{const {pts,cum}=tr;if(e<=0)return pts[0];for(let k=1;k<pts.length;k++)if(cum[k]>=e){const a=pts[k-1],b=pts[k],f=(e-cum[k-1])/Math.max(1e-9,cum[k]-cum[k-1]);return {x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f}}return pts.at(-1)};
@@ -168,7 +168,10 @@ export function createLocalWalker({tolerance=VERIFY_TILES,snapTiles=SNAP_TILES}=
   // A click-walk planned here: path [[x,z],...] tile centres (from startTile()), walked at once.
   // A new click while walking continues the same schedule: the server is still on the old walk
   // (it gets the click a little later), so the walk so far stays the head of the track.
-  walk(path,{serverNow,steps:s}={}){const pts=pointsOf(path),now=Number.isFinite(serverNow)?serverNow:Date.now();if(s>0)steps=s;awaiting=true;standYaw=null;
+  walk(path,{serverNow,steps:s,now:clickAt}={}){const pts=pointsOf(path),now=Number.isFinite(serverNow)?serverNow:Date.now();if(s>0)steps=s;awaiting=true;standYaw=null;
+   // From rest, the walk starts at the click (clickAt, the update() clock): the frame before it was
+   // idle time, which must not be walked (a 1/3-tile surge per click at 5 fps).
+   if(!queue.length&&Number.isFinite(clickAt))startAt=clickAt;
    if(track&&queue.length&&track.steps===steps&&cheb(queue.at(-1),track.pts.at(-1))<1e-6){
     let left=0,px=out.x,pz=out.z;for(const q of queue){left+=stepLen(px,pz,q.x,q.z);px=q.x;pz=q.z}
     const e=track.cum.at(-1)-left,head=[];for(let k=0;k<track.pts.length&&track.cum[k]<e-1e-6;k++)head.push(track.pts[k]);
@@ -200,6 +203,7 @@ export function createLocalWalker({tolerance=VERIFY_TILES,snapTiles=SNAP_TILES}=
    if(active||pending){ready=false;queue.length=0;track=null;lastNow=null;return null}
    if(!ready||!(Math.hypot(position.x-shownX,position.z-shownZ)<=.3)){ready=true;out.x=position.x;out.z=position.z;queue.length=0;track=null;lastNow=null}
    // Real elapsed time (a long frame on a slow GPU still moves the walker its true distance).
+   if(startAt!==null){if(lastNow!==null&&startAt>lastNow&&startAt<=now)lastNow=startAt;startAt=null}
    const dt=lastNow===null?0:Math.max(0,Math.min(5000,now-lastNow))/1000;lastNow=now;
    out.snapped=snapNext;snapNext=false;
    out.speed=queue.length&&dt>0?advance(steps*dt/GAME_TICK)/dt:0;out.moving=queue.length>0||out.speed>0;out.steps=steps;

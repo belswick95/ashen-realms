@@ -88,7 +88,7 @@ export function simulate({seed=1,flagsAt=()=>0,clicks,start={x:0,z:0},driver='cr
  if(observer)client((snap,t)=>(obsLateness.observe(obsSeen.at,snap.at,serverNow(t)),obsSeen.at=snap.at,playback.push({x:snap.x,z:snap.z,yaw:snap.yaw,stepTiles:observerAt==='step'?undefined:snap.stepTiles},t,observerAt==='step'?snap.stepAt:snap.at,serverNow(t))));
  for(const c of clicks)at(c.t,()=>{const gx=c.goal[0]*TILE,gz=c.goal[1]*TILE;
   if(localDriver){me.move(c.t,{path:[[gx,gz]],steps:c.steps||1});c.plan=planTileMove([tileOf(local.x),tileOf(local.z)],[[gx,gz]],flagsAt).path;c.from=[tileOf(local.x),tileOf(local.z)];return}
-  const plan=walker.plan(t=>planTileMove(t,[[gx,gz]],flagsAt).path),from=plan.from;walker.walk(plan.path,{serverNow:serverNow(c.t),steps:c.steps||1});
+  const plan=walker.plan(t=>planTileMove(t,[[gx,gz]],flagsAt).path),from=plan.from;walker.walk(plan.path,{serverNow:serverNow(c.t),steps:c.steps||1,now:c.t});
   // game.js: the move is queued right after walk(), so every snapshot before its reply is stale.
   me.move(c.t,{path:[[gx,gz]],from,steps:c.steps||1});walker.ack();c.plan=plan.path;c.from=from});
  const frameMs=1000/fps;for(let t=0;t<end;t+=frameMs)at(t,()=>{const s=localDriver?localDriver.frame(local,t,serverNow(t)):walker.update(local,t);frames.push({t,x:local.x,z:local.z,yaw:s?.yaw??0,snapped:!!s?.snapped});
