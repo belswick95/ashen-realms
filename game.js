@@ -1555,7 +1555,7 @@ function lodAnimate(actor,dt,distance,update){if(actor.lodHidden){actor.lodTrave
 const DEATH_SHOW_MS=2800;
 function deathPose(mob){if(mob.alive!==false||!mob.dyingSince){if(mob.toppled){mob.toppled=false;const body=mob.root.userData.deathBody;if(body){body.rotation.z=0;body.position.y=0}}return mob.alive===false&&!mob.root.visible?null:false}
  const t=(performance.now()-mob.dyingSince)/1000;if(t*1000>=DEATH_SHOW_MS){mob.root.visible=false;mob.dyingSince=0;return null}
- if(!mob.model?.humanoid){let body=mob.root.userData.deathBody;if(body===undefined){body=mob.root.children.find(c=>c.isGroup&&!c.userData.healthBar)||null;mob.root.userData.deathBody=body}if(body){const f=Math.min(1,t/.6);body.rotation.z=f*f*1.35;body.position.y=-.05*f;mob.toppled=true}}
+ if(!mob.model?.humanoid&&!mob.model?.ownDeath){let body=mob.root.userData.deathBody;if(body===undefined){body=mob.root.children.find(c=>c.isGroup&&!c.userData.healthBar)||null;mob.root.userData.deathBody=body}if(body){const f=Math.min(1,t/.6);body.rotation.z=f*f*1.35;body.position.y=-.05*f;mob.toppled=true}}
  return true}
 // Per-frame scratch values: the frame loop allocates no vectors for these.
 const authScreen=document.querySelector('#auth-screen'),frameStartScratch=new T.Vector3(),actorBefore=new T.Vector3(),cameraEye=new T.Vector3(),cameraVector=new T.Vector3(),combatBars=[];let cameraWalls=[],nextCameraWalls=0;
