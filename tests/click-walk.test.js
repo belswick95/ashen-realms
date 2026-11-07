@@ -1,7 +1,7 @@
 import test from 'node:test';import {readFileSync} from 'node:fs';import assert from 'node:assert/strict';import * as T from 'three';
 import {WALK_SPEED,RUN_SPEED,MOUNT_SPEED,TILE,GAME_TICK,travelSpeed,isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,crossFrame,crossColor,CROSS_TIME,approachPoint,withinReach,arrivalStatus} from '../click-walk.js';
 import {mapPoint} from '../minimap.js';import {searchRoute} from '../route-search.js';import {CHARACTER_SCALE} from '../character-assets.js';
-import {STRIDE,createHumanoidAnimator} from '../animation.js';import {gaitPlayback} from '../gait-cadence.js';import {buildHumanoid} from '../humanoid.js';import {mountSpeed} from '../mounts.js';
+import {createHumanoidAnimator,gaitRate} from '../animation.js';import {locomotionSpeed} from '../character-assets.js';import {buildHumanoid} from '../humanoid.js';import {mountSpeed} from '../mounts.js';
 
 test('travel pace matches RuneScape: walk 1 tile/tick, run 2, mount a modest gallop',()=>{
  assert.equal(TILE,CHARACTER_SCALE,'one tile is one metre in world units');
@@ -15,12 +15,13 @@ test('travel pace matches RuneScape: walk 1 tile/tick, run 2, mount a modest gal
  const strides=MOUNT_SPEED/7.6;assert.ok(strides>1&&strides<2);
 });
 
-test('walk plays the walk clip and run plays the jog clip with planted feet (no sliding)',()=>{
- const rig=buildHumanoid(T,new T.Group()),animator=createHumanoidAnimator(rig);
- let pose;for(let i=0;i<30;i++)pose=animator.update(1/60,{distance:WALK_SPEED/60,speed:WALK_SPEED,locomotion:'walk'});assert.equal(pose.gait,'Walk_Loop');
- for(let i=0;i<30;i++)pose=animator.update(1/60,{distance:RUN_SPEED/60,speed:RUN_SPEED,locomotion:'jog'});assert.equal(pose.gait,'Jog_Fwd_Loop');
- for(const [gait,speed,duration] of [['Walk_Loop',WALK_SPEED,1.333],['Jog_Fwd_Loop',RUN_SPEED,.933]]){const p=gaitPlayback(gait,speed,{stride:STRIDE[gait],duration,scale:CHARACTER_SCALE});assert.ok(Math.abs(STRIDE[gait]*p.timeScale*p.amplitude-speed)<1e-6,gait+' planted foot travels at ground speed');assert.ok(p.timeScale<=2.4)}
- animator.dispose();
+test('walk plays the Mixamo walk and run the Mixamo run, at the rate that keeps the planted foot at ground speed',()=>{
+ for(const sex of ['male','female']){const rig=buildHumanoid(T,new T.Group(),{sex}),animator=createHumanoidAnimator(rig);
+  let pose;for(let i=0;i<30;i++)pose=animator.update(1/60,{distance:WALK_SPEED/60,speed:WALK_SPEED,locomotion:'walk'});assert.equal(pose.gait,'Mixamo_Walk');
+  for(let i=0;i<30;i++)pose=animator.update(1/60,{distance:RUN_SPEED/60,speed:RUN_SPEED,locomotion:'jog'});assert.equal(pose.gait,'Mixamo_Run');
+  // At the tile speeds the clips play close to their authored cadence (no slow motion, no fast-forward).
+  for(const [gait,speed] of [['Mixamo_Walk',WALK_SPEED],['Mixamo_Run',RUN_SPEED]]){const rate=gaitRate(sex,gait,speed);assert.ok(Math.abs(locomotionSpeed(sex,gait)*rate-speed)<1e-9,gait+' planted foot travels at ground speed');assert.ok(rate>.6&&rate<1.2,sex+' '+gait+' rate '+rate)}
+  animator.dispose()}
 });
 
 test('a tap walks but a camera drag does not; touch gets more slack than a mouse',()=>{

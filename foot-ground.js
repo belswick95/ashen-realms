@@ -14,7 +14,7 @@ const SIDES=['left','right'];
 const scratchByThree=new WeakMap();
 const scratchFor=T=>{let s=scratchByThree.get(T);if(s)return s;
  const v=()=>new T.Vector3(),q=()=>new T.Quaternion();
- s={H:v(),K:v(),A:v(),At:v(),u:v(),w:v(),n:v(),a:v(),b:v(),q1:q(),q2:q(),q3:q(),footWorld:q()};scratchByThree.set(T,s);return s;};
+ s={H:v(),K:v(),A:v(),At:v(),V:v(),u:v(),w:v(),n:v(),a:v(),b:v(),q1:q(),q2:q(),q3:q(),footWorld:q()};scratchByThree.set(T,s);return s;};
 
 // The planted-foot errors (ground + footHeight - ankle y) and the pelvis shift they call for.
 // `errors` is reused: {left,right} (NaN for a foot in the air). Exported for tests.
@@ -59,7 +59,11 @@ export function plantFeet(T,rig,visual,groundAt,contacts=null){
  if(rig.__footIk)for(const e of rig.__footIk){if(e.active&&e.bone.quaternion.equals(e.applied))e.bone.quaternion.copy(e.original);e.active=false}
  visual.updateWorldMatrix(true,true);
  const errors=rig.__footErrors||(rig.__footErrors={left:NaN,right:NaN});
- for(const side of SIDES){const ankle=rig[side+'Ankle'];errors[side]=NaN;if(!ankle||contacts&&!contacts[side])continue;ankle.getWorldPosition(s.A);errors[side]=groundAt(s.A.x,s.A.z)+rig.footHeight+(rig.footLift?.[side]||0)-s.A.y}
+ // rig.footAuthored (0..1, animation.js): how much of the pose is a locomotion loop whose feet are
+ // already seated on flat ground as authored. Its share keeps each ankle at its authored height above
+ // the body's base (run flight, walk bob), so only terrain differences under the feet move the body.
+ const authored=Math.max(0,Math.min(1,Number(rig.footAuthored)||0));if(authored)visual.getWorldPosition(s.V);
+ for(const side of SIDES){const ankle=rig[side+'Ankle'];errors[side]=NaN;if(!ankle||contacts&&!contacts[side])continue;ankle.getWorldPosition(s.A);const lift=(rig.footLift?.[side]||0)+(authored?authored*(s.A.y-s.V.y-rig.footHeight):0);errors[side]=groundAt(s.A.x,s.A.z)+rig.footHeight+lift-s.A.y}
  const shift=footShift(errors,contacts);
  if(shift){visual.position.y+=shift;visual.updateWorldMatrix(false,true)}
  for(const side of SIDES){const e=errors[side];if(!Number.isFinite(e))continue;const residual=Math.min(FOOT_LIFT_LIMIT,e-shift);if(residual<=FOOT_EPSILON)continue;

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as T from 'three';
 import {buildHumanoid} from '../humanoid.js';
 import {createHumanoidAnimator} from '../animation.js';
-import {characterStore,CHARACTER_SCALE,clipsFor,ensurePart} from '../character-assets.js';
+import {characterStore,CHARACTER_SCALE,clipsFor,ensurePart,locomotionSpeed} from '../character-assets.js';
 import {outfitItems,wornOutfit,defaultClothing,OUTFIT_SLOTS} from '../outfits.js';
 import {makeWeapon} from '../weapons.js';
 import {makeShield} from '../shields.js';
@@ -92,8 +92,8 @@ test('held items ride the hand sockets at world size and follow the clip',()=>{
 });
 
 test('the animator picks gait clips from speed or requested locomotion and never moves the root',()=>{
- const cases=[[{},'Idle_Loop'],[{distance:1.5/60,speed:1.5},'Walk_Loop'],[{distance:5/60,speed:5},'Jog_Fwd_Loop'],[{distance:9/60,speed:9},'Sprint_Loop'],
-  [{distance:3/60,speed:3,locomotion:'walk'},'Walk_Loop'],[{distance:3/60,speed:3,locomotion:'run'},'Sprint_Loop'],[{armed:true},'Idle_Loop'],[{armed:true,combat:true},'Sword_Idle'],[{combat:true},'Sword_Idle'],[{block:.5},'Sword_Idle'],[{mounted:true,distance:.1,speed:6},'Driving_Loop'],[{activity:'smith'},'Fixing_Kneeling'],[{dead:true},'Fixing_Kneeling']];
+ const cases=[[{},'Idle_Loop'],[{distance:1.5/60,speed:1.5},'Mixamo_Walk'],[{distance:5/60,speed:5},'Mixamo_Run'],[{distance:9/60,speed:9},'Mixamo_Run'],
+  [{distance:3/60,speed:3,locomotion:'walk'},'Mixamo_Walk'],[{distance:3/60,speed:3,locomotion:'run'},'Mixamo_Run'],[{armed:true},'Idle_Loop'],[{armed:true,combat:true},'Sword_Idle'],[{combat:true},'Sword_Idle'],[{block:.5},'Sword_Idle'],[{mounted:true,distance:.1,speed:6},'Driving_Loop'],[{activity:'smith'},'Fixing_Kneeling'],[{dead:true},'Fixing_Kneeling']];
  for(const [opts,clip] of cases){const r=character(),{pose}=run(r,40,opts);assert.equal(pose.gait,clip,JSON.stringify(opts));assert.deepEqual(r.root.position.toArray(),[0,0,0]);assert.equal(r.root.rotation.x,0)}
  // Death: down on the knees first (head bowed), then the collapse; the root never moves.
  {const r=character();assert.equal(run(r,100,{dead:true}).pose.gait,'Death01');assert.deepEqual(r.root.position.toArray(),[0,0,0]);assert.equal(run(r,140,i=>i<100?{dead:true}:{}).pose.gait,'Idle_Loop')}
@@ -106,9 +106,9 @@ test('running leans the head ahead of the hips toward +Z',()=>{
 
 test('playback rate follows travel speed so feet do not slide, within sane limits',()=>{
  const rate=(speed,mode='walk')=>{const r=character(),{a,pose}=run(r,20,{distance:speed/60,speed,locomotion:mode});return a.mixer.existingAction(clipsFor('male')[pose.gait]).timeScale};
- assert.ok(rate(2)>rate(1.2));assert.ok(rate(20)<=2.4);assert.ok(rate(.2)>=.5);
- // Jogging at the normal 6.4 travel speed steps faster than the clip, not in slow motion.
- assert.ok(rate(6.4,'jog')>1.1,'jog cadence '+rate(6.4,'jog'));
+ assert.ok(rate(2)>rate(1.2));assert.ok(rate(20)<=2.5);assert.ok(rate(.2)>=.35);
+ // The rate is travel speed over the clip's own ground speed: the clip is never restyled.
+ for(const [speed,mode,gait] of [[2.633,'walk','Mixamo_Walk'],[5.267,'jog','Mixamo_Run']])assert.ok(Math.abs(rate(speed,mode)*locomotionSpeed('male',gait)-speed)<1e-6,mode);
 });
 
 test('the planted foot moves backward at the travel speed: short quick strides, no sliding',()=>{
