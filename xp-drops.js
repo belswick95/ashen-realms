@@ -1,5 +1,5 @@
-import {levelSkills} from './level-up.js?v=release-20261107-heading144';
-import {formatXp} from './combat-level.js?v=release-20261107-heading144';
+import {levelSkills} from './level-up.js?v=release-20261107-portrait145';
+import {formatXp} from './combat-level.js?v=release-20261107-portrait145';
 // RuneScape-style XP drops: when a skill's XP rises, a small "+N Skill" label
 // floats up near the top right and fades. Purely cosmetic; the server owns XP.
 // OSRS XP can be fractional (17.5 per copper ore, 6.25 per bronze bar), so gains keep two decimals.

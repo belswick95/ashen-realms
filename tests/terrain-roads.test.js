@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import * as geo from '../geography.js?v=release-20261107-heading144';
-import {ROAD_GRADE,createLandscape} from '../landscape.js?v=release-20261107-heading144';
-import {castle} from '../castle-layout.js?v=release-20261107-heading144';
+import * as geo from '../geography.js?v=release-20261107-portrait145';
+import {ROAD_GRADE,createLandscape} from '../landscape.js?v=release-20261107-portrait145';
+import {castle} from '../castle-layout.js?v=release-20261107-portrait145';
 // Roads follow the land: no trench through the hills, gentle grades, soft shoulders.
 // Both worlds are measured: the live seeded world (db/generated-world.json) and the legacy layout.
 const MAX_GRADE=.15,MAX_BANK_SLOPE=.75,MAX_TRENCH=6.5;
