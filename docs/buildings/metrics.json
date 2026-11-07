@@ -1,0 +1,319 @@
+{
+ "shots": {
+  "birchford": {
+   "before": {
+    "calls": 2033,
+    "triangles": 1956556,
+    "blockers": [
+     {
+      "id": "capital:117",
+      "name": "Mortar & Mint Apothecary",
+      "distance": 114.31
+     }
+    ],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 1770,
+    "triangles": 2210476,
+    "blockers": [
+     {
+      "id": "capital:117",
+      "name": "Mortar & Mint Apothecary",
+      "distance": 114.31
+     }
+    ],
+    "kitMeshes": 175
+   }
+  },
+  "birchford-street": {
+   "before": {
+    "calls": 613,
+    "triangles": 873530,
+    "blockers": [
+     {
+      "id": "capital:117",
+      "name": "Mortar & Mint Apothecary",
+      "distance": 0.29
+     }
+    ],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 543,
+    "triangles": 948214,
+    "blockers": [
+     {
+      "id": "capital:117",
+      "name": "Mortar & Mint Apothecary",
+      "distance": 2.5
+     }
+    ],
+    "kitMeshes": 175
+   },
+   "reskin": {
+    "calls": 589,
+    "triangles": 947409,
+    "blockers": [
+     {
+      "id": "capital:117",
+      "name": "Mortar & Mint Apothecary",
+      "distance": 2.5
+     }
+    ],
+    "kitMeshes": 175
+   }
+  },
+  "birchford-keep": {
+   "before": {
+    "calls": 528,
+    "triangles": 676605,
+    "blockers": [
+     {
+      "id": "capital:80",
+      "name": "Birchford Keep",
+      "distance": 23.73
+     }
+    ],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 457,
+    "triangles": 802223,
+    "blockers": [
+     {
+      "id": "capital:80",
+      "name": "Birchford Keep",
+      "distance": 23.73
+     }
+    ],
+    "kitMeshes": 175
+   }
+  },
+  "grand-market": {
+   "before": {
+    "calls": 1094,
+    "triangles": 1202883,
+    "blockers": [
+     {
+      "id": "capital:151",
+      "name": "capital:151",
+      "distance": 39.15
+     }
+    ],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 905,
+    "triangles": 1374877,
+    "blockers": [
+     {
+      "id": "capital:151",
+      "name": "capital:151",
+      "distance": 39.15
+     }
+    ],
+    "kitMeshes": 175
+   }
+  },
+  "castle": {
+   "before": {
+    "calls": 534,
+    "triangles": 572180,
+    "blockers": [
+     {
+      "id": "castle:28",
+      "name": "castle:28",
+      "distance": 135.3
+     }
+    ],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 460,
+    "triangles": 679434,
+    "blockers": [
+     {
+      "id": "castle:28",
+      "name": "castle:28",
+      "distance": 135.3
+     }
+    ],
+    "kitMeshes": 26
+   },
+   "reskin": {
+    "calls": 465,
+    "triangles": 675381,
+    "blockers": [
+     {
+      "id": "castle:28",
+      "name": "castle:28",
+      "distance": 135.3
+     }
+    ],
+    "kitMeshes": 26
+   }
+  },
+  "castle-gate": {
+   "before": {
+    "calls": 442,
+    "triangles": 563689,
+    "blockers": [
+     {
+      "id": "castle:18",
+      "name": "castle:18",
+      "distance": 16.17
+     }
+    ],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 365,
+    "triangles": 655845,
+    "blockers": [
+     {
+      "id": "castle:18",
+      "name": "castle:18",
+      "distance": 17.27
+     }
+    ],
+    "kitMeshes": 26
+   }
+  },
+  "winterwatch": {
+   "before": {
+    "calls": 530,
+    "triangles": 595464,
+    "blockers": [
+     {
+      "id": "scenery:34",
+      "name": "scenery:34",
+      "distance": 76.32
+     }
+    ],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 488,
+    "triangles": 630598,
+    "blockers": [
+     {
+      "id": "scenery:34",
+      "name": "scenery:34",
+      "distance": 76.32
+     }
+    ],
+    "kitMeshes": 22
+   }
+  },
+  "emberspire": {
+   "before": {
+    "calls": 493,
+    "triangles": 604177,
+    "blockers": [
+     {
+      "id": "scenery:67",
+      "name": "scenery:67",
+      "distance": 75.32
+     }
+    ],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 452,
+    "triangles": 637859,
+    "blockers": [
+     {
+      "id": "scenery:67",
+      "name": "scenery:67",
+      "distance": 75.32
+     }
+    ],
+    "kitMeshes": 21
+   }
+  },
+  "arrival-1-gate": {
+   "before": {
+    "calls": 420,
+    "triangles": 526682,
+    "blockers": [],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 362,
+    "triangles": 629278,
+    "blockers": [],
+    "kitMeshes": 26
+   }
+  },
+  "arrival-2-courtyard": {
+   "before": {
+    "calls": 249,
+    "triangles": 485611,
+    "blockers": [],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 221,
+    "triangles": 545305,
+    "blockers": [],
+    "kitMeshes": 26
+   }
+  },
+  "arrival-3-walk": {
+   "before": {
+    "calls": 168,
+    "triangles": 470994,
+    "blockers": [],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 145,
+    "triangles": 511682,
+    "blockers": [],
+    "kitMeshes": 26
+   }
+  },
+  "arrival-4-two-shot": {
+   "before": {
+    "calls": 144,
+    "triangles": 462912,
+    "blockers": [],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 133,
+    "triangles": 508174,
+    "blockers": [],
+    "kitMeshes": 26
+   }
+  },
+  "arrival-5-king": {
+   "before": {
+    "calls": 116,
+    "triangles": 427073,
+    "blockers": [],
+    "kitMeshes": 0
+   },
+   "after": {
+    "calls": 108,
+    "triangles": 470847,
+    "blockers": [],
+    "kitMeshes": 26
+   }
+  },
+  "kit-before": {
+   "status": "idle",
+   "rebuilt": null
+  },
+  "kit-after": {
+   "status": "ready",
+   "rebuilt": 0
+  },
+  "kit-reskin": {
+   "status": "ready",
+   "rebuilt": 70
+  }
+ },
+ "errors": []
+}
