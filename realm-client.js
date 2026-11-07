@@ -1,7 +1,7 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
-import {loading,commandLabel} from './loading-indicator.js?v=release-20261107-move3v161';
-import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261107-move3v161';
-import {combatClock,isLogoutRefusal,isLegacyLogoutReply} from './logout-guard.js?v=release-20261107-move3v161';
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261107-quests162';
+import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261107-quests162';
+import {combatClock,isLogoutRefusal,isLegacyLogoutReply} from './logout-guard.js?v=release-20261107-quests162';
 const MOTION_COMMANDS=new Set(['move','stop']);
 // A hidden tab (nothing is drawn) polls every 3 s instead of four times a second: it still counts as
 // online (the server's presence window is 8-15 s) but stops costing the database a world reply

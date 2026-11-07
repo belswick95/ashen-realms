@@ -1,133 +1,133 @@
-import {capital,capitalActive,capitalMapWalls,inCapitalClearing,inCapital,isCapitalTown,townExtent,inwardNormal} from './capital-layout.js?v=release-20261107-move3v161';
-import {campClearing} from './camp-blueprint.js?v=release-20261107-move3v161';
-import {createLevelUpPanel,jingleFor} from './level-up.js?v=release-20261107-move3v161';
-import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261107-move3v161';
-import {createQuestJournal} from './quests.js?v=release-20261107-move3v161';
-import {createTutorial} from './tutorial.js?v=release-20261107-move3v161';
-import {createBuildingSigns,defaultSignposts} from './building-signs.js?v=release-20261107-move3v161';
-import {createQuestMarkers} from './quest-markers.js?v=release-20261107-move3v161';
-import {createQuestTracker} from './quest-tracker.js?v=release-20261107-move3v161';
-import {createQuestTrail,mountGuidanceSettings} from './quest-trail.js?v=release-20261107-move3v161';
-import {createQuestCutscenes} from './quest-cutscenes.js?v=release-20261107-move3v161';
-import {npcLinesFor} from './quest-v2.js?v=release-20261107-move3v161';
-import {createNpcDialogue,converse} from './npc-dialogue.js?v=release-20261107-move3v161';
-import {panelStateKey} from './panel-state.js?v=release-20261107-move3v161';
-import {arrangeInventory,moveSlot,sanitizeOrder,createOrderSync,installInventoryDrag} from './inventory-order.js?v=release-20261107-move3v161';
-import {obstructionDistance,collectCameraOccluders} from './camera-obstruction.js?v=release-20261107-move3v161';
-import {slideStep,locomotionDistance,movementTime} from './movement-collision.js?v=release-20261107-move3v161';
-import {createWildlife} from './wildlife.js?v=release-20261107-move3v161';
-import {createProfessionVisuals} from './profession-visuals.js?v=release-20261107-move3v161';
-import {makeDroppedItemModel} from './item-models.js?v=release-20261107-move3v161';
-import {createProfessionPanel} from './professions.js?v=release-20261107-move3v161';
-import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261107-move3v161';
-import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261107-move3v161';
-import {createHorseMount} from './horse-mount.js?v=release-20261107-move3v161';
-import {createTravelHeading} from './mount-heading.js?v=release-20261107-move3v161';
-import {playHorseHoof,playLevelUpJingle,soundEffects,duckMusic,playThunder} from './music.js?v=release-20261107-move3v161';
-import {createCombatAudio,weaponFamily,monsterFamily} from './combat-audio.js?v=release-20261107-move3v161';
-import {createLevelFireworks} from './level-fireworks.js?v=release-20261107-move3v161';
-import {townMusic,waterProximity} from './audio-regions.js?v=release-20261107-move3v161';
-import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261107-move3v161';
-import {createGroundDressing} from './environment-detail.js?v=release-20261107-move3v161';
-import {createGroundPaths,roadStroke,surfaceStrokes} from './ground-paths.js?v=release-20261107-move3v161';
-import {createGroundClutter} from './ground-clutter.js?v=release-20261107-move3v161';
-import {createWaterSystem} from './water-rendering.js?v=release-20261107-move3v161';
-import {fishingDock} from './waterfront.js?v=release-20261107-move3v161';
-import {createSurfaceCoverIndex,isBuilding as isWalkInBuilding,buildingPlot as walkInPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261107-move3v161';
-import {isFoundationStructure,structurePlot,propBase} from './foundation.js?v=release-20261107-move3v161';
-import {batchStaticMeshes,createCellBatcher,BATCHED_LAYER} from './static-batch.js?v=release-20261107-move3v161';
-import {createWeatherEffects} from './weather-effects.js?v=release-20261107-move3v161';
-import {createCanopyFader} from './canopy-fade.js?v=release-20261107-move3v161';
+import {capital,capitalActive,capitalMapWalls,inCapitalClearing,inCapital,isCapitalTown,townExtent,inwardNormal} from './capital-layout.js?v=release-20261107-quests162';
+import {campClearing} from './camp-blueprint.js?v=release-20261107-quests162';
+import {createLevelUpPanel,jingleFor} from './level-up.js?v=release-20261107-quests162';
+import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261107-quests162';
+import {createQuestJournal} from './quests.js?v=release-20261107-quests162';
+import {createTutorial} from './tutorial.js?v=release-20261107-quests162';
+import {createBuildingSigns,defaultSignposts} from './building-signs.js?v=release-20261107-quests162';
+import {createQuestMarkers} from './quest-markers.js?v=release-20261107-quests162';
+import {createQuestTracker} from './quest-tracker.js?v=release-20261107-quests162';
+import {createQuestTrail,mountGuidanceSettings} from './quest-trail.js?v=release-20261107-quests162';
+import {createQuestCutscenes} from './quest-cutscenes.js?v=release-20261107-quests162';
+import {npcLinesFor} from './quest-v2.js?v=release-20261107-quests162';
+import {createNpcDialogue,converse} from './npc-dialogue.js?v=release-20261107-quests162';
+import {panelStateKey} from './panel-state.js?v=release-20261107-quests162';
+import {arrangeInventory,moveSlot,sanitizeOrder,createOrderSync,installInventoryDrag} from './inventory-order.js?v=release-20261107-quests162';
+import {obstructionDistance,collectCameraOccluders} from './camera-obstruction.js?v=release-20261107-quests162';
+import {slideStep,locomotionDistance,movementTime} from './movement-collision.js?v=release-20261107-quests162';
+import {createWildlife} from './wildlife.js?v=release-20261107-quests162';
+import {createProfessionVisuals} from './profession-visuals.js?v=release-20261107-quests162';
+import {makeDroppedItemModel} from './item-models.js?v=release-20261107-quests162';
+import {createProfessionPanel} from './professions.js?v=release-20261107-quests162';
+import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261107-quests162';
+import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261107-quests162';
+import {createHorseMount} from './horse-mount.js?v=release-20261107-quests162';
+import {createTravelHeading} from './mount-heading.js?v=release-20261107-quests162';
+import {playHorseHoof,playLevelUpJingle,soundEffects,duckMusic,playThunder} from './music.js?v=release-20261107-quests162';
+import {createCombatAudio,weaponFamily,monsterFamily} from './combat-audio.js?v=release-20261107-quests162';
+import {createLevelFireworks} from './level-fireworks.js?v=release-20261107-quests162';
+import {townMusic,waterProximity} from './audio-regions.js?v=release-20261107-quests162';
+import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261107-quests162';
+import {createGroundDressing} from './environment-detail.js?v=release-20261107-quests162';
+import {createGroundPaths,roadStroke,surfaceStrokes} from './ground-paths.js?v=release-20261107-quests162';
+import {createGroundClutter} from './ground-clutter.js?v=release-20261107-quests162';
+import {createWaterSystem} from './water-rendering.js?v=release-20261107-quests162';
+import {fishingDock} from './waterfront.js?v=release-20261107-quests162';
+import {createSurfaceCoverIndex,isBuilding as isWalkInBuilding,buildingPlot as walkInPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261107-quests162';
+import {isFoundationStructure,structurePlot,propBase} from './foundation.js?v=release-20261107-quests162';
+import {batchStaticMeshes,createCellBatcher,BATCHED_LAYER} from './static-batch.js?v=release-20261107-quests162';
+import {createWeatherEffects} from './weather-effects.js?v=release-20261107-quests162';
+import {createCanopyFader} from './canopy-fade.js?v=release-20261107-quests162';
 // Walk-in buildings and freestanding structures (farm huts, stalls, wells...)
 // both get a levelled terrain pad; only buildings register a walkable floor.
 const isBuilding=d=>isWalkInBuilding(d)||isFoundationStructure(d),buildingPlot=d=>isWalkInBuilding(d)?walkInPlot(d):structurePlot(d);
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261107-move3v161';
-import {installWorldHoverCursor} from './cursors.js?v=release-20261107-move3v161';
-import {installMMOControls,CAMERA_TURN_RATE,CAMERA_PITCH_RATE} from './mmorpg-controls.js?v=release-20261107-move3v161';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261107-move3v161';
-import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261107-move3v161';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261107-move3v161';
-import {runFrameWork,nextTask,createLoadingPanel} from './frame-work.js?v=release-20261107-move3v161';import {trackLoadingManager} from './loading-indicator.js?v=release-20261107-move3v161';import {installLongPressMenus,fitToViewport} from './touch-menus.js?v=release-20261107-move3v161';installLongPressMenus();trackLoadingManager(T.DefaultLoadingManager);
-import {createRegionStreamer} from './region-streamer.js?v=release-20261107-move3v161';
-import {searchRoute} from './route-search.js?v=release-20261107-move3v161';
-import {disposeEntityResources,disposeSkeletons} from './entity-resources.js?v=release-20261107-move3v161';
-import {actorMenuLabel} from './context-label.js?v=release-20261107-move3v161';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261107-move3v161';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261107-move3v161';
-import {createGroundDrops} from './ground-drops.js?v=release-20261107-move3v161';
-import {createCombatHealth} from './combat-health.js?v=release-20261107-move3v161';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261107-move3v161';
-import {castle,inCastle} from './castle-layout.js?v=release-20261107-move3v161';
-import {createMotionTrack,createLocalWalker,realmLateness,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose,presentPose,turnToward,TILE_WALK_SPEED,CATCH_UP} from './motion-track.js?v=release-20261107-move3v161';
-import {planTileMove,bfsRoute,tileOf,createTileFlagCache} from './tile-grid.js?v=release-20261107-move3v161';
-import {lightingAt} from './world-lighting.js?v=release-20261107-move3v161';
-import {sculptPatches} from './terrain-patches.js?v=release-20261107-move3v161';
-import {fromPlayerRow} from './player-save.js?v=release-20261107-move3v161';
-import {combatLevel,skillLevel,crossedSwords,xpProgress,hitpointsLevel,formatXp} from './combat-level.js?v=release-20261107-move3v161';
-import {EAT_DELAY,EAT_ANIMATION,isFood,fishingMethods} from './food.js?v=release-20261107-move3v161';
-import {createXpDrops} from './xp-drops.js?v=release-20261107-move3v161';
-import {worldTemplates} from './world-templates.js?v=release-20261107-move3v161';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261107-move3v161';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261107-move3v161';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll,equipRefusal,gearDetails,equipmentBonuses,playerLevels} from './melee-stats.js?v=release-20261107-move3v161';
-import {renderEquipmentStats,installGearTooltip} from './equipment-stats.js?v=release-20261107-move3v161';
-import {styleLabels,playerAttackProfile,rollPlayerHit,rollMonsterHit} from './gear-tiers.js?v=release-20261107-move3v161';
-import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261107-move3v161';
-import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261107-move3v161';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon,drawCityWalls} from './world-map.js?v=release-20261107-move3v161';import {createMapMarkers} from './map-markers.js?v=release-20261107-move3v161';import {drawMarker} from './map-icons.js?v=release-20261107-move3v161';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261107-quests162';
+import {installWorldHoverCursor} from './cursors.js?v=release-20261107-quests162';
+import {installMMOControls,CAMERA_TURN_RATE,CAMERA_PITCH_RATE} from './mmorpg-controls.js?v=release-20261107-quests162';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261107-quests162';
+import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261107-quests162';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261107-quests162';
+import {runFrameWork,nextTask,createLoadingPanel} from './frame-work.js?v=release-20261107-quests162';import {trackLoadingManager} from './loading-indicator.js?v=release-20261107-quests162';import {installLongPressMenus,fitToViewport} from './touch-menus.js?v=release-20261107-quests162';installLongPressMenus();trackLoadingManager(T.DefaultLoadingManager);
+import {createRegionStreamer} from './region-streamer.js?v=release-20261107-quests162';
+import {searchRoute} from './route-search.js?v=release-20261107-quests162';
+import {disposeEntityResources,disposeSkeletons} from './entity-resources.js?v=release-20261107-quests162';
+import {actorMenuLabel} from './context-label.js?v=release-20261107-quests162';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261107-quests162';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261107-quests162';
+import {createGroundDrops} from './ground-drops.js?v=release-20261107-quests162';
+import {createCombatHealth} from './combat-health.js?v=release-20261107-quests162';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261107-quests162';
+import {castle,inCastle} from './castle-layout.js?v=release-20261107-quests162';
+import {createMotionTrack,createLocalWalker,realmLateness,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose,presentPose,turnToward,TILE_WALK_SPEED,CATCH_UP} from './motion-track.js?v=release-20261107-quests162';
+import {planTileMove,bfsRoute,tileOf,createTileFlagCache} from './tile-grid.js?v=release-20261107-quests162';
+import {lightingAt} from './world-lighting.js?v=release-20261107-quests162';
+import {sculptPatches} from './terrain-patches.js?v=release-20261107-quests162';
+import {fromPlayerRow} from './player-save.js?v=release-20261107-quests162';
+import {combatLevel,skillLevel,crossedSwords,xpProgress,hitpointsLevel,formatXp} from './combat-level.js?v=release-20261107-quests162';
+import {EAT_DELAY,EAT_ANIMATION,isFood,fishingMethods} from './food.js?v=release-20261107-quests162';
+import {createXpDrops} from './xp-drops.js?v=release-20261107-quests162';
+import {worldTemplates} from './world-templates.js?v=release-20261107-quests162';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261107-quests162';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261107-quests162';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll,equipRefusal,gearDetails,equipmentBonuses,playerLevels} from './melee-stats.js?v=release-20261107-quests162';
+import {renderEquipmentStats,installGearTooltip} from './equipment-stats.js?v=release-20261107-quests162';
+import {styleLabels,playerAttackProfile,rollPlayerHit,rollMonsterHit} from './gear-tiers.js?v=release-20261107-quests162';
+import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261107-quests162';
+import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261107-quests162';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon,drawCityWalls} from './world-map.js?v=release-20261107-quests162';import {createMapMarkers} from './map-markers.js?v=release-20261107-quests162';import {drawMarker} from './map-icons.js?v=release-20261107-quests162';
 const ARMOR_SLOTS=[...OUTFIT_SLOTS,'cape'];
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261107-move3v161';
-import {createMechanicsHud} from './mechanics-hud.js?v=release-20261107-move3v161';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261107-move3v161';
-import {createCombatTimeline} from './combat-timeline.js?v=release-20261107-move3v161';
-import {impactDelay,monsterStrike} from './attack-motion.js?v=release-20261107-move3v161';
-import {MONSTER_MODELS} from './monster-models.js?v=release-20261107-move3v161';
-import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity,serviceOutOfReach} from './economy.js?v=release-20261107-move3v161';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261107-move3v161';
-import {mapPoint,worldToMinimap,minimapRotation,cameraHeading,compassRotation,nearestYaw,stepYaw,LOOK_YAW} from './minimap.js?v=release-20261107-move3v161';
-import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261107-move3v161';
-import {heldOpen,heldOpenExamine} from './business-doors.js?v=release-20261107-move3v161';
-import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus,actorsFirst,withWalkHere,followGoal,TILE,GAME_TICK,REDIRECT_PAUSE_MS,trimPassedWaypoints} from './click-walk.js?v=release-20261107-move3v161';
-import {townResidents,animateTownActivity,createWorkKit,carriesWeapon,workFacing,spreadStanding} from './town-life.js?v=release-20261107-move3v161';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-move3v161';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261107-move3v161';
-import {createPlayerHUD,portraitLook} from './player-hud.js?v=release-20261107-move3v161';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261107-move3v161';
-import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261107-move3v161';
-import {stabilizeSun,shadowQuality,celestialLight,installShadowEdgeFade} from './sun-shadow.js?v=release-20261107-move3v161';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261107-move3v161';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261107-move3v161';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261107-move3v161';
-import {isTablet,isPhone,lowerTier,createFrameGovernor,createDistanceCuller,characterLod,lodStep,holdGait,HIDDEN_LAYER} from './graphics-quality.js?v=release-20261107-move3v161';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261107-quests162';
+import {createMechanicsHud} from './mechanics-hud.js?v=release-20261107-quests162';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261107-quests162';
+import {createCombatTimeline} from './combat-timeline.js?v=release-20261107-quests162';
+import {impactDelay,monsterStrike} from './attack-motion.js?v=release-20261107-quests162';
+import {MONSTER_MODELS} from './monster-models.js?v=release-20261107-quests162';
+import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity,serviceOutOfReach} from './economy.js?v=release-20261107-quests162';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261107-quests162';
+import {mapPoint,worldToMinimap,minimapRotation,cameraHeading,compassRotation,nearestYaw,stepYaw,LOOK_YAW} from './minimap.js?v=release-20261107-quests162';
+import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261107-quests162';
+import {heldOpen,heldOpenExamine} from './business-doors.js?v=release-20261107-quests162';
+import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus,actorsFirst,withWalkHere,followGoal,TILE,GAME_TICK,REDIRECT_PAUSE_MS,trimPassedWaypoints} from './click-walk.js?v=release-20261107-quests162';
+import {townResidents,animateTownActivity,createWorkKit,carriesWeapon,workFacing,spreadStanding,postedYaw} from './town-life.js?v=release-20261107-quests162';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-quests162';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261107-quests162';
+import {createPlayerHUD,portraitLook} from './player-hud.js?v=release-20261107-quests162';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261107-quests162';
+import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261107-quests162';
+import {stabilizeSun,shadowQuality,celestialLight,installShadowEdgeFade} from './sun-shadow.js?v=release-20261107-quests162';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261107-quests162';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261107-quests162';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261107-quests162';
+import {isTablet,isPhone,lowerTier,createFrameGovernor,createDistanceCuller,characterLod,lodStep,holdGait,HIDDEN_LAYER} from './graphics-quality.js?v=release-20261107-quests162';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {preloadCharacters,setCharacterRim} from './character-assets.js?v=release-20261107-move3v161';
-import {buildHumanoid} from './humanoid.js?v=release-20261107-move3v161';
-import {arrangeEquipmentDoll,loadStance,saveStance,stanceToggle} from './equipment-doll.js?v=release-20261107-move3v161';
-import {createHumanoidAnimator} from './animation.js?v=release-20261107-move3v161';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261107-move3v161';
-import {buildForest} from './forest.js?v=release-20261107-move3v161';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261107-move3v161';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261107-move3v161';
-import {governorOptions,leanGraphics} from './graphics-quality.js?v=release-20261107-move3v161';
-import {warmupList,runShaderWarmup} from './shader-warmup.js?v=release-20261107-move3v161';
-import {cutsceneBootFocus,cutsceneBusy,afterArrival,holdRender,deferReflections,prewarmShot,CUTSCENE_FOCUS_RADIUS} from './cutscene-boot.js?v=release-20261107-move3v161';
-import {createLightProxies} from './light-proxies.js?v=release-20261107-move3v161';
-import {createClassicLook,classicEnabled,classicPixelRatio,blobRadius} from './classic-look.js?v=release-20261107-move3v161';
+import {preloadCharacters,setCharacterRim} from './character-assets.js?v=release-20261107-quests162';
+import {buildHumanoid} from './humanoid.js?v=release-20261107-quests162';
+import {arrangeEquipmentDoll,loadStance,saveStance,stanceToggle} from './equipment-doll.js?v=release-20261107-quests162';
+import {createHumanoidAnimator} from './animation.js?v=release-20261107-quests162';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261107-quests162';
+import {buildForest} from './forest.js?v=release-20261107-quests162';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261107-quests162';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261107-quests162';
+import {governorOptions,leanGraphics} from './graphics-quality.js?v=release-20261107-quests162';
+import {warmupList,runShaderWarmup} from './shader-warmup.js?v=release-20261107-quests162';
+import {cutsceneBootFocus,cutsceneBusy,afterArrival,holdRender,deferReflections,prewarmShot,CUTSCENE_FOCUS_RADIUS} from './cutscene-boot.js?v=release-20261107-quests162';
+import {createLightProxies} from './light-proxies.js?v=release-20261107-quests162';
+import {createClassicLook,classicEnabled,classicPixelRatio,blobRadius} from './classic-look.js?v=release-20261107-quests162';
 const landscape=installUndergroundTerrain(createLandscape());
-import {npcAppearance} from './npc-looks.js?v=release-20261107-move3v161';
-import {createCape} from './cape.js?v=release-20261107-move3v161';
-import {weaponCatalog,makeWeapon,iconForWeapon,isTwoHanded,isRanged,isMagic,usesArrows} from './weapons.js?v=release-20261107-move3v161';
-import {createArrows} from './arrows.js?v=release-20261107-move3v161';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261107-move3v161';import {createTorchLights,torchDarkness} from './torch.js?v=release-20261107-move3v161';
-import {createDeathFlow,renderKeptOnDeath} from './death.js?v=release-20261107-move3v161';
-import {createTileOverlay} from './tile-overlay.js?v=release-20261107-move3v161';
-import {createUnderground,installUndergroundTerrain} from './underground.js?v=release-20261107-move3v161';
-import {createExplore} from './explore.js?v=release-20261107-move3v161';
-import {createBossFx} from './boss-fx.js?v=release-20261107-move3v161';
-import {fishingOptions} from './fish-tiers.js?v=release-20261107-move3v161';
-import {SKILL_PANEL,skillId} from './skill-list.js?v=release-20261107-move3v161';
-import {createSkillGuide} from './skill-guide.js?v=release-20261107-move3v161';
-import {plantFeet} from './foot-ground.js?v=release-20261107-move3v161';
-import {buildingKitReady,buildingKitStatus,loadBuildingKit,onBuildingKitReady,kitStorey,kitRoof,kitDoorLeaf,KIT_ROOF_LIFT} from './building-kit.js?v=release-20261107-move3v161';
+import {npcAppearance} from './npc-looks.js?v=release-20261107-quests162';
+import {createCape} from './cape.js?v=release-20261107-quests162';
+import {weaponCatalog,makeWeapon,iconForWeapon,isTwoHanded,isRanged,isMagic,usesArrows} from './weapons.js?v=release-20261107-quests162';
+import {createArrows} from './arrows.js?v=release-20261107-quests162';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261107-quests162';import {createTorchLights,torchDarkness} from './torch.js?v=release-20261107-quests162';
+import {createDeathFlow,renderKeptOnDeath} from './death.js?v=release-20261107-quests162';
+import {createTileOverlay} from './tile-overlay.js?v=release-20261107-quests162';
+import {createUnderground,installUndergroundTerrain} from './underground.js?v=release-20261107-quests162';
+import {createExplore} from './explore.js?v=release-20261107-quests162';
+import {createBossFx} from './boss-fx.js?v=release-20261107-quests162';
+import {fishingOptions} from './fish-tiers.js?v=release-20261107-quests162';
+import {SKILL_PANEL,skillId} from './skill-list.js?v=release-20261107-quests162';
+import {createSkillGuide} from './skill-guide.js?v=release-20261107-quests162';
+import {plantFeet} from './foot-ground.js?v=release-20261107-quests162';
+import {buildingKitReady,buildingKitStatus,loadBuildingKit,onBuildingKitReady,kitStorey,kitRoof,kitDoorLeaf,KIT_ROOF_LIFT} from './building-kit.js?v=release-20261107-quests162';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 // RuneScape-style death: input lock and death pose, jingle, kept-items note, death pile on the maps (death.js).
 const deathFlow=createDeathFlow({say:text=>say(text),jingle:kind=>playLevelUpJingle(kind),now:()=>window.eldervaleServerTime?.()||Date.now(),goods});
@@ -1103,12 +1103,12 @@ sizeMinimap();addEventListener('resize',sizeMinimap);
 function refreshMinimapCache(){sizeMinimap();minimapCacheCtx.setTransform(minimapRes,0,0,minimapRes,0,0);drawMap(minimapCacheCtx,minimapCache,false,{w:minimapCacheSpan,h:minimapCacheSpan,extent:minimapExtent*minimapCacheSpan/MINIMAP_SIZE});minimapCached.x=player.position.x;minimapCached.z=player.position.z;minimapCached.extent=minimapExtent;minimapCached.ready=true;minimapStamp++;refreshMinimapMarkers()}
 // Map markers near the player (map-icons.js), refreshed with the cache; drawn upright by composeMinimap.
 let minimapMarkers=[],minimapMarkerKey='';
-function refreshMinimapMarkers(){let list=[];try{list=mapMarkers.near(player.position.x,player.position.z,minimapExtent*.75,new Set(worldMap.hiddenKinds))}catch{/* before the map is set up */}const key=list.map(c=>c.id).join('|');if(key!==minimapMarkerKey){minimapMarkerKey=key;minimapMarkers=list;minimapDrawn.stamp=-1}}
+function refreshMinimapMarkers(){let list=[];try{list=mapMarkers.near(player.position.x,player.position.z,minimapExtent*.75,new Set([...worldMap.hiddenKinds,'quest']))}catch{/* before the map is set up */}const key=list.map(c=>c.id).join('|');if(key!==minimapMarkerKey){minimapMarkerKey=key;minimapMarkers=list;minimapDrawn.stamp=-1}}
 function composeMinimap(force=false){
  const px=player.position.x,pz=player.position.z,ppu=MINIMAP_SIZE/minimapExtent;
  if(!minimapCached.ready||minimapCached.extent!==minimapExtent||Math.hypot(minimapCached.x-px,minimapCached.z-pz)*ppu>MINIMAP_PAD*.8)refreshMinimapCache();
- if(!force&&minimapDrawn.stamp===minimapStamp&&minimapDrawn.yaw===yaw&&minimapDrawn.x===px&&minimapDrawn.z===pz)return;
- minimapDrawn.stamp=minimapStamp;minimapDrawn.yaw=yaw;minimapDrawn.x=px;minimapDrawn.z=pz;
+ const questStamp=questUiRef?.markers.stamp??-1;if(!force&&minimapDrawn.stamp===minimapStamp&&minimapDrawn.quests===questStamp&&minimapDrawn.yaw===yaw&&minimapDrawn.x===px&&minimapDrawn.z===pz)return;
+ minimapDrawn.stamp=minimapStamp;minimapDrawn.quests=questStamp;minimapDrawn.yaw=yaw;minimapDrawn.x=px;minimapDrawn.z=pz;
  const ctx=mapCtx,S=MINIMAP_SIZE,c=S/2;
  ctx.setTransform(minimapRes,0,0,minimapRes,0,0);ctx.clearRect(0,0,S,S);ctx.save();ctx.beginPath();ctx.arc(c,c,c,0,Math.PI*2);ctx.clip();
  ctx.fillStyle='#415d39';ctx.fillRect(0,0,S,S);
@@ -1120,7 +1120,8 @@ function composeMinimap(force=false){
  if(minimapMarkers.length){const placed=[],size=15;for(const m of minimapMarkers){const p=worldToMinimap(m.x,m.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(Math.hypot(p.x-c,p.y-c)>c-6||placed.some(q=>Math.abs(q.x-p.x)<size-2&&Math.abs(q.y-p.y)<size-2))continue;placed.push({x:p.x,y:p.y});drawMarker(ctx,m,p.x,p.y,size,minimapRes)}}
  ctx.textAlign='left';
  questUiRef?.trail.drawMinimap(ctx,(x,z)=>worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch),c,c);
- questUiRef?.markers.drawMinimap(ctx,(x,z)=>{const p=worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch);return p.x>5&&p.x<S-5&&p.y>5&&p.y<S-5&&Math.hypot(p.x-c,p.y-c)<c-5?p:null});
+ // Quest givers ('!' to start, '?' to hand in; the world map's chain-start markers are skipped above).
+ questUiRef?.markers.drawMinimap(ctx,(x,z)=>{const p=worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch);return p.x>7&&p.x<S-7&&p.y>7&&p.y<S-7&&Math.hypot(p.x-c,p.y-c)<c-7?p:null},{size:13,dpr:minimapRes});
  const pile=deathFlow.pile();if(pile){const p=worldToMinimap(pile.x,pile.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(p.x>6&&p.x<S-6&&p.y>6&&p.y<S-6)drawSkullIcon(ctx,p.x,p.y,13)}
  const flagAt=walkFlagState||mapDestination;if(flagAt){const p=worldToMinimap(flagAt.x,flagAt.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(p.x>3&&p.x<S-3&&p.y>3&&p.y<S-3)drawMapFlag(ctx,p.x,p.y)}
  ctx.fillStyle='#ffffff';ctx.strokeStyle='#15251d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c,c,3.2,0,Math.PI*2);ctx.fill();ctx.stroke();
@@ -1144,7 +1145,7 @@ const worldMapRegions=()=>generatedWorld?regionAnchors(regionDefinitions,(x,z)=>
 const worldMapRows=()=>{try{return [...persistentRows.values()].filter(r=>!r.deleted&&r.data)}catch{return []}};
 // Map markers (map-markers.js / map-icons.js): mines, trees, fishing, stations, shops, caves, lairs,
 // dragons, training areas, shortcuts, boats — shared by the world map, the minimap and the console.
-const mapMarkers=createMapMarkers({rows:()=>worldMapRows().filter(r=>!(r.data.floor>0)).map(r=>r.data),buildings:()=>houseInteriors.map(h=>({type:h.type,name:h.name,x:h.group.position.x,z:h.group.position.z})),config:()=>window.eldervaleGameConfig?.mapMarkers});
+const mapMarkers=createMapMarkers({quests:()=>questUiRef?.markers.chainGivers()||[],rows:()=>worldMapRows().filter(r=>!(r.data.floor>0)).map(r=>r.data),buildings:()=>houseInteriors.map(h=>({type:h.type,name:h.name,x:h.group.position.x,z:h.group.position.z})),config:()=>window.eldervaleGameConfig?.mapMarkers});
 window.eldervaleMapMarkers=mapMarkers;
 const worldMap=createWorldMap({canvas:largeMap,source:{extent:840,phone:matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<700,
  heightAt:(x,z)=>landscape.heightAt(x,z),waterAt:(x,z)=>landscape.waterAt(x,z),biome:generatedWorld?(x,z)=>biomeWeights(x,z,generatedWorld.seed):null,regions:worldMapRegions,
@@ -1153,7 +1154,7 @@ const worldMap=createWorldMap({canvas:largeMap,source:{extent:840,phone:matchMed
  buildings:()=>houseInteriors.map(h=>({x:h.group.position.x,z:h.group.position.z,halfW:2*h.group.scale.x,halfD:1.85*h.group.scale.z,rot:h.group.rotation.y,roof:'#'+Number(h.roofColor||0x8a4b33).toString(16).padStart(6,'0'),type:h.type,name:h.name})),
  places:()=>places.map(([name,x,z])=>({name,x,z,kind:name.includes('Castle')?'castle':'town',...(isCapitalTown({x,z})&&name===capital.name?{capital:true,title:capital.title}:{})})),walls:()=>capitalActive()?[capitalMapWalls()]:[],
  pois:()=>explore.mapPois(),markers:()=>mapMarkers.items(),
- quests:()=>questUiRef?.markers.givers?.()||[],objective:()=>{const t=questUiRef?.trail?.target;return t?{x:t.x,z:t.z,label:questUiRef.tracker?.step?.label||''}:null},
+ objective:()=>{const t=questUiRef?.trail?.target;return t?{x:t.x,z:t.z,label:questUiRef.tracker?.step?.label||''}:null},
  player:()=>({x:player.position.x,z:player.position.z,heading:player.rotation.y}),flag:()=>walkFlagState||mapDestination,deathPile:()=>deathFlow.pile(),
  signature:()=>forestTrees.length+':'+townStreets.length+':'+worldMapRows().filter(r=>r.data.template==='plaza').length}});
 function setMapOpen(next){mapOpen=next;mapPanel.hidden=!mapOpen;if(mapOpen)worldMap.open();else worldMap.close()}
@@ -1857,7 +1858,7 @@ function spreadTownsfolk(dt){spreadPeople.length=0;const P=player.position;
  for(const other of remotePlayers.values()){const e=other.spreadEntry||={key:'p',spread:null,moving:false};e.x=other.root.position.x;e.z=other.root.position.z;e.radius=other.mounted?1.6:0;spreadPeople.push(e)}
  const me=spreadOwn;me.x=P.x;me.z=P.z;me.radius=mounted?1.6:0;spreadPeople.push(me);spreadStanding(spreadPeople,dt)}
 const spreadOwn={key:'me',spread:null,moving:false};
-function interpolateRealm(actor,dt){if(actor.motion){const sample=actor.motion.sample();if(sample){const moved=Math.abs(sample.x-actor.root.position.x)+Math.abs(sample.z-actor.root.position.z)>.001;actor.root.position.x=sample.x;actor.root.position.z=sample.z;actor.root.rotation.y=workFacing(actor.rig,sample.yaw,moved,dt);actor.motionRun=sample.run===true;return sample.snapped===true}return false}if(!actor.serverPose)return;const target=new T.Vector3(actor.serverPose.x,actor.root.position.y,actor.serverPose.z);if(actor.root.position.distanceToSquared(target)>100)actor.root.position.copy(target);else actor.root.position.lerp(target,1-Math.exp(-14*dt));actor.root.rotation.y=actor.serverPose.yaw;}
+function interpolateRealm(actor,dt){if(actor.motion){const sample=actor.motion.sample();if(sample){const moved=Math.abs(sample.x-actor.root.position.x)+Math.abs(sample.z-actor.root.position.z)>.001;actor.root.position.x=sample.x;actor.root.position.z=sample.z;actor.root.rotation.y=workFacing(actor.rig,postedYaw(actor.profile,sample.yaw,moved),moved,dt);actor.motionRun=sample.run===true;return sample.snapped===true}return false}if(!actor.serverPose)return;const target=new T.Vector3(actor.serverPose.x,actor.root.position.y,actor.serverPose.z);if(actor.root.position.distanceToSquared(target)>100)actor.root.position.copy(target);else actor.root.position.lerp(target,1-Math.exp(-14*dt));actor.root.rotation.y=postedYaw(actor.profile,actor.serverPose.yaw);}
 const realmActorCache=new Map(),realmObjectState=new Map(),realmObjectTargets=new Map(),realmMerchant={root:merchant,profile:{level:5,hp:45,maxHp:45}};
 const baseRealmId=(kind,x,z)=>'base:'+kind+':'+Number(x).toFixed(1)+':'+Number(z).toFixed(1);
 creatures.forEach((m,i)=>m.realmId='base:creature:'+i);
@@ -1865,11 +1866,13 @@ houseInteriors.forEach((h,i)=>h.realmId='base:door:'+i);
 for(const target of targets){const a=target.userData;if(['tree','rock','chest','merchant'].includes(a.kind)&&(!generatedWorld||!['chest','merchant'].includes(a.kind)))a.realmId=baseRealmId(a.kind,a.x,a.z);else if(a.kind==='door')a.realmId=a.house.realmId;else if(a.kind==='npc')a.realmId=a.profile.realmId;else if(a.kind==='creature')a.realmId=a.mob.realmId;if(a.realmId)realmObjectTargets.set(a.realmId,target);}
 // Quest markers over givers and the tracker under the minimap (quest-markers.js, quest-tracker.js).
 let questUiRef=null;const markerActors=new Map();
+// A quest giver's home position (its world entity row), for the world map's chain-start markers.
+function giverHome(id){const d=persistentRows.get(id)?.data;return d&&Number.isFinite(+d.x)?{x:+d.x,z:+d.z,name:d.name}:questLocate(id)}
 function markerActor(id){let a=markerActors.get(id);if(!a||a.deleted||!a.root?.parent){a=realmActor(id)||null;markerActors.set(id,a)}return a}
 // Quest guidance (quest-trail.js): breadcrumb trail + minimap path toward the tracked step (or the
 // castle training's current step), and quest cutscenes (quest-cutscenes.js) on the tutorial engine.
 function questLocate(id){const a=realmActor(id),root=a?.root||worldInstances.get(id)?.root;if(root)return {x:root.position.x,y:root.position.y,z:root.position.z,name:a?.profile?.name||a?.name};const d=persistentRows.get(id)?.data;return d?{x:d.x,y:landscape.walkHeight(d.x,d.z),z:d.z,name:d.name}:null}
-function questUi(){if(questUiRef)return questUiRef;const markers=createQuestMarkers(T,scene,{actorFor:markerActor}),tracker=createQuestTracker({openJournal:id=>window.eldervaleQuestJournal?.show?.(id)});
+function questUi(){if(questUiRef)return questUiRef;const markers=createQuestMarkers(T,scene,{actorFor:markerActor,locate:giverHome}),tracker=createQuestTracker({openJournal:id=>window.eldervaleQuestJournal?.show?.(id)});
  const trail=createQuestTrail(T,scene,{heightAt:(x,z)=>landscape.walkHeight(x,z),player:()=>player.position,locate:questLocate,fetchTiles:(x,z,radius)=>window.eldervaleRealm?.guideTiles?.({x,z,radius}),floor:()=>currentInterior?.floor||0,owner:()=>window.eldervaleQuestState?.guidance||{}});
  tracker.onTarget(e=>{if(!questContext().trainee)trail.setStep(e)});mountGuidanceSettings(document.querySelector('[data-settings-panel="gameplay"]'),v=>trail.configure(v));
  const cutscenes=createQuestCutscenes({play:(name,options)=>window.eldervaleTutorial?.playCutscene(name,options),busy:()=>document.body.classList.contains('npc-conversation')||!!window.eldervaleCutscene?.active||window.eldervaleWorldLoading===true});

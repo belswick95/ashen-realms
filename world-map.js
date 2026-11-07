@@ -16,7 +16,7 @@
 // in a little, hover or tap names them with their level, and the legend toggles each kind.
 //
 // The pure helpers (view maths, colours, POI kinds) are exported for tests.
-import {MARKER_CATS,MARKER_GROUPS,clusterMarkers,markerLabel,drawMarker,drawMarkerIcon,legendTint,loadFilters,saveFilters} from './map-icons.js?v=release-20261107-move3v161';
+import {MARKER_CATS,MARKER_GROUPS,clusterMarkers,markerLabel,drawMarker,drawMarkerIcon,legendTint,loadFilters,saveFilters} from './map-icons.js?v=release-20261107-quests162';
 
 export const POI_KINDS={
  bank:{label:'Bank',color:'#d6a21e',ink:'#4a3006'},
@@ -168,11 +168,6 @@ export function drawCrownIcon(ctx,x,y,size=16){
  for(const [cx,cy,c]of [[0,-7,'#d8344a'],[-9,-4,'#3b7bd4'],[9,-4,'#3b7bd4']]){ctx.fillStyle=c;ctx.beginPath();ctx.arc(cx,cy,1.6,0,Math.PI*2);ctx.fill();ctx.stroke()}
  ctx.restore();
 }
-// Quest giver: the yellow "!" (quest to start) or "?" (hand-in) the world shows over their heads.
-export function drawQuestGlyph(ctx,kind,x,y,scale=1){
- ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 17px Georgia,serif';ctx.lineJoin='round';
- ctx.lineWidth=4.5;ctx.strokeStyle='#1d1404';ctx.strokeText(kind==='?'?'?':'!',0,0);ctx.fillStyle='#ffd23a';ctx.fillText(kind==='?'?'?':'!',0,0);ctx.restore();
-}
 // City walls: a thick stone band along each wall polygon, with gaps for the gates.
 export function drawCityWalls(ctx,walls,project,{width=4,gates=[],gateWidth=8}={}){
  for(const wall of walls||[]){const pts=wall.points||wall;ctx.save();ctx.lineCap='square';ctx.lineJoin='miter';
@@ -317,11 +312,11 @@ export function createWorldMap({canvas,source}){
 
  // World features are read when the map opens and every two seconds while it
  // is open; a redraw happens only when something on the map actually changed.
- let lists={buildings:[],places:[],pois:[],quests:[],markers:[]},listKey='',dynKey='',lastLists=0;
+ let lists={buildings:[],places:[],pois:[],markers:[]},listKey='',dynKey='',lastLists=0;
  // Viewer's legend toggles (kinds hidden on this device) and the per-zoom marker groupings.
  const filters=loadFilters(win.localStorage);let markerCache=new Map(),drawn=[];
- function readLists(){lists={buildings:source.buildings?.()||[],places:source.places?.()||[],pois:mergePois(source.pois?.()||[]),quests:source.quests?.()||[],markers:source.markers?.()||[]};
-  const sum=a=>a.reduce((s,p)=>s+(p.x||0)*1.3+(p.z||0)*.7,0).toFixed(1);const key=[lists.buildings.length,lists.places.length,lists.pois.length,lists.markers.length,lists.quests.map(q=>q.kind).join(''),sum(lists.buildings),sum(lists.pois),sum(lists.quests),sum(lists.markers),lists.markers.map(m=>m.name).join('')].join('|');
+ function readLists(){lists={buildings:source.buildings?.()||[],places:source.places?.()||[],pois:mergePois(source.pois?.()||[]),markers:source.markers?.()||[]};
+  const sum=a=>a.reduce((s,p)=>s+(p.x||0)*1.3+(p.z||0)*.7,0).toFixed(1);const key=[lists.buildings.length,lists.places.length,lists.pois.length,lists.markers.length,sum(lists.buildings),sum(lists.pois),sum(lists.markers),lists.markers.map(m=>m.name).join('')].join('|');
   lastLists=performance.now();if(key!==listKey){listKey=key;markerCache=new Map();return true}return false}
  // Moving things: player, destination flag, death pile and the quest objective.
  function dynamicKey(){const me=source.player?.(),f=source.flag?.(),pile=source.deathPile?.(),o=source.objective?.(),r=v=>Math.round(v*4)/4;
@@ -394,10 +389,12 @@ export function createWorldMap({canvas,source}){
   // kinds only once zoomed in a little; kinds switched off in the legend are skipped.
   const markerPx=Math.round(Math.max(16,Math.min(22,icon*2))),fit=fitScale(w,h,extent);drawn=[];
   for(const c of markersForZoom(lists.markers,k,markerPx,markerCache)){const def=MARKER_CATS[c.cat];if(!def||filters.has(c.cat)||k<fit*(def.zoom||1)*.999)continue;
-   const q=S(c.x,c.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12||!claim({x:q.x,y:q.y,w:markerPx-2,h:markerPx-2}))continue;drawMarker(ctx,c,q.x,q.y,markerPx,dpr);drawn.push({c,x:q.x,y:q.y,r:markerPx/2})}
+   const q=S(c.x,c.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12)continue;
+   // Quest-chain starts are few, a size larger and always shown (over a name if need be).
+   const quest=c.cat==='quest',px=quest?markerPx+6:markerPx,room=claim({x:q.x,y:q.y,w:px-2,h:px-2});if(!room&&!quest)continue;drawMarker(ctx,c,q.x,q.y,px,dpr);drawn.push({c,x:q.x,y:q.y,r:px/2})}
   if(!filters.has('exploration'))for(const p of lists.pois){if(p.kind==='quest'&&filters.has('quest'))continue;const q=S(p.x,p.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12||!claim({x:q.x,y:q.y,w:icon*2,h:icon*2}))continue;drawPoiIcon(ctx,p.kind,q.x,q.y,icon)}
-  // Quest givers: the same yellow ! and ? as over their heads in the world.
-  if(!filters.has('quest'))for(const g of lists.quests){const q=S(g.x,g.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12)continue;drawQuestGlyph(ctx,g.kind,q.x,q.y,Math.max(.85,ui))}
+  // Quest givers are map markers too (kind 'quest'): only those who start a quest chain or a big
+  // quest this player has not begun, drawn above with the other markers (map-markers.js).
   // The player's death pile: skull with the time left beneath it.
   const pile=source.deathPile?.();if(pile){const q=S(pile.x,pile.z);
    ctx.save();ctx.strokeStyle='rgba(224,38,29,.6)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(q.x,q.y,15,0,Math.PI*2);ctx.stroke();ctx.restore();
@@ -428,10 +425,10 @@ export function createWorldMap({canvas,source}){
    b.onclick=e=>{e.preventDefault();e.stopPropagation();const on=filters.has(key);toggle(key,on);b.setAttribute('aria-pressed',String(on));b.title=(on?'Hide ':'Show ')+label.toLowerCase()};legend.append(b)};
   const counts=new Map();for(const m of lists.markers)counts.set(m.cat,(counts.get(m.cat)||0)+1);
   const all=doc.createElement('div');all.className='wm-all';for(const [text,on] of [['Show all',true],['Hide all',false]]){const b=doc.createElement('button');b.type='button';b.textContent=text;b.onclick=e=>{e.preventDefault();e.stopPropagation();for(const k of [...counts.keys(),'quest','exploration'])if(on)filters.delete(k);else filters.add(k);saveFilters(filters,win.localStorage);refreshLegend();invalidate()};all.append(b)}legend.append(all);
-  for(const [group,name] of MARKER_GROUPS){const cats=Object.entries(MARKER_CATS).filter(([c,d])=>d.group===group&&counts.has(c));const extra=group==='places'&&(lists.quests.length||kinds.size);if(!cats.length&&!extra)continue;
+  for(const [group,name] of MARKER_GROUPS){const cats=Object.entries(MARKER_CATS).filter(([c,d])=>d.group===group&&counts.has(c));const extra=group==='places'&&kinds.size;if(!cats.length&&!extra)continue;
    const h=doc.createElement('strong');h.textContent=name;legend.append(h);
    for(const [cat,def] of cats){const tint=legendTint(cat,lists.markers);toggleRow(cat,def.label,counts.get(cat),g=>drawMarkerIcon(g,cat,10,10,18,{tint}))}
-   if(group==='places'){if(lists.quests.length)toggleRow('quest','Quest giver',lists.quests.length,g=>drawQuestGlyph(g,'!',10,10,.8));if(kinds.has('discovered')||kinds.has('hidden'))toggleRow('exploration','Discovered place',lists.pois.length,g=>drawPoiIcon(g,'discovered',10,10,8))}}
+   if(group==='places'){if(kinds.has('discovered')||kinds.has('hidden'))toggleRow('exploration','Discovered place',lists.pois.length,g=>drawPoiIcon(g,'discovered',10,10,8))}}
   const h=doc.createElement('strong');h.textContent='You';legend.append(h);
   for(const [kind,def] of Object.entries(POI_KINDS))if(kinds.has(kind)&&!['discovered','hidden','quest'].includes(kind))row(def.label,g=>drawPoiIcon(g,kind,10,10,8));
   if(source.objective)row('Quest objective',g=>{g.translate(10,10);g.rotate(Math.PI/4);g.fillStyle='#ffd23a';g.strokeStyle='#2a1a04';g.lineWidth=1.5;g.fillRect(-4.5,-4.5,9,9);g.strokeRect(-4.5,-4.5,9,9)});
@@ -477,7 +474,7 @@ export function createWorldMap({canvas,source}){
  canvas.addEventListener('pointerleave',()=>{if(hovering){hovering=null;canvas.style.cursor='';if(!selected)info.hidden=true}});
  function select(sx,sy){const at=screenToWorld(view,sx,sy,w,h),r=16/view.scale;
   const mark=markerAt(sx,sy,6);
-  const hit=mark?{label:markerLabel(mark.c)}:pickFeature(lists.pois.map(p=>({...p,label:(p.name?p.name+' · ':'')+POI_KINDS[p.kind].label})),at.x,at.z,r)||pickFeature(lists.quests.map(q=>({...q,label:(q.name?q.name+' · ':'')+(q.kind==='?'?'Quest to hand in':'Quest available')})),at.x,at.z,r)||pickFeature(lists.places.map(p=>({...p,label:p.name})),at.x,at.z,Math.max(r,28/view.scale))||pickFeature(lists.buildings.map(b=>({...b,label:b.name||'Building'})),at.x,at.z,Math.max(r,4));
+  const hit=mark?{label:markerLabel(mark.c)}:pickFeature(lists.pois.map(p=>({...p,label:(p.name?p.name+' · ':'')+POI_KINDS[p.kind].label})),at.x,at.z,r)||pickFeature(lists.places.map(p=>({...p,label:p.name})),at.x,at.z,Math.max(r,28/view.scale))||pickFeature(lists.buildings.map(b=>({...b,label:b.name||'Building'})),at.x,at.z,Math.max(r,4));
   const me=source.player?.();const youAre=me&&Math.hypot(me.x-at.x,me.z-at.z)<r;
   const pile=source.deathPile?.(),onPile=pile&&Math.hypot(pile.x-at.x,pile.z-at.z)<r;
   const goal=source.objective?.(),onGoal=goal&&Math.hypot(goal.x-at.x,goal.z-at.z)<r;

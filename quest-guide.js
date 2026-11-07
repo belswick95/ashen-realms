@@ -1,8 +1,8 @@
 // Pure quest guidance rules shared by the quest markers, the tracker under the minimap and the
 // NPC conversation (tests/quest-guide.test.js). Input is the quest snapshot the server sends with
 // every realm sync (eldervale_private.quest_snapshot): {id,data,accepted,completed,progress}.
-import {objectiveCount,questReady} from './tutorial-logic.js?v=release-20261107-move3v161';
-import {questView,isStaged,currentStage,stageReport,atFinalStage,requirementRows,branchLines,stageNpc} from './quest-v2.js?v=release-20261107-move3v161';
+import {objectiveCount,questReady} from './tutorial-logic.js?v=release-20261107-quests162';
+import {questView,isStaged,currentStage,stageReport,atFinalStage,requirementRows,branchLines,stageNpc} from './quest-v2.js?v=release-20261107-quests162';
 
 export const isTutorialQuest=q=>q?.data?.chain==='tutorial';
 const skillLevel=(ctx,skill)=>Number(ctx.skillLevel?.(skill))||1;
@@ -41,6 +41,33 @@ export function markerFor(npcId,quests=[],ctx={}){
 // Every quest giver that should carry a marker: Map npcId -> '!' | '?'.
 export function giverMarkers(quests=[],ctx={}){
  const out=new Map();for(const id of new Set([...quests.map(q=>q?.data?.giver),...quests.map(q=>stageReport(q,ctx.carried)?.npc)].filter(Boolean))){const m=markerFor(id,quests,ctx);if(m)out.set(id,m)}return out;
+}
+
+// ---- big quests and quest-chain starts (world map markers)
+// A quest's prerequisite quest keys: the classic data.requires and quest v2 requirements.quests.
+export const questPrereqs=d=>[...(d?.requires?[d.requires]:[]),...(Array.isArray(d?.requirements?.quests)?d.requirements.quests:[])].map(String);
+const BIG_LENGTH=/^(long|very long)$/i,BIG_DIFFICULTY=/^(experienced|master|grandmaster|elite)$/i;
+// The quests worth a world-map marker, from the quest data alone: a quest that needs no earlier
+// quest (castle-training quests count as done: every adventurer has finished them) and either
+// starts a chain (the first of two or more quests sharing data.chain, or a quest another quest
+// requires) or is big on its own (length Long / Very long, or difficulty Experienced and up).
+// Training quests and unpublished quests never count. Each start lists its chain's quest keys
+// (same data.chain, else every quest it unlocks, transitively) and whether this player has
+// started or finished that chain (any of them accepted or completed).
+export function chainStarts(quests=[]){
+ const rows=quests.filter(q=>q?.data?.key&&!isTutorialQuest(q)&&q.data.published!==false),byKey=new Map(rows.map(q=>[q.data.key,q]));
+ const chainSize=new Map(),unlocks=new Map();
+ for(const q of rows){const c=q.data.chain;if(c)chainSize.set(c,(chainSize.get(c)||0)+1);for(const k of questPrereqs(q.data))if(byKey.has(k)){if(!unlocks.has(k))unlocks.set(k,[]);unlocks.get(k).push(q.data.key)}}
+ const out=[];
+ for(const q of rows){const d=q.data;if(questPrereqs(d).some(k=>!k.startsWith('tutorial')))continue;
+  const chain=d.chain&&chainSize.get(d.chain)>1?d.chain:null,follows=unlocks.get(d.key)||[],big=BIG_LENGTH.test(String(d.length||''))||BIG_DIFFICULTY.test(String(d.difficulty||''));
+  if(!chain&&!follows.length&&!big)continue;
+  let members;
+  if(chain)members=rows.filter(x=>x.data.chain===chain).map(x=>x.data.key);
+  else{const seen=new Set([d.key]),todo=[d.key];while(todo.length)for(const k of unlocks.get(todo.pop())||[])if(!seen.has(k)){seen.add(k);todo.push(k)}members=[...seen]}
+  const started=members.some(k=>{const m=byKey.get(k);return !!(m?.accepted||m?.completed)});
+  out.push({id:q.id,key:d.key,name:d.name,giver:d.giver||null,chain:chain||d.key,kind:chain||follows.length?'chain':'big',members,started})}
+ return out;
 }
 
 // The quest the tracker shows: the remembered one if still active, else the most recently

@@ -76,7 +76,7 @@ test('quest markers: billboard instancing, yellow ! and ?, LOD-culled, on the mi
  const src=read('quest-markers.js'),game=read('game.js');
  assert.deepEqual(MARKER_GLYPHS,['!','?']);assert.match(src,/new T\.InstancedMesh/);assert.match(src,/fog:false/);assert.match(src,/a\.lodHidden/);
  assert.match(game,/questUiRef\?\.markers\.drawMinimap\(ctx,/);assert.match(game,/questUiRef\?\.markers\.frame\(camera\)/);
- assert.equal(markerHeight({position:{y:2},scale:{y:1}}),4.9);assert.equal(markerHeight({position:{y:0},scale:{y:.3}}),2.9*.85,'tiny model scales still clear the head');assert.equal(markerScale(5),1);assert.ok(markerScale(40)>3);assert.equal(markerScale(1000),4);
+ assert.equal(markerHeight({position:{y:2},scale:{y:1}}),5.25,'fallback above a hat when nothing is measured yet');assert.equal(markerHeight({position:{y:0},scale:{y:.3}}),3.25*.85,'tiny model scales still clear the head');assert.equal(markerScale(5),1);assert.ok(markerScale(40)>3);assert.equal(markerScale(1000),4);
 });
 
 test('arrival prologue starts at character creation, before game.js loads',()=>{

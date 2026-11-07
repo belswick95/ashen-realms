@@ -17,7 +17,7 @@ begin;
 create or replace function eldervale_private.map_marker_kinds() returns text[]
 language sql immutable set search_path='' as $fn$
  select array['boss','dungeon','dragon','training','mining','woodcutting','fishing','cooking','furnace','smithing','crafting','farming','skill',
-  'bank','general','apothecary','weapons','armour','inn','altar','agility','boat','teleport','exploration','custom']
+  'bank','general','apothecary','weapons','armour','inn','altar','agility','boat','teleport','exploration','quest','custom']
 $fn$;
 
 -- Checks and normalises an overrides document; raises a readable message for anything invalid.

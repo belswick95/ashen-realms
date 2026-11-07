@@ -7,7 +7,7 @@
 // keep using the original road data; the drawn path wanders a little around it (meander()), within
 // the graded road bed, and comes back to it at junctions and doors.
 // Everything is original and procedural. Pure helpers are exported for the unit tests.
-import {seedNoise} from './procedural-world.js?v=release-20261107-move3v161';
+import {seedNoise} from './procedural-world.js?v=release-20261107-quests162';
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
 // Mask channels: R dirt cover, G cobble cover, B centre (1 on the centreline, worn), A unused.

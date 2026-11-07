@@ -9,7 +9,7 @@
 // - weatherLook turns a kind + intensity into visual/audio parameters, and
 //   weatherAt blends them for a player position (schedule transitions and
 //   region borders both fade smoothly).
-import {biomeWeights} from './procedural-world.js?v=release-20261107-move3v161';
+import {biomeWeights} from './procedural-world.js?v=release-20261107-quests162';
 
 export const WEATHER_KINDS=['clear','cloudy','rain','storm','fog','snow','ash','haze'];
 export const WEATHER_LABELS={clear:'Clear',cloudy:'Cloudy',rain:'Rain',storm:'Thunderstorm',fog:'Fog',snow:'Snow',ash:'Ashfall',haze:'Heat haze'};

@@ -1,4 +1,4 @@
-import {animateWork,createWorkKit,workFacing} from './npc-activities.js?v=release-20261107-move3v161';
+import {animateWork,createWorkKit,workFacing} from './npc-activities.js?v=release-20261107-quests162';
 // Original townsfolk, small walking loops and visible work. Service NPCs keep their jobs.
 export function townResidents(settlements){
  const resident=(name,role,x,z,color,activity,patrol)=>({name,role,x,z,color,activity,behavior:patrol?'patrol':'stationary',patrol,lines:[`A good day for ${role.toLowerCase()}. There is always work to do around here.`,`The roads bring new faces to our town every day.`]});
@@ -29,6 +29,15 @@ export function animateTownActivity(rig,kind,time,moving=false){if(!kind&&!rig.t
 export {createWorkKit,workFacing};
 // Civilians keep any defensive weapon out of sight; it would otherwise put
 // them in a fighting stance and stop their work.
+// Posted NPCs (no roam, no route: gate wardens, gatekeepers, stall keepers) keep the facing the
+// world data gives them (data.yaw, degrees: 0 faces +Z / south) while they stand idle. The server
+// actor row used to be created without that facing (yaw 0 for everyone; db/quest-map-markers.sql
+// seeds it), so while the server reports exactly 0 for an idle posted NPC, the data facing is used.
+// Any other server facing (turning to a player who talks to them, a fight) is shown as sent.
+export function postedYaw(profile,serverYaw,moving=false){
+ if(moving||!profile||profile.behavior!=='stationary'||Number(profile.roam)>0||Array.isArray(profile.route)&&profile.route.length>1)return serverYaw;
+ const deg=Number(profile.yaw);return Number.isFinite(deg)&&deg!==0&&!(Math.abs(Number(serverYaw)||0)>1e-6)?deg*Math.PI/180:serverYaw;
+}
 export function carriesWeapon(profile={}){return /guard|warden|knight|soldier|ranger|scout|hunter|bandit|sentinel/i.test(String(profile.role||''))||profile.attackable===true}
 // Standing room. Server tiles do not keep townsfolk apart: around the capital fountain six routes
 // share the plaza ring and two sweepers share stations, so people stood inside one another (and

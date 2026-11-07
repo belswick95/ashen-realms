@@ -6,8 +6,8 @@ import {dungeons} from '../underground-data.js';
 import {UNIQUE_ITEMS,UNIQUE_MATERIALS,UNIQUE_SPECIALS,UNIQUE_POISON,legacyWeaponNumbers,defenceOf} from '../unique-gear.js';
 import {rosterBeasts,statBlock} from '../monster-roster.js';
 import {migrateLoot} from '../mechanics.js';
-import {bestiaryEntity} from '../bestiary.js?v=release-20261107-move3v161';
-import {outfitItems,SLOT_LABELS} from '../outfits.js?v=release-20261107-move3v161';
+import {bestiaryEntity} from '../bestiary.js?v=release-20261107-quests162';
+import {outfitItems,SLOT_LABELS} from '../outfits.js?v=release-20261107-quests162';
 
 const root=new URL('../',import.meta.url);
 const json=v=>{const t=JSON.stringify(v);if(t.includes('$j$'))throw Error('quote clash');return '$j$'+t+'$j$'};
