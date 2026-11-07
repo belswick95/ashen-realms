@@ -7,7 +7,7 @@
 // Flags: tradeable (false = refused by the trade window, kept on death), shopless (never stocked by
 // any shop), quest (granted by quests only; no drop source). Bonuses use the OSRS-style keys of
 // gear-tiers.js bonuses(): a = attack [stab,slash,crush,magic,ranged], d = defence, str, rstr, prayer.
-import {bonuses} from './gear-tiers.js?v=release-20261106-clips125';
+import {bonuses} from './gear-tiers.js?v=release-20261107-horse126';
 
 const AXE={stab:'slash',slash:'slash',lunge:'crush'},STAB={stab:'stab',slash:'slash',lunge:'stab'},SPEAR={stab:'stab',slash:'slash',lunge:'crush'},CRUSH={stab:'crush',slash:'crush',lunge:'crush'},HEAVY={stab:'slash',slash:'slash',lunge:'crush'},MAGIC={stab:'magic',slash:'magic',lunge:'magic'};
 const U=(id,kind,o)=>({id,kind,catalogId:kind+':'+id,tradeable:true,shopless:true,quest:false,...o,bonuses:bonuses(o.b||{})});

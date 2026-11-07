@@ -1,7 +1,7 @@
-import {registerProfessions} from './professions.js?v=release-20261106-clips125';
-import {registerWorldItems,registerCatalogOverrides} from './economy.js?v=release-20261106-clips125';
-import {loading} from './loading-indicator.js?v=release-20261106-clips125';
-import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261106-clips125';
+import {registerProfessions} from './professions.js?v=release-20261107-horse126';
+import {registerWorldItems,registerCatalogOverrides} from './economy.js?v=release-20261107-horse126';
+import {loading} from './loading-indicator.js?v=release-20261107-horse126';
+import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261107-horse126';
 // Requests the player waits on show the loading chip; background polling does not.
 const RPC_LABELS={world_pickup:'Picking up…',world_admin:'Working…',world_report:'Sending report…'};
 export async function startWorld(db,user,{initial,flush,disconnect}){
@@ -42,7 +42,7 @@ export async function startWorld(db,user,{initial,flush,disconnect}){
  window.eldervaleExploreJournal=()=>db.rpc('explore_journal').then(r=>r.error?null:r.data).catch(()=>null);
  window.eldervaleBossJournal=()=>db.rpc('boss_journal').then(r=>r.error?null:r.data).catch(()=>null);
  void db.rpc('underground_world').then(r=>{if(!r.error&&r.data?.areas?.length)window.eldervaleUnderground?.setAreas(r.data.areas)}).catch(()=>{});const loadSigns=()=>db.rpc('building_signs').then(r=>{if(!r.error)window.eldervaleBuildingSigns?.setOverrides(r.data||{})}).catch(()=>{});window.eldervaleReloadSigns=loadSigns;void loadSigns();
- if(snapshot?.owner||snapshot?.staffRole==='moderator'){const {createAdminPanel}=await import('./admin-panel.js?v=release-20261106-clips125');panel=createAdminPanel({userId:user.id,rpc,action,refresh,snapshot,bridge:window.eldervaleWorldBridge,storage:db.storage,auth:db.auth})}
+ if(snapshot?.owner||snapshot?.staffRole==='moderator'){const {createAdminPanel}=await import('./admin-panel.js?v=release-20261107-horse126');panel=createAdminPanel({userId:user.id,rpc,action,refresh,snapshot,bridge:window.eldervaleWorldBridge,storage:db.storage,auth:db.auth})}
  const report=document.createElement('button');report.type='button';report.textContent='Report a player';report.id='world-report-button';report.style.cssText='position:fixed;bottom:4px;left:50%;transform:translateX(-50%);z-index:95;font:11px Arial;padding:4px 8px;background:#182620;color:#c8ba9a;border:1px solid #80704c;border-radius:4px';(document.body.classList.contains('phone-layout')?document.querySelector('#settings-tab')||document.body:document.body).append(report);
  // Also opened from a player's right-click menu with that player already filled in.
  window.eldervaleReportPlayer=(targetId=null,targetName='')=>{const form=document.createElement('dialog');form.innerHTML='<form method="dialog"><h2>Report a player</h2><p class="report-target" hidden></p><label>Player ID (optional)<input name="target" maxlength="36"></label><label>What happened?<textarea name="body" required minlength="5" maxlength="1000"></textarea></label><p role="status"></p><button type="submit">Send report</button><button type="button" data-close>Cancel</button></form>';document.body.append(form);form.querySelector('[data-close]').onclick=()=>form.close();form.addEventListener('close',()=>form.remove());form.querySelector('form').onsubmit=async e=>{e.preventDefault();try{await rpc('world_report',{target_id:form.querySelector('[name=target]').value.trim()||null,report_text:form.querySelector('textarea').value});form.close();window.eldervaleWorldBridge.notice('Report sent to the owner.')}catch(err){form.querySelector('[role=status]').textContent=err.message}};if(targetId){form.querySelector('[name=target]').value=String(targetId);if(targetName){const who=form.querySelector('.report-target');who.textContent='Reporting '+targetName;who.hidden=false}}form.showModal()};report.onclick=()=>window.eldervaleReportPlayer();

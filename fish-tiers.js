@@ -2,10 +2,10 @@
 // band (net, bait, lure/fly, cage, harpoon, big net, deep bait). The first ladder (food.js
 // foodLadder/fishTable) is unchanged; this extends it. Server twin: fish_table() and the catalog
 // rows in db/water-1-fishing.sql (tests/water-fishing.test.js keeps both in step).
-import {fishTable,fishingMethods,foodLadder,foodItems} from './food.js?v=release-20261106-clips125';
-import {skillingChance} from './combat-level.js?v=release-20261106-clips125';
-import {fishingItems} from './fishing.js?v=release-20261106-clips125';
-import {SPOT_TYPES} from './water-data.js?v=release-20261106-clips125';
+import {fishTable,fishingMethods,foodLadder,foodItems} from './food.js?v=release-20261107-horse126';
+import {skillingChance} from './combat-level.js?v=release-20261107-horse126';
+import {fishingItems} from './fishing.js?v=release-20261107-horse126';
+import {SPOT_TYPES} from './water-data.js?v=release-20261107-horse126';
 // low/high: OSRS-style catch chances out of 256 at Fishing 1 and 99.
 export const extraFish=[
  {id:'mudperch',name:'Cooked mudperch',healPct:32,buy:16,model:'fish',color:0x9a8c6c,raw:{id:'rawMudperch',name:'Raw mudperch',method:'rod',fishLevel:10,fishXp:30,color:0x7e8a6a,low:24,high:128},cookLevel:5,cookXp:50,burn:.18,stopBurn:38},

@@ -1,5 +1,5 @@
-import {GEAR_TIERS,PLATE_TIERS,PLATE_PIECES,PLATE_NAMES,TIER_PRICE,tierById,tierItemKey,outfitGear} from './gear-tiers.js?v=release-20261106-clips125';
-import {UNIQUE_ITEMS} from './unique-gear.js?v=release-20261106-clips125';
+import {GEAR_TIERS,PLATE_TIERS,PLATE_PIECES,PLATE_NAMES,TIER_PRICE,tierById,tierItemKey,outfitGear} from './gear-tiers.js?v=release-20261107-horse126';
+import {UNIQUE_ITEMS} from './unique-gear.js?v=release-20261107-horse126';
 // Wearable outfit items built from Quaternius' Modular Character Outfits -
 // Fantasy (CC0). One item works for both bodies: each piece names its male and
 // female part. Item keys are what saves, the server catalog and equipment use.
