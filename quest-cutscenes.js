@@ -2,7 +2,7 @@
 // reaches that stage, and data.onComplete.cutscene plays before the completion scroll. Scenes are
 // stored in the quest (data.cutscenes) and run on the castle tutorial's cutscene engine
 // (tutorial.js playCutscene); the server records them in progress._seen (quest_cutscene).
-import {isStaged,currentStage} from './quest-v2.js?v=release-20261107-qa2g163';
+import {isStaged,currentStage} from './quest-v2.js?v=release-20261107-busy164';
 
 // The next stage cutscene this player has not seen yet: {quest, name, scene} or null.
 export function pendingQuestCutscene(rows=[],played=new Set()){

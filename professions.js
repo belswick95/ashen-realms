@@ -1,7 +1,7 @@
-import {professionRecipes,professionSkills} from './profession-data.js?v=release-20261107-qa2g163';
-import {goods,quantity} from './economy.js?v=release-20261107-qa2g163';
-import {skillLevel,formatXp,burnChance,skillingChance} from './combat-level.js?v=release-20261107-qa2g163';
-import {morphChildren} from './ui-stable.js?v=release-20261107-qa2g163';
+import {professionRecipes,professionSkills} from './profession-data.js?v=release-20261107-busy164';
+import {goods,quantity} from './economy.js?v=release-20261107-busy164';
+import {skillLevel,formatXp,burnChance,skillingChance} from './combat-level.js?v=release-20261107-busy164';
+import {morphChildren} from './ui-stable.js?v=release-20261107-busy164';
 export const recipes={...professionRecipes};
 export function registerProfessions(data){if(data?.recipes){for(const key of Object.keys(recipes))delete recipes[key];Object.assign(recipes,data.recipes)}window.eldervaleSkillRecipes=recipes;}
 const has=(r,id)=>Object.hasOwn(r.inputs||{},id)||(r.tools||[]).includes(id)||(r.tools||[]).includes('firelighter')&&['matches','tinderbox'].includes(id);

@@ -1,4 +1,4 @@
-import {isBow,isMagic} from './weapons.js?v=release-20261107-qa2g163';
+import {isBow,isMagic} from './weapons.js?v=release-20261107-busy164';
 // Staffs stand upright like walking staffs: in the right-hand socket of the
 // relaxed idle pose, world up is UP and the character's forward is FORWARD
 // (measured from the rig; the same for both bodies).

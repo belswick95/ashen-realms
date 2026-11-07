@@ -1,8 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';import fs from 'node:fs';
 import {createCanopyFader,canopyFadeShader,canopyFadeMaterial,canopyFadeAttribute,canopyRecord,canopySphere,segmentPointDistanceSq,CANOPY_FADE_KEY,CANOPY_FADE_OPACITY,CANOPY_FADE_SECONDS} from '../canopy-fade.js';
-import {initializeGeography} from '../geography.js?v=release-20261107-qa2g163';
+import {initializeGeography} from '../geography.js?v=release-20261107-busy164';
 const world=JSON.parse(fs.readFileSync(new URL('../db/generated-world.json',import.meta.url)));initializeGeography(world.config);
-const {buildNaturalForest}=await import('../natural-forest.js?v=release-20261107-qa2g163');
+const {buildNaturalForest}=await import('../natural-forest.js?v=release-20261107-busy164');
 globalThis.document??={createElement:()=>({width:0,height:0,getContext:()=>({clearRect(){},beginPath(){},ellipse(){},fill(){},set fillStyle(v){}})})};
 const read=f=>fs.readFileSync(new URL('../'+f,import.meta.url),'utf8');
 
@@ -76,7 +76,7 @@ test('placed trees fade through their world transform; hidden batches and releas
 });
 test('game, forest and classic look are wired to the fader',()=>{
  const game=read('game.js');
- assert.match(game,/import \{createCanopyFader\} from '\.\/canopy-fade\.js\?v=release-20261107-qa2g163'/);
+ assert.match(game,/import \{createCanopyFader\} from '\.\/canopy-fade\.js\?v=release-20261107-busy164'/);
  assert.match(game,/for\(const batch of forestBatches\)canopyFader\.addStatic\(batch\)/);
  assert.match(game,/nextCanopyTest=performance\.now\(\)\+100;/,'the occlusion test runs at 10 Hz');
  assert.match(game,/canopyFader\.update\(elapsed\)/);assert.match(game,/canopyRoots\.delete\(entry\.root\)/);
