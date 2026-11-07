@@ -1,4 +1,4 @@
-import {clipsFor,locomotionSpeed} from './character-assets.js?v=release-20261107-npcsmooth128';
+import {clipsFor,locomotionSpeed} from './character-assets.js?v=release-20261107-mixamo129';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip and cross-fades. Walking and running use the owner's

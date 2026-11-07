@@ -1,18 +1,18 @@
-import {undergroundObjectModel} from './underground-models.js?v=release-20261107-npcsmooth128';
-import {exploreObjectModel} from './explore-models.js?v=release-20261107-npcsmooth128';
-import {campObject} from './camp-models.js?v=release-20261107-npcsmooth128';
-import {professionStationModel} from './profession-models.js?v=release-20261107-npcsmooth128';
-import {oreResources} from './profession-data.js?v=release-20261107-npcsmooth128';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261107-npcsmooth128';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261107-npcsmooth128';
-import {creatureMaterial} from './creature-material.js?v=release-20261107-npcsmooth128';
-import {dragonModel} from './monster-dragon.js?v=release-20261107-npcsmooth128';
-import {castleObject} from './castle-models.js?v=release-20261107-npcsmooth128';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261107-npcsmooth128';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-npcsmooth128';
-import {townProp,dressFountain} from './town-props.js?v=release-20261107-npcsmooth128';
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-npcsmooth128';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-npcsmooth128';
+import {undergroundObjectModel} from './underground-models.js?v=release-20261107-mixamo129';
+import {exploreObjectModel} from './explore-models.js?v=release-20261107-mixamo129';
+import {campObject} from './camp-models.js?v=release-20261107-mixamo129';
+import {professionStationModel} from './profession-models.js?v=release-20261107-mixamo129';
+import {oreResources} from './profession-data.js?v=release-20261107-mixamo129';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261107-mixamo129';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261107-mixamo129';
+import {creatureMaterial} from './creature-material.js?v=release-20261107-mixamo129';
+import {dragonModel} from './monster-dragon.js?v=release-20261107-mixamo129';
+import {castleObject} from './castle-models.js?v=release-20261107-mixamo129';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261107-mixamo129';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-mixamo129';
+import {townProp,dressFountain} from './town-props.js?v=release-20261107-mixamo129';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-mixamo129';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-mixamo129';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);
