@@ -3,12 +3,12 @@
 // look-ahead point and low-passed the horse's velocity. OSRS walks DIAGONALLY first until level with
 // the target on one axis, then STRAIGHT (one clean bend), faces the step it is on and turns fast.
 // This plays a click-walk end to end the way the game does: the server walking the BFS route one tick
-// at a time, snapshots polled with latency, the local player presented (createTileFollower +
-// turnToward, game.js), a rider's horse heading (mount-heading.js) and a remote
-// player's tile playback (createMotionTrack.pushTile).
+// at a time, snapshots polled with latency, the local player presented (movement v3: the click's
+// route walked at once by createLocalWalker, snapshots only verify it, game.js), a rider's horse
+// heading (mount-heading.js) and a remote player's tile playback (createMotionTrack.pushTile).
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {TILE,GAME_TICK,bfsRoute,projectTilePose,tileSteps} from '../tile-grid.js';
-import {createMotionTrack,createTileFollower,turnToward} from '../motion-track.js';
+import {createMotionTrack,createLocalWalker,createTickLateness,turnToward} from '../motion-track.js';
 import {createTravelHeading} from '../mount-heading.js';
 
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a)),deg=a=>a*180/Math.PI,FRAME=16;
@@ -23,16 +23,17 @@ function clickWalk(goal,{steps=1,startYaw=0,poll=250,latency=100,clickAt=1234,un
  const route=bfsRoute({start:[0,0],goal,flagsAt}).path;
  let sx=0,sz=0,syaw=startYaw,path=[],at=0,stepTiles=0,lastTick=0,planned=false,nextPoll=0;
  let pose={x:0,z:0,yaw:startYaw,path:[],at:0,tile:true,stepTiles:0,moving:false,speed:TILE/GAME_TICK};
- const local={x:0,z:0},follower=createTileFollower(),rider=createTravelHeading(),remoteRider=createTravelHeading(),remote=createMotionTrack({delay:650}),inbox=[],frames=[];
- let yaw=startYaw;remote.pushTile(0,{x:0,z:0,yaw:startYaw,moving:true,stepTiles:0},0);
+ const local={x:0,z:0},walker=createLocalWalker(),rider=createTravelHeading(),remoteRider=createTravelHeading(),remote=createMotionTrack({delay:650,tileOptions:{lateness:createTickLateness()}}),inbox=[],frames=[];
+ let yaw=startYaw,clicked=false;remote.pushTile(0,{x:0,z:0,yaw:startYaw,moving:true,stepTiles:0},0,0);walker.face(startYaw);
  const gx=goal[0]*TILE,gz=goal[1]*TILE;
  for(let t=0;t<until;t+=FRAME){
   if(!planned&&t>=clickAt+latency){planned=true;path=route.map(p=>[...p]);at=Math.floor(t/600)*600;stepTiles=steps}
   for(const tick=Math.floor(t/600);lastTick<tick;){lastTick++;if(planned&&path.length){for(let s=0;s<steps&&path.length;s++){const p=path.shift();syaw=Math.atan2(p[0]-sx,p[1]-sz);sx=p[0];sz=p[1]}at=lastTick*600;if(!path.length)stepTiles=0}}
-  if(t>=nextPoll){nextPoll+=poll;inbox.push({arrive:t+latency,snap:{x:sx,z:sz,yaw:syaw,path:path.map(p=>[...p]),at,tile:true,stepTiles,moving:path.length>0,speed:Math.max(1,stepTiles)*TILE/GAME_TICK}})}
-  while(inbox.length&&inbox[0].arrive<=t){pose=inbox.shift().snap;remote.pushTile(pose.at,{x:pose.x,z:pose.z,yaw:pose.yaw,moving:pose.moving,stepTiles:pose.stepTiles},t)}
-  const dt=FRAME/1000,shown=follower.update(local,pose,t,dt);
-  if(shown&&(shown.moving||!pose.moving))yaw=turnToward(yaw,shown.yaw,dt);
+  if(t>=nextPoll){nextPoll+=poll;inbox.push({arrive:t+latency,snap:{x:sx,z:sz,yaw:syaw,path:path.map(p=>[...p]),at,tile:true,stepTiles,moving:path.length>0,speed:Math.max(1,stepTiles)*TILE/GAME_TICK,planned}})}
+  // game.js: the click is planned and walked at once; the move goes out, snapshots verify.
+  if(!clicked&&t>=clickAt){clicked=true;walker.walk(route,{serverNow:t,steps});walker.ack()}
+  while(inbox.length&&inbox[0].arrive<=t){pose=inbox.shift().snap;remote.pushTile(pose.at,{x:pose.x,z:pose.z,yaw:pose.yaw,moving:pose.moving,stepTiles:pose.stepTiles},t,t);walker.verify(pose,t,{stale:clicked&&!pose.planned})}
+  const dt=FRAME/1000;walker.face(yaw);const shown=walker.update(local,t);if(shown)yaw=shown.yaw;
   if(steps===3)yaw=rider.update(local.x,local.z,dt,yaw);
   const r=remote.sample(t),ryaw=steps===3?remoteRider.update(r.x,r.z,dt,r.yaw):r.yaw;// game.js: a remote rider's horse too
   frames.push({t,x:local.x,z:local.z,yaw,left:Math.hypot(gx-local.x,gz-local.z)/TILE,rx:r.x,rz:r.z,ryaw,rleft:Math.hypot(gx-r.x,gz-r.z)/TILE});

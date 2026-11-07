@@ -58,7 +58,8 @@ import {createGroundDrops} from './ground-drops.js?v=release-20261107-ground158'
 import {createCombatHealth} from './combat-health.js?v=release-20261107-ground158';
 import {terrainCameraClearance} from './camera-clearance.js?v=release-20261107-ground158';
 import {castle,inCastle} from './castle-layout.js?v=release-20261107-ground158';
-import {createMotionTrack,createTileFollower,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose,presentPose,turnToward,TILE_WALK_SPEED,CATCH_UP} from './motion-track.js?v=release-20261107-ground158';
+import {createMotionTrack,createLocalWalker,realmLateness,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose,presentPose,turnToward,TILE_WALK_SPEED,CATCH_UP} from './motion-track.js?v=release-20261107-ground158';
+import {planTileMove,bfsRoute,tileOf,createTileFlagCache} from './tile-grid.js?v=release-20261107-ground158';
 import {lightingAt} from './world-lighting.js?v=release-20261107-ground158';
 import {sculptPatches} from './terrain-patches.js?v=release-20261107-ground158';
 import {fromPlayerRow} from './player-save.js?v=release-20261107-ground158';
@@ -551,14 +552,55 @@ function routeTo(target){
  }
  return goal;
 }
-var navigationAfterDoor=null,pendingPickup=null,walkCheck=null;let walkQueue=[],mapDestination=null;
+var navigationAfterDoor=null,pendingPickup=null,walkCheck=null;
+// Movement log for QA (opt-in: localStorage eldervaleMoveDebug=1): per frame the presented position
+// and facing, per snapshot the server tile, path and tick, with timestamps.
+var moveDebug=(()=>{try{if(localStorage.getItem('eldervaleMoveDebug')!=='1')return null}catch{return null}
+ const frames=[],snaps=[],cap=a=>{if(a.length>20000)a.splice(0,5000)};
+ return window.eldervaleMoveDebug={frames,snaps,
+  frame(s){if(!s)return;frames.push({t:performance.now(),srv:window.eldervaleServerTime?.(),x:s.x,z:s.z,yaw:s.yaw,moving:s.moving,steps:s.steps,snapped:s.snapped});cap(frames)},
+  snapshot(p,srv,verdict,meta){snaps.push({t:performance.now(),srv,at:p.at,x:p.x,z:p.z,path:p.path,stepTiles:p.stepTiles,verdict,stale:!!meta?.motionStale});cap(snaps)},
+  pose:()=>({x:player.position.x,z:player.position.z,yaw:player.rotation.y,moving:localWalker.queue.length>0,reroutes:localWalker.stats.reroutes,snaps:localWalker.stats.snaps}),
+  stats:()=>({...localWalker.stats,lateness:realmLateness.value,tiles:walkTiles.center,fetchedAt:walkTiles.fetchedAt}),
+  walkTo:(x,z)=>setWalkDestination(new T.Vector3(x,0,z))}})();let walkQueue=[],mapDestination=null;
 // Routes start where the server has the walker (advanced along its path), not
 // where a lagging or low-frame-rate render shows it; otherwise the server walks
 // back to the drawn position first.
 function routeOrigin(){
- if(!window.eldervaleAuthority||!realmPlayerPose)return player.position.clone();
+ if(!window.eldervaleAuthority||!realmPlayerPose||window.eldervaleTileMode)return player.position.clone();
  const p=presentPose(realmPlayerPose,window.eldervaleServerTime?.()||Date.now());
  return Math.hypot(p.x-player.position.x,p.z-player.position.z)>.35?new T.Vector3(p.x,player.position.y,p.z):player.position.clone();
+}
+// Movement v3 (OSRS): a tile-mode click is planned HERE, at once, with the server's own BFS and leg
+// planning (tile-grid.js planTileMove / bfsRoute) from the tile the player is visibly on, and walked
+// at the true pace by the local walker (motion-track.js createLocalWalker); the move command carries
+// that tile as `from` (db/movement-v3.sql walks the same tiles), and server snapshots only verify.
+// Tile flags (walls, closed doors) come from the server's tile feed (quest_guide_tiles), fetched
+// around the player before a click needs them: about once per 10 tiles walked, or 30 s.
+let walkTilesBusy=false,walkTilesRetry=0;
+function refreshWalkTiles(){
+ if(!window.eldervaleTileMode||walkTilesBusy||(currentInterior?.floor||0)!==0||!window.eldervaleRealm?.guideTiles)return;
+ const i=tileOf(player.position.x),j=tileOf(player.position.z),now=Date.now();
+ if(walkTiles.covers(i,j,30)&&(now-walkTiles.fetchedAt<30000||!localWalker.queue.length))return;
+ if(now<walkTilesRetry)return;walkTilesBusy=true;
+ Promise.resolve(window.eldervaleRealm.guideTiles({x:player.position.x,z:player.position.z,radius:40})).then(v=>{if(!walkTiles.set(v))walkTilesRetry=Date.now()+10000}).catch(()=>{walkTilesRetry=Date.now()+10000}).finally(()=>{walkTilesBusy=false});
+}
+function walkSteps(){return mounted?3:running&&Number(state.runEnergy)>0?2:1}
+// The walk the server will plan for this move, from the walker's tile, or null when it cannot be
+// known here (no tile flags yet, inside a building, underground, an object target, a ranged attack).
+function predictWalk(route,requestAction,target){
+ if(!window.eldervaleTileMode||!window.eldervaleAuthority||(currentInterior?.floor||0)!==0||!localWalker.ready)return null;
+ const start=localWalker.startTile(),[si,sj]=start;if(si>540||sj>540||!walkTiles.covers(si,sj,28))return null;
+ if(target){
+  const kind=requestAction?.kind;if(kind!=='npc'&&kind!=='creature')return null;
+  if(kind==='creature'&&weaponStats(state.equippedWeapon)?.ranged)return null;
+  const row=realmActor(target)?.serverPose;if(!row||!Number.isFinite(row.x)||!Number.isFinite(row.z))return null;
+  const goal=[tileOf(row.x),tileOf(row.z)];
+  const best=localWalker.plan(t=>{const r=bfsRoute({start:t,goal,mode:'card',point:[row.x,row.z],radius:32,alt:10,flagsAt:walkTiles.flagsAt});return r.reached&&r.path.length?r.path:null});
+  return best?.path.length?best:null;
+ }
+ const best=localWalker.plan(t=>{const plan=planTileMove(t,route,walkTiles.flagsAt,{covered:(i,j)=>walkTiles.covers(i,j,28)});return plan.path.length?plan.path:null});
+ return best?.path.length?best:null;
 }
 let following=null;
 async function setWalkDestination(point,{flag=true,retried=false,follow=false}={}){
@@ -575,7 +617,7 @@ async function setWalkDestination(point,{flag=true,retried=false,follow=false}={
   const all=[];let current=routeOrigin();for(const stop of stops){if(window.eldervaleTileMode&&Math.hypot(current.x-stop.x,current.z-stop.z)<28*TILE){all.push(stop.clone());current=stop;continue}const path=await runFrameWork(routeSteps(current,stop,30000,{coarse:true}),{signal:controller.signal,budget:12,yieldFrame:nextTask,onProgress:p=>ticket.progress(0,0,p?.visited?'Checking paths around nearby obstacles…':null)});if(!path.length&&Math.hypot(current.x-stop.x,current.z-stop.z)>.4){say('That destination is currently unreachable.');if(showFlag)hideWalkFlag();break}all.push(...path.map(p=>new T.Vector3(p.x,p.y,p.z)));current=stop;}
   clearTimeout(pauseTimer);if(pausePromise)await pausePromise;if(generation!==navigationGeneration)return;ticket.end();
   dest=all.shift()||null;walkQueue=all;mapDestination=all.at(-1)?.clone()||dest?.clone()||null;if(showFlag&&mapDestination)plantWalkFlag(mapDestination);
-  if(window.eldervaleAuthority){let route=[dest,...walkQueue].filter(Boolean).slice(0,128).map(p=>[p.x,p.z]);if(!window.eldervaleTileMode&&realmPlayerPose)route=trimPassedWaypoints(route,presentPose(realmPlayerPose,(window.eldervaleServerTime?.()||Date.now())+(window.eldervaleRealm?.predictionLead?.()||0)));const target=requestAction?.realmId||requestAction?.worldEntityId||requestAction?.mob?.realmId||requestAction?.profile?.realmId||requestAction?.house?.realmId;await window.eldervaleRealm?.command('move',{path:route,target:target||null,kind:requestAction?.kind||'walk'});const end=route.at(-1);walkCheck=!requestAction&&end&&generation===navigationGeneration?{x:end[0],z:end[1],reach:.9,clicked:point.clone(),flag,generation,retried:retried===true,from:{x:player.position.x,z:player.position.z},startedAt:performance.now()}:null;}
+  if(window.eldervaleAuthority){let route=[dest,...walkQueue].filter(Boolean).slice(0,128).map(p=>[p.x,p.z]);if(!window.eldervaleTileMode&&realmPlayerPose)route=trimPassedWaypoints(route,presentPose(realmPlayerPose,(window.eldervaleServerTime?.()||Date.now())+(window.eldervaleRealm?.predictionLead?.()||0)));const target=requestAction?.realmId||requestAction?.worldEntityId||requestAction?.mob?.realmId||requestAction?.profile?.realmId||requestAction?.house?.realmId;const predicted=predictWalk(route,requestAction,target);if(predicted)localWalker.walk(predicted.path,{serverNow:window.eldervaleServerTime?.()||Date.now(),steps:walkSteps()});await window.eldervaleRealm?.command('move',{path:route,target:target||null,kind:requestAction?.kind||'walk',...(predicted?{from:predicted.from}:{})});if(predicted)localWalker.ack();const end=route.at(-1);walkCheck=!requestAction&&end&&generation===navigationGeneration?{x:end[0],z:end[1],reach:.9,clicked:point.clone(),flag,generation,retried:retried===true,from:{x:player.position.x,z:player.position.z},startedAt:performance.now()}:null;}
  }catch(error){if(error.name!=='AbortError'){say('The route could not be loaded. Please choose a destination again.');console.warn('Route loading:',error);}}finally{clearTimeout(pauseTimer);ticket.end();if(generation===navigationGeneration)routePending=false;}
 }
 
@@ -762,7 +804,7 @@ const arrows=createArrows(T,scene);
 function launch(rig,weapon,target){if(isMagic(weapon))arrows.fire(rig.leftHand,target,{kind:'bolt',color:weaponCatalog[weapon].color});else arrows.fire(rig.leftHand,target)}
 let mounted=false;
 function hoofSound({root,front,index}){const distance=root.position.distanceTo(player.position);if(distance>28)return;const dx=root.position.x-player.position.x,dz=root.position.z-player.position.z;playHorseHoof({front,volume:Math.max(0,1-distance/28)*.8,pan:(dx*Math.cos(yaw)-dz*Math.sin(yaw))/18,hard:onBridge(landscape.bridges,root.position.x,root.position.z)||distanceToRoad(root.position.x,root.position.z)<3||inCastle(root.position.x,root.position.z)});}
-const playerHorse=createHorseMount(T,player,{onHoof:hoofSound}),playerHeading=createTravelHeading(),localTileFollower=createTileFollower();
+const playerHorse=createHorseMount(T,player,{onHoof:hoofSound}),playerHeading=createTravelHeading(),localWalker=createLocalWalker(),walkTiles=createTileFlagCache();
 const merchantAnimator=createHumanoidAnimator(trader);
 // Other online adventurers and short-lived overhead chat bubbles.
 const remotePlayers=new Map(),chatBubbles=new Map();
@@ -802,7 +844,7 @@ window.eldervaleUpdatePlayers=entries=>{
  const cosmetics=publicCharacter(entry.appearance,entry.loadout),signature=JSON.stringify(cosmetics);
  if(signature!==other.signature){other.animator.dispose();other.animator=buildCharacterDisplay(T,other.root,cosmetics.appearance,cosmetics.loadout);other.signature=signature}
  other.username=String(entry.username||'Adventurer').slice(0,24);other.combatLevel=Math.max(1,Math.min(100,Math.floor(entry.combatLevel||1)));other.tag.textContent='Lv '+other.combatLevel+' · '+other.username;
- other.motion||=createMotionTrack({delay:650});const tileAt=entry.stepTiles!=null?Date.parse(entry.at):NaN;if(Number.isFinite(tileAt))other.motion.pushTile(tileAt,{x:entry.x,z:entry.z,yaw:entry.yaw||0,moving:true,stepTiles:entry.stepTiles},performance.now(),realmFrameTime);else other.motion.push(realmFrameTime||Date.now(),{x:entry.x,z:entry.z,yaw:entry.yaw||0,moving:true});other.moveIntent=entry.moving===true;other.mounted=entry.mounted===true;other.running=entry.run===true;other.target.set(entry.x,0,entry.z);other.yaw=Number.isFinite(entry.yaw)?entry.yaw:0;
+ other.motion||=createMotionTrack({delay:650,tileOptions:{flagsAt:walkTiles.flagsAt}});const tileAt=entry.stepTiles!=null?Date.parse(entry.at):NaN;if(Number.isFinite(tileAt))other.motion.pushTile(tileAt,{x:entry.x,z:entry.z,yaw:entry.yaw||0,moving:true,stepTiles:entry.stepTiles},performance.now(),window.eldervaleServerTime?.());else other.motion.push(realmFrameTime||Date.now(),{x:entry.x,z:entry.z,yaw:entry.yaw||0,moving:true});other.moveIntent=entry.moving===true;other.mounted=entry.mounted===true;other.running=entry.run===true;other.target.set(entry.x,0,entry.z);other.yaw=Number.isFinite(entry.yaw)?entry.yaw:0;
  // Treat long jumps as teleports rather than animating across the whole map.
  if(other.root.position.distanceToSquared(other.target)>400)other.root.position.copy(other.target);
  }
@@ -1642,11 +1684,12 @@ const authScreen=document.querySelector('#auth-screen'),frameStartScratch=new T.
 // Declared before the first frame() call below: groundFeet() runs inside frame(), so a later
 // `const` here was in its temporal dead zone when the loop starts early (offline/headless boot).
 const footBox=new T.Box3();function groundHeightAt(x,z){return landscape.walkHeight(x,z)}
-function frame(){requestAnimationFrame(frame);if(!authScreen.hidden||window.eldervaleWorldLoading===true)return;updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();governFrame(elapsed);if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.1),movementDt=movementTime(elapsed);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}if(window.eldervaleAuthority&&realmPoseJump&&realmPlayerPose){reconcileLocalPose(player.position,realmPlayerPose,dt,{teleport:true});player.rotation.y=realmPlayerPose.yaw;cameraFocus=null;cameraObstructionDistance=null;realmPoseJump=false;}const manual=mmoControls.update(movementDt,performance.now());const cameraKeys=mmoControls.cameraAxes();if(cameraKeys.yaw||cameraKeys.pitch){yaw+=cameraKeys.yaw*CAMERA_TURN_RATE*dt;pitch=T.MathUtils.clamp(pitch+cameraKeys.pitch*CAMERA_PITCH_RATE*dt,-.10,1.15);lastCameraDrag=performance.now()}updateCompassTurn(dt);const presentedPose=window.eldervaleAuthority&&realmPlayerPose?{...realmPlayerPose,...presentPose(realmPlayerPose,window.eldervaleServerTime?.()||Date.now())}:null;const followHold={active:!!manual,pending:!!(window.eldervaleRealm?.steerPending?window.eldervaleRealm.steerPending():window.eldervaleRealm?.movementPending())};
-// Tile mode (OSRS): the local walker walks its own queue of the route's tiles, leg by leg at the
-// true pace, facing the leg it is on (motion-track.js createTileFollower); it no longer chases the
-// presented point, which cut every bend on a slow curve.
-if(window.eldervaleAuthority&&realmPlayerPose?.tile){const shown=localTileFollower.update(player.position,realmPlayerPose,window.eldervaleServerTime?.()||Date.now(),Math.min(elapsed,1),followHold);if(shown&&!realmInCombat&&(shown.moving||!realmPlayerPose.moving))player.rotation.y=turnToward(player.rotation.y,shown.yaw,elapsed)}
+function frame(){requestAnimationFrame(frame);if(!authScreen.hidden||window.eldervaleWorldLoading===true)return;updateWorldSky();updateCoordinateHUD();const elapsed=clock.getDelta();governFrame(elapsed);if(document.body.classList.contains('landscape-required'))return;const dt=Math.min(elapsed,.1),movementDt=movementTime(elapsed);fpsSamples++;fpsSeconds+=elapsed;if(fpsSeconds>=1){if(clientSettings.fps)document.querySelector('#fps-counter').textContent=Math.round(fpsSamples/fpsSeconds)+' FPS';fpsSamples=0;fpsSeconds=0}if(window.eldervaleAuthority&&realmPoseJump&&realmPlayerPose&&!realmPlayerPose.tile){reconcileLocalPose(player.position,realmPlayerPose,dt,{teleport:true});player.rotation.y=realmPlayerPose.yaw;cameraFocus=null;cameraObstructionDistance=null;realmPoseJump=false;}const manual=mmoControls.update(movementDt,performance.now());const cameraKeys=mmoControls.cameraAxes();if(cameraKeys.yaw||cameraKeys.pitch){yaw+=cameraKeys.yaw*CAMERA_TURN_RATE*dt;pitch=T.MathUtils.clamp(pitch+cameraKeys.pitch*CAMERA_PITCH_RATE*dt,-.10,1.15);lastCameraDrag=performance.now()}updateCompassTurn(dt);const presentedPose=window.eldervaleAuthority&&realmPlayerPose?{...realmPlayerPose,...presentPose(realmPlayerPose,window.eldervaleServerTime?.()||Date.now())}:null;const followHold={active:!!manual,pending:!!(window.eldervaleRealm?.steerPending?window.eldervaleRealm.steerPending():window.eldervaleRealm?.movementPending())};
+// Tile mode (OSRS, movement v3): the local walker walks the click's route at exactly the walk/run/
+// ride pace from the moment of the click, facing the step it is on (motion-track.js
+// createLocalWalker); server snapshots only verify it (bridge.snapshot), so latency and tick timing
+// never change its speed.
+if(window.eldervaleAuthority&&realmPlayerPose?.tile){localWalker.face(player.rotation.y);const shown=localWalker.update(player.position,performance.now(),followHold);if(shown&&!realmInCombat)player.rotation.y=shown.yaw;if(moveDebug)moveDebug.frame(shown)}
 else if(window.eldervaleAuthority&&reconcileLocalPose(player.position,presentedPose,elapsed,followHold)&&!realmInCombat&&(presentedPose.moving||!realmPlayerPose.moving))player.rotation.y=turnToward(player.rotation.y,presentedPose.yaw,elapsed);const frameStart=frameStartScratch.copy(player.position);
 if(manual){player.rotation.y=manual.yaw;if(!window.eldervaleAuthority||performance.now()-lastMovementAck<1500){const step=new T.Vector3(player.position.x+manual.x*mountSpeed(mounted,running)*movementDt,player.position.y,player.position.z+manual.z*mountSpeed(mounted,running)*movementDt);const resolved=slideStep(player.position,step,(a,b)=>!walkAllowed(a,b).blocked);player.position.set(resolved.x,resolved.y,resolved.z);if(window.eldervaleAuthority)reconcileActivePose(player.position,realmPlayerPose,manual,movementDt,(window.eldervaleServerTime?.()||Date.now())+(window.eldervaleRealm?.predictionLead?.()||0),{canStep:(a,b)=>!walkAllowed(a,b).blocked});}}
 if(!window.eldervaleAuthority&&action?.kind==='creature'&&action.mob?.alive&&player.position.distanceTo(action.mob.root.position)<weaponStats(state.equippedWeapon).reach){dest=null;walkQueue=[];faceTarget(player,action.mob.root.position);strike(action.mob)}
@@ -1835,7 +1878,7 @@ function questUi(){if(questUiRef)return questUiRef;const markers=createQuestMark
   const g=JSON.stringify(window.eldervaleQuestState?.guidance||{});if(g!==guidance){guidance=g;trail.configure()}
   if(ctx.trainee){const st=window.eldervaleTutorial?.currentStep?.(),k=st?st.quest?.id+'|'+st.state+'|'+st.label:'';if(k!==trainStep){trainStep=k;trail.setStep({step:st&&st.state!=='finished'?st:null})}}else if(trainStep){trainStep=null;trail.setStep({step:tracker.step})}}}}
 function realmActor(id){if(id==='base:merchant:-3.0:7.0')return realmMerchant;const custom=worldInstances.get(id)?.actor;return custom||creatures.find(a=>a.realmId===id)||npcs.find(a=>a.realmId===id)}
-function applyRealmActor(row){let actor=realmActor(row.id);if(!actor&&row.id.startsWith('base:npc:')){const p=extraResidents.find(p=>'base:npc:'+p.name===row.id);if(p){actor=spawnNPC({...p,realmId:row.id},npcs.length);spawnedResidents.add(extraResidents.indexOf(p))}}if(!actor)return;const prevHp=actor.serverPose?.hp;actor.serverPose=row;actor.motion||=createMotionTrack({delay:650});const stepAt=row.stepAt?Date.parse(row.stepAt):NaN;if(Number.isFinite(stepAt))actor.motion.pushTile(stepAt,{x:row.x,z:row.z,yaw:row.yaw,moving:!!row.target},performance.now(),realmFrameTime);else actor.motion.push(realmFrameTime,{x:row.x,z:row.z,yaw:row.yaw,moving:!!row.target});const living=row.hp>0;
+function applyRealmActor(row){let actor=realmActor(row.id);if(!actor&&row.id.startsWith('base:npc:')){const p=extraResidents.find(p=>'base:npc:'+p.name===row.id);if(p){actor=spawnNPC({...p,realmId:row.id},npcs.length);spawnedResidents.add(extraResidents.indexOf(p))}}if(!actor)return;const prevHp=actor.serverPose?.hp;actor.serverPose=row;actor.motion||=createMotionTrack({delay:650,tileOptions:{flagsAt:walkTiles.flagsAt}});const stepAt=row.stepAt?Date.parse(row.stepAt):NaN;if(Number.isFinite(stepAt))actor.motion.pushTile(stepAt,{x:row.x,z:row.z,yaw:row.yaw,moving:!!row.target},performance.now(),window.eldervaleServerTime?.());else actor.motion.push(realmFrameTime,{x:row.x,z:row.z,yaw:row.yaw,moving:!!row.target});const living=row.hp>0;
  // A monster killed in view plays its death (humanoids: kneel and collapse; beasts topple) before it disappears.
  // It stays standing until the killing blow has landed (combat-timeline.js), so a one-shot kill
  // never falls before the attacker's weapon reaches it.
@@ -1849,7 +1892,7 @@ window.eldervaleRealmBridge={
   for(const [id,g]of Object.entries(goods))if(!g.field)state[id]=Number(data.self.stats?.[id])||0;const savedRow=fromPlayerRow(data.self);for(const k of ['gold','wood','ore','fishingPole','fishingNet','bait','rawFish','woodXP','miningXP','armorOwned','weaponsOwned','shieldsOwned','jewelryOwned','mountsOwned','equippedMount','bank','attackXP','strengthXP','defenceXP','hitpointsXP','rangedXP','magicXP','prayerXP','firemakingXP','fishingXP','cookingXP','smithingXP','craftingXP','herbloreXP','farmingXP','agilityXP','thievingXP','fletchingXP','runecraftingXP','constructionXP','hunterXP','amulet','trinket','starterChestClaimed','starterShieldsGranted','starterBattleaxeGranted','starterDaggerGranted','starterJewelryGranted'])if(savedRow[k]!==undefined)state[k]=savedRow[k];
   if(inventoryOrderOwner!==selfId){inventoryOrderOwner=selfId;const serverOrder=data.self.game_flags?.inventoryOrder;if(Array.isArray(serverOrder)){inventoryLayout=state.inventoryOrder=sanitizeOrder(serverOrder,INVENTORY_SLOTS);inventoryOrderSync.known(inventoryLayout);lastPanelKey=null}}
   const signature=JSON.stringify([state.equipped,state.equippedWeapon,state.equippedShield]),incoming=JSON.stringify([savedRow.equipped,savedRow.equippedWeapon,savedRow.equippedShield]);state.equipped=savedRow.equipped;state.equippedWeapon=savedRow.equippedWeapon;state.equippedShield=savedRow.equippedShield;holdHp(playerKey(selfId),combat,combat.hp,data.self.health);combat.hp=data.self.health;combat.maxHp=data.self.max_health;combat.xp=data.self.xp;combat.kills=savedRow.kills;state.runEnergy=data.motion.energy;running=runPending&&performance.now()<runPending.until?runPending.value:data.motion.run===true;mounted=data.motion.mounted===true;
-  if(signature!==incoming){gatheringVisuals.clear();refreshArmor();refreshWeapon();refreshShield()}playerMotion.push(realmFrameTime,{x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0});const nextPose={x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0||Date.parse(data.motion.input_until)>(window.eldervaleServerTime?.()||Date.now()),inputX:data.motion.input_x||0,inputZ:data.motion.input_z||0,at:Date.parse(data.motion.motion_at)||realmFrameTime,until:Date.parse(data.motion.input_until),path:Array.isArray(data.motion.path)?data.motion.path:[],speed:data.motion.tile?Math.max(1,data.motion.stepTiles||1)*TILE/GAME_TICK:mountSpeed(data.motion.mounted===true,data.motion.run&&Number(data.motion.energy)>0),tile:data.motion.tile===true,stepTiles:data.motion.stepTiles||0};window.eldervaleTileMode=data.motion.tile===true;realmPoseJump=realmPoseJump||serverMotionJump(realmPlayerPose,nextPose);realmPlayerPose=nextPose;if(!realmPlayerPose.moving&&!meta.motionStale){dest=null;walkQueue=[];mapDestination=null;}
+  if(signature!==incoming){gatheringVisuals.clear();refreshArmor();refreshWeapon();refreshShield()}playerMotion.push(realmFrameTime,{x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0});const nextPose={x:data.motion.x,z:data.motion.z,yaw:data.motion.yaw,moving:data.motion.path.length>0||Date.parse(data.motion.input_until)>(window.eldervaleServerTime?.()||Date.now()),inputX:data.motion.input_x||0,inputZ:data.motion.input_z||0,at:Date.parse(data.motion.motion_at)||realmFrameTime,until:Date.parse(data.motion.input_until),path:Array.isArray(data.motion.path)?data.motion.path:[],speed:data.motion.tile?Math.max(1,data.motion.stepTiles||1)*TILE/GAME_TICK:mountSpeed(data.motion.mounted===true,data.motion.run&&Number(data.motion.energy)>0),tile:data.motion.tile===true,stepTiles:data.motion.stepTiles||0};window.eldervaleTileMode=data.motion.tile===true;realmPoseJump=realmPoseJump||serverMotionJump(realmPlayerPose,nextPose);const lastPoseAt=realmPlayerPose?.at;realmPlayerPose=nextPose;if(nextPose.tile){const serverNow=window.eldervaleServerTime?.()||Date.now();realmLateness.observe(lastPoseAt,nextPose.at,serverNow);const verdict=localWalker.verify(nextPose,serverNow,{stale:!!meta.motionStale});if(moveDebug)moveDebug.snapshot(nextPose,serverNow,verdict,meta);refreshWalkTiles()}if(!realmPlayerPose.moving&&!meta.motionStale){dest=null;walkQueue=[];mapDestination=null;}
   realmInCombat=false;for(const id of data.removedActors||[]){const a=realmActor(id);if(a){a.root.visible=false;a.deleted=true;}}for(const row of data.actors){const a=realmActor(row.id);if(a)a.deleted=false;realmActorCache.set(row.id,row);applyRealmActor(row);if(row.target===selfId)realmInCombat=true;}
   window.eldervaleUpdatePlayers(data.players);gatheringSelfId=selfId;gatheringVisuals.sync(data.gathering||[]);for(const entry of data.players){const other=remotePlayers.get(entry.id);if(other){holdHp(playerKey(entry.id),other,other.hp,entry.hp);other.hp=entry.hp;other.maxHp=entry.maxHp}}
   for(const object of [...data.objects,...(data.gates||[])]){realmObjectState.set(object.id,object);applyRealmObject(object);}

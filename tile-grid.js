@@ -116,3 +116,43 @@ export function projectTilePose(pose,now,{maxTicks=3}={}){
 
 // Where a click lands: the centre of the tile under it.
 export function snapToTile(p){return {x:tileCenter(tileOf(p.x)),z:tileCenter(tileOf(p.z))}}
+
+// ---- Client route prediction (movement v3) -------------------------------------------------------
+// The local walker starts a click-walk at once, on the route the server will walk: the same BFS
+// (bfsRoute) and the same leg planning as eldervale_private.tile_plan_move / tile_plan_leg.
+// SQL round(double precision) rounds a tie to even; so does this.
+const rint=v=>{const f=Math.floor(v),d=v-f;return d>.5?f+1:d<.5?f:f%2===0?f:f+1};
+// tile_plan_leg: route [[x,z],...] waypoints; the first is the leg's goal (beyond the search window:
+// the closest tile toward it, and the waypoint stays). Returns {path,route} (route: waypoints left).
+export function planTileLeg(ci,cj,route,flagsAt,{radius=32,alt=10}={}){
+ if(!Array.isArray(route)||!route.length)return {path:[],route:[]};
+ let gi=tileOf(route[0][0]),gj=tileOf(route[0][1]);const far=Math.max(Math.abs(gi-ci),Math.abs(gj-cj));
+ if(far<=radius-1){const r=bfsRoute({start:[ci,cj],goal:[gi,gj],mode:'tile',point:[gi*TILE,gj*TILE],radius,alt:route.length>1?-1:alt,flagsAt});return {path:r.path,route:route.slice(1)}}
+ const f=(radius-1)/far;gi=ci+rint((gi-ci)*f);gj=cj+rint((gj-cj)*f);
+ return {path:bfsRoute({start:[ci,cj],goal:[gi,gj],mode:'tile',point:[gi*TILE,gj*TILE],radius,alt:-1,flagsAt}).path,route:route.slice()};
+}
+// tile_plan_move without a target: waypoints inside the first search window are skipped (the BFS
+// finds its own way), then legs are planned one after another while `covered(i,j)` says the flags
+// around a leg's start are known (the server plans the next leg when one ends; so does this).
+// Returns {path,legs}: the whole predicted walk and the leg ends it holds.
+export function planTileMove(start,waypoints,flagsAt,{radius=32,alt=10,covered=()=>true,maxLegs=6}={}){
+ let route=(Array.isArray(waypoints)?waypoints:[]).slice(0,128).filter(w=>Array.isArray(w)&&Number.isFinite(+w[0])&&Number.isFinite(+w[1])).map(w=>[+w[0],+w[1]]);
+ let [ci,cj]=start;const path=[],legs=[];
+ while(route.length>1&&Math.max(Math.abs(tileOf(route[1][0])-ci),Math.abs(tileOf(route[1][1])-cj))<=radius-1)route.shift();
+ for(let n=0;n<maxLegs&&route.length&&covered(ci,cj);n++){
+  const leg=planTileLeg(ci,cj,route,flagsAt,{radius,alt});if(!leg.path.length)break;
+  path.push(...leg.path);const end=leg.path.at(-1);ci=tileOf(end[0]);cj=tileOf(end[1]);legs.push(end);route=leg.route;
+ }
+ return {path,legs,complete:!route.length};
+}
+// Tile flags around the walker from the server feed (public.quest_guide_tiles: flags plus closed
+// door bits, exactly what tile_route reads); unknown tiles read 0. `covers(i,j,r)`: the whole BFS
+// window of radius r around (i,j) is inside the fetched window.
+export function createTileFlagCache(){
+ const k=(i,j)=>(i+32768)*65536+(j+32768);let flags=new Map(),center=null,radius=0,at=0;
+ return {
+  set(view,now=Date.now()){if(!view||!Array.isArray(view.tiles)||!Array.isArray(view.center))return false;const next=new Map();for(const t of view.tiles){if(Array.isArray(t)&&t[2])next.set(k(t[0]|0,t[1]|0),t[2]|0)}flags=next;center=[view.center[0]|0,view.center[1]|0];radius=view.radius|0;at=now;return true},
+  flagsAt:(i,j)=>flags.get(k(i,j))||0,
+  covers(i,j,r=32){return !!center&&Math.max(Math.abs(i-center[0]),Math.abs(j-center[1]))+r<=radius},
+  get center(){return center},get radius(){return radius},get fetchedAt(){return at}};
+}

@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
 import {createTravelHeading} from '../mount-heading.js';
 import {bfsRoute,TILE,GAME_TICK} from '../tile-grid.js';
-import {createMotionTrack,createTileFollower,turnToward} from '../motion-track.js';
+import {createMotionTrack,createLocalWalker,createTickLateness,turnToward} from '../motion-track.js';
 import {createHorseMount,GALLOP_STRIDE} from '../horse-mount.js';
 
 const wrapDeg=a=>Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))*180/Math.PI;
@@ -22,22 +22,26 @@ const reversals=ys=>{let n=0,last=0;for(let i=1;i<ys.length;i++){const d=Math.at
 
 test('local rider: the horse faces its tile step, turns once at the bend, never crabs or wobbles',()=>{
  const poseAt=(idx,at)=>{const prev=points[Math.max(0,idx-1)],cur=points[idx];return {x:cur[0],z:cur[1],yaw:Math.atan2(cur[0]-prev[0],cur[1]-prev[1]),path:points.slice(idx+1),at,tile:true,stepTiles:3,moving:idx<points.length-1,speed:3*TILE/GAME_TICK}};
- const heading=createTravelHeading(),follower=createTileFollower(),local={x:0,z:0},samples=[];let yaw=Math.PI/4;
+ // Movement v3 (game.js): the click's route is ridden at once at three tiles a tick; each tick's
+ // server pose only verifies it.
+ const heading=createTravelHeading(),walker=createLocalWalker(),local={x:0,z:0},samples=[];let yaw=Math.PI/4,lastTick=-1;
+ walker.update(local,0);walker.face(yaw);walker.walk(points.slice(1),{serverNow:0,steps:3});walker.ack();
  for(let t=0;t<(MOVES.length/3+2)*TICK;t+=dt*1000){
-  const tick=Math.floor(t/TICK),pose=poseAt(Math.min(points.length-1,tick*3),tick*TICK),f=follower.update(local,pose,t,dt);
-  if(f)yaw=turnToward(yaw,f.yaw,dt);yaw=heading.update(local.x,local.z,dt,yaw);samples.push({x:local.x,z:local.z,yaw});
+  const tick=Math.floor(t/TICK);if(tick!==lastTick){lastTick=tick;walker.verify(poseAt(Math.min(points.length-1,tick*3),tick*TICK),t)}
+  walker.face(yaw);const f=walker.update(local,t);if(f)yaw=f.yaw;yaw=heading.update(local.x,local.z,dt,yaw);samples.push({x:local.x,z:local.z,yaw});
  }
+ assert.equal(walker.stats.reroutes,0,'the server tick poses only verify the ride');
  const c=crab(samples);assert.ok(c.length>50&&Math.max(...c)<1,'faces the travel direction: worst '+Math.max(...c).toFixed(2)+'° at '+c.indexOf(Math.max(...c))+' of '+c.length);
  assert.equal(reversals(samples.map(s=>s.yaw)),0,'no side-to-side swing');
  assert.ok(Math.hypot(local.x-points.at(-1)[0],local.z-points.at(-1)[1])<1e-6,'arrives on the clicked tile');
 });
 
 test('remote rider: tick positions three tiles apart are walked tile by tile; the horse faces each step',()=>{
- const track=createMotionTrack({delay:650}),heading=createTravelHeading(),samples=[];
+ const track=createMotionTrack({delay:650,tileOptions:{lateness:createTickLateness()}}),heading=createTravelHeading(),samples=[];
  let sent=0;
  for(let now=0;now<(MOVES.length/3+6)*TICK;now+=dt*1000){
   // Each tick's position arrives 150 ms after its tick (three tiles on, when riding).
-  for(;sent*TICK+150<=now&&sent*3<MOVES.length+3;sent++){const idx=Math.min(points.length-1,sent*3),prev=points[Math.max(0,idx-1)],cur=points[idx];track.pushTile(sent*TICK,{x:cur[0],z:cur[1],yaw:idx?Math.atan2(cur[0]-prev[0],cur[1]-prev[1]):Math.PI/4,moving:true,stepTiles:3},now)}// standing facing the first (diagonal) step
+  for(;sent*TICK+150<=now&&sent*3<MOVES.length+3;sent++){const idx=Math.min(points.length-1,sent*3),prev=points[Math.max(0,idx-1)],cur=points[idx];track.pushTile(sent*TICK,{x:cur[0],z:cur[1],yaw:idx?Math.atan2(cur[0]-prev[0],cur[1]-prev[1]):Math.PI/4,moving:true,stepTiles:3},now,now)}// standing facing the first (diagonal) step
   const s=track.sample(now);if(!s)continue;samples.push({x:s.x,z:s.z,yaw:heading.update(s.x,s.z,dt,s.yaw)})}
  const c=crab(samples);assert.ok(c.length>50&&Math.max(...c)<1,'faces each step, no chord between tick positions: worst '+Math.max(...c).toFixed(2)+'° n='+c.length);
  assert.equal(reversals(samples.slice(1).map(s=>s.yaw)),0,'no side-to-side swing');
