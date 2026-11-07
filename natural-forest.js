@@ -1,5 +1,6 @@
 import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261107-polish150';
 import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261107-polish150';
+import {canopyFadeMaterial,canopyFadeAttribute,canopyRecord,canopySphere,canopyLimbMaterial} from './canopy-fade.js?v=release-20261107-polish150';
 // Tree species share the same three instanced meshes per 64-unit chunk (trunks, branches, leaf
 // cards): a species is only a different arrangement and an instance tint, so adding variety costs
 // no extra draw calls. Everything is seeded by position, so every client grows the same forest.
@@ -27,10 +28,10 @@ const BARK={oak:0xffffff,birch:[5.2,7.6,11.5],pine:[.85,.8,.75],spruce:[.7,.68,.
 const LEAF={oak:[1,1,1],birch:[1.25,1.32,.78],pine:[.62,.78,.7],spruce:[.55,.72,.8],snowpine:[8,5.2,14],willow:[1.35,1.45,.85],dead:[1,1,1]};
 const DRY_LEAF=[1.25,1.05,.6];
 export function buildNaturalForest(T,scene,trees,{wood,heightAt,seed=1,species=null}){
- const atlas=document.createElement('canvas');atlas.width=atlas.height=256;const c=atlas.getContext('2d'),rand=seededRandom(seed);c.clearRect(0,0,256,256);for(let i=0;i<650;i++){const a=rand()*Math.PI*2,r=Math.sqrt(rand())*116,x=128+Math.cos(a)*r,y=128+Math.sin(a)*r;c.fillStyle=['#466138','#5a7441','#789253','#314d31'][i%4];c.beginPath();c.ellipse(x,y,3+rand()*8,1.5+rand()*4,a,0,Math.PI*2);c.fill()}const map=new T.CanvasTexture(atlas);map.colorSpace=T.SRGBColorSpace;const leaves=new T.MeshStandardMaterial({map,alphaTest:.4,side:T.DoubleSide,roughness:.95,color:0xd4dfc3});
- const leafGeometry=new T.PlaneGeometry(1,1),trunkGeometry=new T.CylinderGeometry(.15,.27,1,10),branchGeometry=new T.CylinderGeometry(.45,.8,1,6),chunks=new Map(),meshes=[],dummy=new T.Object3D(),tint=new T.Color();
+ const atlas=document.createElement('canvas');atlas.width=atlas.height=256;const c=atlas.getContext('2d'),rand=seededRandom(seed);c.clearRect(0,0,256,256);for(let i=0;i<650;i++){const a=rand()*Math.PI*2,r=Math.sqrt(rand())*116,x=128+Math.cos(a)*r,y=128+Math.sin(a)*r;c.fillStyle=['#466138','#5a7441','#789253','#314d31'][i%4];c.beginPath();c.ellipse(x,y,3+rand()*8,1.5+rand()*4,a,0,Math.PI*2);c.fill()}const map=new T.CanvasTexture(atlas);map.colorSpace=T.SRGBColorSpace;const limbs=canopyLimbMaterial(wood),leaves=canopyFadeMaterial(new T.MeshStandardMaterial({map,alphaTest:.4,side:T.DoubleSide,roughness:.95,color:0xd4dfc3}));
+ const trunkGeometry=new T.CylinderGeometry(.15,.27,1,10),branchGeometry=new T.CylinderGeometry(.45,.8,1,6),chunks=new Map(),meshes=[],dummy=new T.Object3D(),tint=new T.Color();
  for(const tree of trees){const key=Math.floor(tree.x/64)+':'+Math.floor(tree.z/64);if(!chunks.has(key))chunks.set(key,[]);chunks.get(key).push(tree)}
- for(const [key,records]of chunks){const trunks=[],branches=[],cards=[];for(const {x,z}of records){
+ for(const [key,records]of chunks){const trunks=[],branches=[],cards=[],crowns=[];for(const {x,z}of records){
   const starts=[trunks.length,branches.length,cards.length],treeKey='base:tree:'+x.toFixed(1)+':'+z.toFixed(1);
   const r=seededRandom((seed^Math.floor(x*127)^Math.floor(z*313))>>>0),y=heightAt(x,z);
   let height=5+r()*3;const w=species?null:biomeWeights(x,z,seed);
@@ -59,11 +60,15 @@ export function buildNaturalForest(T,scene,trees,{wood,heightAt,seed=1,species=n
    for(let i=0;i<6;i++){const a=i*2.4+r()*.4,level=(birch?.62:.57)+(i%3)*.12,reach=(1.7+r()*.6)*spread,bx=x+Math.sin(a)*reach,bz=z+Math.cos(a)*reach;branches.push({x:(x+bx)/2,y:y+height*level,z:(z+bz)/2,sx:birch?.07:.10,sy:reach*1.3,sz:birch?.07:.10,rx:Math.PI/2-.35,ry:a,rz:0,color:bark});for(let j=0;j<3;j++)card({x:bx+(r()-.5)*.9,y:y+height*level+r()*.8,z:bz+(r()-.5)*.9,sx:2.8*spread,sy:2.5*(birch?.9:1),sz:1,rx:(r()-.5)*.65,ry:a+j*Math.PI/3,rz:(r()-.5)*.3});}
   }
   [trunks,branches,cards].forEach((data,k)=>{for(let i=starts[k];i<data.length;i++)data[i].treeKey=treeKey});
+  if(cards.length>starts[2])crowns.push([starts[2],cards.length,starts[1],branches.length]);
  }
- const [kx,kz]=key.split(':').map(Number);for(const [geometry,material,data,range]of [[trunkGeometry,wood,trunks,190],[branchGeometry,wood,branches,150],[leafGeometry,leaves,cards,175]]){if(!data.length)continue;const m=new T.InstancedMesh(geometry,material,data.length);const tinted=data.some(d=>d.color!==0xffffff&&d.color!==LEAF.oak);data.forEach((d,i)=>{dummy.position.set(d.x,d.y,d.z);dummy.rotation.set(d.rx,d.ry,d.rz);dummy.scale.set(d.sx,d.sy,d.sz);dummy.updateMatrix();m.setMatrixAt(i,dummy.matrix);if(tinted){if(typeof d.color==='number')tint.setHex(d.color);else tint.setRGB(...d.color);m.setColorAt(i,tint)}});if(m.instanceColor)m.instanceColor.needsUpdate=true;m.userData.treeSlots=new Map();data.forEach((d,i)=>{if(!m.userData.treeSlots.has(d.treeKey))m.userData.treeSlots.set(d.treeKey,[]);m.userData.treeSlots.get(d.treeKey).push(i)});m.userData.treeOriginal=m.instanceMatrix.array.slice();m.castShadow=true;m.receiveShadow=true;m.userData.terrainFixed=true;m.userData.naturalChunk={x:kx*64+32,z:kz*64+32,range};m.computeBoundingSphere();scene.add(m);meshes.push(m)}
+ const [kx,kz]=key.split(':').map(Number);let limbMesh=null;for(const [geometry,material,data,range]of [[trunkGeometry,wood,trunks,190],[branchGeometry,limbs,branches,150],[null,leaves,cards,175]]){if(!data.length)continue;const fades=data!==trunks,leafBatch=data===cards,m=new T.InstancedMesh(fades?fadeChunkGeometry(T,geometry,data.length):geometry,material,data.length);if(data===branches)limbMesh=m;const tinted=data.some(d=>d.color!==0xffffff&&d.color!==LEAF.oak);data.forEach((d,i)=>{dummy.position.set(d.x,d.y,d.z);dummy.rotation.set(d.rx,d.ry,d.rz);dummy.scale.set(d.sx,d.sy,d.sz);dummy.updateMatrix();m.setMatrixAt(i,dummy.matrix);if(tinted){if(typeof d.color==='number')tint.setHex(d.color);else tint.setRGB(...d.color);m.setColorAt(i,tint)}});if(m.instanceColor)m.instanceColor.needsUpdate=true;m.userData.treeSlots=new Map();data.forEach((d,i)=>{if(!m.userData.treeSlots.has(d.treeKey))m.userData.treeSlots.set(d.treeKey,[]);m.userData.treeSlots.get(d.treeKey).push(i)});m.userData.treeOriginal=m.instanceMatrix.array.slice();m.castShadow=true;m.receiveShadow=true;m.userData.terrainFixed=true;m.userData.naturalChunk={x:kx*64+32,z:kz*64+32,range};m.computeBoundingSphere();if(leafBatch)m.userData.canopyTrees=crowns.map(([start,end,limbStart,limbEnd])=>{const c=canopySphere(cards,start,end);return canopyRecord(m,c.x,c.y,c.z,c.r,start,end,limbMesh,limbStart,limbEnd)});scene.add(m);meshes.push(m)}
  }
  return meshes;
 }
+// Each chunk's leaf cards and limbs get their own geometry (a plane or a six-sided cylinder), so
+// the per-instance canopy fade attribute (canopy-fade.js) belongs to that chunk alone.
+function fadeChunkGeometry(T,shared,count){const g=shared?shared.clone():new T.PlaneGeometry(1,1);g.setAttribute('canopyFade',canopyFadeAttribute(T,count));return g}
 export function updateNaturalForest(batches,player){for(const b of batches){const c=b.userData.naturalChunk;if(c)b.visible=Math.hypot(c.x-player.x,c.z-player.z)<c.range+46;}}
 
 export function setForestTreeVisible(T,batches,id,visible){for(const mesh of batches){const slots=mesh.userData.treeSlots?.get(id);if(!slots)continue;for(const i of slots){const offset=i*16;if(visible)mesh.instanceMatrix.array.set(mesh.userData.treeOriginal.subarray(offset,offset+16),offset);else {mesh.instanceMatrix.array.fill(0,offset,offset+16);mesh.instanceMatrix.array[offset+15]=1;}}mesh.instanceMatrix.needsUpdate=true;}}
