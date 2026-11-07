@@ -5,7 +5,7 @@
 // name,x,z,note}]}, stored in game_settings 'map_markers' and published to every client in
 // gameConfig.mapMarkers (db/map-icons.sql: map_markers_get / map_markers_save, owner-checked and
 // audited). "Preview" applies the draft on this screen only.
-import {MARKER_CATS,MARKER_GROUPS,markerLabel,drawMarkerIcon,OVERWORLD} from './map-icons.js?v=release-20261107-portrait145';
+import {MARKER_CATS,MARKER_GROUPS,markerLabel,drawMarkerIcon,OVERWORLD} from './map-icons.js?v=release-20261107-perf146';
 
 export const MARKER_LIMITS={custom:60,names:300,hidden:600,name:60,note:120};
 // The overrides document from the console's draft: trimmed names, known kinds, bounded sizes.

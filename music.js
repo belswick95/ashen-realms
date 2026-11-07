@@ -1,7 +1,7 @@
-import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261107-portrait145';
-import {createSfx} from './sfx.js?v=release-20261107-portrait145';
-import {createAmbience} from './ambience.js?v=release-20261107-portrait145';
-import {playJingle} from './jingles.js?v=release-20261107-portrait145';
+import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261107-perf146';
+import {createSfx} from './sfx.js?v=release-20261107-perf146';
+import {createAmbience} from './ambience.js?v=release-20261107-perf146';
+import {playJingle} from './jingles.js?v=release-20261107-perf146';
 let singleton;
 // One audio engine spans sign-in and gameplay: ONE AudioContext and mixer with
 // three channels, as in RuneScape — Music (region tracks, mixed soft by
@@ -17,7 +17,10 @@ export function startMusic({scene='world'}={}){
  let enabled=storage.getItem('eldervale-audio-enabled')!=='false',musicEnabled=storage.getItem('eldervale-music-enabled')===null?storage.getItem('eldervale-music-muted')!=='true':storage.getItem('eldervale-music-enabled')!=='false',environmentEnabled=storage.getItem('eldervale-environment-enabled')!=='false',sfxEnabled=storage.getItem('eldervale-sfx-enabled')!=='false';
  let volume=audioPreference(storage,'eldervale-music-volume',DEFAULT_VOLUMES.music),environmentVolume=audioPreference(storage,'eldervale-environment-volume',audioPreference(storage,'eldervale-ambient-volume',DEFAULT_VOLUMES.environment)),sfxVolume=audioPreference(storage,'eldervale-sfx-volume',DEFAULT_VOLUMES.sfx);
  const fades=new Map();
- decks.forEach(deck=>{deck.loop=true;deck.preload='auto';deck.autoplay=enabled&&musicEnabled;deck.setAttribute('playsinline','');deck.addEventListener('error',()=>{if(deck===decks[active]&&enabled){unavailable=true;notify()}})});
+ decks.forEach(deck=>{deck.loop=true;
+  // No download before the first gesture: a track cannot play until then, and the login theme
+  // alone is 2.4 MB of the first load (autoplay would override preload). After unlock, play() streams the track as before.
+  deck.preload='none';deck.autoplay=false;deck.setAttribute('playsinline','');deck.addEventListener('error',()=>{if(deck===decks[active]&&enabled){unavailable=true;notify()}})});
  function state(){return {scene:mode,zone:zone?.id||null,track:desired?.title||null,enabled,musicEnabled,environmentEnabled,sfxEnabled,volume,environmentVolume,sfxVolume,status:unavailable?'unavailable':!enabled?'muted':waiting?'waiting':started?'playing':'waiting',context:ctx?.state||'not-started',sfxLoaded:sfx?.loaded||0,beds:ambience?.beds||[]}}
  function notify(){for(const listener of listeners)listener(state());const b=document.querySelector('#music-toggle'),s=document.querySelector('#music-volume'),label=document.querySelector('#music-track');if(b){b.textContent=musicEnabled?'♫ Music on':'♫ Music off';b.setAttribute('aria-pressed',String(musicEnabled))}if(s)s.value=String(volume);if(label)label.textContent=desired?desired.title+' · '+(desired.artist||'Kevin MacLeod'):'No town music';const e=document.querySelector('#environment-toggle'),v=document.querySelector('#environment-volume');if(e){e.textContent=environmentEnabled?'Area sounds on':'Area sounds off';e.setAttribute('aria-pressed',String(environmentEnabled))}if(v)v.value=String(environmentVolume);const f=document.querySelector('#sfx-toggle'),fv=document.querySelector('#sfx-volume');if(f){f.textContent=sfxEnabled?'Sound effects on':'Sound effects off';f.setAttribute('aria-pressed',String(sfxEnabled))}if(fv)fv.value=String(sfxVolume)}
  function ramp(gain,value,duration=.7){if(!gain||!ctx)return;const p=gain.gain,t=ctx.currentTime;p.cancelScheduledValues(t);p.setValueAtTime(p.value,t);p.setTargetAtTime(value,t,duration/4)}
@@ -30,7 +33,7 @@ export function startMusic({scene='world'}={}){
   ambience=createAmbience({context:()=>ctx,bus:()=>environmentBus,sfx});
   applyVolume();ctx.addEventListener('statechange',()=>{if(ctx.state==='suspended'&&enabled&&!document.hidden){waiting=true;notify()}});
  }
- function applyVolume(){if(celebration)celebration.volume=enabled?volume/100:0;decks.forEach(deck=>deck.autoplay=enabled&&musicEnabled);ramp(musicBus,enabled&&musicEnabled?volume/100*.7:0,.25);ramp(environmentBus,enabled&&environmentEnabled?environmentVolume/100:0,.3);ramp(sfxBus,enabled&&sfxEnabled?sfxVolume/100:0,.15);if(!enabled||!musicEnabled)decks.forEach(deck=>deck.pause())}
+ function applyVolume(){if(celebration)celebration.volume=enabled?volume/100:0;decks.forEach(deck=>deck.autoplay=started&&enabled&&musicEnabled);ramp(musicBus,enabled&&musicEnabled?volume/100*.7:0,.25);ramp(environmentBus,enabled&&environmentEnabled?environmentVolume/100:0,.3);ramp(sfxBus,enabled&&sfxEnabled?sfxVolume/100:0,.15);if(!enabled||!musicEnabled)decks.forEach(deck=>deck.pause())}
  // Music ducks under important effects (−dB for `hold` s), then eases back.
  function duck(db=-5,hold=.6,release=1.2){if(!ctx||!duckBus)return;const t=ctx.currentTime,target=Math.pow(10,db/20),p=duckBus.gain;if(t+hold<duckUntil&&p.value<=target+.001)return;duckUntil=Math.max(duckUntil,t+hold);p.cancelScheduledValues(t);p.setValueAtTime(p.value,t);p.setTargetAtTime(target,t,.06);p.setTargetAtTime(1,duckUntil,release/3)}
  function transition(track){
@@ -38,7 +41,7 @@ export function startMusic({scene='world'}={}){
   // Region changes crossfade: the old track eases out while the new one eases in.
   if(ctx){ramp(gains[old],0,3.2);ramp(gains[active],0,.05)}
   decks[active].pause();decks[active].removeAttribute('src');decks[active].load();
-  if(track){decks[active].src='/assets/audio/'+track.id+'.mp3';if(enabled&&musicEnabled&&started)playActive()}
+  if(track){decks[active].preload=started?'auto':'none';decks[active].src='/assets/audio/'+track.id+'.mp3';if(enabled&&musicEnabled&&started)playActive()}
   const timer=setTimeout(()=>{if(epoch===generation)decks[old].pause();fades.delete(old)},3400);fades.set(old,timer);notify();
  }
  async function playActive(){
