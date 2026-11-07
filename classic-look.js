@@ -79,15 +79,16 @@ export function terrainColor(climate,normalY,height,source=null,jitter=0,patch=0
  if(source){const albedo=(GROUND_ALBEDO.grass*(g+c)+GROUND_ALBEDO.snow*s+GROUND_ALBEDO.dry*d)/sum,cold=s/sum;for(let k=0;k<3;k++)out[k]=source[k]*albedo*(1-cold*SNOW_TINT[k])}
  else for(let k=0;k<3;k++)out[k]=(G.grass[k]*(g+c)+G.snow[k]*s+G.sand[k]*d)/sum;
  // Lush and dry patches in grassland: a gentle shift between deeper and yellower green.
- const p=patch*green;out[0]*=1+.07*p;out[1]*=1+.02*p;out[2]*=1-.08*p;
+ const p=patch*green;out[0]*=1+.10*p;out[1]*=1+.03*p;out[2]*=1-.12*p;
  // A touch of bare earth in some grass points, as worn spots.
  const worn=clamp(jitter-.6)*.8*green;for(let k=0;k<3;k++)out[k]=out[k]*(1-worn)+G.earth[k]*worn;
  const t=clamp((Math.abs(normalY)-.58)/.3),rock=(1-t*t*(3-2*t))*.72;
  // Steep ground: the same colour over darker stone, as the normal ground shader does.
  for(let k=0;k<3;k++)out[k]=out[k]*(1-rock)+(source?source[k]*GROUND_ALBEDO.rock:G.rock[k])*rock;
- // Slightly muted, so props and characters stand out against the ground.
- const y=.2126*out[0]+.7152*out[1]+.0722*out[2];for(let k=0;k<3;k++)out[k]+=(y-out[k])*.2;
- const light=1+jitter*.07+patch*.05;
+ // Rich, earthy colour: saturation pushed up a little (the old mute read as washed out), and
+ // gentle shading that darkens slopes before they turn to rock.
+ const y=.2126*out[0]+.7152*out[1]+.0722*out[2];for(let k=0;k<3;k++)out[k]+=(out[k]-y)*.05;
+ const tilt=clamp((.985-Math.abs(normalY))/.3),light=(1+jitter*.07+patch*.09)*(1-.14*tilt)*.94;
  for(let k=0;k<3;k++)out[k]=clamp(out[k]*light);
  return out;
 }
@@ -178,12 +179,14 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
  // Leaf cards and hair keep their texture for the cut-out shape; without the
  // environment light of the normal renderer they need a lift to stay readable.
  const CUTOUT_LIFT=1.35;
+ // Tree canopies instead go a little deeper and greener: chunky dark-green crowns over brown trunks.
+ const CANOPY_TONE=[.86,1,.66];
  // One program for every graded texture; the colours are per-material uniforms.
  function gradeTexture(m,avg){const g=textureGrade(avg),uniforms={classicAvg:{value:new T.Vector3(...g.avg)},classicShift:{value:new T.Vector3(...g.shift)}};
   m.onBeforeCompile=shader=>{Object.assign(shader.uniforms,uniforms);shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>\nuniform vec3 classicAvg;uniform vec3 classicShift;\n#define CLASSIC_BIAS ${CLASSIC_TEXTURE.bias.toFixed(2)}\n#define CLASSIC_CONTRAST ${CLASSIC_TEXTURE.contrast.toFixed(2)}`).replace('#include <map_fragment>',GRADE_CHUNK)};
   m.customProgramCacheKey=()=>'classic-graded-texture';m.userData.classicGrade=g}
  function pooled(sig,src,variant,avg,emissiveAvg,faceted){let m=pool.get(sig);if(m)return m;
-  m=new T.MeshLambertMaterial({name:'classic',color:variant==='flat'?quantizedLinear(src.color,avg):variant==='cutout'?src.color.clone().multiplyScalar(CUTOUT_LIFT):src.color.clone(),flatShading:faceted,vertexColors:variant==='bake'||!!src.vertexColors,transparent:src.transparent,opacity:src.opacity,side:src.side,alphaTest:src.alphaTest,depthWrite:src.depthWrite,depthTest:src.depthTest,fog:src.fog,visible:src.visible,polygonOffset:src.polygonOffset,polygonOffsetFactor:src.polygonOffsetFactor,polygonOffsetUnits:src.polygonOffsetUnits,toneMapped:src.toneMapped});
+  m=new T.MeshLambertMaterial({name:'classic',color:variant==='flat'?quantizedLinear(src.color,avg):variant==='cutout'?(src.userData?.canopyFade?src.color.clone().multiply(new T.Color(...CANOPY_TONE)):src.color.clone().multiplyScalar(CUTOUT_LIFT)):src.color.clone(),flatShading:faceted,vertexColors:variant==='bake'||!!src.vertexColors,transparent:src.transparent,opacity:src.opacity,side:src.side,alphaTest:src.alphaTest,depthWrite:src.depthWrite,depthTest:src.depthTest,fog:src.fog,visible:src.visible,polygonOffset:src.polygonOffset,polygonOffsetFactor:src.polygonOffsetFactor,polygonOffsetUnits:src.polygonOffsetUnits,toneMapped:src.toneMapped});
   if(variant==='cutout'||variant==='decal')m.map=src.map;
   else if(variant==='hooked'){m.map=src.map;m.onBeforeCompile=src.onBeforeCompile;const key=src.customProgramCacheKey?.();m.customProgramCacheKey=()=>'classic|'+(key||src.uuid)}
   else if(variant==='textured'){m.map=src.map;gradeTexture(m,avg)}
@@ -257,7 +260,7 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
  // --- Light: a warm ambient fill that follows the time of day ---
  // The sky dome, fog colour and any weather stay under the normal renderer's
  // control; classic only adds the fill light that Lambert needs.
- const AMBIENT={day:.85,night:.22},AMBIENT_TINT={day:0xf6f2ea,dusk:0xffcfa8,night:0x8d9ac4};
+ const AMBIENT={day:.68,night:.22},AMBIENT_TINT={day:0xf6f2ea,dusk:0xffcfa8,night:0x8d9ac4};
  let lastSky={daylight:1,twilight:0};const tint=new T.Color();
  function applySky(daylight=lastSky.daylight,twilight=lastSky.twilight){lastSky={daylight,twilight};if(!enabled)return;
   tint.set(AMBIENT_TINT.night).lerp(new T.Color(AMBIENT_TINT.day),daylight).lerp(new T.Color(AMBIENT_TINT.dusk),twilight*.45);ambient.color.copy(tint);ambient.intensity=AMBIENT.night+(AMBIENT.day-AMBIENT.night)*daylight}
@@ -277,7 +280,9 @@ export function createClassicLook(T,{scene,renderer,camera,hiddenLayer=31,onChan
  return {
   get enabled(){return enabled},get pending(){return sweepPending},get converted(){return converted.size},
   convert,convertMesh,classicMaterial,lowPoly,updateBlobs,applySky,update,
-  configure({ground:g,hide:h}={}){if(g)ground=g;if(h)hideTargets=h},
+  configure({ground:g,hide:h,terrainShader}={}){if(g)ground=g;if(h)hideTargets=h;
+   // The game's path splat and ground colour variation (ground-paths.js) on the classic terrain: one program.
+   if(terrainShader&&!terrainMaterial.userData.groundPaths)terrainShader(terrainMaterial)},
   set(on){on=!!on;if(on===enabled)return false;enabled=on;
    if(on){convertTerrain(ground);scene.add(blobMesh());blobs.visible=true;hide(hideTargets(),true);applySky();sweep=null;const it=walk();while(!it.next().done);}
    else{for(const o of converted)restoreMesh(o);scene.traverse(o=>{if(o.userData.classicOrig)restoreMesh(o)});converted.clear();ambient.intensity=0;if(blobs){blobs.visible=false;blobs.count=0}hide([...hiddenLayers.keys()],false);sweep=null}

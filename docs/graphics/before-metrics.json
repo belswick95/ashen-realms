@@ -1,0 +1,109 @@
+{
+ "shots": {
+  "castle-courtyard": {
+   "regular": {
+    "calls": 265,
+    "triangles": 575018,
+    "programs": 142,
+    "classic": false,
+    "scenery": {
+     "grass": 10961,
+     "grassBusy": false,
+     "detailBusy": false
+    }
+   },
+   "classic": {
+    "calls": 264,
+    "triangles": 340722,
+    "programs": 94,
+    "classic": true,
+    "scenery": {
+     "grass": 10961,
+     "grassBusy": false,
+     "detailBusy": false
+    }
+   }
+  },
+  "birchford-street": {
+   "regular": {
+    "calls": 676,
+    "triangles": 970159,
+    "programs": 150,
+    "classic": false,
+    "scenery": {
+     "grass": 6628,
+     "grassBusy": false,
+     "detailBusy": false
+    }
+   },
+   "classic": {
+    "calls": 668,
+    "triangles": 818460,
+    "programs": 105,
+    "classic": true,
+    "scenery": {
+     "grass": 6628,
+     "grassBusy": false,
+     "detailBusy": false
+    }
+   }
+  },
+  "countryside-trail": {
+   "regular": {
+    "calls": 126,
+    "triangles": 609780,
+    "programs": 150,
+    "classic": false,
+    "scenery": {
+     "grass": 13984,
+     "grassBusy": false,
+     "detailBusy": false
+    }
+   },
+   "classic": {
+    "calls": 125,
+    "triangles": 312632,
+    "programs": 107,
+    "classic": true,
+    "scenery": {
+     "grass": 13984,
+     "grassBusy": false,
+     "detailBusy": false
+    }
+   }
+  },
+  "forest-edge": {
+   "regular": {
+    "calls": 125,
+    "triangles": 609315,
+    "programs": 150,
+    "classic": false,
+    "scenery": {
+     "grass": 14688,
+     "grassBusy": false,
+     "detailBusy": false
+    }
+   },
+   "classic": {
+    "calls": 124,
+    "triangles": 291843,
+    "programs": 107,
+    "classic": true,
+    "scenery": {
+     "grass": 14688,
+     "grassBusy": false,
+     "detailBusy": false
+    }
+   }
+  },
+  "programs-regular": {
+   "settled": 150,
+   "again": 150
+  },
+  "programs-classic": {
+   "settled": 107,
+   "again": 107
+  }
+ },
+ "errors": []
+}
