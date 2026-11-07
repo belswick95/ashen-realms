@@ -1,4 +1,15 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import * as T from 'three';
+import {disposeEntityResources} from '../entity-resources.js';
+
+test('unloading a skinned entity frees its skeleton bone texture once, and it can be rebuilt',()=>{
+ const bones=[new T.Bone(),new T.Bone()];bones[0].add(bones[1]);const skeleton=new T.Skeleton(bones);
+ const root=new T.Group(),geo=new T.BoxGeometry();const a=new T.SkinnedMesh(geo,new T.MeshStandardMaterial()),b=new T.SkinnedMesh(geo,new T.MeshStandardMaterial());
+ a.add(bones[0]);a.bind(skeleton);b.bind(skeleton);root.add(a,b);
+ skeleton.computeBoneTexture();let freed=0;skeleton.boneTexture.addEventListener('dispose',()=>freed++);
+ disposeEntityResources(root);assert.equal(freed,1);assert.equal(skeleton.boneTexture,null);
+ skeleton.computeBoneTexture();assert.ok(skeleton.boneTexture?.isDataTexture,'a re-shown skeleton gets a fresh bone texture');
+});
+
 const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
 
 test('qa-perf.sql is one idempotent transaction without approval-prompt words',()=>{

@@ -46,7 +46,7 @@ import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.
 import {runFrameWork,nextTask,createLoadingPanel} from './frame-work.js?v=release-20261107-portrait145';import {trackLoadingManager} from './loading-indicator.js?v=release-20261107-portrait145';import {installLongPressMenus,fitToViewport} from './touch-menus.js?v=release-20261107-portrait145';installLongPressMenus();trackLoadingManager(T.DefaultLoadingManager);
 import {createRegionStreamer} from './region-streamer.js?v=release-20261107-portrait145';
 import {searchRoute} from './route-search.js?v=release-20261107-portrait145';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261107-portrait145';
+import {disposeEntityResources,disposeSkeletons} from './entity-resources.js?v=release-20261107-portrait145';
 import {actorMenuLabel} from './context-label.js?v=release-20261107-portrait145';
 import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261107-portrait145';
 import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261107-portrait145';
@@ -793,7 +793,7 @@ window.eldervaleUpdatePlayers=entries=>{
  // Treat long jumps as teleports rather than animating across the whole map.
  if(other.root.position.distanceToSquared(other.target)>400)other.root.position.copy(other.target);
  }
- for(const [id,other] of remotePlayers)if(!seen.has(id)){other.horse.dispose();other.animator.dispose();const ti=targets.indexOf(other.hit);if(ti>=0)targets.splice(ti,1);scene.remove(other.root);other.tag.remove();remotePlayers.delete(id);const bubble=chatBubbles.get(id);bubble?.node.remove();chatBubbles.delete(id)}
+ for(const [id,other] of remotePlayers)if(!seen.has(id)){other.horse.dispose();other.animator.dispose();disposeSkeletons(other.root);const ti=targets.indexOf(other.hit);if(ti>=0)targets.splice(ti,1);scene.remove(other.root);other.tag.remove();remotePlayers.delete(id);const bubble=chatBubbles.get(id);bubble?.node.remove();chatBubbles.delete(id)}
 };
 window.eldervaleShowChatBubble=(id,name,message)=>{
  if(!id||!message)return;const old=chatBubbles.get(id);old?.node.remove();
