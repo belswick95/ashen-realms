@@ -29,3 +29,15 @@ test('failed latest stop retries without resurrecting movement',async()=>{
  const realm=await startRealm(db,{id:'self'},'session');realm.steer({x:0,z:0,moving:false});await new Promise(setImmediate);assert.equal(realm.movementPending(),true);tick();await new Promise(setImmediate);assert.equal(attempts,2);assert.equal(realm.movementPending(),false);
  }finally{for(const k of keys)if(old[k]===undefined)delete globalThis[k];else globalThis[k]=old[k];}
 });
+
+test('a hidden tab keeps a 3 s presence poll instead of four syncs a second',async()=>{
+ const keys=['window','document','addEventListener','setInterval'],old=Object.fromEntries(keys.map(k=>[k,globalThis[k]])),oldNow=Date.now;let tick,clock=10000,syncs=0;
+ try{Date.now=()=>clock;globalThis.window={eldervaleRealmBridge:{snapshot(){},event(){}}};globalThis.document={hidden:false,createElement:()=>({style:{},setAttribute(){}}),body:{append(){}}};globalThis.addEventListener=()=>{};globalThis.setInterval=fn=>{tick=fn;return 1};
+ const db={async rpc(name,args){if(args.command==='sync')syncs++;return {data:{time:new Date(clock).toISOString(),events:[]}}}};
+ await startRealm(db,{id:'self'},'session');assert.equal(syncs,1);
+ clock+=250;tick();await new Promise(setImmediate);assert.equal(syncs,2,'visible: polls every interval');
+ document.hidden=true;for(let i=0;i<11;i++){clock+=250;tick();await new Promise(setImmediate)}assert.equal(syncs,2,'hidden: no poll within 3 s');
+ clock+=250;tick();await new Promise(setImmediate);assert.equal(syncs,3,'hidden: presence poll after 3 s');
+ document.hidden=false;clock+=250;tick();await new Promise(setImmediate);assert.equal(syncs,4,'visible again: polls at once');
+ }finally{Date.now=oldNow;for(const k of keys)if(old[k]===undefined)delete globalThis[k];else globalThis[k]=old[k];}
+});
