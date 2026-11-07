@@ -1,3 +1,4 @@
+import {kitFarmHut} from './building-kit.js?v=release-20261107-perf146';
 import {creatureMaterial} from './creature-material.js?v=release-20261107-perf146';
 import {sharedGeometry} from './shared-geometry.js?v=release-20261107-perf146';
 // Original procedural farm animals and countryside props. Local +Z faces forward; the ground is y=0.
@@ -50,6 +51,7 @@ export function farmAnimalModel(T,parent,d){
 export function farmObjectModel(T,parent,id){
  if(!farmObjectIds.includes(id))return null;const g=new T.Group();parent.add(g);const k=kit(T,g,'hide');
  const wood=0x8a6a45,dark=0x5d4630,straw=0xd2b65f,stone=0x9a9a90;
+ if(id==='farm_hut'&&kitFarmHut(T,g))return g;
  if(id==='farm_hut'){
   k.box(0,.08,0,4.4,.16,3.6,0x7d756a);for(const s of [-1,1]){k.box(s*2.05,1.25,0,.18,2.3,3.4,wood);k.box(0,1.25,s*1.65,4.1,2.3,.16,wood)}
   for(let y=.35;y<2.4;y+=.4)for(const s of [-1,1])k.box(0,y,s*1.75,4.2,.05,.04,dark);

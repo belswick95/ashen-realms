@@ -122,6 +122,7 @@ import {fishingOptions} from './fish-tiers.js?v=release-20261107-perf146';
 import {SKILL_PANEL,skillId} from './skill-list.js?v=release-20261107-perf146';
 import {createSkillGuide} from './skill-guide.js?v=release-20261107-perf146';
 import {plantFeet} from './foot-ground.js?v=release-20261107-perf146';
+import {buildingKitReady,buildingKitStatus,loadBuildingKit,onBuildingKitReady,kitStorey,kitRoof,kitDoorLeaf,KIT_ROOF_LIFT} from './building-kit.js?v=release-20261107-perf146';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 // RuneScape-style death: input lock and death pose, jingle, kept-items note, death pile on the maps (death.js).
 const deathFlow=createDeathFlow({say:text=>say(text),jingle:kind=>playLevelUpJingle(kind),now:()=>window.eldervaleServerTime?.()||Date.now(),goods});
@@ -274,6 +275,8 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  const sx=scale*(options.width||1),sz=scale*(options.depth||1);
  // One coherent material style per building, from its role and a stable seed.
  const style=buildingStyle({type:options.type||'cottage',x,z,stone:options.stone,biome:options.biome}),wallKind=style.wallKind,roofColor=style.roof;c=style.wall;
+ // Kit art (building-kit.js) once loaded: same footprint, plinth, floor, interior and door.
+ const kitLook=buildingKitReady()&&options.kit!==false,kitScale={x:sx,y:(options.stories||1)>1?Math.max(1.55,Math.min(1.8,scale)):scale,z:sz};
  // Keep full building footprints ashore, including existing lakeside hamlets.
  const radius=2.4*Math.hypot(sx,sz);
  const dry=(px,pz)=>[-1,0,1].every(a=>[-1,0,1].every(b=>landscape.waterAt(px+a*radius,pz+b*radius)<=0));
@@ -298,12 +301,13 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  box(3.76,.085,3.56,0x81684c,0,.0825,0,group,style.stone?'masonry':'floor');
  // Walls meet at edges. Overlapping box caps used to compete in the depth
  // buffer along the corners, independently of the grass/foundation seam.
+ if(kitLook)kitStorey(T,group,{style,scale:kitScale,door:true});else{
  box(3.64,3,.18,c,0,1.5,-1.83,group,wallKind);
  for(const side of [-1,1])box(.18,3,3.84,c,side*1.91,1.5,0,group,wallKind);
  for(const side of [-1,1])box(1.30,3,.18,c,side*1.17,1.5,1.83,group,wallKind);
  box(1.04,.75,.18,c,0,2.625,1.83,group,wallKind);
  // Fill the opening above the door leaf so the frame fits the door itself.
- box(1.04,.47,.18,c,0,2.015,1.83,group,wallKind);
+ box(1.04,.47,.18,c,0,2.015,1.83,group,wallKind);}
  for(const side of [-1,1]){
   box(.07,.38,3.42,0x69513b,side*1.79,.32,0,group,'wood');
   box(.14,2.8,.16,0x66503c,side*1.77,1.5,-1.65,group,'wood');
@@ -313,6 +317,7 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  box(1.0,.08,.38,0x75543a,-.75,1.28,-1.56,group,'wood');
  for(let i=0;i<4;i++)box(.12,.22+(i%2)*.10,.20,[0x80504a,0x697b66,0x9f875c][i%3],-1.08+i*.2,1.43,-1.55,group,'cloth');
  const roofParts=[];
+ if(kitLook)kitRoof(T,group,{style,type:options.type||'cottage',list:roofParts});else{
  // Wall plate: a timber beam, or a stone cornice on masonry buildings.
  roofParts.push(box(4.25,.18,3.9,style.stone?style.trim:0x74543c,0,3.07,0,group,style.stone?'masonry':'wood'));
  // Roof geometry: ridge x=0 at y=4.40; eaves x=±2.25 at y=3.12.
@@ -334,7 +339,7 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
   const shape=new T.Shape();shape.moveTo(-2,3.0);shape.lineTo(2,3.0);shape.lineTo(2,3.15);shape.lineTo(0,4.29);shape.lineTo(-2,3.15);shape.closePath();
   const gableGeometry=new T.ShapeGeometry(shape),guv=gableGeometry.attributes.uv;for(let i=0;i<guv.count;i++)guv.setXY(i,guv.getX(i)/2,guv.getY(i)/2);
   const gable=new T.Mesh(gableGeometry,gableMaterial);gable.position.z=z;gable.castShadow=true;group.add(gable);roofParts.push(gable);
- }
+ }}
  // Hinged, clickable door. A closed door blocks entry.
  const doorPivot=new T.Group();doorPivot.position.set(-.52,0,1.86);group.add(doorPivot);
  const doorMesh=box(1.04,1.75,.13,0x654026,.52,.9,0,doorPivot,'wood');
@@ -343,11 +348,15 @@ function house(x,z,c,scale=1.65,rotation=0,options={}){
  doorHit.position.set(0,.95,1.86);group.add(doorHit);
  const houseRecord={group,roofParts,inside:false,open:!!options.open,doorPivot,doorHit,type:options.type||'cottage',name:options.name||'Cottage',roofColor,stories:options.stories||1};
  if(houseRecord.open)doorPivot.rotation.y=-Math.PI*.53;
+ if(kitLook){kitDoorLeaf(T,doorPivot,doorMesh);houseRecord.style=style;houseRecord.kit=true;houseRecord.kitStorey=shell=>{kitStorey(T,shell,{style,scale:kitScale});batchStaticMeshes(T,shell,{deep:false,keep:m=>m.geometry.type==='BoxGeometry'})}}
  doorHit.userData={kind:'door',house:houseRecord};
  doorMesh.userData={kind:'door',house:houseRecord};targets.push(doorMesh);
  houseInteriors.push(houseRecord);
+ const roofCount=roofParts.length;
  if(options.type){if(options.furnished!==false)decorateTownBuilding(T,houseRecord,{box,material});if(options.type!=='armory')signsSystem().addBuilding(houseRecord)}
- detailBuilding(T,houseRecord,{box,material,style,type:options.type||'cottage'});
+ // Hall clock and chapel bell towers rise out of the taller kit roof.
+ if(kitLook)for(const part of roofParts.slice(roofCount))part.position.y+=KIT_ROOF_LIFT;
+ else detailBuilding(T,houseRecord,{box,material,style,type:options.type||'cottage'});
  for(const stand of houseRecord.bankStands||[]){stand.userData={kind:'bankStand',house:houseRecord};targets.push(stand);}
  return houseRecord;
 }
@@ -1745,9 +1754,9 @@ const shaderWarmup=afterArrival(2500).then(()=>runShaderWarmup(warmupList(worldT
  compile:root=>Promise.all([compileFor(root),waterSystem.reflects&&compileFor(root,true)]),
  dispose:root=>{root.userData.warmModel?.dispose?.();disposeEntityResources(root)},
  yieldTask:()=>new Promise(r=>setTimeout(r,40))})).then(async r=>{if(waterSystem.reflects)await compileFor(scene,true,scene);window.eldervaleShaderWarmup=r;return r},()=>(window.eldervaleShaderWarmup={done:0,failed:1},null));
-const persistentRows=new Map(),applyNearby=window.eldervaleWorldBridge.apply;let regionTicket=null,regionResume=null;
+const persistentRows=new Map(),applyNearby=window.eldervaleWorldBridge.apply;let regionTicket=null,regionResume=null,applyStreamedRow=null;
 const regionStreamer=createRegionStreamer({rows:persistentRows,loaded:worldInstances,position:()=>player.position,
- apply:row=>{applyNearby([row]);const entry=worldInstances.get(row.id);if(entry?.house)entry.root.visible=entry.root.position.distanceToSquared(player.position)<155*155;const target=targets.find(t=>t.userData.worldEntityId===row.id);if(target)realmObjectTargets.set(row.id,target);const pose=realmActorCache.get(row.id);if(pose)applyRealmActor(pose);const object=realmObjectState.get(row.id);if(object)applyRealmObject(object);},
+ apply:applyStreamedRow=row=>{applyNearby([row]);const entry=worldInstances.get(row.id);if(entry?.house)entry.root.visible=entry.root.position.distanceToSquared(player.position)<155*155;const target=targets.find(t=>t.userData.worldEntityId===row.id);if(target)realmObjectTargets.set(row.id,target);const pose=realmActorCache.get(row.id);if(pose)applyRealmActor(pose);const object=realmObjectState.get(row.id);if(object)applyRealmObject(object);},
  remove:removeWorldEntity,canRemove:id=>{const e=worldInstances.get(id);return !e||!e.actor||combatTurns.target!==e.actor&&(!conversation||conversation.profile!==e.actor.profile)},
  onProgress:({pending,done,total,error,blocking})=>{if(!document.querySelector('#auth-screen').hidden)document.querySelector('#auth-status').textContent=pending?'Loading nearby world… '+done+' / '+total:'Preparing controls…';if(pending&&window.eldervaleWorldLoading===true)window.eldervaleLoading?.bootProgress('Loading the nearby world…',.68+.24*(total?done/total:0),done+' / '+total+' places ready');if(pending&&(blocking||regionTicket&&!cutsceneBusy())){if(!regionTicket){regionTicket=areaLoading.begin('Loading nearby area…');regionResume=!realmInCombat&&!routePending&&mapDestination?{goal:mapDestination.clone(),generation:navigationGeneration}:null;if(regionResume)void window.eldervaleRealm?.command('stop');}regionTicket.progress(done,total,'Preparing buildings, scenery and residents…');}else if(regionTicket&&!error){regionTicket.end();regionTicket=null;const resume=regionResume;regionResume=null;if(resume&&resume.generation===navigationGeneration&&!routePending)void setWalkDestination(resume.goal);}},
  onError:error=>{console.warn('Area loading:',error);regionTicket?.fail('This area could not be loaded. Reload to reconnect.',()=>location.reload());}
@@ -1755,6 +1764,17 @@ const regionStreamer=createRegionStreamer({rows:persistentRows,loaded:worldInsta
 // A new character's first load waits only for the arrival cutscene's surroundings (cutscene-boot.js).
 window.eldervaleWorldBridge.apply=rows=>{const all=regionStreamer.upsert(rows);return cutsceneBootFocus()?Promise.race([all,regionStreamer.near(CUTSCENE_FOCUS_RADIUS)]):all};
 setInterval(()=>void regionStreamer.scan().catch(()=>{}),1200);
+// Kit building art (building-kit.js) loads once the nearby world has settled. Buildings already
+// standing are rebuilt with it a few per frame, never during a cutscene; until then, or if the
+// GLBs fail to load, they keep their procedural look.
+const KIT_TEMPLATES=new Set(['cottage','bank','inn','forge','castle_wall','castle_tower','castle_gate','farm_hut']);
+let kitReskin=null;
+function reskinBuildings(){return kitReskin??=new Promise(done=>{const ids=[...worldInstances.keys()].filter(id=>KIT_TEMPLATES.has(persistentRows.get(id)?.data?.template));let i=0;
+ const step=()=>{if(cutsceneBusy()){setTimeout(step,1500);return}for(const end=i+6;i<ids.length&&i<end;i++){const row=persistentRows.get(ids[i]);if(row&&!row.deleted&&worldInstances.has(row.id))applyStreamedRow(row)}if(i<ids.length)requestAnimationFrame(step);else done(ids.length)};step()})}
+onBuildingKitReady(reskinBuildings);
+const loadKitArt=()=>loadBuildingKit(T).then(ok=>ok?reskinBuildings():0);
+setTimeout(()=>void regionStreamer.idle().then(loadKitArt),3000);
+window.eldervaleBuildingKit={load:loadKitArt,status:buildingKitStatus};
 
 var realmPlayerPose=null,realmPoseJump=false,realmInCombat=false,lastMovementAck=0;var playerMotion=createMotionTrack(),realmFrameTime=0;var cameraFocus=null;var terrainCameraLift=0;var cameraObstructionDistance=null;var attackStyle='slash';
 // Tile walkers are played back along their tiles at their true pace (motion-track.js
