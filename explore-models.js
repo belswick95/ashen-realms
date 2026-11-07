@@ -3,7 +3,7 @@
 // thorn thicket, sea cave, sealed shrine door, rowing boat, cliff path). Original low-poly shapes
 // built only from pooled geometry and materials (shared-geometry.js), a handful of meshes each,
 // so they stream, batch and LOD like every other prop. world-models.js objectModel() asks here first.
-import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-canopy152';
+import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-bank153';
 export const EXPLORE_MODEL_TEMPLATES=['lore_statue','lore_tablet','lore_grave','lore_journal','lore_carving','lore_shrine','explore_crate','waterfall_curtain','thorn_thicket','sea_cave','shrine_door','ferry_boat','cliff_path'];
 const mat=(T,key,color,extra={})=>sharedMaterial(T,'ex:'+key,()=>new T.MeshStandardMaterial({color,roughness:.9,metalness:0,...extra}));
 const glow=(T,key,color,i=1.4)=>sharedMaterial(T,'ex-glow:'+key,()=>new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:i,roughness:.6}));

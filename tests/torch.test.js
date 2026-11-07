@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {rea
 import {shieldCatalog,makeShield,isTorch} from '../shields.js';import {goods} from '../economy.js';import {publicCharacter,buildCharacterDisplay} from '../character-display.js';
 import {attachShield} from '../equipment-pose.js';import {professionRecipes} from '../profession-data.js';import {makeDroppedItemModel} from '../item-models.js';
 // Same module instance as shields.js (its import carries the cache key), so the live-torch registry is shared.
-import {makeTorch,createTorchLights,torchDarkness,torchIntensity,torchFlicker,liveTorches,TORCH_LIGHT,TORCH_LIGHT_COUNT,TORCH_MOUNT_OFFSET} from '../torch.js?v=release-20261107-canopy152';
+import {makeTorch,createTorchLights,torchDarkness,torchIntensity,torchFlicker,liveTorches,TORCH_LIGHT,TORCH_LIGHT_COUNT,TORCH_MOUNT_OFFSET} from '../torch.js?v=release-20261107-bank153';
 import {lightingAt} from '../world-lighting.js';
 import {createHorseMount,keptWhileMounted} from '../horse-mount.js';
 const MOTIONS={idle:{},walk:{distance:3.2/60,speed:3.2,locomotion:'walk'},run:{distance:6.4/60,speed:6.4,locomotion:'run'}};
