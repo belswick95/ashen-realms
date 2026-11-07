@@ -4,6 +4,7 @@ import {attachShield} from '../equipment-pose.js';import {professionRecipes} fro
 // Same module instance as shields.js (its import carries the cache key), so the live-torch registry is shared.
 import {makeTorch,createTorchLights,torchDarkness,torchIntensity,torchFlicker,liveTorches,TORCH_LIGHT,TORCH_LIGHT_COUNT,TORCH_MOUNT_OFFSET} from '../torch.js?v=release-20261107-hud142';
 import {lightingAt} from '../world-lighting.js';
+import {createHorseMount,keptWhileMounted} from '../horse-mount.js';
 const MOTIONS={idle:{},walk:{distance:3.2/60,speed:3.2,locomotion:'walk'},run:{distance:6.4/60,speed:6.4,locomotion:'run'}};
 const sql=readFileSync(new URL('../db/torch.sql',import.meta.url),'utf8');
 const flameOf=torch=>{let f=null;torch.traverse(o=>{if(o.name==='torch-flame-outer')f=o});return f};
@@ -70,4 +71,31 @@ test('db/torch.sql: catalog matches the client, recipe, store stock, idempotent 
  assert.equal(shieldCatalog.torch.buy,8);assert.equal(shieldCatalog.torch.sell,2);
  const recipe=JSON.parse(sql.match(/\('make_torch','(\{[^']+\})'/)[1]),r=professionRecipes.make_torch;for(const k of ['skill','level','xp','inputs','outputs','tools','seconds','kind'])assert.deepEqual(recipe[k],r[k],k);
  assert.match(sql,/on conflict \(id\) do update/);assert.match(sql,/on conflict \(id\) do nothing/);assert.match(sql,/polish_seeds where key='torch-stock:'/);assert.match(sql,/"shield:torch":\{"buy":8,"sell":2,"stock":-1\}/);
+});
+
+// Riding: only the torch stays in hand (raised high in the left fist, right fist on both reins);
+// real shields and every other held item are put away as before.
+const ride=(loadout,frames=40)=>{const parent=new T.Group(),scene=new T.Scene();scene.add(parent);const d=buildCharacterDisplay(T,parent,{},loadout),horse=createHorseMount(T,parent);
+ for(let i=0;i<frames;i++){d.update(1/60,{mounted:true});horse.update({active:true,distance:.1,dt:1/60,rig:d.rig,visual:d.visual})}scene.updateMatrixWorld(true);return {d,horse,scene,parent}};
+test('only the torch is kept in hand while mounted',()=>{
+ assert.equal(keptWhileMounted(makeShield(T,'torch')),true);
+ for(const key of Object.keys(shieldCatalog).filter(k=>!isTorch(k)))assert.equal(keptWhileMounted(makeShield(T,key)),false,key);
+ assert.equal(keptWhileMounted(null),false);assert.equal(keptWhileMounted(new T.Group()),false);
+ const lit=ride({weapon:'longsword',shield:'torch'}),torch=lit.d.rig.leftHand.children.find(o=>o.userData.torch),sword=lit.d.rig.rightHand.children.find(o=>o.userData.weaponMount);
+ assert.equal(torch.visible,true,'torch stays in hand');assert.equal(torch.userData.flame.visible,true,'and stays lit');assert.equal(sword.visible,false,'the weapon is still put away');
+ const kite=ride({weapon:'longsword',shield:'kite'}),shield=kite.d.rig.leftHand.children.find(o=>o.userData.shieldMount);assert.equal(shield.visible,false,'a real shield is put away');
+ kite.horse.update({active:false,rig:kite.d.rig,visual:kite.d.visual});assert.equal(shield.visible,true,'and comes back on dismount');
+ lit.horse.dispose();kite.horse.dispose();
+});
+test('a mounted torch is raised high in the left hand, the right fist holds both reins, and it still gets a light',()=>{
+ const {d,horse,scene,parent}=ride({shield:'torch'}),W=o=>o.getWorldPosition(new T.Vector3());
+ const torch=d.rig.leftHand.children.find(o=>o.userData.torch),up=new T.Vector3(0,1,0).transformDirection(torch.matrixWorld);
+ const left=W(d.rig.leftHand),right=W(d.rig.rightHand),shoulder=W(d.rig.bones.upperarm_l),flame=W(torch.userData.flame),pelvis=W(d.rig.bones.pelvis);
+ assert.ok(up.y>.8,'handle upright ('+up.y.toFixed(2)+')');assert.ok(left.y>shoulder.y+.2,'torch fist raised above the shoulder');assert.ok(left.x>shoulder.x-.05,'on the left side');
+ assert.ok(flame.y>left.y+.35,'flame above the fist');assert.ok(right.z>pelvis.z+.25&&right.y>pelvis.y&&right.y<shoulder.y,'right fist low in front on the reins');
+ const ends=horse.root.children.flatMap(o=>o.children||[]).filter(m=>m.isMesh&&m.geometry.type==='CylinderGeometry');assert.equal(ends.length,4);
+ for(const i of [0,1]){const tip=new T.Vector3(0,0,1).applyMatrix4(ends[i*2+1].matrixWorld);assert.ok(tip.distanceTo(right)<.06,'rein '+i+' ends in the right fist: '+tip.distanceTo(right).toFixed(3))}
+ const pool=createTorchLights(T,scene);flameOf(torch).onBeforeRender(null,scene);pool.update({local:torch,focus:parent.position,darkness:1});
+ assert.equal(pool.assigned[0],torch);assert.ok(pool.lights[0].intensity>TORCH_LIGHT.night*.7);assert.ok(pool.lights[0].position.distanceTo(flame)<.4,'light at the raised flame');
+ pool.dispose();horse.dispose();
 });

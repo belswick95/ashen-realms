@@ -85,7 +85,7 @@ import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFl
 import {townResidents,animateTownActivity,createWorkKit,carriesWeapon,workFacing,spreadStanding} from './town-life.js?v=release-20261107-hud142';
 import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-hud142';
 import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261107-hud142';
-import {createPlayerHUD} from './player-hud.js?v=release-20261107-hud142';
+import {createPlayerHUD,portraitLook} from './player-hud.js?v=release-20261107-hud142';
 import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261107-hud142';
 import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261107-hud142';
 import {stabilizeSun,shadowQuality,celestialLight,installShadowEdgeFade} from './sun-shadow.js?v=release-20261107-hud142';
@@ -1381,7 +1381,7 @@ function drawSkills(){
 let lastPanelKey=null,stylePending=null,stancePreference=loadStance();
 function draw(){
  if(inventoryGold.hidden!==(activeTab!=='inventory'))inventoryGold.hidden=activeTab!=='inventory';{const gold='🪙 '+state.gold.toLocaleString()+' gold';if(inventoryGold.textContent!==gold)inventoryGold.textContent=gold}
- playerHUD.update({combatLevel:combatLevel(state),hp:combat.hp,maxHp:combat.maxHp,xp:Object.keys(state).filter(k=>/^[a-z]+XP$/.test(k)).reduce((t,k)=>t+(Number(state[k])||0),0),kills:combat.kills,gold:state.gold,helmet:armorKeys.find(k=>state.equipped[k]&&armorCatalog[k].equipSlot==='helm')||null,weapon:weaponCatalog[state.equippedWeapon]});
+ playerHUD.update({combatLevel:combatLevel(state),hp:combat.hp,maxHp:combat.maxHp,xp:Object.keys(state).filter(k=>/^[a-z]+XP$/.test(k)).reduce((t,k)=>t+(Number(state[k])||0),0),kills:combat.kills,gold:state.gold,helmet:armorKeys.find(k=>state.equipped[k]&&armorCatalog[k].equipSlot==='helm')||null,look:portraitLook(state.equipped,appearance),weapon:weaponCatalog[state.equippedWeapon]});
  {const html='<p><strong>Health: '+Math.ceil(combat.hp)+' / '+combat.maxHp+'</strong><br>Combat: '+level(combat.xp)+' ('+combat.xp+' XP)<br>Defeated: '+combat.kills+'<br>Gold: '+state.gold+'<br>Woodcutting: '+level(state.woodXP)+' ('+state.woodXP+' XP)<br>Mining: '+level(state.miningXP)+' ('+state.miningXP+' XP)</p>';if(stats.dataset.html!==html){stats.dataset.html=html;stats.innerHTML=html}};
  const panelKey=panelStateKey(state,activeTab,attackStyle,goods);if(panelKey===lastPanelKey)return;lastPanelKey=panelKey;
  inventory.innerHTML='';for(const child of [...equipment.children])if(!child.classList.contains('mount-slot'))child.remove();
