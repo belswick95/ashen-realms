@@ -1,6 +1,6 @@
-import {creatureMaterial} from './creature-material.js?v=release-20261107-qaui148';
-import {sharedGeometry} from './shared-geometry.js?v=release-20261107-qaui148';
-import {kitFarmHut} from './building-kit.js?v=release-20261107-qaui148';
+import {creatureMaterial} from './creature-material.js?v=release-20261107-buildings149';
+import {sharedGeometry} from './shared-geometry.js?v=release-20261107-buildings149';
+import {kitFarmHut} from './building-kit.js?v=release-20261107-buildings149';
 // Original procedural farm animals and countryside props. Local +Z faces forward; the ground is y=0.
 export const farmAnimalSpecies=['cow','chicken','sheep','pig'];
 export const farmObjectIds=['farm_hut','chicken_coop','hay_bale','water_trough','scarecrow','flower_bed','stone_statue','wheelbarrow'];

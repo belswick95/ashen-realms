@@ -14,7 +14,7 @@
 //    tile stays below the world limit of 4500), x = 1200…4200 in steps of 600. Nothing else uses
 //    z ≥ 3800: R2-G caves sit at z 1200 (+400 per level), R3-I lairs at x 1200–4200 / z 1200–2625,
 //    R3-J arenas at x 1400–3800 / z 3000–3400.
-import {passageLook,ARRIVAL_OFFSET} from './underground-data.js?v=release-20261107-qaui148';
+import {passageLook,ARRIVAL_OFFSET} from './underground-data.js?v=release-20261107-buildings149';
 export const EXPLORE_BLUEPRINT='explore-v1';
 export const AREA_Z=4250,AREA_XS=[1200,1800,2400,3000,3600,4200];
 export const TIERS=['easy','medium','hard'];

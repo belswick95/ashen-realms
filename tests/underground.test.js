@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 // Seeded world (the live config) before any world module loads.
 globalThis.eldervaleWorldConfig={enabled:true,seed:241916600,version:2};
-const V='?v=release-20261107-qaui148';
+const V='?v=release-20261107-buildings149';
 const ug=await import('../underground-data.js'+V);
 const ag=await import('../agility-data.js'+V);
 const {ROSTER_KEYS,rosterBeasts}=await import('../monster-roster.js'+V);
