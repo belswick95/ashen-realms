@@ -166,7 +166,7 @@ test('client route mirror: planTileMove skips near waypoints and plans legs like
 
 test('game.js wiring: a tile click is planned and walked at once, the move carries `from`, snapshots verify',()=>{
  const src=fs.readFileSync(new URL('../game.js',import.meta.url),'utf8');
- assert.match(src,/const predicted=predictWalk\(route,requestAction,target\);if\(predicted\)localWalker\.walk\(predicted\.path,\{serverNow:[^}]*steps:walkSteps\(\)\}\);await window\.eldervaleRealm\?\.command\('move',\{path:route,target:target\|\|null,kind:requestAction\?\.kind\|\|'walk',\.\.\.\(predicted\?\{from:predicted\.from\}:\{\}\)\}\);if\(predicted\)localWalker\.ack\(\);/);
+ assert.match(src,/const predicted=predictWalk\(route,requestAction,target\);if\(predicted\)localWalker\.walk\(predicted\.path,\{serverNow:[^}]*steps:walkSteps\(\),now:performance\.now\(\)\}\);await window\.eldervaleRealm\?\.command\('move',\{path:route,target:target\|\|null,kind:requestAction\?\.kind\|\|'walk',\.\.\.\(predicted\?\{from:predicted\.from\}:\{\}\)\}\);if\(predicted\)localWalker\.ack\(\);/);
  assert.match(src,/const verdict=localWalker\.verify\(nextPose,serverNow,\{stale:!!meta\.motionStale\}\)/);
  assert.match(src,/localWalker\.face\(player\.rotation\.y\);const shown=localWalker\.update\(player\.position,performance\.now\(\),followHold\);if\(shown&&!realmInCombat\)player\.rotation\.y=shown\.yaw;/);
  assert.match(src,/createMotionTrack\(\{delay:650,tileOptions:\{flagsAt:walkTiles\.flagsAt\}\}\)/);

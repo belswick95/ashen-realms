@@ -1,7 +1,7 @@
 // Tick & tile engine, client half (mirrors db/tick-tile-engine-*.sql; the server is authoritative).
 // Tiles are 1.58 world units (one character-width, click-walk.js TILE); tile (i,j) is centred on
 // (i*TILE, j*TILE). One game tick is 600 ms: walkers step 1 tile per tick, runners 2.
-import {TILE,GAME_TICK} from './click-walk.js?v=release-20261107-quests162';
+import {TILE,GAME_TICK} from './click-walk.js?v=release-20261107-qa2g163';
 export {TILE,GAME_TICK};
 export const FLAG={BLOCK:1,E:2,N:4,NE:8,NW:16,WATER:32,OBJECT:64};
 export const tileOf=v=>Math.floor(v/TILE+.5);
@@ -154,5 +154,7 @@ export function createTileFlagCache(){
   set(view,now=Date.now()){if(!view||!Array.isArray(view.tiles)||!Array.isArray(view.center))return false;const next=new Map();for(const t of view.tiles){if(Array.isArray(t)&&t[2])next.set(k(t[0]|0,t[1]|0),t[2]|0)}flags=next;center=[view.center[0]|0,view.center[1]|0];radius=view.radius|0;at=now;return true},
   flagsAt:(i,j)=>flags.get(k(i,j))||0,
   covers(i,j,r=32){return !!center&&Math.max(Math.abs(i-center[0]),Math.abs(j-center[1]))+r<=radius},
+  // A door or gate opened or closed: the flags stay usable but are refetched (stale) at once.
+  invalidate(){at=0},get stale(){return at===0},
   get center(){return center},get radius(){return radius},get fetchedAt(){return at}};
 }

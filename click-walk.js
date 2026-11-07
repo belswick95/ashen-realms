@@ -1,4 +1,4 @@
-import {mapDestination} from './minimap.js?v=release-20261107-quests162';
+import {mapDestination} from './minimap.js?v=release-20261107-qa2g163';
 // RuneScape-style point-and-click travel: travel pace, tap-versus-drag on the
 // world canvas, minimap clicks back to world points, the on-screen click
 // cross and the red destination flag on the minimap.
@@ -98,6 +98,11 @@ export function approachPoint(from,target,reach){
  if(d<=stand||d<1e-6)return {x:from.x,z:from.z};
  return {x:target.x+dx/d*stand,z:target.z+dz/d*stand};
 }
+// A left click on a door held open for business (or an open castle gate) has no action of its own:
+// the click walks. The ground ray ignores the door and walls, so a click on the doorway, seen from a
+// low camera, lands far beyond the building (live: 250 units off, behind the castle kitchen). When the
+// ground lies more than `slack` units past the door, walk into the doorway instead.
+export function throughOpenDoorway(doorDistance,groundDistance,slack=2){return Number.isFinite(doorDistance)&&!(Number.isFinite(groundDistance)&&groundDistance<=doorDistance+slack)}
 export function withinReach(position,target,reach){return !!position&&Math.hypot(position.x-target.x,position.z-target.z)<=reach}
 // 'arrived' (act now), 'walking', 'waiting' (stopped, waiting for the server to
 // settle), 'failed' (stopped out of reach) or 'cancelled' (a newer click).

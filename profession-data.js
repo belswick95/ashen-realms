@@ -1,6 +1,6 @@
-import {foodRecipes} from './food.js?v=release-20261107-quests162';import {extraFishRecipes} from './fish-tiers.js?v=release-20261107-quests162';
-import {registerGearProfessions} from './gear-recipes.js?v=release-20261107-quests162';
-import {BONES,ALTAR_OFFER_MULTIPLIER} from './monster-roster.js?v=release-20261107-quests162';
+import {foodRecipes} from './food.js?v=release-20261107-qa2g163';import {extraFishRecipes} from './fish-tiers.js?v=release-20261107-qa2g163';
+import {registerGearProfessions} from './gear-recipes.js?v=release-20261107-qa2g163';
+import {BONES,ALTAR_OFFER_MULTIPLIER} from './monster-roster.js?v=release-20261107-qa2g163';
 // Original Eldervale recipes inspired by OSRS resource-processing mechanics.
 // Levels and XP follow the OSRS experience table (combat-level.js). Per-action XP and level requirements match the
 // closest Old School RuneScape action (fractional XP such as 17.5 or 6.25 is kept exactly; see db/osrs-skill-parity.sql).

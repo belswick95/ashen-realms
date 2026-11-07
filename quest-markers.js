@@ -7,8 +7,8 @@
 // and the billboard grows upward from there, so a far-away (larger) marker never sinks into the
 // head either. The same markers are drawn on the minimap in the map-icons.js badge style, and
 // the givers who start a quest chain are listed for the world map (chainGivers).
-import {giverMarkers,chainStarts} from './quest-guide.js?v=release-20261107-quests162';
-import {drawMarker} from './map-icons.js?v=release-20261107-quests162';
+import {giverMarkers,chainStarts} from './quest-guide.js?v=release-20261107-qa2g163';
+import {drawMarker} from './map-icons.js?v=release-20261107-qa2g163';
 
 export const MARKER_GLYPHS=['!','?'];
 export const MARKER_MAX_DISTANCE=160;
