@@ -1,5 +1,5 @@
-import {goods,inventoryEntries,quantity,isWorn} from './economy.js?v=release-20261107-emotes143';
-import {TRADE_REQUEST_SECONDS,tradeFinished,neverOpened,tradeRoles,requestDeadline,secondsLeft,requestExpired,requestOutcomeMessage} from './trade-requests.js?v=release-20261107-emotes143';
+import {goods,inventoryEntries,quantity,isWorn} from './economy.js?v=release-20261107-heading144';
+import {TRADE_REQUEST_SECONDS,tradeFinished,neverOpened,tradeRoles,requestDeadline,secondsLeft,requestExpired,requestOutcomeMessage} from './trade-requests.js?v=release-20261107-heading144';
 const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e};
 // The 10-second request popup: the target accepts or declines, the requester
 // sees "Sending trade request…". Not modal, so the world stays playable.

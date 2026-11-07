@@ -24,28 +24,28 @@ begin
   'prev[idx+1]:=cur;tail:=tail+1;queue[tail]:=idx;',
   'prev[idx+1]:=cur;depth[idx+1]:=depth[cur+1]+1;tail:=tail+1;queue[tail]:=idx;',
   E' k:=found;\n while k<>radius*w+radius and steps<n loop\n  path:=jsonb_build_array(jsonb_build_array(eldervale_private.tile_center(k%w+ox),eldervale_private.tile_center(k/w+oz)))||path;\n  k:=prev[k+1];steps:=steps+1;\n end loop;',
-  E' k:=found;ex:=found%w-radius;ez:=found/w-radius;\n'
-  E' while k<>radius*w+radius and steps<n loop\n'
-  E'  ci:=k%w;cj:=k/w;\n'
-  E'  path:=jsonb_build_array(jsonb_build_array(eldervale_private.tile_center(ci+ox),eldervale_private.tile_center(cj+oz)))||path;\n'
-  E'  -- The one-step-shorter parent closest to the start-end line (|cross product|) that can step here.\n'
-  E'  nxt:=prev[k+1];off:=abs((nxt%w-radius)*ez-(nxt/w-radius)*ex);\n'
-  E'  for d in 1..8 loop\n'
-  E'   di:=dis[d];dj:=djs[d];wi:=ci-di;wj:=cj-dj;\n'
-  E'   if wi<0 or wj<0 or wi>=w or wj>=w then continue;end if;\n'
-  E'   idx:=wj*w+wi;\n'
-  E'   if idx=nxt or prev[idx+1]<0 or depth[idx+1]<>depth[k+1]-1 then continue;end if;\n'
-  E'   if dj=0 then f:=fl[wj*w+least(wi,ci)+1]&2;\n'
-  E'   elsif di=0 then f:=fl[least(wj,cj)*w+wi+1]&4;\n'
-  E'   elsif fl[wj*w+ci+1]&1<>0 and fl[cj*w+wi+1]&1<>0 then f:=1;\n'
-  E'   elsif strict and (fl[wj*w+ci+1]&1<>0 or fl[cj*w+wi+1]&1<>0 or fl[wj*w+least(wi,ci)+1]&2<>0 or fl[least(wj,cj)*w+wi+1]&4<>0) then f:=1;\n'
-  E'   elsif di=dj then f:=fl[least(wj,cj)*w+least(wi,ci)+1]&8;\n'
-  E'   else f:=fl[least(wj,cj)*w+greatest(wi,ci)+1]&16;end if;\n'
-  E'   if f<>0 then continue;end if;\n'
-  E'   dd:=abs((wi-radius)*ez-(wj-radius)*ex);\n'
-  E'   if dd<off then off:=dd;nxt:=idx;end if;\n'
-  E'  end loop;\n'
-  E'  k:=nxt;steps:=steps+1;\n'
+  E' k:=found;ex:=found%w-radius;ez:=found/w-radius;\n'||
+  E' while k<>radius*w+radius and steps<n loop\n'||
+  E'  ci:=k%w;cj:=k/w;\n'||
+  E'  path:=jsonb_build_array(jsonb_build_array(eldervale_private.tile_center(ci+ox),eldervale_private.tile_center(cj+oz)))||path;\n'||
+  E'  -- The one-step-shorter parent closest to the start-end line (|cross product|) that can step here.\n'||
+  E'  nxt:=prev[k+1];off:=abs((nxt%w-radius)*ez-(nxt/w-radius)*ex);\n'||
+  E'  for d in 1..8 loop\n'||
+  E'   di:=dis[d];dj:=djs[d];wi:=ci-di;wj:=cj-dj;\n'||
+  E'   if wi<0 or wj<0 or wi>=w or wj>=w then continue;end if;\n'||
+  E'   idx:=wj*w+wi;\n'||
+  E'   if idx=nxt or prev[idx+1]<0 or depth[idx+1]<>depth[k+1]-1 then continue;end if;\n'||
+  E'   if dj=0 then f:=fl[wj*w+least(wi,ci)+1]&2;\n'||
+  E'   elsif di=0 then f:=fl[least(wj,cj)*w+wi+1]&4;\n'||
+  E'   elsif fl[wj*w+ci+1]&1<>0 and fl[cj*w+wi+1]&1<>0 then f:=1;\n'||
+  E'   elsif strict and (fl[wj*w+ci+1]&1<>0 or fl[cj*w+wi+1]&1<>0 or fl[wj*w+least(wi,ci)+1]&2<>0 or fl[least(wj,cj)*w+wi+1]&4<>0) then f:=1;\n'||
+  E'   elsif di=dj then f:=fl[least(wj,cj)*w+least(wi,ci)+1]&8;\n'||
+  E'   else f:=fl[least(wj,cj)*w+greatest(wi,ci)+1]&16;end if;\n'||
+  E'   if f<>0 then continue;end if;\n'||
+  E'   dd:=abs((wi-radius)*ez-(wj-radius)*ex);\n'||
+  E'   if dd<off then off:=dd;nxt:=idx;end if;\n'||
+  E'  end loop;\n'||
+  E'  k:=nxt;steps:=steps+1;\n'||
   E' end loop;']);
 end $patch$;
 

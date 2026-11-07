@@ -5,15 +5,15 @@
 // (clusterMarkers), then the owner's overrides from gameConfig.mapMarkers (hide, rename, custom
 // markers; db/map-icons.sql) are applied. Rebuilt only when the inputs change, at most once a
 // second, so the minimap can ask every refresh.
-import {collectMarkers,clusterMarkers,applyOverrides,markerId,MARKER_CATS} from './map-icons.js?v=release-20261107-emotes143';
-import {dungeons} from './underground-data.js?v=release-20261107-emotes143';
-import {undergroundAreas} from './underground.js?v=release-20261107-emotes143';
-import {BOSSES,LAIRS} from './bosses.js?v=release-20261107-emotes143';
-import {rosterBeasts} from './monster-roster.js?v=release-20261107-emotes143';
-import {monsterSpawns} from './monster-spawns.js?v=release-20261107-emotes143';
-import {shortcuts,shortcutEntity} from './agility-data.js?v=release-20261107-emotes143';
-import {extraFishingSpots} from './water-data.js?v=release-20261107-emotes143';
-import {PLACES} from './explore-data.js?v=release-20261107-emotes143';
+import {collectMarkers,clusterMarkers,applyOverrides,markerId,MARKER_CATS} from './map-icons.js?v=release-20261107-heading144';
+import {dungeons} from './underground-data.js?v=release-20261107-heading144';
+import {undergroundAreas} from './underground.js?v=release-20261107-heading144';
+import {BOSSES,LAIRS} from './bosses.js?v=release-20261107-heading144';
+import {rosterBeasts} from './monster-roster.js?v=release-20261107-heading144';
+import {monsterSpawns} from './monster-spawns.js?v=release-20261107-heading144';
+import {shortcuts,shortcutEntity} from './agility-data.js?v=release-20261107-heading144';
+import {extraFishingSpots} from './water-data.js?v=release-20261107-heading144';
+import {PLACES} from './explore-data.js?v=release-20261107-heading144';
 
 const LAIR_IDS=LAIRS.map(l=>l.id),SHORTCUTS=shortcuts.map(s=>shortcutEntity(s)).filter(Boolean);
 export function createMapMarkers({rows=()=>[],buildings=()=>[],config=()=>null,now=()=>performance.now()}={}){
