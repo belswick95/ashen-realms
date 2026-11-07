@@ -22,6 +22,9 @@ export const MONSTER_MODELS={
  boar:{file:'boar.glb',size:{length:2.35},yaw:Math.PI,stride:2.2,attack:.7},
  golem:{file:'golem.glb',size:{height:2.3},yaw:Math.PI,stride:2.6,attack:1.1},
  troll:{file:'troll.glb',size:{height:2.3},yaw:0,stride:2.6,attack:.95},
+ // The lava golem serves the ash demon and, smaller and tinted, the imps.
+ demon:{file:'demon.glb',size:{height:2.5},yaw:0,stride:2.4,attack:1},
+ imp:{file:'demon.glb',size:{height:1.9},yaw:0,stride:1.8,attack:.8,mouth:[1.35,.55]},
 };
 const BASE=new URL('./assets/monsters/',import.meta.url);
 const CLASSIC_KEY='eldervale-classic-monsters';
@@ -39,9 +42,11 @@ const canLoad=()=>typeof document!=='undefined'&&typeof fetch==='function';
 function loadAsset(T,species){
  if(store.assets.has(species))return store.assets.get(species);if(store.pending.has(species))return null;
  const cfg=MONSTER_MODELS[species];
- store.pending.set(species,new GLTFLoader().loadAsync(new URL(cfg.file,BASE).href).then(gltf=>{
+ // One parse per file, shared by every species that uses it.
+ const files=store.files||(store.files=new Map());if(!files.has(cfg.file))files.set(cfg.file,new GLTFLoader().loadAsync(new URL(cfg.file,BASE).href).then(gltf=>{gltf.scene.traverse(o=>{if(o.geometry)o.geometry.userData.eldervaleShared=true;if(o.material){o.material.userData.eldervaleShared=true;for(const v of Object.values(o.material))if(v?.isTexture)v.userData.eldervaleShared=true}});return gltf}));
+ store.pending.set(species,files.get(cfg.file).then(gltf=>{
   const scene=gltf.scene,clips={};for(const c of gltf.animations)clips[c.name]=c;
-  scene.traverse(o=>{if(o.geometry)o.geometry.userData.eldervaleShared=true;if(o.material){o.material.userData.eldervaleShared=true;if(cfg.tintAll)o.material.userData.tintAll=true;for(const v of Object.values(o.material))if(v?.isTexture)v.userData.eldervaleShared=true}});
+  if(cfg.tintAll)scene.traverse(o=>{if(o.material)o.material.userData.tintAll=true});
   // Fit: pose the first idle frame, measure, then scale to the species size with feet on y=0.
   const probe=cloneSkinned(scene),mixer=new T.AnimationMixer(probe);if(clips.idle)mixer.clipAction(clips.idle).play();mixer.update(0);
   const holder=new T.Group();holder.rotation.y=cfg.yaw||0;holder.add(probe);holder.updateMatrixWorld(true);
@@ -61,7 +66,7 @@ export async function preloadMonsterModels(T){if(!canLoad())return;for(const s o
 function tintedMaterial(T,material,tint){
  if(!Number.isFinite(tint))return material;const key=material.uuid+':'+tint;let m=store.materials.get(key);if(m)return m;
  m=material.clone();m.userData.eldervaleShared=true;const t={h:0,s:0,l:0};new T.Color(tint).getHSL(t);
- if(material.map){const c=new T.Color(tint),peak=Math.max(c.r,c.g,c.b,1e-3);c.multiplyScalar(1/peak);m.color.setRGB(1,1,1).lerp(c,.7).multiplyScalar(Math.max(.4,Math.min(1.1,.45+t.l)))}
+ if(material.map){const c=new T.Color(tint),peak=Math.max(c.r,c.g,c.b,1e-3);c.multiplyScalar(1/peak);m.color.setRGB(1,1,1).lerp(c,.7).multiplyScalar(Math.max(.4,Math.min(1.1,.45+t.l)));if(material.emissiveMap)m.emissive.copy(c)}
  else{const own={h:0,s:0,l:0};material.color.getHSL(own);if(own.l>=.75&&material.userData.tintAll)m.color.set(tint);else if(own.l<.75)m.color.setHSL(t.h,Math.min(1,t.s*.85+own.s*.15),Math.max(.04,Math.min(.92,own.l*(.35+t.l*1.3))))}
  store.materials.set(key,m);return m;
 }
