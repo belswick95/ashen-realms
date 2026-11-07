@@ -118,3 +118,45 @@ test('arrival cutscene camera rays do not cross kit castle masonry or the Great 
   const hit=ray.intersectObjects(scene.children,true)[0];assert.equal(hit,undefined,`shot ${shot.eye} blocked by ${hit?.object.name}`)}
  resetKit();
 });
+
+// Owner report (bank153): inside Eldervale Castle the walls beside the gate showed KayKit's plain
+// back slab under a salmon wall walk ("red lines"), while other runs showed the dressed stone face.
+// Every wall and gate run must be the same kit wall, with the dressed face on both sides.
+test('every castle, town wall and gate run is the same kit wall, dressed stone on both faces',async()=>{
+ install();
+ const {castleBlueprint}=await import('../castle-layout.js?v='+version);
+ const {initializeGeography}=await import('../geography.js?v='+version);
+ initializeGeography(JSON.parse(fs.readFileSync(new URL('../db/generated-world.json',import.meta.url))).config);
+ const {capitalBlueprint}=await import('../capital-layout.js?v='+version);
+ const runs=[...castleBlueprint(),...capitalBlueprint()].filter(d=>['castle_wall','castle_gate'].includes(d.template));
+ assert.ok(runs.filter(d=>d.template==='castle_wall').length>=20&&runs.some(d=>d.template==='castle_gate'),'castle and Birchford walls and gates found');
+ const materials=new Set();
+ for(const d of runs){
+  // Unbatched, as castleObject builds it before batchStaticMeshes merges it per material.
+  const g=new T.Group();assert.equal(kitCastle(T,g,d.template,d),true);const masonry=meshes(g);
+  assert.ok(masonry.length>0&&masonry.every(m=>m.name==='kit:hex_wall'),`${d.name||d.template}: only kit wall pieces (${[...new Set(masonry.map(m=>m.name))]})`);
+  for(const m of masonry)materials.add(m.material);
+  // Back-to-back halves: as many facing out (+z) as in (-z), each with its dressed face outermost.
+  const out=masonry.filter(m=>m.rotation.y===0),inn=masonry.filter(m=>Math.abs(m.rotation.y-Math.PI)<1e-9);
+  assert.equal(out.length,inn.length,`${d.name||d.template}: dressed face on both sides`);assert.equal(out.length+inn.length,masonry.length);
+  const all=worldBox(masonry),front=worldBox(out),back=worldBox(inn);
+  assert.ok(Math.abs(front.max.z-all.max.z)<1e-6&&Math.abs(back.min.z-all.min.z)<1e-6,`${d.name||d.template}: each half's face is the outer face`);
+  assert.ok(front.min.z<=0&&back.max.z>=0,`${d.name||d.template}: halves meet on the centre line`);
+ }
+ assert.equal(materials.size,1,'one wall material everywhere');
+ resetKit();
+});
+
+test('KayKit castle wall walk and tower roof lose the salmon atlas cells, tower doors keep theirs',()=>{
+ const {stoneTrim}=kitModule;
+ // A wall walk quad (atlas column 6, top row) at 6.4 m, two faces sharing an edge, and a door face at 1 m.
+ const g=new T.BufferGeometry();
+ g.setAttribute('position',new T.BufferAttribute(new Float32Array([0,6.4,0,1,6.4,0,0,6.4,1,1,6.4,1, 0,1,0,1,1,0,0,2,0]),3));
+ g.setAttribute('uv',new T.BufferAttribute(new Float32Array([.82,.02,.83,.02,.82,.03,.83,.03, .82,.15,.83,.15,.82,.16]),2));
+ g.setIndex([0,1,2,2,1,3,4,5,6]);
+ assert.equal(stoneTrim({parts:[{geometry:g}]}),2);
+ const uv=g.attributes.uv;
+ // Shared vertices move once (no face is left spanning two atlas columns).
+ for(let i=0;i<4;i++)assert.equal(Math.floor(uv.getX(i)*8),3,'wall walk moved to the dark stone column');
+ for(let i=4;i<7;i++)assert.equal(Math.floor(uv.getX(i)*8),6,'low (door) face keeps its colour');
+});

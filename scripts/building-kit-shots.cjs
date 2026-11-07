@@ -19,6 +19,12 @@ const shots=[
  {id:'grand-market',at:[-191,160],eye:[-170,22,138],look:[-191,2,166]},
  {id:'castle',at:[-340,-280],eye:[-255,62,-215],look:[-340,0,-305]},
  {id:'castle-gate',at:[-340,-250],eye:[-325,9,-241],look:[-342,2,-267]},
+ // Castle walls from the owner's view (inside the courtyard near the gate) and outside.
+ {id:'walls-courtyard-gate',at:[-340,-275],ground:true,eye:[-336,2.2,-282],look:[-340,5,-256]},
+ {id:'walls-courtyard-front',at:[-345,-266],ground:true,eye:[-332,2.2,-266],look:[-372,4,-257]},
+ {id:'walls-courtyard-side',at:[-350,-285],ground:true,eye:[-345,2.2,-275],look:[-389,5,-300]},
+ {id:'walls-outside',at:[-340,-232],ground:true,eye:[-318,4,-226],look:[-350,6,-258]},
+ {id:'walls-birchford',at:[-218,143],eye:[-150,30,215],look:[-220,6,145]},
  {id:'winterwatch',at:[217,-243],eye:[262,34,-190],look:[217,0,-243]},
  {id:'emberspire',at:[257,212],eye:[305,34,262],look:[257,0,212]},
  // Arrival cutscene (cutscenes.js): the two fixed shots, the follow shot on the walk to the
