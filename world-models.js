@@ -1,19 +1,19 @@
-import {undergroundObjectModel} from './underground-models.js?v=release-20261107-monsters135';
-import {exploreObjectModel} from './explore-models.js?v=release-20261107-monsters135';
-import {campObject} from './camp-models.js?v=release-20261107-monsters135';
-import {professionStationModel} from './profession-models.js?v=release-20261107-monsters135';
-import {oreResources} from './profession-data.js?v=release-20261107-monsters135';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261107-monsters135';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261107-monsters135';
-import {creatureMaterial} from './creature-material.js?v=release-20261107-monsters135';
-import {dragonModel} from './monster-dragon.js?v=release-20261107-monsters135';
-import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-monsters135';
-import {castleObject} from './castle-models.js?v=release-20261107-monsters135';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261107-monsters135';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-monsters135';
-import {townProp,dressFountain} from './town-props.js?v=release-20261107-monsters135';
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-monsters135';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-monsters135';
+import {undergroundObjectModel} from './underground-models.js?v=release-20261107-skillguide136';
+import {exploreObjectModel} from './explore-models.js?v=release-20261107-skillguide136';
+import {campObject} from './camp-models.js?v=release-20261107-skillguide136';
+import {professionStationModel} from './profession-models.js?v=release-20261107-skillguide136';
+import {oreResources} from './profession-data.js?v=release-20261107-skillguide136';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261107-skillguide136';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261107-skillguide136';
+import {creatureMaterial} from './creature-material.js?v=release-20261107-skillguide136';
+import {dragonModel} from './monster-dragon.js?v=release-20261107-skillguide136';
+import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-skillguide136';
+import {castleObject} from './castle-models.js?v=release-20261107-skillguide136';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261107-skillguide136';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-skillguide136';
+import {townProp,dressFountain} from './town-props.js?v=release-20261107-skillguide136';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-skillguide136';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-skillguide136';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);
