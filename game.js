@@ -68,7 +68,7 @@ import {armorCatalog,weaponStats,meleeProtection,meleeRoll,equipRefusal,gearDeta
 import {renderEquipmentStats,installGearTooltip} from './equipment-stats.js?v=release-20261107-demons132';
 import {styleLabels,playerAttackProfile,rollPlayerHit,rollMonsterHit} from './gear-tiers.js?v=release-20261107-demons132';
 import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261107-demons132';
-import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261107-demons132';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon,drawCityWalls} from './world-map.js?v=release-20261107-demons132';
+import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261107-demons132';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon,drawCityWalls} from './world-map.js?v=release-20261107-demons132';import {createMapMarkers} from './map-markers.js?v=release-20261107-demons132';import {drawMarker} from './map-icons.js?v=release-20261107-demons132';
 const ARMOR_SLOTS=[...OUTFIT_SLOTS,'cape'];
 import {stepEnergy,footIcon} from './run-energy.js?v=release-20261107-demons132';
 import {createMechanicsHud} from './mechanics-hud.js?v=release-20261107-demons132';
@@ -1036,7 +1036,10 @@ const minimapCached={x:0,z:0,extent:0,ready:false},minimapDrawn={yaw:NaN,x:NaN,z
 let minimapRes=0,minimapStamp=0,compassAngle=NaN,compassTurn=null;
 function sizeMinimap(){const res=Math.min(2,Math.max(1,Math.ceil((window.devicePixelRatio||1)*2)/2));if(res===minimapRes)return;minimapRes=res;mapCanvas.width=mapCanvas.height=MINIMAP_SIZE*res;minimapCache.width=minimapCache.height=minimapCacheSpan*res;minimapCached.ready=false;minimapDrawn.stamp=-1}
 sizeMinimap();addEventListener('resize',sizeMinimap);
-function refreshMinimapCache(){sizeMinimap();minimapCacheCtx.setTransform(minimapRes,0,0,minimapRes,0,0);drawMap(minimapCacheCtx,minimapCache,false,{w:minimapCacheSpan,h:minimapCacheSpan,extent:minimapExtent*minimapCacheSpan/MINIMAP_SIZE});minimapCached.x=player.position.x;minimapCached.z=player.position.z;minimapCached.extent=minimapExtent;minimapCached.ready=true;minimapStamp++}
+function refreshMinimapCache(){sizeMinimap();minimapCacheCtx.setTransform(minimapRes,0,0,minimapRes,0,0);drawMap(minimapCacheCtx,minimapCache,false,{w:minimapCacheSpan,h:minimapCacheSpan,extent:minimapExtent*minimapCacheSpan/MINIMAP_SIZE});minimapCached.x=player.position.x;minimapCached.z=player.position.z;minimapCached.extent=minimapExtent;minimapCached.ready=true;minimapStamp++;refreshMinimapMarkers()}
+// Map markers near the player (map-icons.js), refreshed with the cache; drawn upright by composeMinimap.
+let minimapMarkers=[],minimapMarkerKey='';
+function refreshMinimapMarkers(){let list=[];try{list=mapMarkers.near(player.position.x,player.position.z,minimapExtent*.75,new Set(worldMap.hiddenKinds))}catch{/* before the map is set up */}const key=list.map(c=>c.id).join('|');if(key!==minimapMarkerKey){minimapMarkerKey=key;minimapMarkers=list;minimapDrawn.stamp=-1}}
 function composeMinimap(force=false){
  const px=player.position.x,pz=player.position.z,ppu=MINIMAP_SIZE/minimapExtent;
  if(!minimapCached.ready||minimapCached.extent!==minimapExtent||Math.hypot(minimapCached.x-px,minimapCached.z-pz)*ppu>MINIMAP_PAD*.8)refreshMinimapCache();
@@ -1048,7 +1051,9 @@ function composeMinimap(force=false){
  ctx.save();ctx.translate(c,c);ctx.rotate(minimapRotation(yaw));ctx.translate((minimapCached.x-px)*ppu,(minimapCached.z-pz)*ppu);
  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(minimapCache,-minimapCacheSpan/2,-minimapCacheSpan/2,minimapCacheSpan,minimapCacheSpan);ctx.restore();
  ctx.font='bold 10px Georgia';ctx.textAlign='center';ctx.fillStyle='#f7e5a9';
- for(const h of houseInteriors){if(h.type!=='bank'&&h.type!=='hall')continue;const p=worldToMinimap(h.group.position.x,h.group.position.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(p.x>-20&&p.x<S+20&&p.y>-10&&p.y<S+10)ctx.fillText(h.type==='bank'?'BANK':'HALL',p.x,p.y+3)}
+ for(const h of houseInteriors){if(h.type!=='hall')continue;const p=worldToMinimap(h.group.position.x,h.group.position.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(p.x>-20&&p.x<S+20&&p.y>-10&&p.y<S+10)ctx.fillText('HALL',p.x,p.y+3)}
+ // Map markers (banks, mines, stations, caves…): upright icons, the higher kinds first, no overlaps.
+ if(minimapMarkers.length){const placed=[],size=15;for(const m of minimapMarkers){const p=worldToMinimap(m.x,m.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(Math.hypot(p.x-c,p.y-c)>c-6||placed.some(q=>Math.abs(q.x-p.x)<size-2&&Math.abs(q.y-p.y)<size-2))continue;placed.push({x:p.x,y:p.y});drawMarker(ctx,m,p.x,p.y,size,minimapRes)}}
  ctx.textAlign='left';
  questUiRef?.trail.drawMinimap(ctx,(x,z)=>worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch),c,c);
  questUiRef?.markers.drawMinimap(ctx,(x,z)=>{const p=worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch);return p.x>5&&p.x<S-5&&p.y>5&&p.y<S-5&&Math.hypot(p.x-c,p.y-c)<c-5?p:null});
@@ -1073,13 +1078,17 @@ mapCanvas.addEventListener('click',e=>walkFromMap(e,mapCanvas));
 // The full world map (world-map.js) pans, zooms and names places; it never walks.
 const worldMapRegions=()=>generatedWorld?regionAnchors(regionDefinitions,(x,z)=>biomeWeights(x,z,generatedWorld.seed),840,20,places.map(([,x,z])=>({x,z}))):[];
 const worldMapRows=()=>{try{return [...persistentRows.values()].filter(r=>!r.deleted&&r.data)}catch{return []}};
+// Map markers (map-markers.js / map-icons.js): mines, trees, fishing, stations, shops, caves, lairs,
+// dragons, training areas, shortcuts, boats — shared by the world map, the minimap and the console.
+const mapMarkers=createMapMarkers({rows:()=>worldMapRows().filter(r=>!(r.data.floor>0)).map(r=>r.data),buildings:()=>houseInteriors.map(h=>({type:h.type,name:h.name,x:h.group.position.x,z:h.group.position.z})),config:()=>window.eldervaleGameConfig?.mapMarkers});
+window.eldervaleMapMarkers=mapMarkers;
 const worldMap=createWorldMap({canvas:largeMap,source:{extent:840,phone:matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<700,
  heightAt:(x,z)=>landscape.heightAt(x,z),waterAt:(x,z)=>landscape.waterAt(x,z),biome:generatedWorld?(x,z)=>biomeWeights(x,z,generatedWorld.seed):null,regions:worldMapRegions,
  rivers:worldRivers,lakes:worldLakes,lakeOutline,roads:worldRoads,roadPoints,streets:()=>townStreets,bridges:landscape.bridges,castle,trees:()=>forestTrees,
  plazas:()=>worldMapRows().filter(r=>r.data.template==='plaza').map(r=>({x:r.data.x,z:r.data.z,r:8})),
  buildings:()=>houseInteriors.map(h=>({x:h.group.position.x,z:h.group.position.z,halfW:2*h.group.scale.x,halfD:1.85*h.group.scale.z,rot:h.group.rotation.y,roof:'#'+Number(h.roofColor||0x8a4b33).toString(16).padStart(6,'0'),type:h.type,name:h.name})),
  places:()=>places.map(([name,x,z])=>({name,x,z,kind:name.includes('Castle')?'castle':'town',...(isCapitalTown({x,z})&&name===capital.name?{capital:true,title:capital.title}:{})})),walls:()=>capitalActive()?[capitalMapWalls()]:[],
- pois:()=>[...explore.mapPois(),...houseInteriors.map(h=>({kind:poiKind(h.type),x:h.group.position.x,z:h.group.position.z,name:h.name})),...worldMapRows().map(r=>({kind:r.data.kind==='npc'&&(r.data.quest||r.data.questId)?'quest':poiKind(r.data.template),x:r.data.x,z:r.data.z,name:r.data.name}))],
+ pois:()=>explore.mapPois(),markers:()=>mapMarkers.items(),
  quests:()=>questUiRef?.markers.givers?.()||[],objective:()=>{const t=questUiRef?.trail?.target;return t?{x:t.x,z:t.z,label:questUiRef.tracker?.step?.label||''}:null},
  player:()=>({x:player.position.x,z:player.position.z,heading:player.rotation.y}),flag:()=>walkFlagState||mapDestination,deathPile:()=>deathFlow.pile(),
  signature:()=>forestTrees.length+':'+townStreets.length+':'+worldMapRows().filter(r=>r.data.template==='plaza').length}});
