@@ -17,7 +17,9 @@ export function buildWarhorse(T,parent){
 
  for(const side of [-1,1]){panel([[side*.08,1.87,.70],[side*.26,1.76,.76],[side*.29,1.25,.69],[side*.07,1.18,.77]],steel);line([[side*.08,1.87,.71],[side*.26,1.76,.77],[side*.29,1.25,.70],[side*.07,1.18,.78]],.012,gold);}
  let seatOffset=[0,0];
- function pose(phase,moving){const count=horseAsset.saddle.length,f=((phase%1)+1)%1*count,i=Math.floor(f)%count,j=(i+1)%count,t=f-i;for(const skin of skins){skin.morphTargetInfluences.fill(0);if(moving){skin.morphTargetInfluences[i]=1-t;skin.morphTargetInfluences[j]=t;}}seatOffset=moving?horseAsset.saddle[i].map((v,k)=>v*(1-t)+horseAsset.saddle[j][k]*t):[0,0];barrel.position.set(0,seatOffset[0],seatOffset[1]);return seatOffset;}
+ // `amount` (0..1, or a boolean) scales the stride: 1 is the full baked gallop,
+ // smaller values a shorter, gentler canter/trot reach from the standing frame.
+ function pose(phase,amount){const w=amount===true?1:Math.max(0,Math.min(1,+amount||0)),count=horseAsset.saddle.length,f=((phase%1)+1)%1*count,i=Math.floor(f)%count,j=(i+1)%count,t=f-i;for(const skin of skins){skin.morphTargetInfluences.fill(0);if(w>0){skin.morphTargetInfluences[i]=(1-t)*w;skin.morphTargetInfluences[j]=t*w;}}seatOffset=w>0?horseAsset.saddle[i].map((v,k)=>(v*(1-t)+horseAsset.saddle[j][k]*t)*w):[0,0];barrel.position.set(0,seatOffset[0],seatOffset[1]);return seatOffset;}
  // Reins: bit ring → over the neck → the rider's hand. Straight leather
  // segments are re-aimed every frame so the line ends in the rider's fist.
  const reinGeometry=new T.CylinderGeometry(.014,.014,1,6,1,true);reinGeometry.translate(0,.5,0);reinGeometry.rotateX(Math.PI/2);resources.push(reinGeometry);
