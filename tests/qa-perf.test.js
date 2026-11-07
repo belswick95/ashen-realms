@@ -16,3 +16,9 @@ test('groundFeet helpers exist before the first frame() call',()=>{
  const src=read('game.js'),decl=src.indexOf('function groundHeightAt('),box=src.indexOf('const footBox=new T.Box3()'),first=src.indexOf("say('Welcome to Eldervale!');frame();");
  assert.ok(decl>0&&box>0&&first>0);assert.ok(box<first,'footBox declared before the first frame');
 });
+
+test('automatic graphics drops keep the light count (no full shader rebuild on a slow frame)',()=>{
+ const src=read('game.js');
+ assert.match(src,/const lamps=\(autoTierDrop>0\|\|leanMode\)&&lampBudget\?lampBudget:shadow\.lamps;lampBudget=lamps;lanternPool\.forEach\(\(light,i\)=>light\.visible=i<lamps\);torchLights\.setBudget\(lamps>=3\?3:2\);/);
+ assert.ok(!src.includes('light.visible=i<shadow.lamps'),'no direct preset-driven toggle left');
+});
