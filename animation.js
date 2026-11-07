@@ -1,20 +1,27 @@
-import {clipsFor,CHARACTER_SCALE} from './character-assets.js?v=release-20261107-npcsmooth128';
-import {gaitPlayback,createStrideWarp} from './gait-cadence.js?v=release-20261107-npcsmooth128';
-import {createRunStyle,runStyleWeight} from './run-style.js?v=release-20261107-npcsmooth128';
+import {clipsFor,locomotionSpeed} from './character-assets.js?v=release-20261107-combatsfx130';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
-// this picks the clip, cross-fades, and plays gaits at a natural cadence
-// for the real travel speed with strides shortened to match (gait-cadence.js),
-// so feet do not slide. Gameplay roots are never moved here.
+// this picks the clip and cross-fades. Walking and running use the owner's
+// Adobe Mixamo walk and run, retargeted onto each body
+// (scripts/build-mixamo-locomotion.mjs), played exactly as authored: only the
+// playback rate follows the real travel speed, so the planted foot moves back
+// at the ground speed and does not slide. Gameplay roots are never moved here.
 
-// Ground speed of each loop at normal playback, in world units per second:
-// how fast the planted ball of the foot moves backward (measured from the
-// clips, Quaternius metres × scale).
-export const STRIDE={Walk_Loop:1.03*CHARACTER_SCALE,Jog_Fwd_Loop:6.27*CHARACTER_SCALE,Sprint_Loop:9.5*CHARACTER_SCALE};
+// The two locomotion loops. Their natural ground speed (world units per second
+// at playback rate 1: how fast the planted foot moves backward) is measured
+// per body when the clips are baked (locomotionSpeed, character-assets.js).
+export const WALK_CLIP='Mixamo_Walk',RUN_CLIP='Mixamo_Run',LOCOMOTION=new Set([WALK_CLIP,RUN_CLIP]);
+// Playback rate limits: very slow strolls play slower, never frozen.
+export const MIN_RATE=.35,MAX_RATE=2.5;
+export function gaitRate(sex,gait,speed){const natural=locomotionSpeed(sex,gait);if(!(natural>0)||!(speed>0))return 1;return Math.max(MIN_RATE,Math.min(MAX_RATE,speed/natural))}
+// Which loop a moving character plays: an explicit run (or jog) runs; a walk
+// (or combat walk) walks up to WALK_LIMIT; otherwise the travel speed decides.
+export function gaitFor(locomotion,speed){if(locomotion==='run'||locomotion==='jog')return RUN_CLIP;if((locomotion==='walk'||locomotion==='combat')&&speed<=WALK_LIMIT)return WALK_CLIP;return speed>WALK_LIMIT?RUN_CLIP:WALK_CLIP}
 // Death pose timing (s): kneel clip is down by 0.7 s; Death01 joins where its hips are at
 // kneeling height (0.8 s) and plays a little slower so the collapse reads.
 export const DEATH_KNEEL=1.1,KNEEL_HOLD=.7,DEATH_JOIN=.8,DEATH_FALL_SPEED=.6;
-const FADE=.18,FIGHT_HOLD=6,COMBAT_HOLD=3,WALK_LIMIT=3.8;
+// Starting, stopping and switching between walk and run blend a little longer than other clips.
+const GAIT_FADE=.3,FADE=.18,FIGHT_HOLD=6,COMBAT_HOLD=3;export const WALK_LIMIT=3.8;
 // Town and profession activities → looping clips.
 // A clip name ending in '@loop' repeats a normally one-shot clip (chopping, mining).
 const ACTIVITY={smith:'Fixing_Kneeling',fix:'Fixing_Kneeling',garden:'Fixing_Kneeling',sweep:'Push_Loop',push:'Push_Loop',carry:'Idle_Torch_Loop',read:'Idle_Talking_Loop',talk:'Idle_Talking_Loop',sit:'Sitting_Idle_Loop',interact:'Interact@loop',pickup:'PickUp_Table@loop',swim:'Swim_Idle_Loop',mine:'Sword_Attack@loop',woodcut:'Sword_Attack@loop',fish:'Idle_Torch_Loop',net:'Fixing_Kneeling',cook:'Interact@loop',craft:'Fixing_Kneeling',
@@ -26,9 +33,8 @@ const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_S
 
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
- const actions=new Map(),weights=new Map(),mids=new Map();let settle=0,deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
- const warp=createStrideWarp(rig),runStyle=createRunStyle(rig);let stride=1;
- const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0,netting=0;
+ const actions=new Map(),weights=new Map(),mids=new Map();let settle=0,gaitFade=0,deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
+ const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0,netting=0;const held={left:{w:0,kind:null},right:{w:0,kind:null}};
  const holding=socket=>!!socket&&socket.children.some(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);
  const loops={};
  function clipFor(name){const [clip,loop]=name.split('@');if(!loop)return clips[clip];if(!clips[clip])return null;return loops[name]||(loops[name]=Object.assign(clips[clip].clone(),{name}))}
@@ -56,39 +62,45 @@ export function createHumanoidAnimator(rig){
   if(dead)base=clips.Fixing_Kneeling&&time-deadAt<DEATH_KNEEL?'Fixing_Kneeling':'Death01';
   else if(mounted)base=clips.Driving_Loop?'Driving_Loop':'Sitting_Idle_Loop';
   else if(airborne)base='Jump_Loop';
-  else if(moving){const gait=locomotion==='run'?'Sprint_Loop':locomotion==='jog'?'Jog_Fwd_Loop':(locomotion==='walk'||locomotion==='combat')&&speed<=WALK_LIMIT?'Walk_Loop':speed>6.5?'Sprint_Loop':speed>2.6?'Jog_Fwd_Loop':'Walk_Loop';base=gait;}
+  else if(moving)base=gaitFor(locomotion,speed);
   // Relaxed by default; the fighting stance is for an explicit combat stance or
   // a few seconds after armed melee attacks and blocks.
   else base=work||(block>0||!ranged&&time<fightUntil?'Sword_Idle':'Idle_Loop');
   // A loop that is still fading out keeps its phase when it comes back (walk ->
   // idle -> walk within a fade): restarting it from frame 0 visibly pops the limbs.
-  if(base!==current){if(LOW_POSE.has(base)||LOW_POSE.has(current))settle=.9;current=base;const a=action(base);if(dead||!((weights.get(base)||0)>.05))a.reset?.();if(dead&&base==='Death01'&&clips.Fixing_Kneeling)a.time=DEATH_JOIN}
-  const loop=action(base);if(STRIDE[base]){const play=gaitPlayback(base,speed,{stride:STRIDE[base],duration:loop.getClip().duration,scale:CHARACTER_SCALE});loop.timeScale=play.timeScale;stride=play.amplitude}else{loop.timeScale=1;stride=1}
+  if(base!==current){if(LOW_POSE.has(base)||LOW_POSE.has(current))settle=.9;const from=current;current=base;const a=action(base);if(dead||!((weights.get(base)||0)>.05))a.reset?.();if(dead&&base==='Death01'&&clips.Fixing_Kneeling)a.time=DEATH_JOIN;
+   // Walk to run and back: the incoming loop starts at the same point of the stride
+   // (both Mixamo cycles begin on the same foot), so the legs never fade out of step.
+   if(LOCOMOTION.has(base)&&LOCOMOTION.has(from)&&actions.has(from)){const o=actions.get(from);a.time=o.time/o.getClip().duration*a.getClip().duration}
+   if(LOCOMOTION.has(base)||LOCOMOTION.has(from))gaitFade=GAIT_FADE}
+  const loop=action(base);loop.timeScale=LOCOMOTION.has(base)?gaitRate(rig.sex,base,speed):1;
   if(work&&base===work&&rig.activityPhase!=null){loop.time=rig.activityPhase*loop.getClip().duration;loop.timeScale=0}
   // Net fishing holds the kneel (the arms and spine are posed by arms.net), so the body does not bob each loop.
   else if(base===work&&(activity||rig.activity)==='net'&&base==='Fixing_Kneeling'){loop.time=Math.min(KNEEL_HOLD,loop.getClip().duration);loop.timeScale=0}
   if(dead&&base==='Fixing_Kneeling')loop.timeScale=loop.time>=KNEEL_HOLD?0:1;else if(dead&&base==='Death01')loop.timeScale=DEATH_FALL_SPEED;
   // Cross-fade: the active one-shot (if any) takes over, then hands back.
   if(oneShot){oneShotLeft-=dt;if(oneShotLeft<=0&&!(oneShot==='Death01'))oneShot=null}
-  const target=oneShot||base,k=1-Math.exp(-dt/FADE*3);
+  gaitFade=Math.max(0,gaitFade-dt);const target=oneShot||base,k=1-Math.exp(-dt/(gaitFade>0&&!oneShot?GAIT_FADE:FADE)*3);
   // Townsfolk (rig.smoothFade, npc-activities.js) blend loops through two
   // cascaded smoothing stages: the fade starts gently and takes about a third
   // of a second, so stopping to sweep, kneeling down or getting up from a
   // bench never jumps the hips and feet a quarter of the way in one frame.
   // Weights still sum to one (both stages are linear). One-shots stay crisp.
   // Kneeling down, sitting and getting up again take a little longer still.
-  settle=Math.max(0,settle-dt);const soft=rig.smoothFade&&!oneShot&&!dead,k2=1-Math.exp(-dt/(settle>0?.12:.075));
+  settle=Math.max(0,settle-dt);const soft=rig.smoothFade&&!oneShot&&!dead,k2=1-Math.exp(-dt/(settle>0?.15:.075));
   for(const [name,a] of actions){const t=name===target?1:0;let w;if(soft){const m0=mids.get(name)??weights.get(name),m=m0+(t-m0)*k2;mids.set(name,m);w=weights.get(name)+(m-weights.get(name))*k2}else{w=weights.get(name)+(t-weights.get(name))*k;mids.set(name,w)}weights.set(name,w<.001&&t===0&&!(mids.get(name)>.001)?0:w);a.setEffectiveWeight(weights.get(name))}
   mixer.update(dt);
-  // Shorter strides for the gait loop, weighted by how far it has faded in.
-  if(STRIDE[base]&&moving){const w=weights.get(base)||0;if(w>0)warp(loop.getClip(),1-(1-stride)*w)}
-  // Calm the run: steadier hips, head and torso, smaller arm swing (run-style.js).
-  if(moving&&!airborne&&!oneShot)runStyle.update(loop.getClip(),base,weights.get(base)||0);
+  // How much of the pose is a locomotion loop: its feet are seated as authored
+  // (flight and hip bob kept), so ground contact only follows slopes (foot-ground.js).
+  rig.footAuthored=(weights.get(WALK_CLIP)||0)+(weights.get(RUN_CLIP)||0);
   // Blocking raises the shield across the chest on top of whatever clip plays.
   guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
   // Held weapon / shield ride steady at the side while running (gently while walking).
-  carry+=((STRIDE[base]&&moving&&!airborne&&!oneShot&&!mounted&&!dead?1:0)-carry)*k;if(carry<.001)carry=0;
-  if(carry&&!guard)for(const side of ['left','right'])if(holding(side==='left'?rig.leftHand:rig.rightHand))arms.carry(side,carry*(runStyleWeight(base,1)?.8:.45));
+  carry+=((LOCOMOTION.has(base)&&moving&&!airborne&&!oneShot&&!mounted&&!dead?1:0)-carry)*k;if(carry<.001)carry=0;
+  // Each hand fades its carry in and out on its own, so an item that appears or is put away
+  // (a townsperson's trowel, eating) never snaps the arm.
+  for(const side of ['left','right']){const h=held[side],item=(side==='left'?rig.leftHand:rig.rightHand)?.children.find(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);if(item)h.kind=item.userData.shieldMount?'shield':'weapon';h.w+=((item?1:0)-h.w)*k;if(h.w<.001)h.w=0;
+   if(carry&&!guard&&h.w&&h.kind)arms.carry(side,carry*h.w*(base===RUN_CLIP?.8:h.kind==='weapon'?.65:.45),h.kind)}
   // Bow shot: raise and draw over 70% of the attack, release, then lower.
   let draw=0,released=false;
   // Spell: the bolt leaves the casting (left) hand partway through the cast.
@@ -100,7 +112,7 @@ export function createHumanoidAnimator(rig){
   // Net fishing (gathering-visuals.js sets rig.netDip): lean over the bank,
   // both hands on the pole, dip the net into the water, scoop and lift.
   const dip=rig.netDip;netting+=((dip&&!moving&&!mounted&&!dead&&!oneShot?1:0)-netting)*k;if(netting<.001)netting=0;if(netting&&dip)arms.net(netting,dip);
-  const run=base==='Sprint_Loop'?1:base==='Jog_Fwd_Loop'?.65:0;
+  const run=base===RUN_CLIP?1:0;
   return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite};
  },dispose(){eating.dispose();mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
 }
@@ -136,13 +148,17 @@ function createArmLayers(rig){
  return {
   // Hand to mouth: the right fist rises just in front of the chin.
   mouth(weight){frame();(b.Head||b.head).getWorldPosition(target).addScaledVector(forward,.13).addScaledVector(up,-.07).addScaledVector(left,-.03);reach('right',target,weight)},
-  // Running with a weapon or shield: that arm is carried low beside the hip,
-  // elbow bent, instead of pumping the item across the chest; a shield hangs
-  // with its face turned outward.
-  carry(side,weight){frame();const s=side==='left'?'l':'r',out=side==='left'?1:-1,up_=b['upperarm_'+s],fore=b['lowerarm_'+s],hand=b['hand_'+s];
+  // Moving with a weapon or shield: that arm is carried low beside the hip,
+  // elbow bent, instead of pumping the item across the chest (the Mixamo run
+  // swings the fists up to the chin); a shield hangs with its face turned
+  // outward, a weapon's blade points ahead, clear of the face.
+  carry(side,weight,kind){frame();const s=side==='left'?'l':'r',out=side==='left'?1:-1,up_=b['upperarm_'+s],fore=b['lowerarm_'+s],hand=b['hand_'+s];
    up_.getWorldPosition(c);fore.getWorldPosition(a);const L=c.distanceTo(a)+a.distanceTo(hand.getWorldPosition(to));
    target.copy(c).addScaledVector(up,-.68*L).addScaledVector(forward,.42*L).addScaledVector(left,out*.12*L);reach(side,target,weight);
-   if(side==='left'){rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,left),weight*.85)}},
+   const socket=side==='left'?rig.leftHand:rig.rightHand;
+   if(kind==='shield'&&side==='left'){rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,left),weight*.85)}
+   // Weapon in hand: the blade (socket +Y) points ahead, a little up and out, never back past the face.
+   else if(kind==='weapon'){socket.getWorldQuaternion(pq);a.set(0,1,0).applyQuaternion(pq);to.copy(forward).multiplyScalar(.85).addScaledVector(up,.12).addScaledVector(left,out*.3).normalize();turn(hand,rot.setFromUnitVectors(a,to),weight)}},
   guard(weight){frame();b.spine_03.getWorldPosition(target).addScaledVector(forward,.5).addScaledVector(left,.12);reach('left',target,weight);
    rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,forward),weight)},
   // Net fishing pose for cycle position dip.u (see netDipPhase): the spine leans

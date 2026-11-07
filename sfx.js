@@ -1,16 +1,23 @@
 // Sound effects: real CC0 recordings (assets/audio/sfx, see credits.html) plus a
-// few procedural voices where no good recording exists (pick on rock, sword
-// clank, snort, sizzle, bells, owl, chicken, woodpecker, bird calls). One shared
-// AudioContext (music.js), effects on the SFX bus, area sounds on the ambient bus.
+// few procedural voices where no good recording exists (pick on rock, snort,
+// sizzle, bells, owl, chicken, woodpecker, bird calls). Combat is recordings
+// only (assets/audio/combat, combat-audio.js). One shared AudioContext
+// (music.js), effects on the SFX bus, area sounds on the ambient bus.
 // Positional sounds fade and darken with distance and pan by camera bearing.
+import {COMBAT_SAMPLE_SETS} from './combat-audio.js?v=release-20261107-combatsfx130';
 
 export const SAMPLE_SETS={
  chop:['chop'],treeFall:['tree-fall'],creak:['tree-creak'],rockBreak:['rock-break'],anvil:['anvil','hammer'],
  crackle:['fire-crackle'],crunch:['crunch-1','crunch-2','crunch-3'],splashCast:['splash-cast','splash-small'],
  splashCatch:['splash-catch'],ripple:['ripple','splash-small'],frog:['frog-1','frog-2'],dog:['dog'],sheep:['sheep'],
  cricket:['cricket'],birdSong:['../nature-birds'],hoof:['hoof-1','hoof-2','hoof-3','hoof-4','hoof-5','hoof-6'],
- thunderRoll:['thunder-roll'],thunderCrack:['thunder-crack']
+ thunderRoll:['thunder-roll'],thunderCrack:['thunder-crack'],
+ ...COMBAT_SAMPLE_SETS
 };
+// Voice budgets: at most this many sounds of a group play at once. A new sound
+// steals the oldest voice of equal or lower priority (the local player's own
+// combat outranks other people's), otherwise it is dropped.
+export const VOICE_LIMITS={combat:10};
 
 // Distance model for positional sounds: full level inside `near`, an inverse
 // roll-off to silence at `far`, a gentle low-pass (air absorption) and a pan
@@ -29,12 +36,16 @@ export function spatialMix(source,listener,{near=3,far=40}={}){
 export function onsetOffset(data,sampleRate,threshold=.06){let peak=0;for(let i=0;i<data.length;i++){const v=Math.abs(data[i]);if(v>peak)peak=v}if(!peak)return 0;const limit=peak*threshold;for(let i=0;i<data.length;i++)if(Math.abs(data[i])>=limit)return Math.max(0,i-Math.round(sampleRate*.002))/sampleRate;return 0}
 
 export function createSfx({context,sfxBus,ambientBus,listener=()=>null,fetcher=globalThis.fetch,base='/assets/audio/sfx/',version=''}={}){
- const buffers=new Map(),loading=new Map(),loops=new Set();let noise=null,disposed=false;
+ const buffers=new Map(),loading=new Map(),loops=new Set(),groups=new Map();let noise=null,disposed=false;
  const ctx=()=>context();
  function running(){const c=ctx();return !!c&&c.state==='running'&&!disposed}
  function load(file){if(buffers.has(file))return Promise.resolve(buffers.get(file));if(loading.has(file))return loading.get(file);const c=ctx();if(!c||!fetcher)return Promise.resolve(null);
   const p=fetcher(base+file+'.mp3'+(version?'?v='+version:'')).then(r=>r.ok?r.arrayBuffer():null).then(b=>b?c.decodeAudioData(b):null).then(buffer=>{if(buffer){buffer.onset=onsetOffset(buffer.getChannelData(0),buffer.sampleRate);buffers.set(file,buffer)}loading.delete(file);return buffer}).catch(()=>{loading.delete(file);return null});loading.set(file,p);return p}
- function preload(names){for(const n of names)for(const f of SAMPLE_SETS[n]||[n])void load(f)}
+ function preload(names){for(const n of names)for(const f of n==='combat'?Object.values(COMBAT_SAMPLE_SETS).flat():SAMPLE_SETS[n]||[n])void load(f)}
+ // Returns false when the group is full of voices that outrank this one.
+ function claim(group,priority,c){const limit=VOICE_LIMITS[group];if(!limit)return true;const list=groups.get(group)||[];groups.set(group,list);
+  if(list.length<limit)return true;let victim=null;for(const v of list)if(v.priority<=priority&&(!victim||v.priority<victim.priority||(v.priority===victim.priority&&v.started<victim.started)))victim=v;
+  if(!victim)return false;list.splice(list.indexOf(victim),1);try{victim.gain.gain.setTargetAtTime(0,c.currentTime,.012);victim.src.stop(c.currentTime+.06)}catch{}return true}
  function noiseBuffer(c){if(noise&&noise.sampleRate===c.sampleRate)return noise;noise=c.createBuffer(1,c.sampleRate*2,c.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return noise}
  // Output chain for one voice: gain → low-pass (distance) → pan → bus.
  function chain(c,{gain=1,pan=0,cutoff=20000,bus=sfxBus()}={}){const g=c.createGain(),f=c.createBiquadFilter(),p=c.createStereoPanner?c.createStereoPanner():null;g.gain.value=gain;f.type='lowpass';f.frequency.value=cutoff;g.connect(f);if(p){p.pan.value=pan;f.connect(p);p.connect(bus)}else f.connect(bus);return {input:g,nodes:[g,f,p].filter(Boolean)}}
@@ -44,10 +55,13 @@ export function createSfx({context,sfxBus,ambientBus,listener=()=>null,fetcher=g
   if(!running())return false;const c=ctx(),files=SAMPLE_SETS[name]||[name],file=files[Math.floor(Math.random()*files.length)],buffer=buffers.get(file);
   if(!buffer){void load(file);return false}
   const o=place(options);if(o.gain<=.002)return false;
+  const group=options.group,priority=options.priority||0;if(group&&!claim(group,priority,c))return false;
   const vary=options.vary??.06,src=c.createBufferSource(),out=chain(c,{...o,gain:o.gain*(1-vary+Math.random()*vary*2)});
   src.buffer=buffer;src.playbackRate.value=(options.rate??1)*(1-vary+Math.random()*vary*2);
   let input=out.input;if(options.highpass||options.tone){const f=c.createBiquadFilter();if(options.tone){f.type='peaking';f.frequency.value=options.tone.frequency;f.gain.value=options.tone.gain;f.Q.value=options.tone.q||.8}else{f.type='highpass';f.frequency.value=options.highpass}f.connect(out.input);input=f;out.nodes.push(f)}
-  src.connect(input);const when=c.currentTime+(options.delay||0);src.start(when,buffer.onset||0,options.duration);src.onended=()=>{src.disconnect();for(const n of out.nodes)n.disconnect()};return true;
+  src.connect(input);const when=c.currentTime+(options.delay||0);src.start(when,buffer.onset||0,options.duration);
+  let voice=null;if(group&&VOICE_LIMITS[group]){voice={src,gain:out.nodes[0],priority,started:when};groups.get(group).push(voice)}
+  src.onended=()=>{src.disconnect();for(const n of out.nodes)n.disconnect();if(voice){const list=groups.get(group),i=list.indexOf(voice);if(i>=0)list.splice(i,1)}};return true;
  }
  // ---- Procedural voices -------------------------------------------------
  function env(c,param,peak,attack,decay,at){param.setValueAtTime(.0001,at);param.exponentialRampToValueAtTime(Math.max(.0002,peak),at+attack);param.exponentialRampToValueAtTime(.0001,at+attack+decay)}
@@ -57,12 +71,6 @@ export function createSfx({context,sfxBus,ambientBus,listener=()=>null,fetcher=g
  const procedural={
   // Steel pick on stone: a bright inharmonic ring over a gritty crack.
   clink:(c,o,at)=>{burst(c,o,{frequency:3200,q:.9,peak:.5,decay:.06,at});for(const [f,p,d] of [[2380,.16,.18],[3710,.1,.12],[5230,.06,.09]])tone(c,o,{frequency:f*(.97+Math.random()*.06),peak:p,decay:d,at});return tone(c,o,{type:'triangle',frequency:180,to:90,peak:.2,decay:.08,at})},
-  // Blade on armour or shield: clank with a short metallic tail.
-  block:(c,o,at)=>{burst(c,o,{frequency:2100,q:2,peak:.45,decay:.12,at});for(const [f,p,d] of [[920,.14,.28],[1480,.09,.22],[2630,.06,.16]])tone(c,o,{frequency:f*(.98+Math.random()*.04),peak:p,decay:d,at});return burst(c,o,{type:'lowpass',frequency:400,q:.5,peak:.25,decay:.06,at})},
-  // A landed blow: dull body thud with a short slap.
-  hit:(c,o,at)=>{burst(c,o,{type:'lowpass',frequency:900,q:.7,peak:.6,decay:.11,at});burst(c,o,{frequency:2400,q:.8,peak:.14,decay:.03,at});return tone(c,o,{frequency:110,to:55,peak:.35,decay:.14,at})},
-  // A weapon swing that cuts the air.
-  whoosh:(c,o,at)=>{const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=noiseBuffer(c);f.type='bandpass';f.Q.value=1.4;f.frequency.setValueAtTime(500,at);f.frequency.exponentialRampToValueAtTime(2200,at+.12);f.frequency.exponentialRampToValueAtTime(700,at+.26);g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(.32,at+.1);g.gain.exponentialRampToValueAtTime(.0001,at+.28);s.connect(f);f.connect(g);g.connect(o.input);s.start(at,Math.random());s.stop(at+.3);s.onended=()=>{s.disconnect();f.disconnect();g.disconnect()};return s},
   // Horse snort: a breathy nasal burst with a flutter.
   snort:(c,o,at)=>{const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain(),lfo=c.createOscillator(),lg=c.createGain();s.buffer=noiseBuffer(c);f.type='bandpass';f.frequency.value=650;f.Q.value=1.2;lfo.frequency.value=28;lg.gain.value=.25;lfo.connect(lg);lg.connect(g.gain);g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(.5,at+.05);g.gain.setValueAtTime(.5,at+.18);g.gain.exponentialRampToValueAtTime(.0001,at+.55);s.connect(f);f.connect(g);g.connect(o.input);lfo.start(at);lfo.stop(at+.6);s.start(at,Math.random());s.stop(at+.6);s.onended=()=>{s.disconnect();f.disconnect();g.disconnect();lfo.disconnect();lg.disconnect()};return s},
   // Fat in a hot pan: hiss with random spits.
@@ -99,5 +107,5 @@ export function createSfx({context,sfxBus,ambientBus,listener=()=>null,fetcher=g
   return handle;
  }
  function update(){for(const l of loops)l.update()}
- return {sample,proc,bird,loop,update,preload,load,running,get loaded(){return buffers.size},buffer:file=>buffers.get(file)||null,dispose(){disposed=true;for(const l of [...loops])l.stop();buffers.clear()}};
+ return {sample,proc,bird,loop,update,preload,load,running,voices:group=>(groups.get(group)||[]).length,get loaded(){return buffers.size},buffer:file=>buffers.get(file)||null,dispose(){disposed=true;for(const l of [...loops])l.stop();buffers.clear()}};
 }

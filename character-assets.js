@@ -1,14 +1,14 @@
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {preloadWeapons} from './weapon-assets.js?v=release-20261107-npcsmooth128';
-import {tintOutfitMaterial} from './tier-tint.js?v=release-20261107-npcsmooth128';
-import {accentOutfitShader} from './unique-look.js?v=release-20261107-npcsmooth128';
+import {preloadWeapons} from './weapon-assets.js?v=release-20261107-combatsfx130';
+import {tintOutfitMaterial} from './tier-tint.js?v=release-20261107-combatsfx130';
+import {accentOutfitShader} from './unique-look.js?v=release-20261107-combatsfx130';
 // Loads and caches the Quaternius character assets (assets/characters, CC0).
 // Geometry is shared between every character; each character only creates
 // its own bones and lightweight SkinnedMesh wrappers.
 export const CHARACTER_SCALE=1.58; // Quaternius metres → Eldervale units (head bone ≈ 2.53)
 const BASE=new URL('./assets/characters/',import.meta.url);
 // One store per page even if this module is loaded under several cache-busting URLs.
-const store=globalThis.__eldervaleCharacterStore||(globalThis.__eldervaleCharacterStore={ready:false,manifest:null,rigs:{},heads:{},hair:{},parts:{},pending:new Map(),clips:{},mannequinPelvis:null,textures:new Map(),materials:new Map(),T:null,read:null});
+const store=globalThis.__eldervaleCharacterStore||(globalThis.__eldervaleCharacterStore={ready:false,manifest:null,rigs:{},heads:{},hair:{},parts:{},pending:new Map(),clips:{},locomotion:{},locomotionInfo:{},mannequinPelvis:null,textures:new Map(),materials:new Map(),T:null,read:null});
 export const characterStore=store;
 const defaultRead=async url=>{const r=await fetch(url);if(!r.ok)throw Error('Character asset '+url+' '+r.status);return r.arrayBuffer()};
 function parse(buffer){return new Promise((resolve,reject)=>new GLTFLoader().parse(buffer,'',resolve,reject))}
@@ -27,6 +27,8 @@ export async function preloadCharacters(T,{read=defaultRead,parts=[]}={}){
  for(const sex of ['male','female']){jobs.push(loadGlb(store.manifest.bodies[sex].rig).then(g=>store.rigs[sex]=g.scene),loadGlb(store.manifest.bodies[sex].head).then(g=>store.heads[sex]=g.scene))}
  for(const [id,file] of Object.entries(store.manifest.hair))jobs.push(loadGlb(file).then(g=>store.hair[id]=g.scene));
  jobs.push(preloadWeapons(T,{read}));
+ // The owner's Adobe Mixamo walk and run, baked per body (scripts/build-mixamo-locomotion.mjs).
+ jobs.push(loadGlb('mixamo-locomotion.glb').then(g=>{const info=g.parser?.json?.animations||[];for(const c of g.animations){store.locomotion[c.name]=c;store.locomotionInfo[c.name]=info.find(a=>a.name===c.name)?.extras||{}}}));
  jobs.push(loadGlb('animations.glb').then(g=>{for(const c of g.animations)store.clips[c.name]=c;g.scene.updateMatrixWorld(true);store.mannequinPelvis=g.scene.getObjectByName('pelvis')?.position.clone()}));
  await Promise.all(jobs);
  await Promise.all([...defaultParts('male'),...defaultParts('female'),...parts].map(ensurePart));
@@ -36,13 +38,18 @@ export function defaultParts(sex){const S=sex==='female'?'Female':'Male';return 
 export function ensurePart(id){if(store.parts[id])return Promise.resolve(store.parts[id]);if(!store.manifest?.parts[id])return Promise.reject(Error('Unknown outfit part '+id));if(!store.pending.has(id))store.pending.set(id,loadGlb(store.manifest.parts[id]).then(g=>store.parts[id]=g.scene));return store.pending.get(id)}
 
 // Clips are shared per body: only the pelvis translation is re-scaled to the
-// body's own hip height, everything else is rotation-only.
+// body's own hip height, everything else is rotation-only. The Mixamo walk and
+// run are already retargeted to each body (Mixamo_Walk_male -> Mixamo_Walk).
 export function clipsFor(sex){
  const key='clips:'+sex;if(store[key])return store[key];
  const pelvis=store.rigs[sex].getObjectByName('pelvis').position,man=store.mannequinPelvis||pelvis,out={};
  for(const [name,clip] of Object.entries(store.clips)){const c=clip.clone();for(const t of c.tracks)if(t.name==='pelvis.position'){const v=t.values;for(let i=0;i<v.length;i+=3){v[i]=pelvis.x+(v[i]-man.x)*(pelvis.z/man.z);v[i+1]=pelvis.y+(v[i+1]-man.y)*(pelvis.z/man.z);v[i+2]=pelvis.z+(v[i+2]-man.z)*(pelvis.z/man.z)}}out[name]=c}
+ for(const [name,clip] of Object.entries(store.locomotion)){const m=name.match(/^(.*)_(male|female)$/);if(m&&m[2]===sex){const c=clip.clone();c.name=m[1];out[m[1]]=c}}
  return store[key]=out;
 }
+// Natural ground speed of a baked locomotion loop on a body, in world units per
+// second at playback rate 1 (the planted foot's backward speed, measured at bake time).
+export function locomotionSpeed(sex,gait){return (store.locomotionInfo[`${gait}_${sex==='female'?'female':'male'}`]?.groundSpeed||0)*CHARACTER_SCALE}
 
 // Textures load in the browser only; Node checks still get valid materials.
 function texture(name,{color=false}={}){

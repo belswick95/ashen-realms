@@ -16,7 +16,7 @@ test('remote display dresses shared outfit parts, animates and disposes safely',
  assert.ok(display.rig.hairMeshes.length&&display.rig.hairMeshes.every(m=>!m.visible));
  let cape=null;display.visual.traverse(o=>{if(o.userData.attachedCape)cape=o});assert.ok(cape,'cape is worn');
  assert.equal(display.rig.rightHand.children.filter(o=>o.isGroup).length,1);assert.equal(display.rig.leftHand.children.filter(o=>o.isGroup).length,1);
- const pose=display.update(.05,{distance:.2,speed:4});assert.equal(pose.gait,'Jog_Fwd_Loop');
+ const pose=display.update(.05,{distance:.2,speed:4});assert.equal(pose.gait,'Mixamo_Run');
  const shared=display.rig.parts.chest.meshes[0];let sharedDisposed=false;shared.geometry.addEventListener('dispose',()=>sharedDisposed=true);shared.material.addEventListener('dispose',()=>sharedDisposed=true);
  display.dispose();assert.equal(scene.children.length,0);assert.equal(sharedDisposed,false);
 });

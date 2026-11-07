@@ -1,121 +1,122 @@
-import {capital,capitalActive,capitalMapWalls,inCapitalClearing,isCapitalTown,townExtent,inwardNormal} from './capital-layout.js?v=release-20261107-npcsmooth128';
-import {campClearing} from './camp-blueprint.js?v=release-20261107-npcsmooth128';
-import {createLevelUpPanel,jingleFor} from './level-up.js?v=release-20261107-npcsmooth128';
-import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261107-npcsmooth128';
-import {createQuestJournal} from './quests.js?v=release-20261107-npcsmooth128';
-import {createTutorial} from './tutorial.js?v=release-20261107-npcsmooth128';
-import {createBuildingSigns,defaultSignposts} from './building-signs.js?v=release-20261107-npcsmooth128';
-import {createQuestMarkers} from './quest-markers.js?v=release-20261107-npcsmooth128';
-import {createQuestTracker} from './quest-tracker.js?v=release-20261107-npcsmooth128';
-import {createQuestTrail,mountGuidanceSettings} from './quest-trail.js?v=release-20261107-npcsmooth128';
-import {createQuestCutscenes} from './quest-cutscenes.js?v=release-20261107-npcsmooth128';
-import {npcLinesFor} from './quest-v2.js?v=release-20261107-npcsmooth128';
-import {createNpcDialogue,converse} from './npc-dialogue.js?v=release-20261107-npcsmooth128';
-import {panelStateKey} from './panel-state.js?v=release-20261107-npcsmooth128';
-import {obstructionDistance,collectCameraOccluders} from './camera-obstruction.js?v=release-20261107-npcsmooth128';
-import {slideStep,locomotionDistance,movementTime} from './movement-collision.js?v=release-20261107-npcsmooth128';
-import {createWildlife} from './wildlife.js?v=release-20261107-npcsmooth128';
-import {createProfessionVisuals} from './profession-visuals.js?v=release-20261107-npcsmooth128';
-import {makeDroppedItemModel} from './item-models.js?v=release-20261107-npcsmooth128';
-import {createProfessionPanel} from './professions.js?v=release-20261107-npcsmooth128';
-import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261107-npcsmooth128';
-import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261107-npcsmooth128';
-import {createHorseMount} from './horse-mount.js?v=release-20261107-npcsmooth128';
-import {createTravelHeading} from './mount-heading.js?v=release-20261107-npcsmooth128';
-import {playHorseHoof,playLevelUpJingle,soundEffects,duckMusic,playThunder} from './music.js?v=release-20261107-npcsmooth128';
-import {createLevelFireworks} from './level-fireworks.js?v=release-20261107-npcsmooth128';
-import {townMusic,waterProximity} from './audio-regions.js?v=release-20261107-npcsmooth128';
-import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261107-npcsmooth128';
-import {createGroundDressing} from './environment-detail.js?v=release-20261107-npcsmooth128';
-import {createWaterSystem} from './water-rendering.js?v=release-20261107-npcsmooth128';
-import {fishingDock} from './waterfront.js?v=release-20261107-npcsmooth128';
-import {createSurfaceCoverIndex,isBuilding as isWalkInBuilding,buildingPlot as walkInPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261107-npcsmooth128';
-import {isFoundationStructure,structurePlot,propBase} from './foundation.js?v=release-20261107-npcsmooth128';
-import {batchStaticMeshes,createCellBatcher,BATCHED_LAYER} from './static-batch.js?v=release-20261107-npcsmooth128';
-import {createWeatherEffects} from './weather-effects.js?v=release-20261107-npcsmooth128';
+import {capital,capitalActive,capitalMapWalls,inCapitalClearing,isCapitalTown,townExtent,inwardNormal} from './capital-layout.js?v=release-20261107-combatsfx130';
+import {campClearing} from './camp-blueprint.js?v=release-20261107-combatsfx130';
+import {createLevelUpPanel,jingleFor} from './level-up.js?v=release-20261107-combatsfx130';
+import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261107-combatsfx130';
+import {createQuestJournal} from './quests.js?v=release-20261107-combatsfx130';
+import {createTutorial} from './tutorial.js?v=release-20261107-combatsfx130';
+import {createBuildingSigns,defaultSignposts} from './building-signs.js?v=release-20261107-combatsfx130';
+import {createQuestMarkers} from './quest-markers.js?v=release-20261107-combatsfx130';
+import {createQuestTracker} from './quest-tracker.js?v=release-20261107-combatsfx130';
+import {createQuestTrail,mountGuidanceSettings} from './quest-trail.js?v=release-20261107-combatsfx130';
+import {createQuestCutscenes} from './quest-cutscenes.js?v=release-20261107-combatsfx130';
+import {npcLinesFor} from './quest-v2.js?v=release-20261107-combatsfx130';
+import {createNpcDialogue,converse} from './npc-dialogue.js?v=release-20261107-combatsfx130';
+import {panelStateKey} from './panel-state.js?v=release-20261107-combatsfx130';
+import {obstructionDistance,collectCameraOccluders} from './camera-obstruction.js?v=release-20261107-combatsfx130';
+import {slideStep,locomotionDistance,movementTime} from './movement-collision.js?v=release-20261107-combatsfx130';
+import {createWildlife} from './wildlife.js?v=release-20261107-combatsfx130';
+import {createProfessionVisuals} from './profession-visuals.js?v=release-20261107-combatsfx130';
+import {makeDroppedItemModel} from './item-models.js?v=release-20261107-combatsfx130';
+import {createProfessionPanel} from './professions.js?v=release-20261107-combatsfx130';
+import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261107-combatsfx130';
+import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261107-combatsfx130';
+import {createHorseMount} from './horse-mount.js?v=release-20261107-combatsfx130';
+import {createTravelHeading} from './mount-heading.js?v=release-20261107-combatsfx130';
+import {playHorseHoof,playLevelUpJingle,soundEffects,duckMusic,playThunder} from './music.js?v=release-20261107-combatsfx130';
+import {createCombatAudio,weaponFamily,monsterFamily} from './combat-audio.js?v=release-20261107-combatsfx130';
+import {createLevelFireworks} from './level-fireworks.js?v=release-20261107-combatsfx130';
+import {townMusic,waterProximity} from './audio-regions.js?v=release-20261107-combatsfx130';
+import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261107-combatsfx130';
+import {createGroundDressing} from './environment-detail.js?v=release-20261107-combatsfx130';
+import {createWaterSystem} from './water-rendering.js?v=release-20261107-combatsfx130';
+import {fishingDock} from './waterfront.js?v=release-20261107-combatsfx130';
+import {createSurfaceCoverIndex,isBuilding as isWalkInBuilding,buildingPlot as walkInPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261107-combatsfx130';
+import {isFoundationStructure,structurePlot,propBase} from './foundation.js?v=release-20261107-combatsfx130';
+import {batchStaticMeshes,createCellBatcher,BATCHED_LAYER} from './static-batch.js?v=release-20261107-combatsfx130';
+import {createWeatherEffects} from './weather-effects.js?v=release-20261107-combatsfx130';
 // Walk-in buildings and freestanding structures (farm huts, stalls, wells...)
 // both get a levelled terrain pad; only buildings register a walkable floor.
 const isBuilding=d=>isWalkInBuilding(d)||isFoundationStructure(d),buildingPlot=d=>isWalkInBuilding(d)?walkInPlot(d):structurePlot(d);
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261107-npcsmooth128';
-import {installWorldHoverCursor} from './cursors.js?v=release-20261107-npcsmooth128';
-import {installMMOControls,jumpHeight,isAirborne,CAMERA_TURN_RATE,CAMERA_PITCH_RATE} from './mmorpg-controls.js?v=release-20261107-npcsmooth128';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261107-npcsmooth128';
-import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261107-npcsmooth128';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261107-npcsmooth128';
-import {runFrameWork,nextTask,createLoadingPanel} from './frame-work.js?v=release-20261107-npcsmooth128';import {trackLoadingManager} from './loading-indicator.js?v=release-20261107-npcsmooth128';import {installLongPressMenus,fitToViewport} from './touch-menus.js?v=release-20261107-npcsmooth128';installLongPressMenus();trackLoadingManager(T.DefaultLoadingManager);
-import {createRegionStreamer} from './region-streamer.js?v=release-20261107-npcsmooth128';
-import {searchRoute} from './route-search.js?v=release-20261107-npcsmooth128';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261107-npcsmooth128';
-import {actorMenuLabel} from './context-label.js?v=release-20261107-npcsmooth128';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261107-npcsmooth128';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261107-npcsmooth128';
-import {createGroundDrops} from './ground-drops.js?v=release-20261107-npcsmooth128';
-import {createCombatHealth} from './combat-health.js?v=release-20261107-npcsmooth128';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261107-npcsmooth128';
-import {castle,inCastle} from './castle-layout.js?v=release-20261107-npcsmooth128';
-import {createMotionTrack,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose,presentPose,TILE_WALK_SPEED,CATCH_UP} from './motion-track.js?v=release-20261107-npcsmooth128';
-import {lightingAt} from './world-lighting.js?v=release-20261107-npcsmooth128';
-import {sculptPatches} from './terrain-patches.js?v=release-20261107-npcsmooth128';
-import {fromPlayerRow} from './player-save.js?v=release-20261107-npcsmooth128';
-import {combatLevel,skillLevel,crossedSwords,xpProgress,hitpointsLevel,formatXp} from './combat-level.js?v=release-20261107-npcsmooth128';
-import {EAT_DELAY,EAT_ANIMATION,isFood,fishingMethods} from './food.js?v=release-20261107-npcsmooth128';
-import {createXpDrops} from './xp-drops.js?v=release-20261107-npcsmooth128';
-import {worldTemplates} from './world-templates.js?v=release-20261107-npcsmooth128';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261107-npcsmooth128';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261107-npcsmooth128';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll,equipRefusal,gearDetails,equipmentBonuses,playerLevels} from './melee-stats.js?v=release-20261107-npcsmooth128';
-import {renderEquipmentStats,installGearTooltip} from './equipment-stats.js?v=release-20261107-npcsmooth128';
-import {styleLabels,playerAttackProfile,rollPlayerHit,rollMonsterHit} from './gear-tiers.js?v=release-20261107-npcsmooth128';
-import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261107-npcsmooth128';
-import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261107-npcsmooth128';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon,drawCityWalls} from './world-map.js?v=release-20261107-npcsmooth128';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261107-combatsfx130';
+import {installWorldHoverCursor} from './cursors.js?v=release-20261107-combatsfx130';
+import {installMMOControls,jumpHeight,isAirborne,CAMERA_TURN_RATE,CAMERA_PITCH_RATE} from './mmorpg-controls.js?v=release-20261107-combatsfx130';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261107-combatsfx130';
+import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261107-combatsfx130';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261107-combatsfx130';
+import {runFrameWork,nextTask,createLoadingPanel} from './frame-work.js?v=release-20261107-combatsfx130';import {trackLoadingManager} from './loading-indicator.js?v=release-20261107-combatsfx130';import {installLongPressMenus,fitToViewport} from './touch-menus.js?v=release-20261107-combatsfx130';installLongPressMenus();trackLoadingManager(T.DefaultLoadingManager);
+import {createRegionStreamer} from './region-streamer.js?v=release-20261107-combatsfx130';
+import {searchRoute} from './route-search.js?v=release-20261107-combatsfx130';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261107-combatsfx130';
+import {actorMenuLabel} from './context-label.js?v=release-20261107-combatsfx130';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261107-combatsfx130';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261107-combatsfx130';
+import {createGroundDrops} from './ground-drops.js?v=release-20261107-combatsfx130';
+import {createCombatHealth} from './combat-health.js?v=release-20261107-combatsfx130';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261107-combatsfx130';
+import {castle,inCastle} from './castle-layout.js?v=release-20261107-combatsfx130';
+import {createMotionTrack,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose,presentPose,TILE_WALK_SPEED,CATCH_UP} from './motion-track.js?v=release-20261107-combatsfx130';
+import {lightingAt} from './world-lighting.js?v=release-20261107-combatsfx130';
+import {sculptPatches} from './terrain-patches.js?v=release-20261107-combatsfx130';
+import {fromPlayerRow} from './player-save.js?v=release-20261107-combatsfx130';
+import {combatLevel,skillLevel,crossedSwords,xpProgress,hitpointsLevel,formatXp} from './combat-level.js?v=release-20261107-combatsfx130';
+import {EAT_DELAY,EAT_ANIMATION,isFood,fishingMethods} from './food.js?v=release-20261107-combatsfx130';
+import {createXpDrops} from './xp-drops.js?v=release-20261107-combatsfx130';
+import {worldTemplates} from './world-templates.js?v=release-20261107-combatsfx130';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261107-combatsfx130';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261107-combatsfx130';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll,equipRefusal,gearDetails,equipmentBonuses,playerLevels} from './melee-stats.js?v=release-20261107-combatsfx130';
+import {renderEquipmentStats,installGearTooltip} from './equipment-stats.js?v=release-20261107-combatsfx130';
+import {styleLabels,playerAttackProfile,rollPlayerHit,rollMonsterHit} from './gear-tiers.js?v=release-20261107-combatsfx130';
+import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261107-combatsfx130';
+import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261107-combatsfx130';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon,drawCityWalls} from './world-map.js?v=release-20261107-combatsfx130';
 const ARMOR_SLOTS=[...OUTFIT_SLOTS,'cape'];
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261107-npcsmooth128';
-import {createMechanicsHud} from './mechanics-hud.js?v=release-20261107-npcsmooth128';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261107-npcsmooth128';
-import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity,serviceOutOfReach} from './economy.js?v=release-20261107-npcsmooth128';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261107-npcsmooth128';
-import {mapPoint,worldToMinimap,minimapRotation,cameraHeading,compassRotation,nearestYaw,stepYaw,LOOK_YAW} from './minimap.js?v=release-20261107-npcsmooth128';
-import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261107-npcsmooth128';
-import {heldOpen,heldOpenExamine} from './business-doors.js?v=release-20261107-npcsmooth128';
-import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus,actorsFirst,withWalkHere,followGoal,TILE,GAME_TICK,REDIRECT_PAUSE_MS,trimPassedWaypoints} from './click-walk.js?v=release-20261107-npcsmooth128';
-import {townResidents,animateTownActivity,createWorkKit,carriesWeapon,workFacing,spreadStanding} from './town-life.js?v=release-20261107-npcsmooth128';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-npcsmooth128';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261107-npcsmooth128';
-import {createPlayerHUD} from './player-hud.js?v=release-20261107-npcsmooth128';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261107-npcsmooth128';
-import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261107-npcsmooth128';
-import {stabilizeSun,shadowQuality,celestialLight,installShadowEdgeFade} from './sun-shadow.js?v=release-20261107-npcsmooth128';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261107-npcsmooth128';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261107-npcsmooth128';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261107-npcsmooth128';
-import {isTablet,isPhone,lowerTier,createFrameGovernor,createDistanceCuller,characterLod,lodStep,holdGait,HIDDEN_LAYER} from './graphics-quality.js?v=release-20261107-npcsmooth128';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261107-combatsfx130';
+import {createMechanicsHud} from './mechanics-hud.js?v=release-20261107-combatsfx130';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261107-combatsfx130';
+import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity,serviceOutOfReach} from './economy.js?v=release-20261107-combatsfx130';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261107-combatsfx130';
+import {mapPoint,worldToMinimap,minimapRotation,cameraHeading,compassRotation,nearestYaw,stepYaw,LOOK_YAW} from './minimap.js?v=release-20261107-combatsfx130';
+import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261107-combatsfx130';
+import {heldOpen,heldOpenExamine} from './business-doors.js?v=release-20261107-combatsfx130';
+import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus,actorsFirst,withWalkHere,followGoal,TILE,GAME_TICK,REDIRECT_PAUSE_MS,trimPassedWaypoints} from './click-walk.js?v=release-20261107-combatsfx130';
+import {townResidents,animateTownActivity,createWorkKit,carriesWeapon,workFacing,spreadStanding} from './town-life.js?v=release-20261107-combatsfx130';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-combatsfx130';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261107-combatsfx130';
+import {createPlayerHUD} from './player-hud.js?v=release-20261107-combatsfx130';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261107-combatsfx130';
+import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261107-combatsfx130';
+import {stabilizeSun,shadowQuality,celestialLight,installShadowEdgeFade} from './sun-shadow.js?v=release-20261107-combatsfx130';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261107-combatsfx130';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261107-combatsfx130';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261107-combatsfx130';
+import {isTablet,isPhone,lowerTier,createFrameGovernor,createDistanceCuller,characterLod,lodStep,holdGait,HIDDEN_LAYER} from './graphics-quality.js?v=release-20261107-combatsfx130';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {preloadCharacters,setCharacterRim} from './character-assets.js?v=release-20261107-npcsmooth128';
-import {buildHumanoid} from './humanoid.js?v=release-20261107-npcsmooth128';
-import {arrangeEquipmentDoll,loadStance,saveStance,stanceToggle} from './equipment-doll.js?v=release-20261107-npcsmooth128';
-import {createHumanoidAnimator} from './animation.js?v=release-20261107-npcsmooth128';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261107-npcsmooth128';
-import {buildForest} from './forest.js?v=release-20261107-npcsmooth128';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261107-npcsmooth128';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261107-npcsmooth128';
-import {governorOptions,leanGraphics} from './graphics-quality.js?v=release-20261107-npcsmooth128';
-import {warmupList,runShaderWarmup} from './shader-warmup.js?v=release-20261107-npcsmooth128';
-import {cutsceneBootFocus,cutsceneBusy,afterArrival,holdRender,deferReflections,prewarmShot,CUTSCENE_FOCUS_RADIUS} from './cutscene-boot.js?v=release-20261107-npcsmooth128';
-import {createLightProxies} from './light-proxies.js?v=release-20261107-npcsmooth128';
-import {createClassicLook,classicEnabled,classicPixelRatio,blobRadius} from './classic-look.js?v=release-20261107-npcsmooth128';
+import {preloadCharacters,setCharacterRim} from './character-assets.js?v=release-20261107-combatsfx130';
+import {buildHumanoid} from './humanoid.js?v=release-20261107-combatsfx130';
+import {arrangeEquipmentDoll,loadStance,saveStance,stanceToggle} from './equipment-doll.js?v=release-20261107-combatsfx130';
+import {createHumanoidAnimator} from './animation.js?v=release-20261107-combatsfx130';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261107-combatsfx130';
+import {buildForest} from './forest.js?v=release-20261107-combatsfx130';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261107-combatsfx130';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261107-combatsfx130';
+import {governorOptions,leanGraphics} from './graphics-quality.js?v=release-20261107-combatsfx130';
+import {warmupList,runShaderWarmup} from './shader-warmup.js?v=release-20261107-combatsfx130';
+import {cutsceneBootFocus,cutsceneBusy,afterArrival,holdRender,deferReflections,prewarmShot,CUTSCENE_FOCUS_RADIUS} from './cutscene-boot.js?v=release-20261107-combatsfx130';
+import {createLightProxies} from './light-proxies.js?v=release-20261107-combatsfx130';
+import {createClassicLook,classicEnabled,classicPixelRatio,blobRadius} from './classic-look.js?v=release-20261107-combatsfx130';
 const landscape=installUndergroundTerrain(createLandscape());
-import {npcAppearance} from './npc-looks.js?v=release-20261107-npcsmooth128';
-import {createCape} from './cape.js?v=release-20261107-npcsmooth128';
-import {weaponCatalog,makeWeapon,iconForWeapon,isTwoHanded,isRanged,isMagic,usesArrows} from './weapons.js?v=release-20261107-npcsmooth128';
-import {createArrows} from './arrows.js?v=release-20261107-npcsmooth128';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261107-npcsmooth128';
-import {createDeathFlow,renderKeptOnDeath} from './death.js?v=release-20261107-npcsmooth128';
-import {createTileOverlay} from './tile-overlay.js?v=release-20261107-npcsmooth128';
-import {createUnderground,installUndergroundTerrain} from './underground.js?v=release-20261107-npcsmooth128';
-import {createExplore} from './explore.js?v=release-20261107-npcsmooth128';
-import {createBossFx} from './boss-fx.js?v=release-20261107-npcsmooth128';
-import {fishingOptions} from './fish-tiers.js?v=release-20261107-npcsmooth128';
-import {plantFeet} from './foot-ground.js?v=release-20261107-npcsmooth128';
+import {npcAppearance} from './npc-looks.js?v=release-20261107-combatsfx130';
+import {createCape} from './cape.js?v=release-20261107-combatsfx130';
+import {weaponCatalog,makeWeapon,iconForWeapon,isTwoHanded,isRanged,isMagic,usesArrows} from './weapons.js?v=release-20261107-combatsfx130';
+import {createArrows} from './arrows.js?v=release-20261107-combatsfx130';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261107-combatsfx130';
+import {createDeathFlow,renderKeptOnDeath} from './death.js?v=release-20261107-combatsfx130';
+import {createTileOverlay} from './tile-overlay.js?v=release-20261107-combatsfx130';
+import {createUnderground,installUndergroundTerrain} from './underground.js?v=release-20261107-combatsfx130';
+import {createExplore} from './explore.js?v=release-20261107-combatsfx130';
+import {createBossFx} from './boss-fx.js?v=release-20261107-combatsfx130';
+import {fishingOptions} from './fish-tiers.js?v=release-20261107-combatsfx130';
+import {plantFeet} from './foot-ground.js?v=release-20261107-combatsfx130';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 // RuneScape-style death: input lock and death pose, jingle, kept-items note, death pile on the maps (death.js).
 const deathFlow=createDeathFlow({say:text=>say(text),jingle:kind=>playLevelUpJingle(kind),now:()=>window.eldervaleServerTime?.()||Date.now(),goods});
@@ -1190,14 +1191,17 @@ const coordinateHUD=document.createElement('output');coordinateHUD.id='coordinat
 renderFeed();const playerHUD=createPlayerHUD(T,renderer,body);addEventListener('pagehide',()=>playerHUD.dispose(),{once:true});
 const healthBar=document.querySelector('#health-fill'),combatNotice=document.querySelector('#combat-notice');
 function combatMessage(msg){combatNotice.textContent=msg;combatNotice.hidden=false;clearTimeout(combatMessage.timer);combatMessage.timer=setTimeout(()=>combatNotice.hidden=true,1800)}
-// Combat and action effects play through the shared mixer (music.js → sfx.js):
-// swings whoosh, landed blows thud, blocks clank; music ducks a little on hits.
-function combatSound(kind,at=null){const fx=soundEffects();if(!fx)return;const where=at?{x:at.x,z:at.z}:null;
- if(kind==='woodcut'){fx.sample('chop',{at:where,gain:.9});return}
- if(['stab','lunge','slash'].includes(kind)){fx.proc('whoosh',{at:where,gain:.7});return}
- if(kind==='metal'){fx.proc('block',{at:where,gain:.85});duckMusic(-3,.35,.8);return}
- fx.proc('hit',{at:where,gain:kind==='axe'?.95:.85});duckMusic(-4,.35,.8);
-}
+// Combat sounds (combat-audio.js → sfx.js, recorded CC0 one-shots): the swing,
+// bow release or spell cast on the wind-up, then a hit by weapon type, a parry
+// clang or a miss whoosh on impact. Other people's fights are positional; the
+// local player's own fight outranks them in the shared voice budget.
+const combatAudio=createCombatAudio({sfx:()=>soundEffects()});
+const ARMOURED_SPECIES=new Set(['human','goblin','skeleton','orc','knight','golem','troll','ogre','demon','imp','revenant','dummy']);
+function actorSound(a){const c=a?.config;if(!c)return {species:null,family:'sword',armoured:true};const species=c.species||null;return {species,family:monsterFamily(c.attackType,c.weapon,weaponCatalog),armoured:!!(c.weapon||c.gear||ARMOURED_SPECIES.has(species))}}
+function playerWeaponKey(id,selfId){return id==null||id===selfId?state.equippedWeapon:remotePlayers.get(id)?.animator?.data?.loadout?.weapon||null}
+function playerFamily(id,selfId){const key=playerWeaponKey(id,selfId);return weaponFamily(key,weaponCatalog[key])}
+function damageType(key,style){return weaponCatalog[key]?.styles?.[style==='block'?'lunge':style]||null}
+function soundAt(o){return o?.position?{x:o.position.x,z:o.position.z}:null}
 function faceTarget(object,target){const dx=target.x-object.position.x,dz=target.z-object.position.z;if(dx*dx+dz*dz>.0001)object.rotation.y=Math.atan2(dx,dz)}
 const hitNumbers=createHitNumbers(T,camera);
 installGearTooltip(document,()=>state);
@@ -1208,22 +1212,24 @@ function applyPlayerHit(mob,rng=Math.random,weaponKey=state.equippedWeapon){if(w
  combat.stanceTimer=2;faceTarget(player,mob.root.position);
  const dealt=rollPlayerHit(playerAttackProfile({levels:playerLevels(state),bonuses:equipmentBonuses(state),weapon:weaponCatalog[weaponKey]||null,style:attackStyle}),mob.config||{level:1},rng),hit={blocked:dealt<=0,damage:dealt};
  hitNumbers.show(mob.root,hit.damage,hit.blocked,1.7);
- if(hit.blocked){mob.blockAnim=.65;combatSound('metal');combatMessage(mob.name+' blocks your attack.');return}
- mob.hitAnim=.3;mob.hp=Math.max(0,mob.hp-hit.damage);combatSound(/axe|hatchet/i.test(String(state.equippedWeapon||''))?'axe':'slash');combatMessage('You hit '+mob.name+' for '+hit.damage+' damage');
- if(mob.hp<=0){mob.alive=false;mob.root.visible=false;mob.respawn=mob.config?.respawn===0?Infinity:mob.config?.respawn||22;combat.kills++;combat.xp+=30;state.attackXP+=10;state.strengthXP+=10;state.defenceXP+=5;state.hitpointsXP+=5;state.gold+=mob.hostile?8:2;combatMessage('Defeated '+mob.name+'! +30 combat XP');action=null;dest=null;save();draw()}
+ const family=weaponFamily(weaponKey,weaponCatalog[weaponKey]);
+ if(hit.blocked){mob.blockAnim=.65;combatAudio.impact('local-player',{family,outcome:'block',armoured:actorSound(mob).armoured},{self:true});combatMessage(mob.name+' blocks your attack.');return}
+ mob.hitAnim=.3;mob.hp=Math.max(0,mob.hp-hit.damage);combatAudio.impact('local-player',{family,outcome:'hit',damageType:damageType(weaponKey,attackStyle)},{self:true});duckMusic(-4,.35,.8);combatMessage('You hit '+mob.name+' for '+hit.damage+' damage');
+ if(mob.hp<=0){combatAudio.death(actorSound(mob).species,{at:soundAt(mob.root),mine:true});mob.alive=false;mob.root.visible=false;mob.respawn=mob.config?.respawn===0?Infinity:mob.config?.respawn||22;combat.kills++;combat.xp+=30;state.attackXP+=10;state.strengthXP+=10;state.defenceXP+=5;state.hitpointsXP+=5;state.gold+=mob.hostile?8:2;combatMessage('Defeated '+mob.name+'! +30 combat XP');action=null;dest=null;save();draw()}
 }
 function playerHit(mob,rng=Math.random){if(window.eldervaleAuthority)return;
  combat.stanceTimer=2;combat.attackAnim=0;combat.blockAnim=.65;
  const defense=meleeProtection(state).defence,taken=rollMonsterHit({damage:mob.hostile?6:3,...mob.config},{levels:playerLevels(state),bonuses:equipmentBonuses(state),style:attackStyle},rng),hit={blocked:taken<=0,damage:taken};faceTarget(mob.root,player.position);
  hitNumbers.show(player,hit.damage,hit.blocked,2.8);
- if(hit.blocked){combat.blockAnim=.65;combatSound('metal');combatMessage('You block '+mob.name+'’s attack.');return}
- combat.hp=Math.max(0,combat.hp-hit.damage);combat.hitAnim=.45;combatSound(defense?'metal':'axe');combatMessage(mob.name+' hits you for '+hit.damage);draw();
+ const family=actorSound(mob).family;
+ if(hit.blocked){combat.blockAnim=.65;combatAudio.impact('local-enemy',{family,outcome:'block'},{at:soundAt(player),mine:true});combatMessage('You block '+mob.name+'’s attack.');return}
+ combat.hp=Math.max(0,combat.hp-hit.damage);combat.hitAnim=.45;combatAudio.impact('local-enemy',{family,outcome:'hit',armoured:defense>0},{at:soundAt(player),mine:true,hurt:true});duckMusic(-3,.35,.8);combatMessage(mob.name+' hits you for '+hit.damage);draw();
  if(combat.hp<=0){combatTurns.cancel();combat.hp=100;player.position.set(0,0,5);dest=null;walkQueue=[];action=null;state.gold=Math.max(0,state.gold-10);combatMessage('You fell in battle and returned to Oakcross.');save();draw()}
 }
 let combatRng=Math.random,swingWeapon=null;
 const combatTurns=createCombatTurns({
  interval:(side,mob)=>side==='player'?weaponStats(state.equippedWeapon).speed:mob.config?.attackSpeed||2.2,
- onWindup(side,mob){combat.stanceTimer=3;faceTarget(player,mob.root.position);faceTarget(mob.root,player.position);combatNotice.dataset.turn=side;if(side==='player'){swingWeapon=state.equippedWeapon;combat.attackAnim=.55;combat.blockAnim=0;combat.attackTimer=weaponStats(swingWeapon).speed;combatMessage('Your turn — '+weaponStats(swingWeapon).name)}else{mob.attackAnim=.55;combat.attackAnim=0;combat.blockAnim=1.15;combatMessage(mob.name+' attacks — prepare to defend')}},
+ onWindup(side,mob){combat.stanceTimer=3;faceTarget(player,mob.root.position);faceTarget(mob.root,player.position);combatNotice.dataset.turn=side;if(side==='player'){swingWeapon=state.equippedWeapon;combatAudio.swing('local-player',{family:weaponFamily(swingWeapon,weaponCatalog[swingWeapon])},{self:true});combat.attackAnim=.55;combat.blockAnim=0;combat.attackTimer=weaponStats(swingWeapon).speed;combatMessage('Your turn — '+weaponStats(swingWeapon).name)}else{const s=actorSound(mob);combatAudio.swing('local-enemy',{family:s.family},{at:soundAt(mob.root),mine:true});combatAudio.voice(s.species,{at:soundAt(mob.root),mine:true});mob.attackAnim=.55;combat.attackAnim=0;combat.blockAnim=1.15;combatMessage(mob.name+' attacks — prepare to defend')}},
  onImpact(side,mob){if(side==='player')applyPlayerHit(mob,combatRng,swingWeapon);else playerHit(mob,combatRng)},
  onEnd(mob){if(action?.kind==='creature'&&action.mob===mob){action=null;dest=null;walkQueue=[]}}
 });
@@ -1749,14 +1755,14 @@ window.eldervaleRealmBridge={
   // The local save copy is a cache (the server owns the character): refresh it every few seconds, not on every 250 ms sync.
   if(performance.now()-lastSyncSave>3000){lastSyncSave=performance.now();captureSave()}draw();services.refresh?.();
  },
- event(e,selfId){if(explore.event(e,selfId,{player,remoteRoot:id=>remotePlayers.get(id)?.root}))return;if(underground.event(e,selfId,{player,remoteRoot:id=>remotePlayers.get(id)?.root}))return;if(bossFx.event(e,selfId))return;if(e.type==='skill_notice'||e.type==='skill_complete'){if(e.player===selfId)say(e.text);return}if(e.type==='npc_windup'){const a=realmActor(e.attacker),b=realmActor(e.target);if(a&&b?.root.visible&&a.root.position.distanceTo(b.root.position)<4.5){a.attackAnim=.55;a.previewAttack=.55;}if(b)b.blockAnim=.75;return}if(e.type==='npc_hit'){const a=realmActor(e.target);if(a){hitNumbers.show(a.root,e.damage,e.blocked,3);if(a.root.position.distanceTo(player.position)<20)combatSound(e.blocked?'metal':'impact');}return}const actor=realmActor(e.target),root=actor?.root,isSelf=e.player===selfId,other=remotePlayers.get(e.player);if(e.type==='player_death'||e.type==='player_respawn'){deathFlow.event(e,isSelf);if(isSelf){following=null;action=null;dest=null;walkQueue=[];combatTurns.cancel?.()}return}if(e.type==='fishing'){const fisher=isSelf?player:other?.root;if(fisher)soundEffects()?.sample('splashCatch',{at:Number.isFinite(e.x)?{x:e.x,z:e.z}:fisher.position,gain:.8,far:35});if(isSelf)say('You catch a '+(goods[e.item]?.name||'fish').toLowerCase()+'. +'+formatXp(e.xp??20)+' Fishing XP');return}if(e.type==='eat'){if(isSelf){combat.eatAnim=EAT_ANIMATION;combat.eatItem=e.item}else if(other){other.eatAnim=EAT_ANIMATION;other.eatItem=e.item}const eater=isSelf?player:other?.root;if(eater){const fx=soundEffects();
+ event(e,selfId){if(explore.event(e,selfId,{player,remoteRoot:id=>remotePlayers.get(id)?.root}))return;if(underground.event(e,selfId,{player,remoteRoot:id=>remotePlayers.get(id)?.root}))return;if(bossFx.event(e,selfId))return;if(e.type==='skill_notice'||e.type==='skill_complete'){if(e.player===selfId)say(e.text);return}if(e.type==='npc_windup'){const a=realmActor(e.attacker),b=realmActor(e.target);if(a&&b?.root.visible&&a.root.position.distanceTo(b.root.position)<4.5){a.attackAnim=.55;a.previewAttack=.55;const s=actorSound(a);combatAudio.swing(e.attacker+'>'+e.target,{family:s.family},{at:soundAt(a.root)});combatAudio.voice(s.species,{at:soundAt(a.root)},.4)}if(b)b.blockAnim=.75;return}if(e.type==='npc_hit'){const a=realmActor(e.target);if(a){hitNumbers.show(a.root,e.damage,e.blocked,3);combatAudio.impact(e.attacker+'>'+e.target,{family:actorSound(realmActor(e.attacker)).family,outcome:e.blocked?'block':'hit',armoured:actorSound(a).armoured},{at:soundAt(a.root)})}return}const actor=realmActor(e.target),root=actor?.root,isSelf=e.player===selfId,other=remotePlayers.get(e.player);if(e.type==='player_death'||e.type==='player_respawn'){if(e.type==='player_death'){const who=isSelf?player:other?.root;if(who)combatAudio.death(null,{self:isSelf,at:soundAt(who)})}deathFlow.event(e,isSelf);if(isSelf){following=null;action=null;dest=null;walkQueue=[];combatTurns.cancel?.()}return}if(e.type==='fishing'){const fisher=isSelf?player:other?.root;if(fisher)soundEffects()?.sample('splashCatch',{at:Number.isFinite(e.x)?{x:e.x,z:e.z}:fisher.position,gain:.8,far:35});if(isSelf)say('You catch a '+(goods[e.item]?.name||'fish').toLowerCase()+'. +'+formatXp(e.xp??20)+' Fishing XP');return}if(e.type==='eat'){if(isSelf){combat.eatAnim=EAT_ANIMATION;combat.eatItem=e.item}else if(other){other.eatAnim=EAT_ANIMATION;other.eatItem=e.item}const eater=isSelf?player:other?.root;if(eater){const fx=soundEffects();
  // The bite lands when the hand reaches the mouth (35% of the eat animation), a second chew follows.
- fx?.sample('crunch',{at:eater.position,gain:.75,delay:EAT_ANIMATION*.35});fx?.sample('crunch',{at:eater.position,gain:.45,delay:EAT_ANIMATION*.35+.32})}return}if(e.type==='level_up'){const who=e.player===selfId?null:remotePlayers.get(e.player);if(who&&who.root){levelFireworks.burst(who.root,e.skill==='combat'?'combatLevel':jingleFor({type:'skill',key:e.skill}))}return}if(e.type==='woodcut'){if(e.depleted){const tree=targets.find(t=>(t.userData.realmId||t.userData.worldEntityId)===e.target);const at=tree?.getWorldPosition(new T.Vector3())||(isSelf?player.position:other?.root.position);if(at){const fx=soundEffects();fx?.sample('creak',{at,gain:.6,far:50});fx?.sample('treeFall',{at,gain:.95,delay:.6,far:60})}}if(e.depleted)applyRealmObject({id:e.target,available_at:e.availableAt});if(isSelf)say('You receive '+e.amount+' log'+(e.amount===1?'':'s')+'. +'+formatXp(e.xp??25*e.amount)+' Woodcutting XP');return}if(e.type==='gather_end'){if(isSelf&&e.text)say(e.text);return}if(e.type==='preview'){if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}return}if(e.type==='windup'){if(isSelf&&e.side==='player')combatSound(e.style||'slash');if(e.style&&isSelf)attackStyle=e.style;if(e.side==='player'){if(isSelf){combat.attackAnim=.55;combat.blockAnim=0;faceTarget(player,root?.position||player.position);combat.arrowTarget=e.ranged?root:null}else if(other){other.attackAnim=.55;other.attackStyle=e.style||'slash';other.arrowTarget=e.ranged?root:null;}if(actor)actor.blockAnim=1.1;}else{if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}if(isSelf){combat.attackAnim=0;combat.blockAnim=1.15;}else if(other)other.blockAnim=1.15;}}
-  else if(e.type==='hit'){const target=e.side==='player'?root:isSelf?player:other?.root;if(target)hitNumbers.show(target,e.damage,e.blocked,e.side==='player'?1.8:2.8);if(isSelf)combatSound(e.blocked?'metal':'impact');if(actor&&e.side==='player'){actor.hitAnim=e.blocked?0:.3;actor.blockAnim=e.blocked?.65:0;}}
+ fx?.sample('crunch',{at:eater.position,gain:.75,delay:EAT_ANIMATION*.35});fx?.sample('crunch',{at:eater.position,gain:.45,delay:EAT_ANIMATION*.35+.32})}return}if(e.type==='level_up'){const who=e.player===selfId?null:remotePlayers.get(e.player);if(who&&who.root){levelFireworks.burst(who.root,e.skill==='combat'?'combatLevel':jingleFor({type:'skill',key:e.skill}))}return}if(e.type==='woodcut'){if(e.depleted){const tree=targets.find(t=>(t.userData.realmId||t.userData.worldEntityId)===e.target);const at=tree?.getWorldPosition(new T.Vector3())||(isSelf?player.position:other?.root.position);if(at){const fx=soundEffects();fx?.sample('creak',{at,gain:.6,far:50});fx?.sample('treeFall',{at,gain:.95,delay:.6,far:60})}}if(e.depleted)applyRealmObject({id:e.target,available_at:e.availableAt});if(isSelf)say('You receive '+e.amount+' log'+(e.amount===1?'':'s')+'. +'+formatXp(e.xp??25*e.amount)+' Woodcutting XP');return}if(e.type==='gather_end'){if(isSelf&&e.text)say(e.text);return}if(e.type==='preview'){if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}return}if(e.type==='windup'){if(e.side==='player'){const by=isSelf?player:other?.root;if(by)combatAudio.swing(e.player+'>'+e.target,{family:playerFamily(e.player,selfId),special:!!e.special},{self:isSelf,at:soundAt(by)})}else if(root){const s=actorSound(actor);combatAudio.swing(e.target+'>'+e.player,{family:s.family},{at:soundAt(root),mine:isSelf});combatAudio.voice(s.species,{at:soundAt(root),mine:isSelf})}if(e.style&&isSelf)attackStyle=e.style;if(e.side==='player'){if(isSelf){combat.attackAnim=.55;combat.blockAnim=0;faceTarget(player,root?.position||player.position);combat.arrowTarget=e.ranged?root:null}else if(other){other.attackAnim=.55;other.attackStyle=e.style||'slash';other.arrowTarget=e.ranged?root:null;}if(actor)actor.blockAnim=1.1;}else{if(actor){actor.attackAnim=.55;actor.previewAttack=.55;}if(isSelf){combat.attackAnim=0;combat.blockAnim=1.15;}else if(other)other.blockAnim=1.15;}}
+  else if(e.type==='hit'){const target=e.side==='player'?root:isSelf?player:other?.root;if(target)hitNumbers.show(target,e.damage,e.blocked,e.side==='player'?1.8:2.8);if(!e.poison&&target){if(e.side==='player')combatAudio.impact(e.player+'>'+e.target,{family:playerFamily(e.player,selfId),outcome:e.blocked?'block':'hit',damageType:isSelf?damageType(state.equippedWeapon,attackStyle):null,armoured:actorSound(actor).armoured},{self:isSelf,at:soundAt(target)});else combatAudio.impact(e.target+'>'+e.player,{family:actorSound(actor).family,outcome:e.blocked?'block':'hit'},{at:soundAt(target),mine:isSelf,hurt:isSelf&&!e.blocked});if(isSelf&&!e.blocked)duckMusic(-3,.35,.8)}if(actor&&e.side==='player'){actor.hitAnim=e.blocked?0:.3;actor.blockAnim=e.blocked?.65:0;}}
   else if(e.type==='interaction'&&isSelf){pendingArrival=null;const a=targets.find(t=>(t.userData.realmId||t.userData.worldEntityId||t.userData.profile?.realmId)===e.target)?.userData;// Match the clicked NPC itself: its realm and world-entity ids can differ.
 const mode=npcIntent&&(npcIntent.actor===a||npcIntent.target===e.target)?npcIntent.mode:'talk';npcIntent=null;if(a?.kind==='npc'){if(mode==='bank'||mode==='trade')openNpcService(a.profile,mode);else talkTo(a.profile)}else if(a?.kind==='merchant')services.open('shop','Market',e.target);else if(a?.kind==='altar')void Promise.resolve(window.eldervaleRealm.command('pray',{target:e.target})).then(()=>window.eldervaleMechanics?.altar(e.target));else if(a?.kind==='hearth')professions.open({station:'cooking',target:e.target});else if(a?.kind==='fishing')void window.eldervaleRealm.command('fish',{target:e.target});action=null;}
   else if(e.type==='door'){const h=worldInstances.get(e.target)?.house||houseInteriors.find(h=>h.realmId===e.target);if(h){h.open=e.open;h.doorPivot.rotation.y=e.open?-Math.PI*.53:0;}action=null;if(isSelf&&navigationAfterDoor){const goal=navigationAfterDoor;navigationAfterDoor=null;setWalkDestination(goal);}}
-  else if(e.type==='notice'&&isSelf){if(repeatingNotice(e.text))say(e.text)}else if(e.type==='death'&&isSelf){say('Defeated '+(actor?.name||'opponent')+'.');action=null;}else if(e.type==='gather'&&isSelf){say('Resource gathered. +25 XP');action=null;}
+  else if(e.type==='notice'&&isSelf){if(repeatingNotice(e.text))say(e.text)}else if(e.type==='death'){if(root)combatAudio.death(actorSound(actor).species,{at:soundAt(root),mine:isSelf});if(isSelf){say('Defeated '+(actor?.name||'opponent')+'.');action=null;}}else if(e.type==='gather'&&isSelf){say('Resource gathered. +25 XP');action=null;}
  }
 };
 
