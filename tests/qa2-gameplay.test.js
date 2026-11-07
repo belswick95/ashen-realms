@@ -2,6 +2,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {createLocalWalker,TICK_MS} from '../motion-track.js';
 import {TILE} from '../tile-grid.js';
+import {throughOpenDoorway} from '../click-walk.js';
 
 const src=f=>fs.readFileSync(new URL('../'+f,import.meta.url),'utf8');
 
@@ -28,4 +29,16 @@ test('local walker: a redirect while walking keeps the full frame time (no stall
  for(let t=50;t<=600;t+=50)w.update(pos,t);const x=pos.x;
  w.walk([[10*TILE,0]],{serverNow:640,steps:1,now:640});w.update(pos,650);
  assert.ok(Math.abs(pos.x-x-TILE*50/TICK_MS)<1e-6,'a click mid-walk does not drop the frame time already walking');
+});
+
+// Live (castle, phone landscape): a tap on the open door of the Castle Kitchen (held open for
+// business, so examine-only) walked to the ground the ray met 250 units beyond the building: the
+// ground ray ignores doors and walls. Such a click now walks into the doorway.
+test('a left click on a held-open door or open gate walks into the doorway, not to ground far behind it',()=>{
+ assert.equal(throughOpenDoorway(24.5,260),true,'ground far beyond the door: the doorway');
+ assert.equal(throughOpenDoorway(24.5,undefined),true,'no ground under the cursor: the doorway');
+ assert.equal(throughOpenDoorway(24.5,25.6),false,'the floor just inside the door: walk there');
+ assert.equal(throughOpenDoorway(undefined,10),false,'no door hit');
+ const g=src('game.js');
+ assert.match(g,/else if\(examineHit&&\['door','castleGate'\]\.includes\(examineHit\.object\.userData\.kind\)&&throughOpenDoorway\(examineHit\.distance,groundHit\?\.distance\)\)\{const a=examineHit\.object\.userData;[^}]*setWalkDestination\(a\.kind==='door'\?housePoint\(a\.house,0,1\):new T\.Vector3\(a\.x,0,a\.z\)\)\}else if\(hitGround\)/);
 });
