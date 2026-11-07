@@ -1,5 +1,5 @@
-import {clipsFor,locomotionSpeed} from './character-assets.js?v=release-20261107-mapfix140';
-import {attackMotion,strikeTime,clipTime} from './attack-motion.js?v=release-20261107-mapfix140';
+import {clipsFor,locomotionSpeed} from './character-assets.js?v=release-20261107-torch141';
+import {attackMotion,strikeTime,clipTime} from './attack-motion.js?v=release-20261107-torch141';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip and cross-fades. Walking and running use the owner's
@@ -114,8 +114,13 @@ export function createHumanoidAnimator(rig){
   carry+=((LOCOMOTION.has(base)&&moving&&!airborne&&!oneShot&&!swing&&!mounted&&!dead?1:0)-carry)*k;if(carry<.001)carry=0;
   // Each hand fades its carry in and out on its own, so an item that appears or is put away
   // (a townsperson's trowel, eating) never snaps the arm.
-  for(const side of ['left','right']){const h=held[side],item=(side==='left'?rig.leftHand:rig.rightHand)?.children.find(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);if(item)h.kind=item.userData.shieldMount?'shield':'weapon';h.w+=((item?1:0)-h.w)*k;if(h.w<.001)h.w=0;
+  for(const side of ['left','right']){const h=held[side],item=(side==='left'?rig.leftHand:rig.rightHand)?.children.find(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);if(item)h.kind=item.userData.torch?'torch':item.userData.shieldMount?'shield':'weapon';h.w+=((item?1:0)-h.w)*k;if(h.w<.001)h.w=0;
+   if(h.kind==='torch')continue;
    if(carry&&!guard&&h.w&&h.kind)arms.carry(side,carry*h.w*(base===RUN_CLIP?.8:h.kind==='weapon'?.65:.45),h.kind)}
+  // A held torch is carried raised a little ahead in the off hand, flame up, in every
+  // stance (idle, walking, running; a little lower and closer while running). It
+  // gives way to blocking and to the bow arm.
+  const lit=held.left.kind==='torch'?held.left.w:0;if(lit&&!dead)arms.torch(lit*(1-guard)*(1-aim),base===RUN_CLIP?1:moving?.5:0,time);
   // Bow shot: raise and draw over 70% of the attack, release, then lower.
   let draw=0,released=false;
   // Spell: the bolt leaves the casting (left) hand partway through the cast.
@@ -183,6 +188,12 @@ function createArmLayers(rig){
    if(kind==='shield'&&side==='left'){rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,left),weight*.85)}
    // Weapon in hand: the blade (socket +Y) points ahead, a little up and out, never back past the face.
    else if(kind==='weapon'){socket.getWorldQuaternion(pq);a.set(0,1,0).applyQuaternion(pq);to.copy(forward).multiplyScalar(.85).addScaledVector(up,.12).addScaledVector(left,out*.3).normalize();turn(hand,rot.setFromUnitVectors(a,to),weight)}},
+  // Torch: left fist below and ahead of the shoulder, elbow bent, the handle (socket +Y)
+  // tilted forward and a little outward so the flame burns clear of the face and body.
+  torch(weight,run=0,time=0){if(!(weight>0))return;frame();const up_=b.upperarm_l,fore=b.lowerarm_l,hand=b.hand_l;if(!up_||!fore||!hand)return;
+   up_.getWorldPosition(c);fore.getWorldPosition(a);const L=c.distanceTo(a)+a.distanceTo(hand.getWorldPosition(to)),bob=Math.sin(time*(run?9:6))*.015*run;
+   target.copy(c).addScaledVector(up,(-.56-.08*run+bob)*L).addScaledVector(forward,(.52-.1*run)*L).addScaledVector(left,(.4-.06*run)*L);reach('left',target,weight);
+   rig.leftHand.getWorldQuaternion(pq);a.set(0,1,0).applyQuaternion(pq);to.copy(up).addScaledVector(forward,.3-.1*run).addScaledVector(left,.24).normalize();turn(hand,rot.setFromUnitVectors(a,to),weight)},
   guard(weight){frame();b.spine_03.getWorldPosition(target).addScaledVector(forward,.5).addScaledVector(left,.12);reach('left',target,weight);
    rig.leftHand.getWorldQuaternion(pq);a.set(0,0,1).applyQuaternion(pq);turn(b.hand_l,rot.setFromUnitVectors(a,forward),weight)},
   // Net fishing pose for cycle position dip.u (see netDipPhase): the spine leans

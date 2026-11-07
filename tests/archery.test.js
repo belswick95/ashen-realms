@@ -5,7 +5,7 @@ import {createArrows} from '../arrows.js';import {weaponStore} from '../weapon-a
 
 test('every weapon and shield has a model, and bows are two-handed ranged weapons',()=>{
  // Gear-tier variants reuse an iron model (recoloured): `model` names it.
- for(const [key,item] of [...Object.entries(weaponCatalog),...Object.entries(shieldCatalog),['arrow',{}]])assert.ok(weaponStore.items[item.model||key],key);
+ for(const [key,item] of [...Object.entries(weaponCatalog),...Object.entries(shieldCatalog).filter(([,s])=>!s.procedural),['arrow',{}]])assert.ok(weaponStore.items[item.model||key],key);
  for(const key of Object.keys(weaponCatalog)){const g=makeWeapon(T,key);let meshes=0;g.traverse(o=>{if(o.isMesh)meshes++});assert.ok(meshes>0,key)}
  for(const key of Object.keys(shieldCatalog)){const g=makeShield(T,key);let meshes=0;g.traverse(o=>{if(o.isMesh)meshes++});assert.ok(meshes>0,key)}
  const bows=Object.keys(weaponCatalog).filter(isBow);assert.deepEqual(bows,['woodenBow','longbow','goldenBow','bloodthornBow','oakShortbow','willowShortbow','mapleShortbow','yewShortbow']);

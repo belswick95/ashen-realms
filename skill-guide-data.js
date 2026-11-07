@@ -10,24 +10,24 @@
 //  {level, item?: catalog id (goods) for the icon and name, glyph?: emoji when no item exists
 //   (prayers, spells, shortcuts), name, detail, also?: {skill: level} other requirements,
 //   where?: {cat, tier?, tiers?, name?} a map-icons.js marker kind to point at}.
-import {professionRecipes,professionSkills,professionStations} from './profession-data.js?v=release-20261107-mapfix140';
-import {fullFishTable,allMethods,LEGACY_CATCHES,LEGACY_METHODS,allFoodLadder} from './fish-tiers.js?v=release-20261107-mapfix140';
-import {SPOT_TYPES} from './water-data.js?v=release-20261107-mapfix140';
-import {GEAR_TIERS,tierById,tierIndex,tierWeapons,tierShields,WEAPON_TEMPLATES,SHIELD_TEMPLATES,PLATE_PIECES,BOWS,STAFFS,SPELLS,ARROWS,HIT_SCALE,STYLE_BONUS,maxHit,effectiveLevel,bonusSummary} from './gear-tiers.js?v=release-20261107-mapfix140';
-import {weaponCatalog} from './weapons.js?v=release-20261107-mapfix140';
-import {shieldCatalog} from './shields.js?v=release-20261107-mapfix140';
-import {outfitItems,OUTFIT_VARIANTS} from './outfits.js?v=release-20261107-mapfix140';
-import {UNIQUE_ITEMS} from './unique-gear.js?v=release-20261107-mapfix140';
-import {BOSSES} from './bosses.js?v=release-20261107-mapfix140';
-import {PRAYERS} from './mechanics.js?v=release-20261107-mapfix140';
-import {BONES,ALTAR_OFFER_MULTIPLIER} from './monster-roster.js?v=release-20261107-mapfix140';
-import {shortcuts as AGILITY_SHORTCUTS,AGILITY_TEMPLATES} from './agility-data.js?v=release-20261107-mapfix140';
-import {SHORTCUTS as EXPLORE_SHORTCUTS,PLACES,areaById} from './explore-data.js?v=release-20261107-mapfix140';
-import {ORE_TIERS,TREE_TIERS,classifyEntity} from './map-icons.js?v=release-20261107-mapfix140';
-import {skillingChance,HITPOINTS_START,MAX_LEVEL} from './combat-level.js?v=release-20261107-mapfix140';
-import {goods} from './economy.js?v=release-20261107-mapfix140';
-import {WOODCUTTING_TREES,WOODCUTTING_AXES} from './skill-guide-sql-data.js?v=release-20261107-mapfix140';
-import {SKILL_PANEL,skillId} from './skill-list.js?v=release-20261107-mapfix140';
+import {professionRecipes,professionSkills,professionStations} from './profession-data.js?v=release-20261107-torch141';
+import {fullFishTable,allMethods,LEGACY_CATCHES,LEGACY_METHODS,allFoodLadder} from './fish-tiers.js?v=release-20261107-torch141';
+import {SPOT_TYPES} from './water-data.js?v=release-20261107-torch141';
+import {GEAR_TIERS,tierById,tierIndex,tierWeapons,tierShields,WEAPON_TEMPLATES,SHIELD_TEMPLATES,PLATE_PIECES,BOWS,STAFFS,SPELLS,ARROWS,HIT_SCALE,STYLE_BONUS,maxHit,effectiveLevel,bonusSummary} from './gear-tiers.js?v=release-20261107-torch141';
+import {weaponCatalog} from './weapons.js?v=release-20261107-torch141';
+import {shieldCatalog} from './shields.js?v=release-20261107-torch141';
+import {outfitItems,OUTFIT_VARIANTS} from './outfits.js?v=release-20261107-torch141';
+import {UNIQUE_ITEMS} from './unique-gear.js?v=release-20261107-torch141';
+import {BOSSES} from './bosses.js?v=release-20261107-torch141';
+import {PRAYERS} from './mechanics.js?v=release-20261107-torch141';
+import {BONES,ALTAR_OFFER_MULTIPLIER} from './monster-roster.js?v=release-20261107-torch141';
+import {shortcuts as AGILITY_SHORTCUTS,AGILITY_TEMPLATES} from './agility-data.js?v=release-20261107-torch141';
+import {SHORTCUTS as EXPLORE_SHORTCUTS,PLACES,areaById} from './explore-data.js?v=release-20261107-torch141';
+import {ORE_TIERS,TREE_TIERS,classifyEntity} from './map-icons.js?v=release-20261107-torch141';
+import {skillingChance,HITPOINTS_START,MAX_LEVEL} from './combat-level.js?v=release-20261107-torch141';
+import {goods} from './economy.js?v=release-20261107-torch141';
+import {WOODCUTTING_TREES,WOODCUTTING_AXES} from './skill-guide-sql-data.js?v=release-20261107-torch141';
+import {SKILL_PANEL,skillId} from './skill-list.js?v=release-20261107-torch141';
 
 // ------------------------------------------------------------------------------------ helpers
 const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
@@ -101,7 +101,7 @@ function strengthGuide(){
 }
 function defenceGuide(){
  const plate=outfitSets('defence',o=>o.outfit==='knight'&&PLATE_PIECES[o.piece]||Number(o.req?.defence)>1);
- const specials=Object.entries(shieldCatalog).filter(([k,s])=>!s.unique&&!TIER_SHIELDS[k]).map(([k,s])=>({level:lvl(s.req,'defence'),item:'shield:'+k,name:nameOf('shield:'+k),detail:bonusSummary(s.bonuses)}));
+ const specials=Object.entries(shieldCatalog).filter(([k,s])=>!s.unique&&!s.torch&&!TIER_SHIELDS[k]).map(([k,s])=>({level:lvl(s.req,'defence'),item:'shield:'+k,name:nameOf('shield:'+k),detail:bonusSummary(s.bonuses)}));
  return {intro:'Defence decides which armour and shields you can wear and how often you are hit.',sources:['gear-tiers.js','outfits.js','shields.js','unique-gear.js'],
   tabs:[tab('armour','Armour',plate),tab('shields','Shields',[...tierSetRows(TIER_SHIELDS,shieldCatalog,'shield:','defence','kite','shields'),...specials]),tab('uniques','Uniques',uniqueRows(['armor','shield'],'defence'))]};
 }

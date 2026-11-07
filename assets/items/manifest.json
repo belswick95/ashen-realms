@@ -8998,5 +8998,23 @@
       132
     ],
     "sha256": "0d5e6e2209bb6e01c5ca2be9e3205ed38a0cd21e396a6067ef3e44672545551e"
+  },
+  {
+    "key": "item-shield_torch",
+    "id": "shield:torch",
+    "name": "Torch",
+    "model": "shield",
+    "bounds": [
+      0.75,
+      1.1130000008642673,
+      0.10000000149011612
+    ],
+    "pixelBounds": [
+      47,
+      30,
+      97,
+      124
+    ],
+    "sha256": "a8450d6ed5f042b9ca7275eec8f7bac86c2e93eb4de711c181447f6a2029ac0d"
   }
 ]

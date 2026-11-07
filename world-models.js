@@ -1,23 +1,23 @@
-import {undergroundObjectModel} from './underground-models.js?v=release-20261107-mapfix140';
-import {exploreObjectModel} from './explore-models.js?v=release-20261107-mapfix140';
-import {campObject} from './camp-models.js?v=release-20261107-mapfix140';
-import {professionStationModel} from './profession-models.js?v=release-20261107-mapfix140';
-import {oreResources} from './profession-data.js?v=release-20261107-mapfix140';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261107-mapfix140';
-import {buildNaturalForest,TREE_SPECIES} from './natural-forest.js?v=release-20261107-mapfix140';
-import {creatureMaterial} from './creature-material.js?v=release-20261107-mapfix140';
-import {dragonModel} from './monster-dragon.js?v=release-20261107-mapfix140';
-import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-mapfix140';
-import {castleObject} from './castle-models.js?v=release-20261107-mapfix140';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261107-mapfix140';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-mapfix140';
-import {townProp,dressFountain} from './town-props.js?v=release-20261107-mapfix140';
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-mapfix140';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-mapfix140';
+import {undergroundObjectModel} from './underground-models.js?v=release-20261107-torch141';
+import {exploreObjectModel} from './explore-models.js?v=release-20261107-torch141';
+import {campObject} from './camp-models.js?v=release-20261107-torch141';
+import {professionStationModel} from './profession-models.js?v=release-20261107-torch141';
+import {oreResources} from './profession-data.js?v=release-20261107-torch141';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261107-torch141';
+import {buildNaturalForest,TREE_SPECIES} from './natural-forest.js?v=release-20261107-torch141';
+import {creatureMaterial} from './creature-material.js?v=release-20261107-torch141';
+import {dragonModel} from './monster-dragon.js?v=release-20261107-torch141';
+import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-torch141';
+import {castleObject} from './castle-models.js?v=release-20261107-torch141';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261107-torch141';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-torch141';
+import {townProp,dressFountain} from './town-props.js?v=release-20261107-torch141';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-torch141';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-torch141';
 // A placed tree's look: an explicit treeType, else willows for willow logs and dark evergreens
 // for yews, else the template's.
 export const treeSpeciesOf=(d,id=d?.template)=>TREE_SPECIES.includes(d?.treeType)?d.treeType:d?.logItem==='willowLogs'?'willow':d?.logItem==='yewLogs'?'spruce':id==='pine'?'pine':'oak';
-import {passageLook} from './underground-data.js?v=release-20261107-mapfix140';
+import {passageLook} from './underground-data.js?v=release-20261107-torch141';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);
@@ -31,10 +31,11 @@ export function actorModel(T,parent,d){
   const species=d.species,set=(o,v,pieces)=>Object.fromEntries(pieces.map(p=>[o+p+v,true]));
   const appearance=species==='zombie'?{sex:'male',skin:'#7f9170',hair:'Short parted',beard:'Clean shaven',hairColor:'#2b2a22'}:species==='orc'?{sex:'male',skin:'#5f7a43',hair:'Bald',beard:'Short beard',hairColor:'#1c1a14'}:species==='goblin'?{sex:'male',skin:'#74864b',hair:'Bald',beard:'Clean shaven',hairColor:'#211b18'}:species==='skeleton'?{sex:'male',skin:'#d7cfb9',hair:'Bald',beard:'Clean shaven',hairColor:'#c0b5a3'}:{sex:'male',skin:'#c9916b',hair:'Short parted',hairColor:'#5b3c28'};
   const armor=/guard/.test(d.role||'')?{helm:true,chest:true,legs:true,boots:true,knightGauntlets1:true}:species==='zombie'?set('peasant',2,['Shirt','Trousers']):species==='orc'?set('knight',3,['Gambeson','Gauntlets','SpikedPauldrons','HornedHelm']):species==='goblin'?set('ranger',2,['Tunic','Trousers','Bracers']):species==='skeleton'?{...set('peasant',2,['Shirt','Trousers']),knightArmet3:true}:{};
-  // Roster variants (monster-roster.js) bring their own skin/hair (look), armour pieces (gear) and shield.
+  // Roster variants (monster-roster.js) bring their own skin/hair (look), armour pieces (gear) and shield;
+  // townsfolk may carry an off-hand item too (a shield or a torch, data.shield).
   if(d.kind==='monster'&&d.look&&typeof d.look==='object')for(const k of ['sex','skin','hair','hairColor','beard'])if(typeof d.look[k]==='string')appearance[k]=d.look[k];
   const worn=d.kind==='monster'&&Array.isArray(d.gear)?Object.fromEntries(d.gear.filter(k=>typeof k==='string').map(k=>[k,true])):armor;
-  const display=buildCharacterDisplay(T,parent,appearance,{weapon:d.weapon,armor:worn,...(d.kind==='monster'&&typeof d.shield==='string'?{shield:d.shield}:{})},{trusted:true});
+  const display=buildCharacterDisplay(T,parent,appearance,{weapon:d.weapon,armor:worn,...((d.kind==='monster'||d.kind==='npc')&&typeof d.shield==='string'?{shield:d.shield}:{})},{trusted:true});
   const effect=serviceAttackEffect(T,display.rig,d.attackType),aura=monsterAura(T,parent,d);
   return {humanoid:true,update(dt,m){display.update(dt,{...m,locomotion:m.attack>0?'combat':'walk'});effect.update(m.attack||0);aura?.update(dt)},dispose:()=>{aura?.dispose();display.dispose()}};
  }

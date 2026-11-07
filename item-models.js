@@ -1,8 +1,8 @@
-import {itemModelKind as kindForItem,itemColor} from './item-appearance.js?v=release-20261107-mapfix140';
-import {armorItem,horseItem} from './equipment-items.js?v=release-20261107-mapfix140';
-import {goods} from './economy.js?v=release-20261107-mapfix140';
-import {makeWeapon} from './weapons.js?v=release-20261107-mapfix140';
-import {makeShield} from './shields.js?v=release-20261107-mapfix140';
+import {itemModelKind as kindForItem,itemColor} from './item-appearance.js?v=release-20261107-torch141';
+import {armorItem,horseItem} from './equipment-items.js?v=release-20261107-torch141';
+import {goods} from './economy.js?v=release-20261107-torch141';
+import {makeWeapon} from './weapons.js?v=release-20261107-torch141';
+import {makeShield} from './shields.js?v=release-20261107-torch141';
 export function itemModelKind(id){return kindForItem(id,goods[id]||{})}
 export function makeItemModel(T,id){const d=goods[id]||{},kind=itemModelKind(id),root=new T.Group();root.userData.itemModel=kind;const material=(color,metalness=0)=>new T.MeshStandardMaterial({color,metalness,roughness:metalness?.45:.82}),wood=material(0x8c6945),metal=material(d.color||0xa8b7bd,.6),body=material(d.color||0xc8a775),add=(geo,mat,x=0,y=0,z=0)=>{const m=new T.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;root.add(m);return m},box=(w,h,l,x,y,z,mat=body)=>add(new T.BoxGeometry(w,h,l),mat,x,y,z),sphere=(r,x,y,z,mat=body)=>add(new T.SphereGeometry(r,12,8),mat,x,y,z),cyl=(r,h,x,y,z,mat=wood)=>add(new T.CylinderGeometry(r,r,h,12),mat,x,y,z);
  if(kind==='note'){box(.5,.025,.60,0,.03,0,new T.MeshStandardMaterial({color:0xe5d7a4,roughness:.95}));const emblem=makeItemModel(T,d.noteOf);emblem.scale.set(.55,.10,.55);emblem.position.y=.06;root.add(emblem);if(emblem.userData.ready)root.userData.ready=emblem.userData.ready.then(()=>root);}
@@ -65,6 +65,8 @@ export function makeDroppedItemModel(T,id){
  // in on first use, so the fit is repeated once the model has its geometry.
  function fit(){model.scale.copy(rest);model.position.set(0,0,0);root.scale.y=1;root.updateMatrixWorld(true);
   let box=new T.Box3().setFromObject(model);if(box.isEmpty())return false;const size=box.getSize(new T.Vector3()),scale=.72/Math.max(size.x,size.z,.001);model.scale.multiplyScalar(scale);root.scale.y=.14;root.updateMatrixWorld(true);box=new T.Box3().setFromObject(root);model.position.x-=(box.min.x+box.max.x)/2;model.position.z-=(box.min.z+box.max.z)/2;model.position.y-=box.min.y/.14;root.updateMatrixWorld(true);return true}
+ // A torch on the ground is put out (no flame on a flattened drop).
+ model.traverse(o=>{if(o.userData.torchFlame)o.visible=false});
  fit();root.scale.y=.14;root.userData.itemModel=id;root.userData.flattened=true;
  root.userData.ready=model.userData.ready?model.userData.ready.then(()=>{fit();return root}):Promise.resolve(root);
  return root;

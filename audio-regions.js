@@ -1,6 +1,6 @@
-import {townExtent} from './capital-layout.js?v=release-20261107-mapfix140';
-import {generatedWorld} from './procedural-world.js?v=release-20261107-mapfix140';
-import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261107-mapfix140';
+import {townExtent} from './capital-layout.js?v=release-20261107-torch141';
+import {generatedWorld} from './procedural-world.js?v=release-20261107-torch141';
+import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261107-torch141';
 export const townMusic=[
  {id:'oakcross',name:'Oakcross',x:0,z:0,radius:50,title:'Lord of the Land'},
  {id:'northwatch',name:'Northwatch',x:-60,z:45,radius:22,title:'Night Vigil'},
