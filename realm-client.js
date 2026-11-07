@@ -1,6 +1,6 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
-import {loading,commandLabel} from './loading-indicator.js?v=release-20261107-combatsfx130';
-import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261107-combatsfx130';
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261107-monsters131';
+import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261107-monsters131';
 const MOTION_COMMANDS=new Set(['move','stop']);
 // Database/transport failures are not game messages: never show raw Postgres text (e.g. "canceling
 // statement due to statement timeout") in the chat. Game-rule refusals pass through unchanged.
