@@ -1705,7 +1705,7 @@ var realmPlayerPose=null,realmPoseJump=false,realmInCombat=false,lastMovementAck
 // removed again before the next frame's travel is measured. Entries are reused (no allocation).
 const spreadPeople=[];
 function spreadTownsfolk(dt){spreadPeople.length=0;const P=player.position;
- for(const npc of npcs){if(!npc.root.visible||npc.deleted||npc.root.position.distanceToSquared(P)>45*45){if(npc.spreadShown){npc.root.position.x-=npc.spreadShown.x;npc.root.position.z-=npc.spreadShown.z;npc.spreadShown.x=npc.spreadShown.z=0;npc.spread.x=npc.spread.z=0}continue}
+ for(const npc of npcs){if(!npc.root.visible||npc.deleted){if(npc.spreadShown){npc.root.position.x-=npc.spreadShown.x;npc.root.position.z-=npc.spreadShown.z;npc.spreadShown.x=npc.spreadShown.z=0;npc.spread.x=npc.spread.z=0}continue}
   const s=npc.spread||={x:0,z:0},e=npc.spreadEntry||={key:npc.realmId,spread:s};const a=npc.spreadShown;e.x=npc.root.position.x-(a?a.x:0);e.z=npc.root.position.z-(a?a.z:0);e.moving=(npc.travelHold||0)>0||conversation?.profile===npc.profile;spreadPeople.push(e)}
  if(!spreadPeople.length)return;
  for(const other of remotePlayers.values()){const e=other.spreadEntry||={key:'p',spread:null,moving:false};e.x=other.root.position.x;e.z=other.root.position.z;e.radius=other.mounted?1.6:0;spreadPeople.push(e)}
