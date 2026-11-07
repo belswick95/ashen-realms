@@ -216,3 +216,10 @@ previous STATUS block (unfinished QA checks outside the castle, pond radius, iPa
 - Running: NPC smoothing agent (ac5caa197e3205322) — client interpolation, no sprinting, fountain crowding.
 - Owner action recommended: Supabase compute upgrade (DB CPU-starved; ticks still spike to ~1 s).
 - Notes: horse asset only has a gallop (no walk/trot clip); horse uses person-size collision; lamp posts can block camera.
+
+## STATUS 07 Nov (npcsmooth128 live)
+- Live: kingdoms127 (title "Kingdoms of Eldervale"; "The Heartlands" kept as region), npcsmooth128 (tile playback at true pace, spreadStanding).
+- Follow-ups: server route data spreads (two Alden sweepers share stations; plaza spawns) via build-town-life.mjs;
+  NPC work/idle/LOD visual checklist not done; monsters trail ~1.2 s (tune createTilePlayback buffer if combat feels late);
+  Supabase compute upgrade still recommended; dedicated game server plan (Oracle Cloud) pending owner setup.
+- Owner declined/IP: no extraction of RuneScape/MoparScape client assets; legal options: Mixamo, paid packs, commissions.
