@@ -8,7 +8,7 @@
 //  * breath and fight settings (anti-breath shield %, tonic %, prayer %, dragon breath chance and
 //    max hit, reset ticks, rare announcements, loot chest) and the master switch.
 // Writes go through console_boss_* (owner-checked and audited on the server).
-import {BREATH_DEFAULTS,validateBoss,formatTicks,parseOneIn} from './bosses.js?v=release-20261107-kingdoms127';
+import {BREATH_DEFAULTS,validateBoss,formatTicks,parseOneIn} from './bosses.js?v=release-20261107-npcsmooth128';
 
 export const BOSS_NUMBERS=[['attackTicks','Attack speed (ticks)'],['arena.radius','Arena radius (tiles)'],['respawnTicks','Respawn (ticks)'],['resetTicks','Idle reset (ticks)'],
  ['enrage.afterTicks','Enrage after (ticks)'],['enrage.attackTicksMinus','Enrage: faster by (ticks)'],['enrage.damagePct','Enrage damage %']];

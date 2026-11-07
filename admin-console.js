@@ -1,13 +1,13 @@
-import {spawnCatalog,searchCatalog,catalogEntity,consoleCategories,bestiary,lootSummary,normalizeLoot,behaviorPatch,normalizePatrol,transformGroup,aheadOf,ringPositions,mergePlayers,matchesQuery,wrapYaw} from './bestiary.js?v=release-20261107-kingdoms127';
-import {worldTemplates,attackTypes} from './world-templates.js?v=release-20261107-kingdoms127';
-import {goods} from './economy.js?v=release-20261107-kingdoms127';
-import {professionSkills} from './profession-data.js?v=release-20261107-kingdoms127';
-import {SKINS,HAIRS,HAIRSTYLES} from './appearance.js?v=release-20261107-kingdoms127';
-import {showPreview} from './admin-preview.js?v=release-20261107-kingdoms127';
-import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261107-kingdoms127';
-import {engineSection} from './admin-engine.js?v=release-20261107-kingdoms127';
-import {mechanicsSection} from './admin-mechanics.js?v=release-20261107-kingdoms127';
-import {bossesSection} from './admin-bosses.js?v=release-20261107-kingdoms127';
+import {spawnCatalog,searchCatalog,catalogEntity,consoleCategories,bestiary,lootSummary,normalizeLoot,behaviorPatch,normalizePatrol,transformGroup,aheadOf,ringPositions,mergePlayers,matchesQuery,wrapYaw} from './bestiary.js?v=release-20261107-npcsmooth128';
+import {worldTemplates,attackTypes} from './world-templates.js?v=release-20261107-npcsmooth128';
+import {goods} from './economy.js?v=release-20261107-npcsmooth128';
+import {professionSkills} from './profession-data.js?v=release-20261107-npcsmooth128';
+import {SKINS,HAIRS,HAIRSTYLES} from './appearance.js?v=release-20261107-npcsmooth128';
+import {showPreview} from './admin-preview.js?v=release-20261107-npcsmooth128';
+import {scatterPositions,applyOverrides,parseLootLines,formatLootLines} from './admin-full-data.js?v=release-20261107-npcsmooth128';
+import {engineSection} from './admin-engine.js?v=release-20261107-npcsmooth128';
+import {mechanicsSection} from './admin-mechanics.js?v=release-20261107-npcsmooth128';
+import {bossesSection} from './admin-bosses.js?v=release-20261107-npcsmooth128';
 // Owner game console tabs: Dashboard, Spawn, Placed, NPCs, Monsters, Players and World.
 // Every write goes through world_admin, where the server re-checks owner access.
 const svg=p=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';

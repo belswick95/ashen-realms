@@ -1,16 +1,60 @@
-import {slideStep} from './movement-collision.js?v=release-20261107-kingdoms127';
-import {projectTilePose} from './tile-grid.js?v=release-20261107-kingdoms127';
+import {slideStep} from './movement-collision.js?v=release-20261107-npcsmooth128';
+import {projectTilePose,TILE,GAME_TICK} from './tile-grid.js?v=release-20261107-npcsmooth128';
 // Timestamped presentation buffer: no position authority or damage is decided here.
 // When snapshots arrive later than `delay` (a slow reply on a phone or tablet
 // connection) the buffer runs dry and the actor would freeze, then jump. The
 // delay then grows by itself (presentation slows to half speed rather than
 // stopping) up to `maxExtra` ms, and shrinks back slowly once replies keep up.
-export function createMotionTrack({delay=350,maxExtra=600}={}){let frames=[],epoch=null,lastTime=-Infinity,extra=0,lastNow=null;return {get extraDelay(){return extra},push(time,pose,now=performance.now()){if(!Number.isFinite(time))return;if(epoch===null)epoch={server:time,local:now};const prev=frames.at(-1);if(prev&&Math.hypot(pose.x-prev.x,pose.z-prev.z)>12){frames=[];epoch={server:time,local:now};lastTime=-Infinity}if(prev&&time<=prev.time)return;frames.push({...pose,time});if(frames.length>32)frames.shift()},sample(now=performance.now()){if(!frames.length)return null;const step=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow));lastNow=now;const newest=frames.at(-1).time,raw=epoch.server+now-epoch.local-delay-extra;if(frames.length>1||raw>newest){if(raw>newest)extra=Math.min(maxExtra,extra+step*.5);else if(raw<newest-delay*.5)extra=Math.max(0,extra-step*.02)}const t=Math.max(lastTime,epoch.server+now-epoch.local-delay-extra);lastTime=t;while(frames.length>2&&frames[1].time<t)frames.shift();const a=frames[0],b=frames[1];if(!b||t<=a.time)return {...a};const f=Math.max(0,Math.min(1,(t-a.time)/(b.time-a.time)));const yaw=a.yaw+Math.atan2(Math.sin(b.yaw-a.yaw),Math.cos(b.yaw-a.yaw))*f;return {...b,x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f,yaw}},clear(){frames=[];epoch=null;lastTime=-Infinity;extra=0;lastNow=null},
- // Tile walkers (tick & tile engine): `time` is the server tick at which the walker stood on this
- // tile. A repeated tick only updates the facing (an NPC turning to talk); a walk that starts after
- // a pause gets the previous tile one tick earlier, so the first step glides instead of jumping.
- // `serverNow` anchors the clock on the first sample (tick times lag the reply time).
- pushTile(time,pose,now=performance.now(),serverNow=time,tick=600){if(!Number.isFinite(time))return;if(epoch===null)epoch={server:Number.isFinite(serverNow)?serverNow:time,local:now};const prev=frames.at(-1);if(prev&&time<=prev.time){if(Math.hypot(pose.x-prev.x,pose.z-prev.z)<1e-6){prev.yaw=pose.yaw;prev.moving=pose.moving}return}if(prev&&time-prev.time>tick*1.5&&Math.hypot(pose.x-prev.x,pose.z-prev.z)>1e-6&&Math.hypot(pose.x-prev.x,pose.z-prev.z)<=12)this.push(time-tick,{...prev,yaw:pose.yaw},now);this.push(time,pose,now)}}}
+export function createMotionTrack({delay=350,maxExtra=600}={}){let tile=false,playback=null,frames=[],epoch=null,lastTime=-Infinity,extra=0,lastNow=null;return {get extraDelay(){return extra},push(time,pose,now=performance.now()){if(!Number.isFinite(time))return;if(epoch===null)epoch={server:time,local:now};const prev=frames.at(-1);if(prev&&Math.hypot(pose.x-prev.x,pose.z-prev.z)>12){frames=[];epoch={server:time,local:now};lastTime=-Infinity}if(prev&&time<=prev.time)return;frames.push({...pose,time});if(frames.length>32)frames.shift()},sample(now=performance.now()){if(tile)return playback.sample(now);if(!frames.length)return null;const step=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow));lastNow=now;const newest=frames.at(-1).time,raw=epoch.server+now-epoch.local-delay-extra;if(frames.length>1||raw>newest){if(raw>newest)extra=Math.min(maxExtra,extra+step*.5);else if(raw<newest-delay*.5)extra=Math.max(0,extra-step*.02)}const t=Math.max(lastTime,epoch.server+now-epoch.local-delay-extra);lastTime=t;while(frames.length>2&&frames[1].time<t)frames.shift();const a=frames[0],b=frames[1];if(!b||t<=a.time)return {...a};const f=Math.max(0,Math.min(1,(t-a.time)/(b.time-a.time)));const yaw=a.yaw+Math.atan2(Math.sin(b.yaw-a.yaw),Math.cos(b.yaw-a.yaw))*f;return {...b,x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f,yaw}},clear(){playback?.clear();frames=[];epoch=null;lastTime=-Infinity;extra=0;lastNow=null},
+ // Tile walkers (tick & tile engine) are played back along their tiles by createTilePlayback,
+ // not by the server tick stamps (`time`, `serverNow` and `tick` are kept for callers).
+ get tile(){return tile},
+ pushTile(time,pose,now=performance.now()){if(!pose)return;if(!tile){tile=true;playback=createTilePlayback()}playback.push(pose,now)}}}
+
+// Tile-walker playback. The world tick moves a walker one tile per 600 ms tick (runners two), but the
+// tiles do not reach the client evenly: the cron tick runs about once a second and catches up two
+// ticks at once, polls add up to a tick, and a stalled tick delivers several tiles in one burst.
+// Playing the tick stamps back as they came made walkers dash two tiles in one tick, stand for a
+// tick, dash again (and run a jog cycle at the doubled speed), or freeze and then race to catch up.
+// Instead the tiles received are queued as a path and walked at the walker's true pace:
+//  - a buffer of about two tiles (just over a tick at the cron cadence) is kept behind the newest tile while more are due, so a late tile
+//    slows the walker a little (never below SLOW x pace) instead of stopping it;
+//  - a backlog is caught up at no more than CATCH_UP x pace;
+//  - lag is counted in tile steps (a diagonal step is one tick, as on the server, so diagonals play at
+//    their true 1.41x ground speed instead of falling behind);
+//  - further behind than SNAP_TILES the walker is placed quietly at the buffer distance (sample().snapped,
+//    so the caller animates no stride for that frame); a jump over 12 units is a teleport.
+// sample(now) returns {x,z,yaw,moving,run,speed,snapped}; one object is reused (no allocation).
+export const TILE_WALK_SPEED=TILE/GAME_TICK,CATCH_UP=1.3,SLOW=.6,SNAP_TILES=4,BUFFER_TILES=2,DUE_MS=1800,START_WAIT_MS=900,TELEPORT=12;
+export function createTilePlayback({buffer=BUFFER_TILES,slow=SLOW,gain=.2,ease=.4}={}){
+ const path=[],out={x:0,z:0,yaw:0,moving:false,run:false,speed:0,snapped:false};let ready=false,walking=false,startAt=0,stand=0,heading=0,steps=1,rate=1,lastNow=null,lastTile=-Infinity,snapNext=false;
+ // Distances are in tile steps (a diagonal step is one step, as on the server: one tick), not units.
+ const stepsOf=(dx,dz)=>Math.max(Math.abs(dx),Math.abs(dz))/TILE;
+ const len=()=>{let d=0,px=out.x,pz=out.z;for(const p of path){d+=stepsOf(p.x-px,p.z-pz);px=p.x;pz=p.z}return d};
+ // Walk `d` tile steps along the queued path from the presented point; returns the ground covered.
+ function advance(d){let ground=0;while(path.length&&d>0){const p=path[0],dx=p.x-out.x,dz=p.z-out.z,seg=stepsOf(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){ground+=Math.hypot(dx,dz);out.x=p.x;out.z=p.z;d-=seg;path.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}return ground}
+ return {get backlog(){return len()},
+  push(pose,now=performance.now()){if(!Number.isFinite(pose.x)||!Number.isFinite(pose.z))return;
+   if(!ready){ready=true;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand=Number.isFinite(pose.yaw)?pose.yaw:0;return}
+   const last=path.at(-1)||out,d=Math.hypot(pose.x-last.x,pose.z-last.z);if(Number.isFinite(pose.yaw))stand=pose.yaw;
+   if(d<1e-6)return;// same tile: only the facing (an NPC turning to talk)
+   if(d>TELEPORT){path.length=0;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand;snapNext=true;return}
+   steps=pose.stepTiles>0?pose.stepTiles:pose.run?2:1;if(!path.length&&!walking)startAt=now;path.push({x:pose.x,z:pose.z});lastTile=now},
+  sample(now=performance.now()){if(!ready)return null;const dt=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow))/1000;lastNow=now;
+   out.snapped=snapNext;snapNext=false;let lag=len();
+   if(lag>SNAP_TILES){advance(lag-buffer);out.snapped=true;lag=len()}
+   const due=now-lastTile<DUE_MS,over=lag-buffer;
+   const want=due?Math.max(slow,Math.min(CATCH_UP,1+gain*over)):Math.max(1,Math.min(CATCH_UP,1+.15*over));
+   rate+=(want-rate)*(1-Math.exp(-dt/ease));
+   // A walk starts once the buffer has filled (or a short wait has passed: a single step aside).
+   if(!walking&&path.length&&(lag>=buffer*.99||now-startAt>=START_WAIT_MS||!due))walking=true;
+   out.moving=walking&&path.length>0;out.run=steps>1;
+   out.speed=out.moving&&dt>0?advance(steps*rate*dt/GAME_TICK)/dt:0;if(!path.length){out.moving=false;walking=false;heading=stand}
+   // Turn toward the heading (a corner, a diagonal tile step, the facing at rest) over ~0.1 s, not in one frame.
+   const turn=Math.atan2(Math.sin(heading-out.yaw),Math.cos(heading-out.yaw));out.yaw=dt>0&&!out.snapped?out.yaw+turn*Math.min(1,1-Math.exp(-dt/.1)):heading;
+   return out},
+  clear(){path.length=0;ready=false;walking=false;lastNow=null;lastTile=-Infinity;rate=1}};
+}
 
 // The owning client predicts input immediately. Only reconcile the latest final
 // acknowledgement after its input queue drains; remote interpolation is delayed.

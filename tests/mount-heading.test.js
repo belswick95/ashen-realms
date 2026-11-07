@@ -36,10 +36,13 @@ test('local rider: the horse faces its velocity on mixed diagonal and straight t
 
 test('remote rider: tick samples three tiles apart glide on chords; the horse faces the chord, not the last step',()=>{
  const track=createMotionTrack({delay:650}),heading=createTravelHeading(),samples=[],raw=[];
- for(let tick=0;tick*3<MOVES.length;tick++){const idx=Math.min(points.length-1,tick*3),prev=points[Math.max(0,idx-1)],cur=points[idx];track.pushTile(tick*TICK,{x:cur[0],z:cur[1],yaw:Math.atan2(cur[0]-prev[0],cur[1]-prev[1]),moving:true},tick*TICK,0)}
+ for(let tick=0;tick*3<MOVES.length;tick++){const idx=Math.min(points.length-1,tick*3),prev=points[Math.max(0,idx-1)],cur=points[idx];track.pushTile(tick*TICK,{x:cur[0],z:cur[1],yaw:Math.atan2(cur[0]-prev[0],cur[1]-prev[1]),moving:true,stepTiles:3},tick*TICK,0)}
  for(let now=0;now<(MOVES.length/3+2)*TICK;now+=dt*1000){const s=track.sample(now);if(!s)continue;raw.push({x:s.x,z:s.z,yaw:s.yaw});samples.push({x:s.x,z:s.z,yaw:heading.update(s.x,s.z,dt,s.yaw)})}
  const before=stats(crab(raw)),after=stats(crab(samples));
- assert.ok(before.p90>30,'the reported last-step yaw crabs ('+before.p90.toFixed(0)+'°)');
+ // Tile playback (motion-track.js createTilePlayback) already walks the tiles in order and faces
+ // the leg being walked, so the raw track no longer reports the last step's yaw; the heading
+ // filter must keep it at least as straight.
+ assert.ok(after.p90<=before.p90+2,'heading no worse than the track ('+before.p90.toFixed(0)+'°)');
  assert.ok(after.mean<7,'mean crab '+after.mean.toFixed(1)+'°');
  assert.ok(after.p90<22,'p90 crab '+after.p90.toFixed(1)+'°');
 });
