@@ -4,7 +4,8 @@ import {arrowModel} from './weapon-assets.js?v=release-20261107-demons132';
 //         and stays briefly where it lands.
 //  bolt:  a spell, a glowing orb with a short trail in the staff's gem colour,
 //         flies straight and vanishes on impact.
-const ARROW_SPEED=55,BOLT_SPEED=30,STICK=.6,TRAIL=4;
+// Flight speeds (units/s) are also read by attack-motion.js to time the hit to the arrival.
+export const ARROW_SPEED=55,BOLT_SPEED=40;const STICK=.6,TRAIL=4;
 export function createArrows(T,scene){
  const flying=[],from=new T.Vector3(),to=new T.Vector3(),dir=new T.Vector3(),up=new T.Vector3(0,1,0);
  const orb=new T.IcosahedronGeometry(.11,1);

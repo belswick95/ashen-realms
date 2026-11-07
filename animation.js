@@ -1,4 +1,5 @@
 import {clipsFor,locomotionSpeed} from './character-assets.js?v=release-20261107-demons132';
+import {attackMotion,strikeTime,clipTime} from './attack-motion.js?v=release-20261107-demons132';
 // Clip-driven animation for every human in Eldervale (Quaternius Universal
 // Animation Library, CC0). The caller describes what the character is doing;
 // this picks the clip and cross-fades. Walking and running use the owner's
@@ -33,7 +34,7 @@ const ONE_SHOT=new Set(['Sword_Attack','Punch_Jab','Punch_Cross','Spell_Simple_S
 
 export function createHumanoidAnimator(rig){
  const clips=clipsFor(rig.sex),mixer=new rig.T.AnimationMixer(rig.model);
- const actions=new Map(),weights=new Map(),mids=new Map();let settle=0,gaitFade=0,deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
+ const actions=new Map(),weights=new Map(),mids=new Map();let settle=0,gaitFade=0,deadAt=-1,current='Idle_Loop',oneShot=null,oneShotLeft=0,swing=null,lastAttack=0,lastHit=0,airborne=false,punch=0,time=0,guard=0,fightUntil=-1;
  const arms=createArmLayers(rig);let aim=0,shot=null,cast=null,carry=0,netting=0;const held={left:{w:0,kind:null},right:{w:0,kind:null}};
  const holding=socket=>!!socket&&socket.children.some(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);
  const loops={};
@@ -47,7 +48,21 @@ export function createHumanoidAnimator(rig){
   speed=Number.isFinite(speed)?Math.max(0,speed):0;distance=Number.isFinite(distance)?Math.max(0,distance):0;
   const moving=distance>1e-5&&speed>.15&&!mounted;
   // Event-driven one-shots: a new attack, a fresh hit, take-off and landing.
-  if(attack>lastAttack+.05||attack>0&&lastAttack<=0){const spell=magic||style==='magic';if(spell){startOneShot('Spell_Simple_Shoot',Math.max(.45,attack));cast={t:0,at:Math.max(.45,attack)*.45}}else if(ranged)shot={t:0,duration:Math.max(.6,attack)};else startOneShot(spell?'Spell_Simple_Shoot':armed?'Sword_Attack':(punch++%2?'Punch_Cross':'Punch_Jab'),Math.max(.35,attack))}
+  // The motion comes from the weapon (attack-motion.js): slash, stab, crush, chop, two-handed,
+  // bow or staff. The swing starts on this frame and snaps in (no slow cross-fade), and clip
+  // motions are re-timed so the clip's strike frame lands at the weapon's strike time.
+  let strikeNow=false;
+  if(attack>lastAttack+.05||attack>0&&lastAttack<=0){const options={style,armed,ranged,magic},motion=attackMotion(weapon,options);
+   if(style==='magic'&&motion.kind!=='bow')Object.assign(motion,attackMotion(null,{magic:true}));
+   const duration=motion.kind==='bow'?Math.max(.6,attack):motion.kind==='cast'?Math.max(.45,attack):Math.max(.35,attack);
+   swing={motion,t:0,duration,strikeAt:motion.kind==='cast'?.45*duration:motion.kind==='bow'?.7*duration:strikeTime(weapon,{...options,duration}),struck:false,clip:null};
+   if(motion.kind==='cast'){startOneShot('Spell_Simple_Shoot',duration);cast={t:0,at:swing.strikeAt}}
+   else if(motion.kind==='bow')shot={t:0,duration};
+   else{let clip=motion.clip;if(motion.kind==='punch'){clip=punch++%2?'Punch_Cross':'Punch_Jab';swing.motion={...motion,clipStrike:clip==='Punch_Jab'?.21:motion.clipStrike}}
+    if(clip&&clips[clip]){startOneShot(clip,duration);swing.clip=clip;actions.get(clip).timeScale=0;actions.get(clip).time=0}else oneShot=null}
+   if(oneShot&&!dead){weights.set(oneShot,Math.max(weights.get(oneShot)||0,.7));for(const [name,w] of weights)if(name!==oneShot)weights.set(name,w*.3)}}
+  if(swing){swing.t+=dt;if(swing.clip&&oneShot===swing.clip){const a=actions.get(swing.clip);a.time=clipTime(swing.motion,swing.t,a.getClip().duration,swing.duration)}
+   if(!swing.struck&&swing.t>=swing.strikeAt-1e-6){swing.struck=true;strikeNow=true}}
   // Fighting (an armed attack, a block, or the caller's combat flag) holds the
   // combat stance a few seconds, then it eases back to the relaxed idle.
   if(armed&&attack>0||block>0)fightUntil=time+FIGHT_HOLD;else if(combat)fightUntil=Math.max(fightUntil,time+COMBAT_HOLD);lastAttack=attack;
@@ -96,7 +111,7 @@ export function createHumanoidAnimator(rig){
   // Blocking raises the shield across the chest on top of whatever clip plays.
   guard+=((block>0&&!mounted&&!dead&&!ranged?1:0)-guard)*k;if(guard<.001)guard=0;if(guard)arms.guard(guard);
   // Held weapon / shield ride steady at the side while running (gently while walking).
-  carry+=((LOCOMOTION.has(base)&&moving&&!airborne&&!oneShot&&!mounted&&!dead?1:0)-carry)*k;if(carry<.001)carry=0;
+  carry+=((LOCOMOTION.has(base)&&moving&&!airborne&&!oneShot&&!swing&&!mounted&&!dead?1:0)-carry)*k;if(carry<.001)carry=0;
   // Each hand fades its carry in and out on its own, so an item that appears or is put away
   // (a townsperson's trowel, eating) never snaps the arm.
   for(const side of ['left','right']){const h=held[side],item=(side==='left'?rig.leftHand:rig.rightHand)?.children.find(c=>(c.userData.weaponMount||c.userData.shieldMount)&&c.visible);if(item)h.kind=item.userData.shieldMount?'shield':'weapon';h.w+=((item?1:0)-h.w)*k;if(h.w<.001)h.w=0;
@@ -107,13 +122,22 @@ export function createHumanoidAnimator(rig){
   if(cast){cast.t+=dt;if(cast.t>=cast.at){released=true;cast=null}}
   if(shot){shot.t+=dt;const u=shot.t/shot.duration;draw=u<.7?Math.min(1,u/.7)**.8:0;if(u>=.7&&!shot.released){shot.released=true;released=true}if(u>=1.25)shot=null}
   aim+=((shot&&!mounted&&!dead?1:0)-aim)*Math.min(1,k*1.6);if(aim<.001)aim=0;if(aim)arms.aim(aim,draw);
+  // Melee and staff swings: the weapon arm (both arms for two-handers) follows the motion's
+  // keyframes over the clip, timed so the blow lands on the strike frame.
+  let strikeWeight=0;
+  if(swing){const m=swing.motion,u=swing.t,d=swing.duration;
+   if(!dead&&!mounted&&(m.layer||m.twoHanded&&!m.ranged)){strikeWeight=Math.min(1,u/.04)*(u>d*.7?Math.max(0,1-(u-d*.7)/(d*.3)):1);strikeWeight=strikeWeight*strikeWeight*(3-2*strikeWeight);
+    const phase=u<swing.strikeAt?u/swing.strikeAt:1+Math.min(1,(u-swing.strikeAt)/Math.max(.05,d-swing.strikeAt));
+    if(strikeWeight>0)arms.strike(m.layer,phase,strikeWeight,{twoHanded:m.twoHanded&&!m.ranged})}
+   if(u>=(m.kind==='bow'?d*1.25:d))swing=null}
   // Eating: weapon and shield are put away, the right hand brings the food to the mouth.
   const bite=eating.update(eat,food,{mounted,dead});
   // Net fishing (gathering-visuals.js sets rig.netDip): lean over the bank,
   // both hands on the pole, dip the net into the water, scoop and lift.
   const dip=rig.netDip;netting+=((dip&&!moving&&!mounted&&!dead&&!oneShot?1:0)-netting)*k;if(netting<.001)netting=0;if(netting&&dip)arms.net(netting,dip);
   const run=base===RUN_CLIP?1:0;
-  return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite};
+  return {blend:moving?1:0,run,gait:base,flight:airborne,contacts:{left:!airborne,right:!airborne},attack:attack>0,hit:hitNow>.01,clip:target,guard,aim,draw,released,bite,
+   swing:swing?{kind:swing.motion.kind,t:swing.t,strikeAt:swing.strikeAt,struck:swing.struck}:null,strike:strikeNow,strikeWeight};
  },dispose(){eating.dispose();mixer.stopAllAction();mixer.uncacheRoot(rig.model)}};
 }
 
@@ -178,6 +202,19 @@ function createArmLayers(rig){
    const span=Math.hypot(h,v);netGoal.copy(netShoulder).addScaledVector(netDir,Math.max(.25,Math.min(arm,span-pole)));reach('right',netGoal,weight);
    b.hand_r.getWorldPosition(netHand);netGoal.copy(netHand).addScaledVector(netDir,.32).addScaledVector(left,.05);reach('left',netGoal,weight*.9);
    const tool=dip.tool;if(tool?.parent){tool.userData.restQuaternion??=tool.quaternion.clone();tool.parent.getWorldQuaternion(netParent);netWant.setFromUnitVectors(netY,netDir);tool.quaternion.copy(netParent.invert().multiply(netWant)).slerp(tool.userData.restQuaternion,1-weight)}},
+  // Attack motions (attack-motion.js layers): the weapon hand follows STRIKE_KEYS for the phase
+  // (0..1 wind-up, 1 = strike frame, 1..2 recovery), the held weapon's +Y turns to the key's
+  // blade direction and the spine leans into the blow. Two-handers bring the left hand to the grip.
+  strike(layer,phase,weight,{twoHanded=false}={}){const keys=STRIKE_KEYS[layer];
+   if(keys){const s=strikeKey(keys,phase);frame();b.upperarm_r.getWorldPosition(c);b.lowerarm_r.getWorldPosition(a);const L=c.distanceTo(a)+a.distanceTo(b.hand_r.getWorldPosition(to));
+    for(const bone of [b.spine_02,b.spine_03])if(bone)turn(bone,rot.setFromAxisAngle(left,s.lean*.5),weight);
+    if(s.twist)for(const bone of [b.spine_02,b.spine_03])if(bone)turn(bone,rot.setFromAxisAngle(up,s.twist*.5),weight);
+    frame();b.upperarm_r.getWorldPosition(c);
+    target.copy(c).addScaledVector(forward,s.hand[0]*L).addScaledVector(up,s.hand[1]*L).addScaledVector(left,-s.hand[2]*L);reach('right',target,weight);
+    const item=rig.rightHand.children.find(o=>o.userData.weaponMount&&o.visible)||rig.rightHand;item.getWorldQuaternion(pq);a.set(0,1,0).applyQuaternion(pq);
+    to.set(0,0,0).addScaledVector(forward,s.blade[0]).addScaledVector(up,s.blade[1]).addScaledVector(left,-s.blade[2]).normalize();turn(b.hand_r,rot.setFromUnitVectors(a,to),weight)}
+   // Off hand on the grip, a little below the weapon hand along the haft.
+   if(twoHanded||layer==='twoHand'){rig.rightHand.getWorldPosition(target);const item=rig.rightHand.children.find(o=>o.userData.weaponMount&&o.visible);if(item){item.getWorldQuaternion(pq);a.set(0,-1,0).applyQuaternion(pq);target.addScaledVector(a,.2)}reach('left',target,weight*.9)}},
   aim(weight,draw){frame();
    // Bow arm: straight out from the left shoulder at shoulder height.
    b.upperarm_l.getWorldPosition(target).addScaledVector(forward,.78).addScaledVector(left,-.06).addScaledVector(up,.04);reach('left',target,weight);
@@ -188,6 +225,26 @@ function createArmLayers(rig){
  };
 }
 
+// Attack keyframes for the arm layer: [phase, hand (forward, up, out) in arm lengths from the
+// shoulder, blade direction (forward, up, out), spine lean (rad, + = forward), twist (rad)].
+// Phase 0 is the guard, 1 the strike frame, 2 the guard again.
+const GUARD=[.35,-.6,.15],GUARD_BLADE=[.85,.25,.2];
+export const STRIKE_KEYS={
+ // Hammer, mace, maul: raised high behind the head, brought straight down in front.
+ overhead:[[0,GUARD,GUARD_BLADE,0],[.7,[.02,.82,.12],[-.55,.8,.08],-.14],[1,[.86,-.12,.04],[.72,-.68,0],.24],[1.35,[.8,-.26,.04],[.55,-.83,0],.2],[2,GUARD,GUARD_BLADE,0]],
+ // Axe, cleaver, pick: up over the weapon shoulder, then a diagonal chop down across the body.
+ chop:[[0,GUARD,GUARD_BLADE,0],[.7,[.05,.72,.55],[-.45,.75,.45],-.1,-.25],[1,[.82,-.18,-.28],[.55,-.62,-.55],.2,.2],[1.35,[.72,-.32,-.3],[.42,-.72,-.55],.16,.15],[2,GUARD,GUARD_BLADE,0]],
+ // Dagger, spear: drawn back at the hip, then driven straight out at the target.
+ thrust:[[0,GUARD,[.95,.12,.1],0],[.6,[.02,-.32,.22],[1,.06,0],-.06],[1,[.97,-.06,.04],[1,0,-.04],.14],[1.35,[.92,-.1,.04],[1,-.04,0],.1],[2,GUARD,[.95,.12,.1],0]],
+ // Staff: lifted, then thrust toward the target as the casting hand throws the bolt.
+ staff:[[0,[.25,-.62,.22],[.2,.97,0],0],[.7,[.32,-.08,.22],[.1,.99,0],-.04],[1,[.82,.12,.12],[.62,.75,0],.1],[1.35,[.76,.08,.12],[.55,.8,0],.08],[2,[.25,-.62,.22],[.2,.97,0],0]]
+};
+export function strikeKey(keys,phase){
+ const p=Math.max(0,Math.min(2,Number(phase)||0));let i=0;while(i<keys.length-2&&p>keys[i+1][0])i++;
+ const k0=keys[i],k1=keys[i+1],f=Math.max(0,Math.min(1,(p-k0[0])/Math.max(1e-6,k1[0]-k0[0]))),e=f*f*(3-2*f),mix=(x,y)=>x.map((v,j)=>v+(y[j]-v)*e);
+ const blade=mix(k0[2],k1[2]),n=Math.hypot(...blade)||1;
+ return {hand:mix(k0[1],k1[1]),blade:blade.map(v=>v/n),lean:(k0[3]||0)+((k1[3]||0)-(k0[3]||0))*e,twist:(k0[4]||0)+((k1[4]||0)-(k0[4]||0))*e};
+}
 // Eat pose, layered after the clip like guard/aim. `remaining` counts down from
 // EAT_ANIMATION (food.js, about 1.1 s): weapon and shield hide at once, the right
 // hand lifts the food to the mouth (ease in over the first 35%), holds for the

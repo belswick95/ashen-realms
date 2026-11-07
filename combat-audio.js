@@ -129,10 +129,11 @@ export function createCombatAudio({sfx=()=>null,now=()=>performance.now()/1000,r
   return played;
  }
  return {
-  // key identifies the attacker→target pair so the impact can follow its swing.
-  swing(key,cue,opts={}){swings.set(key,now());if(swings.size>64)swings.delete(swings.keys().next().value);return play(swingCue(cue),opts)},
+  // key identifies the attacker→target pair so the impact can follow its swing; opts.strike is
+  // that weapon's strike time (attack-motion.js), STRIKE_AT when not given.
+  swing(key,cue,opts={}){swings.set(key,now()+(Number.isFinite(opts.strike)?opts.strike:STRIKE_AT));if(swings.size>64)swings.delete(swings.keys().next().value);return play(swingCue(cue),opts)},
   // opts.hurt: the local player was wounded, so sometimes add a short grunt.
-  impact(key,cue,opts={}){const t=swings.get(key),wait=t==null?0:Math.max(0,t+STRIKE_AT-now());swings.delete(key);const cues=impactCue(cue);if(opts.hurt&&random()<.35)cues.push({set:'hurt',gain:GAIN.hurt,delay:.07});return play(cues,{...opts,extraDelay:wait})},
+  impact(key,cue,opts={}){const t=swings.get(key),wait=t==null?0:Math.max(0,t-now());swings.delete(key);const cues=impactCue(cue);if(opts.hurt&&random()<.35)cues.push({set:'hurt',gain:GAIN.hurt,delay:.07});return play(cues,{...opts,extraDelay:wait})},
   voice(species,opts={},chance=.6){const v=monsterVoice(species);if(!v||random()>chance)return 0;return play([{set:v,gain:GAIN.voice,delay:0}],opts)},
   death(species,opts={}){return play(deathCue(species),opts)},
   play
