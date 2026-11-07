@@ -20,6 +20,9 @@ export const consoleIcons={
  Editor:svg('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>'),Items:svg('<path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/>'),Recipes:svg('<path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h6"/>'),Quests:svg('<path d="M6 3h9l3 3v15H6z"/><path d="M9 9l2 2 4-4M9 15h6"/>'),
  Weather:svg('<path d="M7 15a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8.5a3.5 3.5 0 0 1-.5 6.5z"/><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"/>'),
  'Skill guides':svg('<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/><path d="M7 9h2M15 9h2M7 13h2M15 13h2"/>'),
+ // World › Underground: a cave arch with stone steps inside. World › Shortcuts: an agility leap over a wall.
+ Underground:svg('<path d="M3 21V11a9 9 0 0 1 18 0v10"/><path d="M6 21h3v-3h3v-3h3v-3h3"/>'),
+ Shortcuts:svg('<path d="M2 20h20"/><rect x="9" y="14" width="5" height="6" rx=".5"/><path d="M4 14C6 7 15 5 19 12"/><path d="M19 12V8.5M19 12l-3-1.8"/>'),
  'Map markers':svg('<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'),
  Signs:svg('<path d="M12 3v18M8 21h8"/><path d="M5 6h12l3 2.5L17 11H5z"/><path d="M19 13H8l-3 2.5L8 18h11z"/>'),
  Actors:svg('<circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20c1-3.5 3.3-5 6-5s5 1.5 6 5M14 15c3 0 5.4 1.6 6 5"/>'),Server:svg('<rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/>'),
