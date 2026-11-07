@@ -27,10 +27,11 @@ export function actorModel(T,parent,d){
   const species=d.species,set=(o,v,pieces)=>Object.fromEntries(pieces.map(p=>[o+p+v,true]));
   const appearance=species==='zombie'?{sex:'male',skin:'#7f9170',hair:'Short parted',beard:'Clean shaven',hairColor:'#2b2a22'}:species==='orc'?{sex:'male',skin:'#5f7a43',hair:'Bald',beard:'Short beard',hairColor:'#1c1a14'}:species==='goblin'?{sex:'male',skin:'#74864b',hair:'Bald',beard:'Clean shaven',hairColor:'#211b18'}:species==='skeleton'?{sex:'male',skin:'#d7cfb9',hair:'Bald',beard:'Clean shaven',hairColor:'#c0b5a3'}:{sex:'male',skin:'#c9916b',hair:'Short parted',hairColor:'#5b3c28'};
   const armor=/guard/.test(d.role||'')?{helm:true,chest:true,legs:true,boots:true,knightGauntlets1:true}:species==='zombie'?set('peasant',2,['Shirt','Trousers']):species==='orc'?set('knight',3,['Gambeson','Gauntlets','SpikedPauldrons','HornedHelm']):species==='goblin'?set('ranger',2,['Tunic','Trousers','Bracers']):species==='skeleton'?{...set('peasant',2,['Shirt','Trousers']),knightArmet3:true}:{};
-  // Roster variants (monster-roster.js) bring their own skin/hair (look), armour pieces (gear) and shield.
+  // Roster variants (monster-roster.js) bring their own skin/hair (look), armour pieces (gear) and shield;
+  // townsfolk may carry an off-hand item too (a shield or a torch, data.shield).
   if(d.kind==='monster'&&d.look&&typeof d.look==='object')for(const k of ['sex','skin','hair','hairColor','beard'])if(typeof d.look[k]==='string')appearance[k]=d.look[k];
   const worn=d.kind==='monster'&&Array.isArray(d.gear)?Object.fromEntries(d.gear.filter(k=>typeof k==='string').map(k=>[k,true])):armor;
-  const display=buildCharacterDisplay(T,parent,appearance,{weapon:d.weapon,armor:worn,...(d.kind==='monster'&&typeof d.shield==='string'?{shield:d.shield}:{})},{trusted:true});
+  const display=buildCharacterDisplay(T,parent,appearance,{weapon:d.weapon,armor:worn,...((d.kind==='monster'||d.kind==='npc')&&typeof d.shield==='string'?{shield:d.shield}:{})},{trusted:true});
   const effect=serviceAttackEffect(T,display.rig,d.attackType),aura=monsterAura(T,parent,d);
   return {humanoid:true,update(dt,m){display.update(dt,{...m,locomotion:m.attack>0?'combat':'walk'});effect.update(m.attack||0);aura?.update(dt)},dispose:()=>{aura?.dispose();display.dispose()}};
  }

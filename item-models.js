@@ -65,6 +65,8 @@ export function makeDroppedItemModel(T,id){
  // in on first use, so the fit is repeated once the model has its geometry.
  function fit(){model.scale.copy(rest);model.position.set(0,0,0);root.scale.y=1;root.updateMatrixWorld(true);
   let box=new T.Box3().setFromObject(model);if(box.isEmpty())return false;const size=box.getSize(new T.Vector3()),scale=.72/Math.max(size.x,size.z,.001);model.scale.multiplyScalar(scale);root.scale.y=.14;root.updateMatrixWorld(true);box=new T.Box3().setFromObject(root);model.position.x-=(box.min.x+box.max.x)/2;model.position.z-=(box.min.z+box.max.z)/2;model.position.y-=box.min.y/.14;root.updateMatrixWorld(true);return true}
+ // A torch on the ground is put out (no flame on a flattened drop).
+ model.traverse(o=>{if(o.userData.torchFlame)o.visible=false});
  fit();root.scale.y=.14;root.userData.itemModel=id;root.userData.flattened=true;
  root.userData.ready=model.userData.ready?model.userData.ready.then(()=>{fit();return root}):Promise.resolve(root);
  return root;

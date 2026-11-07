@@ -9,9 +9,11 @@ import {extraFishRecipes} from '../fish-tiers.js';
 // mapping changes the yield (rune multiples, chest coins, harvest XP).
 const FIELDS=['level','xp','burnChance','stopBurn','chance','chanceLow','chanceHigh','failText'];
 const WITH_OUTPUTS=new Set(['air_runes','fire_runes','pick_training_lock']);
+// Recipes added later with their own seed file (not part of this patch set).
+const OWN_SEED=new Set(['make_torch']);// db/torch.sql
 export function recipePatches(){
  const out={};
- for(const [id,r]of Object.entries(professionRecipes)){if(extraFishRecipes[id])continue;
+ for(const [id,r]of Object.entries(professionRecipes)){if(extraFishRecipes[id]||OWN_SEED.has(id))continue;
   const p={};for(const k of FIELDS)if(r[k]!==undefined)p[k]=r[k];
   if(WITH_OUTPUTS.has(id))p.outputs=r.outputs;
   if(r.kind==='plant')p.crop=r.crop;

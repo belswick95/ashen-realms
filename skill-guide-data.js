@@ -101,7 +101,7 @@ function strengthGuide(){
 }
 function defenceGuide(){
  const plate=outfitSets('defence',o=>o.outfit==='knight'&&PLATE_PIECES[o.piece]||Number(o.req?.defence)>1);
- const specials=Object.entries(shieldCatalog).filter(([k,s])=>!s.unique&&!TIER_SHIELDS[k]).map(([k,s])=>({level:lvl(s.req,'defence'),item:'shield:'+k,name:nameOf('shield:'+k),detail:bonusSummary(s.bonuses)}));
+ const specials=Object.entries(shieldCatalog).filter(([k,s])=>!s.unique&&!s.torch&&!TIER_SHIELDS[k]).map(([k,s])=>({level:lvl(s.req,'defence'),item:'shield:'+k,name:nameOf('shield:'+k),detail:bonusSummary(s.bonuses)}));
  return {intro:'Defence decides which armour and shields you can wear and how often you are hit.',sources:['gear-tiers.js','outfits.js','shields.js','unique-gear.js'],
   tabs:[tab('armour','Armour',plate),tab('shields','Shields',[...tierSetRows(TIER_SHIELDS,shieldCatalog,'shield:','defence','kite','shields'),...specials]),tab('uniques','Uniques',uniqueRows(['armor','shield'],'defence'))]};
 }
