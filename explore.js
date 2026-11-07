@@ -76,6 +76,13 @@ export function createExplore({T=null,camera=null,player=null,say=()=>{},command
  // HUD button beside the world-map toggle.
  let counter=null;
  if(doc?.body){const b=el('button','✦',{id:'explore-toggle',type:'button',title:'Journal: lore, places, clues, boss kills','aria-label':'Exploration journal'});b.onclick=()=>openPanel();const map=doc.getElementById('map-toggle');if(map?.parentNode)map.parentNode.insertBefore(b,map.nextSibling);else doc.body.append(b);counter=el('span','',{class:'explore-counter'});b.append(counter)}
+ // Emote dock: a small button above the bottom-right tab bar opens a compact grid beside it. The grid stays
+ // open after an emote so you can watch your character perform it (the journal would cover the screen).
+ let emoteBar=null,emoteToggle=null;
+ if(doc?.body){emoteToggle=el('button',null,{id:'emote-toggle',type:'button',title:'Emotes','aria-label':'Emotes','aria-expanded':'false','aria-controls':'emote-bar'});emoteToggle.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5q3.5 3 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>';emoteToggle.onclick=()=>setEmotes(emoteBar.hidden);
+  emoteBar=el('div',null,{id:'emote-bar',role:'group','aria-label':'Emotes'});emoteBar.hidden=true;for(const [k,label] of Object.entries(EMOTES)){const b=el('button',label,{type:'button','data-emote':k});b.onclick=()=>emote(k);emoteBar.append(b)}
+  doc.body.append(emoteBar,emoteToggle);doc.addEventListener?.('keydown',e=>{if(e.key==='Escape'&&!emoteBar.hidden)setEmotes(false)})}
+ function setEmotes(open){if(!emoteBar)return;emoteBar.hidden=!open;emoteToggle.setAttribute('aria-expanded',String(open));doc.body.classList.toggle('emotes-open',open)}
  function updateCounter(){if(counter)counter.textContent=journal?' '+(journal.lore||[]).filter(l=>l.found).length+'/'+(journal.lore||[]).length:''}
  function updateMotes(){for(const r of loreRoots){const m=r.userData.exploreModel?.userData.exploreMote;if(m)m.visible=!found('lore',r.userData.exploreLore)}}
 
@@ -97,7 +104,7 @@ export function createExplore({T=null,camera=null,player=null,say=()=>{},command
   else if(tab==='treasure'){const log=j.stats?.log||{};const grid=el('div',null,{class:'explore-log'});for(const k of KEEPSAKES){const g=goods[k]||{},n=log[k]||0,cell=el('div',null,{class:n?'got':'missing',title:(g.name||k)+(n?' ×'+n:' — not yet found')});const icon=el('span',null,{class:'item-icon'});icon.innerHTML=n?g.icon||'':'?';cell.append(icon,el('small',n?g.name:'???'));grid.append(cell)}
    body.append(el('p','Treasure log: '+KEEPSAKES.filter(k=>log[k]).length+'/'+KEEPSAKES.length+' keepsakes',{class:'explore-count'}),grid);if((j.stats?.titles||[]).length)body.append(el('p','Titles: '+j.stats.titles.join(', ')))}
   else if(tab==='bosses')drawBossJournal(body,el,bosses);
-  else if(tab==='emotes'){body.append(el('p','Some clues ask for an emote at a place.',{class:'explore-muted'}));const row=el('div',null,{class:'explore-emotes'});for(const [k,label] of Object.entries(EMOTES)){const b=el('button',label,{type:'button'});b.onclick=()=>emote(k);row.append(b)}body.append(row)}
+  else if(tab==='emotes'){body.append(el('p','Some clues ask for an emote at a place. Emotes also have their own button above the tab bar, so you can watch your character perform them.',{class:'explore-muted'}));const row=el('div',null,{class:'explore-emotes'});for(const [k,label] of Object.entries(EMOTES)){const b=el('button',label,{type:'button'});b.onclick=()=>{panel.close();setEmotes(true);emote(k)};row.append(b)}body.append(row)}
  }
  // ------------------------------------------------------------------------- clue reader
  function showClue(c){if(!doc?.body)return say(c?.step?.text||'');if(!reader){reader=el('dialog',null,{class:'explore-reader','aria-label':'Clue scroll'});doc.body.append(reader)}reader.replaceChildren();
@@ -121,7 +128,7 @@ export function createExplore({T=null,camera=null,player=null,say=()=>{},command
  function milestoneToasts(list){for(const m of list||[])toast('Milestone: '+m.at+' '+(m.kind==='lore'?'lore read':m.kind==='place'?'places found':'clues solved'),(m.amount?m.amount.toLocaleString()+' XP lamp — rub it in the Quests tab':'')+(m.title?' · Title: '+m.title:''),'milestone')}
  function clueResult(c){if(!c)return false;if(c.done){toast('Treasure found!','You receive a '+(goods[c.casket]?.name||'casket')+'. Open it from your inventory.','reward');milestoneToasts(c.milestones)}else showClue(c);return true}
  const api={
-  get journal(){return journal},refresh,openPanel,showClue,toast,dig,emote,
+  get journal(){return journal},refresh,openPanel,showClue,toast,dig,emote,setEmotes,
   tagHit(hit,d){if(!hit||!d)return;const u=hit.userData;
    if(d.lore&&LORE_MODELS[d.template]){u.kind='lore';u.lore=d.lore;u.name=d.name;hit.scale.set(1.6,1.6,1.6);const root=hit.parent;if(root){root.userData.exploreLore=d.lore;if(!loreRoots.includes(root))loreRoots.push(root);updateMotes()}}
    else if(d.crate){u.kind='crate';u.crate=d.crate;u.name=d.name}},

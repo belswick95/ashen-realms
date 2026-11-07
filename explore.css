@@ -50,3 +50,16 @@
 .boss-log-stats dd.boss-log-none{grid-column:1/-1;font-weight:normal;font-style:italic;color:#8a7a5c}
 @media(max-width:420px){.boss-log-row{grid-template-columns:1fr}.boss-log-stats{justify-content:start;text-align:left}}
 @media(max-width:650px){#explore-toggle{top:auto;bottom:118px;right:8px}.explore-toasts{top:52px}}
+/* Emote dock (explore.js): a round button just above the bottom-right tab bar and, beside it, a compact
+   4×2 grid (at most ~35% of the width). It stays open after an emote so the character stays in view. */
+html body{--emote-size:44px;--emote-right:var(--mm-right,12px);--emote-bottom:calc(max(12px,calc(env(safe-area-inset-bottom) + 6px)) + 72px)}
+html body.phone-layout{--emote-size:42px;--emote-right:var(--phone-right,8px);--emote-bottom:calc(var(--phone-bottom,10px) + 62px)}
+#emote-toggle{position:fixed;right:var(--emote-right);bottom:var(--emote-bottom);z-index:58;width:var(--emote-size);height:var(--emote-size);min-width:0;min-height:0;margin:0;padding:0;display:none;place-items:center;border-radius:50%;cursor:pointer;color:#f2d36b;touch-action:manipulation}
+body.game-active #emote-toggle{display:grid}
+#emote-toggle svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#emote-toggle[aria-expanded=true]{box-shadow:inset 0 0 0 2px #f2d36b,0 2px 6px #0008}
+#emote-bar{position:fixed;right:calc(var(--emote-right) + var(--emote-size) + 6px);bottom:var(--emote-bottom);z-index:58;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:min(272px,35vw);padding:5px;box-sizing:border-box;border-radius:8px;background:#1b1610e8;border:1px solid #8a6d3b;box-shadow:0 4px 14px #000a}
+#emote-bar[hidden]{display:none}
+#emote-bar button{min-width:0;min-height:40px;margin:0;padding:2px 3px;font:12px Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.hud-panel-open :is(#emote-toggle,#emote-bar),body.npc-conversation :is(#emote-toggle,#emote-bar),body:has(.tutorial-dialogue:not([hidden])) :is(#emote-toggle,#emote-bar),body.landscape-required :is(#emote-toggle,#emote-bar){visibility:hidden}
+html body #emote-toggle#emote-toggle{border-radius:50%!important;padding:0!important;min-height:0!important}
