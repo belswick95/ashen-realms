@@ -62,3 +62,6 @@ body.touch-controls.fantasy-hud #social-panel.collapsed{width:96px!important;max
 body.touch-controls.fantasy-hud #social-panel.collapsed .social-content,body.touch-controls.fantasy-hud #social-panel.collapsed .social-head strong{display:none!important}
 body.touch-controls.fantasy-hud #social-panel.collapsed .social-head{width:100%!important;height:28px!important;padding:0!important}
 body.touch-controls.fantasy-hud #social-panel.collapsed #social-toggle{width:100%!important;height:28px!important;min-height:28px!important;font-size:12px!important;margin:0!important}
+
+/* Report a player lives in the Settings tab on every device (it overlapped the emote button bottom-right on desktop). */
+body.fantasy-hud #settings-tab #world-report-button{position:static!important;inset:auto!important;transform:none!important;display:block!important;min-height:40px!important;width:100%!important;margin:10px 0!important;font-size:12px!important;opacity:1!important}

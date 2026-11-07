@@ -1,4 +1,4 @@
-import {arrowModel} from './weapon-assets.js?v=release-20261107-buildings149';
+import {arrowModel} from './weapon-assets.js?v=release-20261107-polish150';
 // Projectiles (cosmetic: the server resolves the hit).
 //  arrow: leaves the bow on release, flies a shallow arc to the target's chest
 //         and stays briefly where it lands.

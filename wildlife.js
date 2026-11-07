@@ -1,5 +1,5 @@
-import {wildlifeAssets} from './wildlife-asset.js?v=release-20261107-buildings149';
-import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261107-buildings149';
+import {wildlifeAssets} from './wildlife-asset.js?v=release-20261107-polish150';
+import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261107-polish150';
 const caches=new WeakMap();
 export function createWildlifeModel(T,kind){
  let cache=caches.get(T);if(!cache){cache=new Map();caches.set(T,cache)}

@@ -1,23 +1,23 @@
-import {undergroundObjectModel} from './underground-models.js?v=release-20261107-buildings149';
-import {exploreObjectModel} from './explore-models.js?v=release-20261107-buildings149';
-import {campObject} from './camp-models.js?v=release-20261107-buildings149';
-import {professionStationModel} from './profession-models.js?v=release-20261107-buildings149';
-import {oreResources} from './profession-data.js?v=release-20261107-buildings149';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261107-buildings149';
-import {buildNaturalForest,TREE_SPECIES} from './natural-forest.js?v=release-20261107-buildings149';
-import {creatureMaterial} from './creature-material.js?v=release-20261107-buildings149';
-import {dragonModel} from './monster-dragon.js?v=release-20261107-buildings149';
-import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-buildings149';
-import {castleObject} from './castle-models.js?v=release-20261107-buildings149';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261107-buildings149';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-buildings149';
-import {townProp,dressFountain} from './town-props.js?v=release-20261107-buildings149';
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-buildings149';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-buildings149';
+import {undergroundObjectModel} from './underground-models.js?v=release-20261107-polish150';
+import {exploreObjectModel} from './explore-models.js?v=release-20261107-polish150';
+import {campObject} from './camp-models.js?v=release-20261107-polish150';
+import {professionStationModel} from './profession-models.js?v=release-20261107-polish150';
+import {oreResources} from './profession-data.js?v=release-20261107-polish150';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261107-polish150';
+import {buildNaturalForest,TREE_SPECIES} from './natural-forest.js?v=release-20261107-polish150';
+import {creatureMaterial} from './creature-material.js?v=release-20261107-polish150';
+import {dragonModel} from './monster-dragon.js?v=release-20261107-polish150';
+import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-polish150';
+import {castleObject} from './castle-models.js?v=release-20261107-polish150';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261107-polish150';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-polish150';
+import {townProp,dressFountain} from './town-props.js?v=release-20261107-polish150';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-polish150';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-polish150';
 // A placed tree's look: an explicit treeType, else willows for willow logs and dark evergreens
 // for yews, else the template's.
 export const treeSpeciesOf=(d,id=d?.template)=>TREE_SPECIES.includes(d?.treeType)?d.treeType:d?.logItem==='willowLogs'?'willow':d?.logItem==='yewLogs'?'spruce':id==='pine'?'pine':'oak';
-import {passageLook} from './underground-data.js?v=release-20261107-buildings149';
+import {passageLook} from './underground-data.js?v=release-20261107-polish150';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);
