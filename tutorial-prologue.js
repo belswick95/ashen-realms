@@ -4,7 +4,7 @@
 // It is plain DOM (no Three.js, no world data): a dawn silhouette of the castle, the title card and
 // a few narrated lines, then it holds on "The gates draw near…" until the in-engine arrival
 // cutscene (tutorial.js) takes over from a black frame. It never blocks loading.
-import {needsCutscene} from './tutorial-logic.js?v=release-20261107-ui139';
+import {needsCutscene} from './tutorial-logic.js?v=release-20261107-mapfix140';
 
 export const PROLOGUE_LINES=[
  'A summons rode out from the capital, carried to every village and crossroads.',
@@ -20,7 +20,7 @@ const SKYLINE='<svg class="tutorial-prologue-skyline" viewBox="0 0 1200 300" pre
 
 export function startPrologue({lines=PROLOGUE_LINES,title=PROLOGUE_TITLE,linger=2600}={}){
  if(typeof document==='undefined')return null;
- if(!document.querySelector('link[href^="./tutorial.css"]'))document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261107-ui139'}));
+ if(!document.querySelector('link[href^="./tutorial.css"]'))document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261107-mapfix140'}));
  const root=el('section','tutorial-prologue');root.setAttribute('role','dialog');root.setAttribute('aria-label','Arrival');
  const art=el('div','tutorial-prologue-art');art.innerHTML=SKYLINE;
  const caption=el('div','tutorial-caption'),narration=el('p','tutorial-prologue-line'),holdLine=el('p','tutorial-prologue-hold'),skip=el('button','tutorial-skip','Skip ▸▸');skip.type='button';

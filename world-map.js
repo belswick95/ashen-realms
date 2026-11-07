@@ -16,7 +16,7 @@
 // in a little, hover or tap names them with their level, and the legend toggles each kind.
 //
 // The pure helpers (view maths, colours, POI kinds) are exported for tests.
-import {MARKER_CATS,MARKER_GROUPS,clusterMarkers,markerLabel,drawMarker,drawMarkerIcon,legendTint,loadFilters,saveFilters} from './map-icons.js?v=release-20261107-ui139';
+import {MARKER_CATS,MARKER_GROUPS,clusterMarkers,markerLabel,drawMarker,drawMarkerIcon,legendTint,loadFilters,saveFilters} from './map-icons.js?v=release-20261107-mapfix140';
 
 export const POI_KINDS={
  bank:{label:'Bank',color:'#d6a21e',ink:'#4a3006'},
@@ -348,7 +348,13 @@ export function createWorldMap({canvas,source}){
   // Terrain: one crop of the cached painting (never re-rendered per frame).
   const s=BASE/extent,tl=screenToWorld(view,0,0,w,h);
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality=view.scale*dpr>s*1.5?'medium':'high';
-  ctx.drawImage(base,(tl.x+half)*s,(tl.z+half)*s,w/view.scale*s,h/view.scale*s,0,0,w,h);
+  // Clip the source rectangle to the painting ourselves: Safari stretches an out-of-bounds source
+  // crop over the whole destination, which shifted the terrain away from labels and markers.
+  {let sx=(tl.x+half)*s,sy=(tl.z+half)*s,sw=w/view.scale*s,sh=h/view.scale*s;const fx=w/sw,fy=h/sh,BW=base.width,BH=base.height;
+   let dx=0,dy=0,dw=w,dh=h;
+   if(sx<0){dx-=sx*fx;dw+=sx*fx;sw+=sx;sx=0}if(sy<0){dy-=sy*fy;dh+=sy*fy;sh+=sy;sy=0}
+   if(sx+sw>BW){const o=sx+sw-BW;sw-=o;dw-=o*fx}if(sy+sh>BH){const o=sy+sh-BH;sh-=o;dh-=o*fy}
+   if(sw>0&&sh>0&&dw>0&&dh>0)ctx.drawImage(base,sx,sy,sw,sh,dx,dy,dw,dh);}
   const S=(x,z)=>worldToScreen(view,x,z,w,h),k=view.scale,ui=uiScale(w,h);
   // Buildings: top-down roofs on their real footprints, with a ridge and shadow.
   for(const bld of lists.buildings){const p=S(bld.x,bld.z),r=Math.hypot(bld.halfW,bld.halfD)*k;if(p.x<-r||p.y<-r||p.x>w+r||p.y>h+r)continue;

@@ -1,11 +1,11 @@
 // Owner console › full-control tabs: Catalog, Economy, Quests, Backup and Audit, plus the player
 // inspector shown inside Players. Reads use world_admin directly; writes go through ctx.invoke so
 // they are owner-checked and audited on the server (db/admin-full-control.sql, fc_* commands).
-import {goods} from './economy.js?v=release-20261107-ui139';
+import {goods} from './economy.js?v=release-20261107-mapfix140';
 import {SKILLS,skillLabel,xpKey,statsXpKey,levelForXp,CATALOG_GROUPS,catalogForm,buildCatalogData,validateCatalogDraft,catalogKind,catalogMatches,duplicateId,
  normalizeMultipliers,effectiveXp,validateTimeOverride,MULTIPLIER_LIMITS,OBJECTIVE_TYPES,QUEST_EVENTS,DIALOGUE_STAGES,validateQuestDraft,questPreview,objectiveText,
- auditLine,backupStats,MODERATION_PRESETS} from './admin-full-data.js?v=release-20261107-ui139';
-import {questV2Sections,questSimulator,questPlayerTools,V2_KEYS,cleanV2,validateV2Draft} from './admin-quest-v2.js?v=release-20261107-ui139';
+ auditLine,backupStats,MODERATION_PRESETS} from './admin-full-data.js?v=release-20261107-mapfix140';
+import {questV2Sections,questSimulator,questPlayerTools,V2_KEYS,cleanV2,validateV2Draft} from './admin-quest-v2.js?v=release-20261107-mapfix140';
 
 const QUEST_KEYS=['name','description','giver','key','chain','order','requires','questPoints','icon','finishes','published','hint','objectives','gold','items','startItems','xp','dialogue',...V2_KEYS];
 const download=(name,data)=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
