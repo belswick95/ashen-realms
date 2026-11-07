@@ -228,3 +228,14 @@ previous STATUS block (unfinished QA checks outside the castle, pond radius, iPa
 Running: combat attack anims + hit/death ordering (acd0df7a41a3abc25), map icons (afbcb0c969d7b0391),
 Ultimate Monsters fit: ogre=Orc, revenant=Orc_Skull, wraith=Ghost, imp=Demon, bear=Yeti if it reads (a338b7b5e8ed6490a).
 Deploy each after review + tests, without waiting for owner approval.
+
+## STATUS 07 Nov ~04:00 UTC (monsters135 live)
+Live today: kingdoms127 (title), npcsmooth128, mixamo129 (owner's Mixamo walk/run), combatsfx130 (CC0 combat audio),
+monsters131/132/135 (rigged monster GLBs; bear/deer/bat unchanged), mapicons133 (+db/map-icons.sql applied), attacks134
+(per-weapon attack motions, strike-timed hits, death waits for blow). Tile mode ON (inline driver), tile-perf-1/2/3 applied, max_catchup_ticks=1.
+Running agents: skilling areas a9772710373686a35 (mines named after game metals: copper/tin, iron, coal, Moonsilver=mithrilOre,
+Verdite=adamantOre, Tidestone=runiteOre; Embersteel/Eldersteel stay drop-only; groves oak/willow/maple/yew; db/skilling-world.sql to apply),
+skill guides a736f72a49160c59a (click skill -> OSRS-style guide, data-driven).
+Owner: deploy each finished agent after review + tests without asking. No RuneScape/MoparScape assets (declined).
+Open: Supabase compute upgrade advice; Oracle Cloud dedicated server plan (owner setting up, secrets ORACLE_HOST/USER/SSH_KEY);
+Running.fbx was truncated (optional re-download); NPC route spreading server-side; QA checks outside castle.
