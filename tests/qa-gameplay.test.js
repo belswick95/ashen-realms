@@ -1,6 +1,6 @@
 // Gameplay/world-visual QA pass (release portrait145): regressions found in the live client.
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import * as T from 'three';
-const V='?v=release-20261107-animals159';
+const V='?v=release-20261107-trail160';
 const {makeFlame,makeTorch,liveTorches}=await import('../torch.js'+V);
 const {lightMarker}=await import('../underground-models.js'+V);
 const {sceneFogDistances,weatherFog}=await import('../weather-effects.js'+V);

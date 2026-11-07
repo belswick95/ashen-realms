@@ -10,7 +10,7 @@ const fs=require('fs'),http=require('http'),path=require('path'),assert=require(
 const server=http.createServer((req,res)=>{try{const name=new URL(req.url,'http://local').pathname;res.setHeader('content-type',name.endsWith('.css')?'text/css':name.endsWith('.webp')?'image/webp':name.endsWith('.png')?'image/png':'text/javascript');res.end(fs.readFileSync(path.join(root,name)))}catch{res.writeHead(404).end()}});
 const chrome=process.env.ELDERVALE_CHROMIUM||'/opt/pw-browsers/chromium-1243/chrome-linux64/chrome';
 const fixture=(online)=>`<html><head><meta name="viewport" content="width=device-width,initial-scale=1"><script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script><link rel="stylesheet" href="/medieval-theme.css"><link rel="stylesheet" href="/gameplay.css"><link rel="stylesheet" href="/bank.css"><link rel="stylesheet" href="/phone-fit.css"></head><body style="background:#12232d"><script type="module">
-import {createServicePanel,depositInventory} from '/economy.js?v=release-20261107-animals159';
+import {createServicePanel,depositInventory} from '/economy.js?v=release-20261107-trail160';
 window.testState={gold:5,bank:{wood:10,bait:999999990},wood:4,'note:wood':40,bait:50,bread:3,weaponsOwned:['longsword','longsword'],equippedWeapon:'longsword',armorOwned:['bronzeArmet'],shieldsOwned:[],jewelryOwned:[],mountsOwned:[],equipped:{}};
 window.sent=[];
 if(${online}){window.eldervaleAuthority=true;window.eldervaleRealm={lastError:'',command:async(c,p)=>{sent.push([c,p]);await new Promise(r=>setTimeout(r,50));const r=depositInventory(testState);if(r.error){eldervaleRealm.lastError=r.error;return false}return true}}}

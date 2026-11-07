@@ -1,5 +1,5 @@
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-animals159';
-import {lightingAt} from './world-lighting.js?v=release-20261107-animals159';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-trail160';
+import {lightingAt} from './world-lighting.js?v=release-20261107-trail160';
 // The torch: an off-hand item (shields.js, slot "shield") that burns while held.
 // Original procedural model in the held-item frame (humanoid.js sockets): the
 // fist grips the handle at the origin, the handle runs along +Y. The shield

@@ -8,9 +8,9 @@
 // check the category mapping and the clustering. Markers come from data the client already has:
 // world entity rows, town buildings, underground / lair areas (entrances, spawns, bosses), the
 // roster spawn plan, agility shortcuts, fishing spots and exploration entrances.
-import {oreResources} from './profession-data.js?v=release-20261107-animals159';
-import {fullFishTable,LEGACY_CATCHES} from './fish-tiers.js?v=release-20261107-animals159';
-import {SPOT_TYPES} from './water-data.js?v=release-20261107-animals159';
+import {oreResources} from './profession-data.js?v=release-20261107-trail160';
+import {fullFishTable,LEGACY_CATCHES} from './fish-tiers.js?v=release-20261107-trail160';
+import {SPOT_TYPES} from './water-data.js?v=release-20261107-trail160';
 
 // ------------------------------------------------------------------------------- categories
 // group: legend section; prio: who wins when two icons would overlap; color: badge colour

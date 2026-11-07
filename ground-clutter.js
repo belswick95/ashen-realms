@@ -4,8 +4,8 @@
 // one shared Lambert program in both regular and Classic graphics, instances fade out by distance
 // in the vertex shader and the patch is rebuilt in time slices only when the player crosses a cell.
 // Counts and radius follow the graphics preset; phones get the low budget.
-import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261107-animals159';
-import {runFrameWork} from './frame-work.js?v=release-20261107-animals159';
+import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261107-trail160';
+import {runFrameWork} from './frame-work.js?v=release-20261107-trail160';
 export const CLUTTER_KINDS=['tuft','pebble','twig','flower'];
 // Instance budgets per preset. Classic leans on tufts and flowers (its grass field is hidden);
 // regular keeps its blade meadow and adds the hard detail (pebbles, twigs, gravel) plus a few clumps.

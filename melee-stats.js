@@ -1,8 +1,8 @@
-import {weaponCatalog,isTwoHanded} from './weapons.js?v=release-20261107-animals159';
-import {shieldCatalog} from './shields.js?v=release-20261107-animals159';
-import {outfitItems,SLOT_LABELS} from './outfits.js?v=release-20261107-animals159';
-import {CAPE_GEAR,addBonuses,bonuses,bestArrow,ARROWS,levelsFromXp,requirementError,ARMOUR_VERB,describeGear} from './gear-tiers.js?v=release-20261107-animals159';
-import {skillLevel} from './combat-level.js?v=release-20261107-animals159';
+import {weaponCatalog,isTwoHanded} from './weapons.js?v=release-20261107-trail160';
+import {shieldCatalog} from './shields.js?v=release-20261107-trail160';
+import {outfitItems,SLOT_LABELS} from './outfits.js?v=release-20261107-trail160';
+import {CAPE_GEAR,addBonuses,bonuses,bestArrow,ARROWS,levelsFromXp,requirementError,ARMOUR_VERB,describeGear} from './gear-tiers.js?v=release-20261107-trail160';
+import {skillLevel} from './combat-level.js?v=release-20261107-trail160';
 // Every wearable outfit piece (outfits.js) plus the cape. `equipSlot` is the
 // machine slot; one item per slot can be worn. Legacy helm/chest/legs/boots
 // are the iron knight pieces.

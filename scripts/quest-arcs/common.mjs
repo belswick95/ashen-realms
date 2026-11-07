@@ -1,10 +1,10 @@
 // Shared builders for the Round-3 quest arcs (scripts/quest-arcs/*.mjs -> db/quest-arc-*.sql).
 // Authoring format: quests are written as quest v2 data (db/quests-v2.sql) with symbolic references
 // '@arc.name' for the arc's own NPCs and monsters; resolve() swaps them for fixed entity ids.
-import {entityDefaults} from '../../world-templates.js?v=release-20261107-animals159';
-import {bestiaryEntity} from '../../bestiary.js?v=release-20261107-animals159';
-import {statBlock} from '../../monster-roster.js?v=release-20261107-animals159';
-import {shortcutEntity} from '../../agility-data.js?v=release-20261107-animals159';
+import {entityDefaults} from '../../world-templates.js?v=release-20261107-trail160';
+import {bestiaryEntity} from '../../bestiary.js?v=release-20261107-trail160';
+import {statBlock} from '../../monster-roster.js?v=release-20261107-trail160';
+import {shortcutEntity} from '../../agility-data.js?v=release-20261107-trail160';
 
 export const BLUEPRINT='quest-arcs-v1';
 export const ARC_CODES={crown:1,frontier:2,forge:3,tide:4};
