@@ -46,6 +46,22 @@ export function bankTransfer(state,id,direction,all=false,noted=false,requested=
   add(state,destination,n);state.bank[id]-=n;if(!state.bank[id])delete state.bank[id];
  }return null;
 }
+// One bank stack holds at most this many (the server's item_change limit).
+export const BANK_STACK_LIMIT=1e9;
+// OSRS "Deposit inventory": every carried item goes to the bank at once (the server does the same
+// in one command, db/bank-deposit-all.sql). Worn copies stay worn, notes bank as the real item,
+// and an item whose bank stack is full keeps the part that does not fit in the backpack.
+export function depositInventory(state){
+ state.bank=sanitizeBank(state.bank);const deposited={},kept={};let moved=0;
+ for(const id of inventoryEntries(state)){
+  const available=quantity(state,id)-(isWorn(state,id)?1:0),base=goods[id].noteOf||id;if(available<1)continue;
+  const n=goods[base]?Math.min(available,Math.max(0,BANK_STACK_LIMIT-(state.bank[base]||0))):0;
+  if(n>0){remove(state,id,n);state.bank[base]=(state.bank[base]||0)+n;deposited[id]=n;moved+=n}
+  if(n<available)kept[id]=available-n;
+ }
+ const error=moved?null:Object.keys(kept).length?'Your bank cannot hold any more of those items.':'Your backpack has nothing to deposit.';
+ return {error,deposited,kept,moved};
+}
 export function shopTrade(state,id,buy){
  const item=goods[id];if(!item)return 'Unknown item.';
  if(buy){if(count(state.gold)<item.buy)return 'Not enough gold.';if(inventoryUsed(state)>=INVENTORY_SLOTS&&!(item.stackable&&quantity(state,id)>0))return 'Your inventory is full.';if(item.field&&quantity(state,id))return 'You already own that item.';state.gold=count(state.gold)-item.buy;add(state,id,1)}
@@ -66,7 +82,7 @@ export function serviceEmptyText(mode,side,carried=0){
 export function createServicePanel(state,{onChange,onOpen}){
  const panel=document.createElement('dialog');panel.id='service-panel';panel.innerHTML='<div class="service-head"><div><small>ELDERVALE · SERVICES</small><h2 id="service-title"></h2></div><button type="button" id="service-close" aria-label="Close services">×</button></div><div class="service-wallet"></div><div class="service-bank-settings"><span>Withdraw as:</span><button type="button" data-withdraw="item" aria-pressed="true">Items</button><button type="button" data-withdraw="note" aria-pressed="false">Notes</button></div><p class="service-help"></p><div class="service-columns"><section><h3>Your inventory</h3><div class="service-items" id="service-inventory"></div></section><section><h3 id="service-stock-title"></h3><div class="service-items" id="service-stock"></div></section></div><p id="service-status" role="status"></p>';document.body.append(panel);
  let withdrawNoted=false;let mode='bank',previousFocus=null,merchantId=null;const shop=()=>window.eldervaleShops?.[merchantId]||null;
- const bankView=createBankView(state,{onTransfer:p=>invoke(()=>bankTransfer(state,p.id,p.direction,p.all,p.noted),'bank',{item:p.id,direction:p.direction,all:p.all,noted:p.noted})});panel.append(bankView.root);
+ const bankView=createBankView(state,{onTransfer:p=>invoke(()=>bankTransfer(state,p.id,p.direction,p.all,p.noted),'bank',{item:p.id,direction:p.direction,all:p.all,noted:p.noted}),onDepositAll:()=>invoke(()=>depositInventory(state).error,'bank',{direction:'deposit_all'})});panel.append(bankView.root);
  const crest=document.createElement('span');crest.className='bank-crest';crest.setAttribute('aria-hidden','true');crest.innerHTML='<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 11 12-7 12 7ZM6 13v12m7-12v12m6-12v12m7-12v12M3 28h26M5 24h22"/></svg>';panel.querySelector('.service-head').prepend(crest);
  const invoke=(fn,command,payload)=>{if(window.eldervaleAuthority)return window.eldervaleRealm?.command(command,payload).then(ok=>{const text=ok?'Done.':window.eldervaleRealm?.lastError||'Unable to transfer. Check inventory space and distance to the bank.';render();panel.querySelector('#service-status').textContent=text;bankView.setStatus(text);return ok});const error=fn();if(!error)onChange();render();panel.querySelector('#service-status').textContent=error||'Done.';bankView.setStatus(error||'Done.');return Promise.resolve(!error)};
  function row(id,n,actions){const item={...goods[id],...(mode==='shop'?shop()?.[id]:{})},entry=document.createElement('article');entry.className='service-item';const icon=document.createElement('span');icon.className='service-icon';icon.innerHTML=item.icon;const text=document.createElement('div'),name=document.createElement('strong');name.textContent=item.name;const detail=document.createElement('small');detail.textContent='×'+n+(mode==='shop'?' · '+(actions==='buy'?item.buy:item.sell)+' gold':'');text.append(name,detail);const buttons=document.createElement('div');buttons.className='service-actions';for(const all of (mode==='bank'||mode==='shop'&&item.stackable&&actions==='buy')?[false,true]:[false]){const button=document.createElement('button');button.type='button';button.disabled=actions==='buy'&&item.stock>=0&&item.stock<(all?10:1);button.textContent=(actions==='buy'?'Buy':actions==='sell'?'Sell':actions==='deposit'?'Deposit':'Withdraw')+(all?(mode==='shop'?' 10':' all'):'');if(mode==='shop'){const quote=actions==='buy'?(all?(item.buy10??item.buy*10):item.buy):item.sell;button.title=quote+' gold total';button.textContent+=' · '+quote+'g'}button.onclick=()=>invoke(()=>mode==='bank'?bankTransfer(state,id,actions,all,withdrawNoted):shopTrade(state,id,actions==='buy'),mode==='bank'?'bank':'trade',mode==='bank'?{item:id,direction:actions,all,noted:withdrawNoted}:{item:id,buy:actions==='buy',merchant:merchantId,amount:all?10:1,quote:actions==='buy'?(all?(item.buy10??item.buy*10):item.buy):item.sell});buttons.append(button)}entry.append(icon,text,buttons);return entry}

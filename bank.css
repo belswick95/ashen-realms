@@ -4,3 +4,13 @@
 /* The backpack column is a fixed-height flex child: auto rows shrank below the square slots (about 20px rows
    under 52px slots), so the rows overlapped. Rows are one bank cell tall and the column scrolls. */
 #service-panel.bank-mode .bank-inventory-grid{grid-auto-rows:var(--bank-cell)}
+/* "Deposit inventory" (bank-ui.js): a carved oak-and-brass button beside the transfer buttons, with a
+   satchel-into-vault icon. At least 40px tall everywhere, so it is a full thumb target on phones. */
+#service-panel.bank-mode .bank-action-bar .bank-carved{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:5px 14px 5px 10px;border:1px solid #b89a5a;border-radius:6px;background:linear-gradient(#7a5a34,#5a3f22 46%,#4a3219 54%,#33220f);color:#f6e2b0;font:600 12px/1.15 Georgia,serif;letter-spacing:.3px;text-shadow:0 1px 0 #000,0 0 6px #0009;box-shadow:inset 0 1px 0 #ffe3a066,inset 0 -2px 0 #0008,inset 0 0 0 2px #1d130a,0 2px 4px #000a;white-space:nowrap;cursor:pointer;touch-action:manipulation}
+#service-panel.bank-mode .bank-action-bar .bank-carved:hover:not(:disabled),#service-panel.bank-mode .bank-action-bar .bank-carved:focus-visible{border-color:#ecd08a;color:#fff1c8;background:linear-gradient(#8a6a3e,#664828 46%,#553a1e 54%,#3b2812)}
+#service-panel.bank-mode .bank-action-bar .bank-carved:focus-visible{outline:2px solid #e9cf86;outline-offset:2px}
+#service-panel.bank-mode .bank-action-bar .bank-carved:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 4px #000b,inset 0 0 0 2px #1d130a}
+.bank-carved-icon{flex:none;width:20px;height:20px;stroke:#f0d58e;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 0 #000)}
+.bank-carved-icon .bank-carved-fill{fill:#2a1a0c}
+@media(max-height:500px){#service-panel.bank-mode .bank-action-bar .bank-carved{padding:4px 11px 4px 8px;font-size:11px;gap:5px}.bank-carved-icon{width:18px;height:18px}}
+@media(max-width:650px){#service-panel.bank-mode .bank-action-bar .bank-carved{margin-left:auto}#service-panel.bank-mode .bank-action-bar .bank-carved~button{margin-left:0}}
