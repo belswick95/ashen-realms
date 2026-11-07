@@ -5,7 +5,7 @@
 // an edge arrow when the objective is off the map. Fed by quest-tracker.js onTarget().
 // Cheap: one InstancedMesh (one draw call) + one ring mesh, matrices only rewritten on a re-plan,
 // per-frame work is a few uniforms (no allocations).
-import {TILE,tileOf,bfsRoute,FLAG} from './tile-grid.js?v=release-20261107-monsters131';
+import {TILE,tileOf,bfsRoute,FLAG} from './tile-grid.js?v=release-20261107-demons132';
 
 export const TRAIL={tiles:16,spacing:.86,skip:1.1,radius:32,fetchRadius:40,maxDots:48,replanMs:300,arrive:2.4};
 const KEY='eldervale-quest-guidance';

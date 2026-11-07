@@ -1,6 +1,6 @@
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {clone as cloneSkinned} from 'three/addons/utils/SkeletonUtils.js';
-import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-monsters131';
+import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-demons132';
 // Rigged, animated monster models that replace the old procedural bodies of some species
 // (sources and licences: assets/monsters/CREDITS.md; build: scripts/build-monster-models.mjs).
 // Graphics only: species ids, names, stats, spawns and behaviour are untouched. Each model is
