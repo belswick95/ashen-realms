@@ -1,4 +1,4 @@
-# Eldervale
+# Kingdoms of Eldervale
 
 Browser-based medieval fantasy RPG using Three.js, Supabase authentication,
 player persistence, gathering, equipment and multiplayer social features.

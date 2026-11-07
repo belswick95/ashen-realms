@@ -48,7 +48,7 @@ export function createLoadingIndicator({doc=globalThis.document,delay=LOADING_DE
  function ensureBoot(){
   if(boot||!doc?.body)return boot;
   const root=doc.createElement('div');root.id='world-boot';root.setAttribute('role','status');root.setAttribute('aria-live','polite');root.hidden=true;
-  root.innerHTML='<section><div class="world-boot-crest" aria-hidden="true">ELDERVALE</div><div class="loading-chip-spinner" aria-hidden="true"></div><strong class="world-boot-label">Entering Eldervale…</strong><div class="world-boot-track" aria-hidden="true"><div class="world-boot-fill"></div></div><small class="world-boot-detail"></small></section>';
+  root.innerHTML='<section><div class="world-boot-crest" aria-hidden="true">KINGDOMS OF ELDERVALE</div><div class="loading-chip-spinner" aria-hidden="true"></div><strong class="world-boot-label">Entering Eldervale…</strong><div class="world-boot-track" aria-hidden="true"><div class="world-boot-fill"></div></div><small class="world-boot-detail"></small></section>';
   doc.body.append(root);boot={root,label:root.querySelector('.world-boot-label'),fill:root.querySelector('.world-boot-fill'),detail:root.querySelector('.world-boot-detail'),fraction:0};return boot;
  }
  // fraction never moves backwards, so the bar always reads as progress.

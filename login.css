@@ -71,3 +71,4 @@ body.landscape-required:has(#auth-screen:not([hidden])) #rotate-phone{display:no
 
 /* Remove obsolete architectural grid/band overlays over the fortress artwork. */
 #auth-screen::before,#auth-screen::after{content:none!important;display:none!important}
+.login-wordmark-pre{display:block;font-size:.3em;letter-spacing:.42em;padding-left:.42em;margin-bottom:.32em;line-height:1}
