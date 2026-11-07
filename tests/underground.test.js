@@ -78,3 +78,60 @@ test('generated SQL is current (node scripts/build-water-seed.mjs)',async()=>{
  const {build}=await import('../scripts/build-water-seed.mjs');
  for(const [f,text] of Object.entries(build()))assert.equal(fs.readFileSync(new URL('../'+f,import.meta.url),'utf8'),text,f+' is stale: run node scripts/build-water-seed.mjs');
 });
+
+// Trapdoors and ladders (OSRS style), and click-to-walk below ground.
+test('passages read OSRS style: dungeon ways down are trapdoors, ways up are ladders, natural ways keep theirs',()=>{
+ for(const t of ['cave_mouth','crypt_door','mine_shaft','trapdoor','shrine_door','stairs_down','ladder_down'])assert.equal(ug.passageLook(t),'trapdoor',t);
+ for(const t of ['cave_exit','stairs_up','ladder_up'])assert.equal(ug.passageLook(t),'ladder_up',t);
+ for(const t of ['waterfall_curtain','thorn_thicket','sea_cave','ferry_boat','cliff_path','door','castle_gate','cottage'])assert.equal(ug.passageLook(t),null,t);
+ assert.equal(ug.PASSAGE_LOOK_LABELS.trapdoor,'Climb-down Trapdoor');assert.equal(ug.PASSAGE_LOOK_LABELS.ladder_up,'Climb-up Ladder');
+ // Every overworld entrance of the starter dungeons is a trapdoor, every way out a ladder; you land one tile away.
+ for(const a of ug.dungeons){const all=ug.passageObjects(a);for(const p of all){
+  if(p.key.startsWith('entrance:'))assert.equal(ug.passageLook(p.template),'trapdoor',p.key);
+  if(p.key.startsWith('exit:')){assert.equal(ug.passageLook(p.template),'ladder_up',p.key);const e=a.entrances.find(x=>'exit:'+x.id===p.key),[ex,ez]=p.passage.dest;
+   assert.ok(Math.hypot(ex-e.x,ez-e.z)<=ug.TILE+.05,p.key+' arrives beside the hatch');
+   const inside=all.find(q=>q.key==='entrance:'+e.id).passage.dest;assert.ok(Math.hypot(inside[0]-p.x,inside[1]-p.z)<=ug.TILE+.05,p.key+' ladder beside the arrival')}}}
+});
+test('trapdoor and ladder models: flush hatch with iron bands (open or shut), ladder to a square of light',async()=>{
+ const T=await import('three');const {undergroundObjectModel}=await import('../underground-models.js'+V);const {objectModel}=await import('../world-models.js'+V);
+ const size=g=>{g.updateMatrixWorld(true);return new T.Box3().setFromObject(g).getSize(new T.Vector3())};
+ for(const t of ['crypt_door','cave_mouth','shrine_door','mine_shaft']){const g=objectModel(T,new T.Group(),t,{x:0,z:0,passage:{area:'x',dest:[1200,1200],depth:0}});assert.equal(g.userData.passageLook,'trapdoor',t);
+  const s=size(g);assert.ok(s.y<1.8&&s.x<3.4&&s.z<3.4,t+' is a low hatch, not a door frame: '+s.y.toFixed(2));let hatch=null,iron=0;
+  g.traverse(o=>{if(o.name==='hatch')hatch=o;if(o.isMesh){assert.ok(o.geometry.userData.eldervaleShared&&o.material.userData.eldervaleShared,t+' pooled');if(o.material.metalness>.5)iron++}});
+  assert.ok(hatch&&hatch.rotation.x<-1.5,t+' open hatch');assert.ok(iron>=4,t+' iron bands, studs and ring')}
+ const shut=undergroundObjectModel(T,new T.Group(),'crypt_door',{passage:{requires:{unlock:'area.x'}}});let lid=null;shut.traverse(o=>{if(o.name==='hatch')lid=o});assert.equal(lid.rotation.x,0);assert.ok(size(shut).y<.35,'a locked hatch lies shut and flush');
+ for(const [t,depth] of [['stairs_up',-1],['cave_exit',-1],['ladder_up',0]]){const g=undergroundObjectModel(T,new T.Group(),t,{passage:{depth}});assert.equal(g.userData.passageLook,'ladder_up');assert.ok(size(g).y>4.5,t+' tall ladder');
+  let light=null;g.traverse(o=>{if(o.isMesh&&o.material.emissive?.getHex()>0&&o.position.y>4.5)light=o});assert.ok(light,t+' square of light above');assert.ok(light.material.emissiveIntensity>(depth<0?1:.5))}
+});
+test('click-to-walk below ground: the click ray finds the cave floor (the surface mesh stops at the overworld edge)',async()=>{
+ const T=await import('three');const {createUnderground}=await import('../underground.js'+V);
+ const land=installUndergroundTerrain(createLandscape({segments:40})),scene=new T.Scene();
+ const api=createUnderground({T,scene,landscape:land,camera:new T.PerspectiveCamera(),command:async()=>{},yieldFrame:async()=>{}});
+ const a=ug.dungeons[0],arrive=ug.toWorld(a,0,2,0),player={x:arrive.x,z:arrive.z};
+ const ray=(x,z,h=12)=>{const r=new T.Raycaster(),o=new T.Vector3(x-4,h,z+6);r.set(o,new T.Vector3(x,0,z).sub(o).normalize());return r};
+ // On the floor: the exact point. Tile mode and continuous mode both route from this point.
+ const target=ug.toWorld(a,0,4.5,-2),hit=api.pickFloor(ray(target.x,target.z),player);assert.ok(hit,'floor hit');
+ assert.ok(Math.hypot(hit.point.x-target.x,hit.point.z-target.z)<1e-6);assert.ok(land.canWalk(hit.point.x,hit.point.z));assert.ok(hit.distance>0);
+ // On a rock wall: snapped to walkable floor beside it.
+ const wall=ug.toWorld(a,0,0,9);assert.equal(land.canWalk(wall.x,wall.z),false);const snap=api.pickFloor(ray(wall.x,wall.z),player);
+ assert.ok(snap&&land.canWalk(snap.point.x,snap.point.z)&&Math.hypot(snap.point.x-wall.x,snap.point.z-wall.z)<6,JSON.stringify(snap?.point));
+ // On the surface, aiming at the sky, or at another level: no cave floor (the terrain mesh answers on the surface).
+ assert.equal(api.pickFloor(ray(0,0),{x:0,z:0}),null);assert.equal(api.pickFloor(new T.Raycaster(new T.Vector3(arrive.x,5,arrive.z),new T.Vector3(0,1,0)),player),null);
+ const lower=ug.toWorld(a,1,0,0);assert.equal(api.pickFloor(ray(lower.x,lower.z),player),null);
+ // Passage menu text and hit boxes follow the look.
+ const hitBox=new T.Mesh(new T.BoxGeometry(1.3,2,1.3));hitBox.position.y=1;api.tagHit(hitBox,{template:'crypt_door',name:'Hollowmere crypt door',passage:{area:'hollowmere_undercroft',dest:[2002,1200],depth:0}});
+ assert.equal(api.label(hitBox.userData),'Climb-down Trapdoor');assert.ok(hitBox.position.y+hitBox.scale.y<=1.3,'low hit box over the hatch');
+ const ladderBox=new T.Mesh(new T.BoxGeometry(1.3,2,1.3));api.tagHit(ladderBox,{template:'stairs_up',name:'Way out',passage:{area:'hollowmere_undercroft',dest:[-118,-373.6],depth:-1}});
+ assert.equal(api.label(ladderBox.userData),'Climb-up Ladder');assert.equal(api.label({kind:'passage',template:'waterfall_curtain',name:'The Veilfall'}),'Step behind The Veilfall');
+ const game=fs.readFileSync(new URL('../game.js',import.meta.url),'utf8');assert.match(game,/const groundHit=underground\.pickFloor\(ray,player\.position\)\|\|ray\.intersectObjects\(walkSurfaces/);
+});
+test('db/underground-click.sql: idempotent guarded patches, no destructive words',()=>{
+ const sql=fs.readFileSync(new URL('../db/underground-click.sql',import.meta.url),'utf8');
+ assert.doesNotMatch(sql,/delete|alter|drop/i);assert.match(sql,/eldervale_private\.patch_function\('eldervale_private\.underground_passages\(jsonb\)'::regprocedure/);assert.match(sql,/patch_function\('eldervale_private\.explore_sync\(\)'::regprocedure/);
+ assert.equal((sql.match(/if position\(/g)||[]).length,2,'each patch skipped once present');
+ // The anchors match the shipped function bodies exactly once.
+ const engine=fs.readFileSync(new URL('../db/underground-1-engine.sql',import.meta.url),'utf8'),explore=fs.readFileSync(new URL('../db/explore-1-core.sql',import.meta.url),'utf8');
+ const body=(src,name)=>{const at=src.indexOf('create or replace function eldervale_private.'+name);return src.slice(at,src.indexOf('end $fn$;',at))};
+ for(const a of ['sin(a)*3.2','cos(a)*3.2',"'x',ix-3.5,'z',iz"])assert.equal(body(engine,'underground_passages').split(a).length,2,a);
+ for(const a of ['sin(yaw)*3.2','cos(yaw)*3.2',"'x',ix-3.5,"])assert.equal(body(explore,'explore_sync').split(a).length,2,a);
+});

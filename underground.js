@@ -9,7 +9,7 @@
 //   inside (prop lights go through the shared 4-light pool: every PointLight here becomes a
 //   light-proxy anchor, the scene light count never changes), draws the underground minimap,
 //   picks cave music and ambience, and plays agility crossings.
-import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261107-monsters135';
+import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,PASSAGE_LOOK_LABELS,passageLook,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261107-monsters135';
 import {AGILITY_TEMPLATES,AGILITY_VERBS,failChance} from './agility-data.js?v=release-20261107-monsters135';
 import {sharedMaterial,sharedGeometry} from './shared-geometry.js?v=release-20261107-monsters135';
 import {lightMarker} from './underground-models.js?v=release-20261107-monsters135';
@@ -143,25 +143,34 @@ export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camer
    for(const p of passageObjects(at.area)){if(!undergroundAt(p.x,p.z)||undergroundAt(p.x,p.z).level!==at.level)continue;ctx.fillStyle='#f2d36b';ctx.fillRect(toX(p.x)-2.5,toY(p.z)-2.5,5,5)}
    ctx.fillStyle='rgba(242,211,107,.9)';ctx.font='bold 10px Georgia';ctx.textAlign='left';ctx.fillText(at.area.name+' · '+(at.area.levels.find(l=>l.level===at.level)?.name||''),6,h-8);
    return true},
+  // Click-to-walk below ground. The surface terrain mesh (game.js walkSurfaces) ends at the edge of
+  // the overworld, so a ray into a cave hit nothing and only the minimap could walk. Below ground the
+  // floor is flat at y=0: intersect that plane and snap to the nearest walkable tile of the level the
+  // player is on (a click on a rock wall walks to the floor beside it, as on the surface).
+  pickFloor(ray,position){const p=position||null;if(!ray||!p)return null;const here=undergroundAt(p.x,p.z);if(!here)return null;const r=ray.ray||ray;
+   if(!(r.direction.y<-1e-4))return null;const t=-r.origin.y/r.direction.y;if(!(t>0)||t>600)return null;const x=r.origin.x+r.direction.x*t,z=r.origin.z+r.direction.z*t,at=undergroundAt(x,z);
+   if(!at||at.area.id!==here.area.id||at.level!==here.level)return null;const dry=landscape?.nearestDryPoint?landscape.nearestDryPoint(x,z):{x,z};return {point:new T.Vector3(dry.x,0,dry.z),distance:t}},
   // Mark world-object hit boxes as passages / shortcuts / typed fishing spots.
   tagHit(hit,d){if(!hit||!d)return;const u=hit.userData;
-   if(d.passage&&PASSAGE_TEMPLATES[d.template]){u.kind='passage';u.passage=d.passage;u.template=d.template;u.name=d.name||PASSAGE_TEMPLATES[d.template];hit.scale.set(2.4,1.6,2.4)}
+   if(d.passage&&PASSAGE_TEMPLATES[d.template]){u.kind='passage';u.passage=d.passage;u.template=d.template;u.name=d.name||PASSAGE_TEMPLATES[d.template];const look=passageLook(d.template);
+    // A flat hatch gets a low, wide box; a ladder a tall one up to the light; anything else the old box.
+    if(look==='trapdoor'){hit.scale.set(1.9,.6,1.9);hit.position.y=.6}else if(look==='ladder_up'){hit.scale.set(1.5,2.4,1.5);hit.position.y=2.4}else hit.scale.set(2.4,1.6,2.4)}
    else if(d.agility&&AGILITY_TEMPLATES[d.template]){u.kind='shortcut';u.agility=d.agility;u.template=d.template;u.name=d.name||AGILITY_TEMPLATES[d.template];hit.scale.set(2,1,Math.max(1,(Number(d.length)||4)/1.3))}
    else if(d.template==='fishing_spot')u.spot=d},
-  label(a){if(a.kind==='passage')return (PASSAGE_VERBS[a.template]||'Use')+' '+(a.name||'');if(a.kind==='shortcut')return (AGILITY_VERBS[a.template]||'Use')+' '+a.name+' (Agility '+(a.agility?.level||1)+')';return null},
+  label(a){if(a.kind==='passage'){const look=PASSAGE_LOOK_LABELS[passageLook(a.template)];return look||(PASSAGE_VERBS[a.template]||'Use')+' '+(a.name||'')}if(a.kind==='shortcut')return (AGILITY_VERBS[a.template]||'Use')+' '+a.name+' (Agility '+(a.agility?.level||1)+')';return null},
   // Nearest end of a shortcut (players walk there, not into the river).
   approach(a,position){if(a.kind!=='shortcut')return {x:a.x,z:a.z};const ends=a.agility?.ends||[];let best=ends[0]||[a.x,a.z];for(const e of ends)if(Math.hypot(e[0]-position.x,e[1]-position.z)<Math.hypot(best[0]-position.x,best[1]-position.z))best=e;return {x:best[0],z:best[1]}},
   async travel(a,target){const dest=a.passage?.dest||[];const into=isUndergroundPoint(dest[0],dest[1]),area=state.areas.find(x=>x.id===a.passage?.area),name=area?.name||'the way';
-   const job=loading.begin((into?(a.passage.depth>0||undergroundAt(dest[0],dest[1])?.level>0?'Descending into ':'Entering '):'Climbing out of ')+name+'…',{key:'underground-travel',delay:0,priority:2});
+   const ready=!into||!area||built.has(area.id),look=passageLook(a.template),job=loading.begin((look==='trapdoor'?'Climbing down into ':look==='ladder_up'?'Climbing up out of ':into?(a.passage.depth>0||undergroundAt(dest[0],dest[1])?.level>0?'Descending into ':'Entering '):'Climbing out of ')+name+'…',{key:'underground-travel',delay:ready?600:0,priority:2});
    try{if(into&&area)await prepare(area.id);await command('travel',{target})}finally{job.end()}},
   // Click handling for passages and shortcuts (game.js asks first). Returns true when handled.
   click(hit,e,{approachAndAct,menuAt,player,skillLevel=()=>1}){const a=hit?.object?.userData;if(!a||(a.kind!=='passage'&&a.kind!=='shortcut'))return false;const target=a.worldEntityId||a.realmId;
-   const go=()=>{const at=api.approach(a,player.position);approachAndAct({x:at.x,z:at.z,reach:a.kind==='shortcut'?1.6:3,label:api.label(a),act:()=>a.kind==='passage'?api.travel(a,target):void command('agility',{target})})};
-   const examine=()=>say(a.kind==='passage'?(a.name+'. '+(isUndergroundPoint(...(a.passage?.dest||[0,0]))?'It leads underground.':'It leads back up.')):a.name+' — needs Agility '+(a.agility?.level||1)+'. '+(a.agility?.fail?'Risky: '+Math.round(failChance(skillLevel('agility'),a.agility.level,a.agility.fail,a.agility.margin)*100)+'% chance to slip at your level.':'Safe once you have the level.'));
-   if(e.button===2)menuAt(e.clientX,e.clientY,[[api.label(a),go],['Examine',examine],['Cancel',()=>{}]]);else go();return true},
+   const go=()=>{const at=api.approach(a,player.position);approachAndAct({x:at.x,z:at.z,reach:a.kind==='shortcut'?1.6:look?2.2:3,label:api.label(a),act:()=>a.kind==='passage'?api.travel(a,target):void command('agility',{target})})};
+   const look=a.kind==='passage'?passageLook(a.template):null,examine=()=>say(a.kind==='passage'?(look==='trapdoor'?'A wooden trapdoor — '+a.name+'. '+(isUndergroundPoint(...(a.passage?.dest||[0,0]))?'A ladder leads down into the dark.':'A ladder leads down.'):look==='ladder_up'?'A ladder up to the open hatch — '+a.name+'.':a.name+'. '+(isUndergroundPoint(...(a.passage?.dest||[0,0]))?'It leads underground.':'It leads back up.')):a.name+' — needs Agility '+(a.agility?.level||1)+'. '+(a.agility?.fail?'Risky: '+Math.round(failChance(skillLevel('agility'),a.agility.level,a.agility.fail,a.agility.margin)*100)+'% chance to slip at your level.':'Safe once you have the level.'));
+   if(e.button===2)menuAt(e.clientX,e.clientY,[[api.label(a),go],[look==='trapdoor'?'Examine Trapdoor':look==='ladder_up'?'Examine Ladder':'Examine',examine],['Cancel',()=>{}]]);else go();return true},
   // Realm events: travel (loading chip ends, notice), agility (crossing animation), spots moving.
   event(e,selfId,{remoteRoot=()=>null,player}={}){
-   if(e.type==='travel'){if(e.player===selfId){const at=e.to&&undergroundAt(e.to[0],e.to[1]);say(at?'You enter '+at.area.name+(at.level?' — '+(at.area.levels.find(l=>l.level===at.level)?.name||''):'')+'.':'You climb back into daylight.')}return true}
+   if(e.type==='travel'){if(e.player===selfId){const at=e.to&&undergroundAt(e.to[0],e.to[1]);const look=passageLook(e.kind),where=at?at.area.name+(at.level?' — '+(at.area.levels.find(l=>l.level===at.level)?.name||''):''):'';say(at?(look==='trapdoor'?'You climb down the ladder into '+where+'.':look==='ladder_up'?'You climb up the ladder into '+where+'.':'You enter '+where+'.'):look==='ladder_up'?'You climb up the ladder into daylight.':'You climb back into daylight.')}return true}
    if(e.type==='agility'){const root=e.player===selfId?player:remoteRoot(e.player);
     if(root&&Array.isArray(e.from)&&Array.isArray(e.to)){const t=setTween(root,e),far=Array.isArray(e.toward)?e.toward:e.to;if(!t.ok){t.dirX=far[0]-e.from[0];t.dirZ=far[1]-e.from[1]}
      if(e.player===selfId)tween=t;else remoteTweens.set(e.player,t);const yaw=Math.atan2(far[0]-e.from[0],far[1]-e.from[1]);if(Number.isFinite(yaw))root.rotation.y=yaw}

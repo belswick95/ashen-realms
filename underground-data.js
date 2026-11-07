@@ -32,6 +32,19 @@ export const LIGHT_KINDS={torch:{color:0xffa04a,intensity:5,distance:15},brazier
 export const PASSAGE_TEMPLATES={cave_mouth:'Cave mouth',crypt_door:'Crypt door',mine_shaft:'Mine shaft',trapdoor:'Trapdoor',cave_exit:'Way out',ladder_down:'Ladder down',ladder_up:'Ladder up',stairs_down:'Stairs down',stairs_up:'Stairs up',waterfall_curtain:'Waterfall',thorn_thicket:'Thorn thicket',sea_cave:'Sea cave',shrine_door:'Sealed shrine door',ferry_boat:'Rowing boat',cliff_path:'Cliff path'};
 export const PASSAGE_VERBS={cave_mouth:'Enter',crypt_door:'Enter',mine_shaft:'Climb down',trapdoor:'Climb down',cave_exit:'Leave',ladder_down:'Climb down',ladder_up:'Climb up',stairs_down:'Walk down',stairs_up:'Walk up',waterfall_curtain:'Step behind',thorn_thicket:'Squeeze into',sea_cave:'Wade into',shrine_door:'Push open',ferry_boat:'Board',cliff_path:'Climb'};
 
+// How passages look and read (OSRS style): every dungeon way down is a wooden trapdoor set in the
+// ground ("Climb-down Trapdoor"), every way back up is a ladder to the open hatch above
+// ("Climb-up Ladder"). The stored template keeps its id (server data, map icons, quests); only the
+// model and the menu text follow the look. Natural ways in (waterfall, thicket, sea cave, boat,
+// cliff path) keep their own models.
+export const TRAPDOOR_TEMPLATES=['cave_mouth','crypt_door','mine_shaft','trapdoor','shrine_door','stairs_down','ladder_down'];
+export const LADDER_UP_TEMPLATES=['cave_exit','stairs_up','ladder_up'];
+export function passageLook(template){return TRAPDOOR_TEMPLATES.includes(template)?'trapdoor':LADDER_UP_TEMPLATES.includes(template)?'ladder_up':null}
+export const PASSAGE_LOOK_LABELS={trapdoor:'Climb-down Trapdoor',ladder_up:'Climb-up Ladder'};
+// Arrival is right beside the hatch or ladder: one tile in front of the trapdoor on the surface,
+// one tile from the foot of the ladder below (also eldervale_private.underground_passages).
+export const ARRIVAL_OFFSET=1.6;
+
 const room=(id,x,z,rx,rz)=>({id,x,z,rx,rz}),tunnel=(width,...points)=>({width,points});
 export const dungeons=[
  {id:'birchroot_hollow',name:'Birchroot Hollow',theme:'earth',band:[3,20],origin:{x:1200,z:1200},enabled:true,
@@ -119,7 +132,7 @@ const EXIT_KIND={earth:'cave_exit',crypt:'stairs_up',fire:'ladder_up'};
 // Every passage object of an area: overworld entrances, the way out, ladders/stairs both ways.
 export function passageObjects(area){
  const out=[];
- for(const e of area.entrances||[]){const a=(e.yaw||0)*Math.PI/180,front={x:Math.round((e.x+Math.sin(a)*3.2)*10)/10,z:Math.round((e.z+Math.cos(a)*3.2)*10)/10},inside=toWorld(area,e.to.level,e.to.x,e.to.z),exit=toWorld(area,e.to.level,e.to.x-3.5,e.to.z);
+ for(const e of area.entrances||[]){const a=(e.yaw||0)*Math.PI/180,front={x:Math.round((e.x+Math.sin(a)*ARRIVAL_OFFSET)*10)/10,z:Math.round((e.z+Math.cos(a)*ARRIVAL_OFFSET)*10)/10},inside=toWorld(area,e.to.level,e.to.x,e.to.z),exit=toWorld(area,e.to.level,e.to.x-ARRIVAL_OFFSET,e.to.z);
   out.push({key:'entrance:'+e.id,template:e.kind,name:e.name,x:e.x,z:e.z,yaw:e.yaw||0,passage:{area:area.id,dest:[inside.x,inside.z],requires:e.requires||null,depth:e.to.level}});
   out.push({key:'exit:'+e.id,template:EXIT_KIND[area.theme]||'cave_exit',name:'Way out to '+(e.name||area.name),x:exit.x,z:exit.z,yaw:90,passage:{area:area.id,dest:[front.x,front.z],depth:-1}})}
  for(const l of area.links||[]){const down=l.to.level>l.level,top=toWorld(area,l.level,l.x,l.z),bottom=toWorld(area,l.to.level,l.to.x,l.to.z),k=l.kind==='stairs'?'stairs':'ladder';
