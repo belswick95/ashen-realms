@@ -1,0 +1,11 @@
+Farm Animals Animated by Quaternius ("LowPoly Animated Animals")
+Source: https://quaternius.itch.io/lowpoly-animated-animals
+Download: "Farm Animals Animated  by Quaternius.zip" (6.6 MB), downloaded 2026-11-07.
+The archive itself carries no licence file; the licence is stated on the itch.io page:
+
+  "6 Animated Animals with Death, Idle, Jump, Run and Walk animations in FBX, OBJ and Blend format.
+   CC0 License https://creativecommons.org/publicdomain/zero/1.0/"
+  Asset license: Creative Commons Zero v1.0 Universal
+
+CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+https://creativecommons.org/publicdomain/zero/1.0/

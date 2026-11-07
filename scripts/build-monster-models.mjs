@@ -16,7 +16,7 @@ if(!rawDir){console.error('usage: node scripts/build-monster-models.mjs <raw-dir
 const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..'),out=path.join(root,'assets/monsters');
 fs.mkdirSync(out,{recursive:true});
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS);
-const CLIPS=new Set(['idle','walk','attack','hit','death']);
+const CLIPS=new Set(['idle','walk','run','attack','hit','death']);
 for(const file of fs.readdirSync(rawDir).filter(f=>f.endsWith('.glb')).sort()){
  const name=path.basename(file,'.glb');if(only.length&&!only.includes(name))continue;
  const doc=await io.read(path.join(rawDir,file));

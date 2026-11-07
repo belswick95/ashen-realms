@@ -19,6 +19,11 @@ model" (owner console, Monsters tab).
 | `revenant.glb` | revenant (fallen revenant, marsh wight, gloam phantom) | Ghost Skull, [Ultimate Monsters](https://quaternius.com/packs/ultimatemonsters.html) | Quaternius | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `spider.glb` | spider | [Spider (animated)](https://opengameart.org/content/spider-animated) | PantherOne | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) |
 | `golem.glb` | golem | [Rock golem](https://opengameart.org/content/rock-golem) by Dm3d, a revision of [umask007's golem](https://opengameart.org/content/fireicestone-golem) | Dm3d, umask007 | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) (offered as CC BY 3.0 or CC BY-SA 3.0; used under CC BY 3.0) |
+| `deer.glb` | deer (red deer) | Stag, [Ultimate Animated Animals](https://quaternius.com/packs/ultimateanimatedanimals.html) | Quaternius | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `cow.glb` | cow (dairy cow) | Cow, [Ultimate Animated Animals](https://quaternius.com/packs/ultimateanimatedanimals.html) | Quaternius | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `pig.glb` | pig (farm pig) | Pig, [Farm Animals Animated](https://quaternius.itch.io/lowpoly-animated-animals) (LowPoly Animated Animals) | Quaternius | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `sheep.glb` | sheep (woolly sheep) | Sheep, [Farm Animals Animated](https://quaternius.itch.io/lowpoly-animated-animals) (LowPoly Animated Animals) | Quaternius | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `chicken.glb` | chicken (hen) | [Chicken (animated)](https://opengameart.org/content/chicken-animated), texture from photos by Rick Hoppmann, made for the Kelgar project | Čestmír Dammer (CDmir), with TinyWorlds | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 
 ## Changes made for Eldervale
 
@@ -32,7 +37,17 @@ The Ultimate Monsters models (imp, ogre, wraith, revenant) were converted from t
 files without Blender: clips renamed (`Idle`/`Flying_Idle`, `Walk`/`Fast_Flying`, `Weapon`/`Punch`/`Headbutt`,
 `HitReact`, `Death`), the other clips dropped, and the Demon's halo removed for the imp; their
 1024 px colour-swatch atlas is scaled to 256 px (nearest neighbour, so the flat swatches stay exact).
+The animals: the Ultimate Animated Animals Stag and Cow were converted from the pack's glTF files
+without Blender (`scripts/prep-animal-models.mjs`: `Idle`, `Walk`, `Gallop` as `run`, `Attack_Kick`
+or `Attack_Headbutt`, `Idle_HitReact1` and `Death` kept, the rest dropped; the glTF files were taken
+from an unmodified copy of the pack, as its Google Drive download was over quota). The pig and sheep
+were exported from the pack's `.blend` files with Blender (`Idle`, `Walk`, `Run`, `Death`); they have
+no attack or hit clip, so they lunge and flinch with the whole body. The hen was exported from
+`chickenV2.blend` with Blender (`Idle1`, `Walk`, `Pecking1` as `attack`, `Dying` as `death`), its
+photo texture scaled to 256 px WebP. The procedural bodies stay as the classic models.
 In game, roster variants are recoloured from their tint (the Ultimate Monsters models by shifting
 the body's swatch colour to the tint in the shader).
+
+Licence texts for the animal packs are kept in `licenses/`.
 
 No assets from RuneScape or any other game are used.

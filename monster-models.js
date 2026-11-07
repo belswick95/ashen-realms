@@ -14,6 +14,8 @@ import {sharedGeometry,sharedMaterial} from './shared-geometry.js?v=release-2026
 // yaw: turns the model to face +Z like every actor. lift: hover height for fliers.
 // stride: units covered by one loop of the walk clip at size 1 (sets the walk playback rate).
 // attack: seconds the attack clip is played over (the game's wind-up is 0.55 s).
+// run: speed (units/s) from which a species with a run clip gallops instead of walking;
+// runStride: units covered by one loop of the run clip at size 1.
 export const MONSTER_MODELS={
  wolf:{file:'wolf.glb',size:{length:2.4},yaw:-Math.PI/2,stride:2.4,lunge:.5,tint:0x7d8589,tintAll:true},
  bat:{file:'bat.glb',size:{length:1.4},yaw:0,lift:.75,attack:.7,fly:true,mouth:[1.15,.4]},
@@ -28,7 +30,15 @@ export const MONSTER_MODELS={
  ogre:{file:'ogre.glb',size:{height:2.3},yaw:0,stride:2.2,attack:1,recolor:0x738636},
  revenant:{file:'revenant.glb',size:{height:2.2},yaw:0,stride:2,attack:.9,mouth:[1.4,.6],recolor:0x2a1030,fly:true,lift:.25,opacity:.88,tint:0x46566b},
  wraith:{file:'wraith.glb',size:{height:2},yaw:0,lift:.25,attack:.9,fly:true,mouth:[1.3,.6],recolor:0x2a1030,opacity:.88},
+ // Wildlife and livestock (Quaternius animal packs; the hen is CDmir's). The red deer is the stag.
+ deer:{file:'deer.glb',size:{length:2.3},yaw:0,stride:2.2,runStride:4.2,attack:.8},
+ cow:{file:'cow.glb',size:{length:2.6},yaw:0,stride:2.2,runStride:4,attack:.8},
+ pig:{file:'pig.glb',size:{length:1.7},yaw:0,stride:1.4,runStride:2.4,lunge:.3},
+ sheep:{file:'sheep.glb',size:{length:1.6},yaw:0,stride:1.3,runStride:2.2,lunge:.3},
+ chicken:{file:'chicken.glb',size:{height:.9},yaw:0,stride:.7,attack:.5},
 };
+// From this speed (units/s, about 1.6 x the tile walking pace) a species with a run clip runs.
+export const RUN_SPEED=4.2;
 const BASE=new URL('./assets/monsters/',import.meta.url);
 const CLASSIC_KEY='eldervale-classic-monsters';
 // Per page, even if this module loads under several cache-busting URLs.
@@ -44,6 +54,25 @@ export function corpseHeight(from,rest,progress){const k=Math.max(0,Math.min(1,N
 export const hasRiggedModel=species=>!!MONSTER_MODELS[species];
 const canLoad=()=>typeof document!=='undefined'&&typeof fetch==='function';
 
+// Fit a parsed GLB to its species (exported for the tests): the scale to the species size, the
+// offset that stands the first idle frame's feet on y=0, and deathY (see below).
+export function fitMonsterAsset(T,gltf,cfg){
+ const scene=gltf.scene,clips={};for(const c of gltf.animations)clips[c.name]=c;
+ if(cfg.tintAll)scene.traverse(o=>{if(o.material)o.material.userData.tintAll=true});
+ // Fit: pose the first idle frame, measure, then scale to the species size with feet on y=0.
+ const probe=cloneSkinned(scene),mixer=new T.AnimationMixer(probe);if(clips.idle)mixer.clipAction(clips.idle).play();mixer.update(0);
+ const holder=new T.Group();holder.rotation.y=cfg.yaw||0;holder.add(probe);holder.updateMatrixWorld(true);
+ const box=new T.Box3().setFromObject(holder,true),size=box.getSize(new T.Vector3());
+ const scale=cfg.size.height?cfg.size.height/size.y:cfg.size.length/Math.max(size.z,size.x);
+ const asset={T,scene,clips,scale,offset:new T.Vector3(-(box.min.x+box.max.x)/2*scale,-box.min.y*scale+(cfg.lift||0),-(box.min.z+box.max.z)/2*scale),radius:size.length()*scale*.75,deathY:null};
+ // Where the corpse rests: the fit height that puts the last death frame's lowest point on the
+ // ground. Fliers drop their hover lift, and clips whose body ends below (or above) the idle feet
+ // no longer leave it sunk into the ground (imp, ogre, troll) or hanging in the air (bat).
+ if(clips.death){mixer.stopAllAction();const a=mixer.clipAction(clips.death);a.setLoop(T.LoopOnce,1);a.clampWhenFinished=true;a.play();mixer.setTime(clips.death.duration);holder.updateMatrixWorld(true);
+  const end=new T.Box3().setFromObject(holder,true);if(!end.isEmpty())asset.deathY=-end.min.y*scale}
+ return asset;
+}
+
 // One load per species. The asset keeps the source scene, its clips and the fitted transform.
 function loadAsset(T,species){
  if(store.assets.has(species))return store.assets.get(species);if(store.pending.has(species))return null;
@@ -51,19 +80,7 @@ function loadAsset(T,species){
  // One parse per file, shared by every species that uses it.
  const files=store.files||(store.files=new Map());if(!files.has(cfg.file))files.set(cfg.file,new GLTFLoader().loadAsync(new URL(cfg.file,BASE).href).then(gltf=>{gltf.scene.traverse(o=>{if(o.geometry)o.geometry.userData.eldervaleShared=true;if(o.material){o.material.userData.eldervaleShared=true;for(const v of Object.values(o.material))if(v?.isTexture)v.userData.eldervaleShared=true}});return gltf}));
  store.pending.set(species,files.get(cfg.file).then(gltf=>{
-  const scene=gltf.scene,clips={};for(const c of gltf.animations)clips[c.name]=c;
-  if(cfg.tintAll)scene.traverse(o=>{if(o.material)o.material.userData.tintAll=true});
-  // Fit: pose the first idle frame, measure, then scale to the species size with feet on y=0.
-  const probe=cloneSkinned(scene),mixer=new T.AnimationMixer(probe);if(clips.idle)mixer.clipAction(clips.idle).play();mixer.update(0);
-  const holder=new T.Group();holder.rotation.y=cfg.yaw||0;holder.add(probe);holder.updateMatrixWorld(true);
-  const box=new T.Box3().setFromObject(holder,true),size=box.getSize(new T.Vector3());
-  const scale=cfg.size.height?cfg.size.height/size.y:cfg.size.length/Math.max(size.z,size.x);
-  const asset={T,scene,clips,scale,offset:new T.Vector3(-(box.min.x+box.max.x)/2*scale,-box.min.y*scale+(cfg.lift||0),-(box.min.z+box.max.z)/2*scale),radius:size.length()*scale*.75,deathY:null};
-  // Where the corpse rests: the fit height that puts the last death frame's lowest point on the
-  // ground. Fliers drop their hover lift, and clips whose body ends below (or above) the idle feet
-  // no longer leave it sunk into the ground (imp, ogre, troll) or hanging in the air (bat).
-  if(clips.death){mixer.stopAllAction();const a=mixer.clipAction(clips.death);a.setLoop(T.LoopOnce,1);a.clampWhenFinished=true;a.play();mixer.setTime(clips.death.duration);holder.updateMatrixWorld(true);
-   const end=new T.Box3().setFromObject(holder,true);if(!end.isEmpty())asset.deathY=-end.min.y*scale}
+  const asset=fitMonsterAsset(T,gltf,cfg);
   store.assets.set(species,asset);store.pending.delete(species);store.version++;return asset;
  }).catch(e=>{console.warn('Monster model',species,e);store.pending.delete(species);store.assets.set(species,null)}));
  return null;
@@ -110,12 +127,12 @@ function riggedBody(T,group,d,asset){
   if(o.isSkinnedMesh){o.computeBoundingSphere?.();if(o.boundingSphere)o.boundingSphere.radius*=1.6}});
  const mixer=new T.AnimationMixer(body),act={};for(const [name,clip] of Object.entries(asset.clips))act[name]=mixer.clipAction(clip);
  for(const k of ['attack','hit','death'])if(act[k]){act[k].setLoop(T.LoopOnce,1);act[k].clampWhenFinished=true}
- const walkDuration=asset.clips.walk?.duration||1,attackScale=act.attack?asset.clips.attack.duration/(cfg.attack||.8):1;
+ const walkDuration=asset.clips.walk?.duration||1,runDuration=asset.clips.run?.duration||1,attackScale=act.attack?asset.clips.attack.duration/(cfg.attack||.8):1;
  let base=act.idle||null,oneShot=null,lastAttack=0,lastHit=0,dead=false,tick=0,fallFrom=0;base?.play();
  const effect=attackEffect(T,fit,d,asset);
  const to=(next,fade=.2)=>{if(next===base)return;next?.reset().setEffectiveWeight(1).fadeIn(fade).play();base?.fadeOut(fade);base=next};
  const shot=(a,scale=1,fade=.08)=>{if(!a)return false;if(oneShot&&oneShot!==a)oneShot.fadeOut(fade);a.reset().setEffectiveTimeScale(scale).setEffectiveWeight(1).fadeIn(fade).play();oneShot=a;return true};
- return {fit,update(dt,m){tick+=dt;
+ return {fit,get clip(){return Object.keys(act).find(k=>act[k]===base)||null},update(dt,m){tick+=dt;
    if(m.dead){if(!dead){dead=true;fallFrom=fit.position.y;if(act.death){if(oneShot&&oneShot!==act.death)oneShot.fadeOut(.1);base?.fadeOut(.15);act.death.reset().fadeIn(.1).play();oneShot=act.death}}mixer.update(dt);
     // Settle onto the ground with the fall (see asset.deathY).
     if(act.death&&asset.deathY!=null)fit.position.y=corpseHeight(fallFrom,asset.deathY,act.death.time/asset.clips.death.duration);return}
@@ -126,7 +143,8 @@ function riggedBody(T,group,d,asset){
    lastAttack=attack;lastHit=hit;
    if(oneShot&&!oneShot.isRunning()){oneShot.fadeOut(.15);oneShot=null}
    const moving=(m.distance||0)>1e-4;
-   if(moving&&act.walk){const speed=m.speed||(m.distance/Math.max(dt,1e-3)),rate=Math.max(.5,Math.min(2.4,speed*walkDuration/((cfg.stride||2)*(d.scale||1))));to(act.walk);act.walk.setEffectiveTimeScale(rate)}
+   if(moving&&act.walk){const speed=m.speed||(m.distance/Math.max(dt,1e-3)),run=act.run&&speed>=RUN_SPEED,gait=run?act.run:act.walk;
+    const rate=Math.max(.5,Math.min(2.4,speed*(run?runDuration:walkDuration)/((run?cfg.runStride||cfg.stride*2||4:cfg.stride||2)*(d.scale||1))));to(gait);gait.setEffectiveTimeScale(rate)}
    else if(!moving)to(act.idle||null,.25);
    mixer.update(dt);
    // Species without an attack clip lunge with the whole body; without a hit clip they flinch.
@@ -157,6 +175,8 @@ export function riggedActorModel(T,parent,d,classic){
   current=asset?riggedBody(T,group,d,asset):classic(group);kind=next;group.rotation.z=0;group.position.y=0}
  build();
  return {get ownDeath(){return kind==='rigged'&&!!store.assets.get(d.species)?.clips.death},get rigged(){return kind==='rigged'},
+  // The looping clip playing now (idle, walk or run); null for the classic body.
+  get clip(){return current?.clip??null},
   update(dt,m){if(seen!==store.version)build();current?.update?.(dt,m)},
   dispose(){current?.dispose?.();group.removeFromParent()}};
 }
