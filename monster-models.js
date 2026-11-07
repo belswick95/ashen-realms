@@ -24,7 +24,10 @@ export const MONSTER_MODELS={
  troll:{file:'troll.glb',size:{height:2.3},yaw:0,stride:2.6,attack:.95},
  // The lava golem serves the ash demon and, smaller and tinted, the imps.
  demon:{file:'demon.glb',size:{height:2.5},yaw:0,stride:2.4,attack:1},
- imp:{file:'demon.glb',size:{height:1.9},yaw:0,stride:1.8,attack:.8,mouth:[1.35,.55]},
+ imp:{file:'imp.glb',size:{height:1.9},yaw:0,stride:1.8,attack:.8,mouth:[1.35,.55],recolor:0x721923},
+ ogre:{file:'ogre.glb',size:{height:2.3},yaw:0,stride:2.2,attack:1,recolor:0x738636},
+ revenant:{file:'revenant.glb',size:{height:2.2},yaw:0,stride:2,attack:.9,mouth:[1.4,.6],recolor:0x2a1030,fly:true,lift:.25,opacity:.88,tint:0x46566b},
+ wraith:{file:'wraith.glb',size:{height:2},yaw:0,lift:.25,attack:.9,fly:true,mouth:[1.3,.6],recolor:0x2a1030,opacity:.88},
 };
 const BASE=new URL('./assets/monsters/',import.meta.url);
 const CLASSIC_KEY='eldervale-classic-monsters';
@@ -62,20 +65,39 @@ export async function preloadMonsterModels(T){if(!canLoad())return;for(const s o
 
 // A roster tint recolours the model the way the procedural bodies were recoloured: untextured
 // parts take the tint's hue keeping their own lightness; textured parts are multiplied by a
-// brightened tint. One material per (source material, tint), shared by every instance.
-function tintedMaterial(T,material,tint){
- if(!Number.isFinite(tint))return material;const key=material.uuid+':'+tint;let m=store.materials.get(key);if(m)return m;
+// brightened tint. Models painted from a flat colour atlas (`recolor`: the atlas colour of the
+// body) are instead recoloured in the shader: texels of the body's hue take the tint, while
+// hair, weapons, bone, eyes and teeth keep their own colours. One material per (source material, tint), shared by every instance.
+function tintedMaterial(T,material,tint,cfg={}){
+ if(!Number.isFinite(tint)&&!cfg.opacity)return material;const key=material.uuid+':'+tint;let m=store.materials.get(key);if(m)return m;
  m=material.clone();m.userData.eldervaleShared=true;const t={h:0,s:0,l:0};new T.Color(tint).getHSL(t);
- if(material.map){const c=new T.Color(tint),peak=Math.max(c.r,c.g,c.b,1e-3);c.multiplyScalar(1/peak);m.color.setRGB(1,1,1).lerp(c,.7).multiplyScalar(Math.max(.4,Math.min(1.1,.45+t.l)));if(material.emissiveMap)m.emissive.copy(c)}
+ if(cfg.opacity){m.transparent=true;m.opacity=cfg.opacity}
+ if(!Number.isFinite(tint));else if(material.map&&Number.isFinite(cfg.recolor))recolorMaterial(m,cfg.recolor,tint);
+ else if(material.map){const c=new T.Color(tint),peak=Math.max(c.r,c.g,c.b,1e-3);c.multiplyScalar(1/peak);m.color.setRGB(1,1,1).lerp(c,.7).multiplyScalar(Math.max(.4,Math.min(1.1,.45+t.l)));if(material.emissiveMap)m.emissive.copy(c)}
  else{const own={h:0,s:0,l:0};material.color.getHSL(own);if(own.l>=.75&&material.userData.tintAll)m.color.set(tint);else if(own.l<.75)m.color.setHSL(t.h,Math.min(1,t.s*.85+own.s*.15),Math.max(.04,Math.min(.92,own.l*(.35+t.l*1.3))))}
  store.materials.set(key,m);return m;
+}
+
+const hsv=hex=>{const r=(hex>>16&255)/255,g=(hex>>8&255)/255,b=(hex&255)/255,max=Math.max(r,g,b),d=max-Math.min(r,g,b);const h=d?(max===r?((g-b)/d+6)%6:max===g?(b-r)/d+2:(r-g)/d+4)/6:0;return {h,s:max?d/max:0,v:max}};
+// Hue shift, saturation and value scale (in sRGB, like the swatches) from the body colour to the tint.
+function recolorMaterial(m,base,tint){
+ const b=hsv(base),t=hsv(tint),value=[t.h-b.h,Math.min(1.3,t.s/Math.max(b.s,.05)),Math.max(.4,Math.min(4,t.v/Math.max(b.v,.02)))];
+ m.customProgramCacheKey=()=>'eldervale-recolor';
+ m.onBeforeCompile=sh=>{sh.uniforms.recolor={value};sh.uniforms.recolorHue={value:b.h};
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>',`#include <common>
+uniform vec3 recolor;uniform float recolorHue;
+vec3 rgb2hsv(vec3 c){vec4 K=vec4(0.,-1./3.,2./3.,-1.);vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g));vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r));float d=q.x-min(q.w,q.y);return vec3(abs(q.z+(q.w-q.y)/(6.*d+1e-10)),d/(q.x+1e-10),q.x);}
+vec3 hsv2rgb(vec3 c){vec3 p=abs(fract(c.xxx+vec3(1.,2./3.,1./3.))*6.-3.);return c.z*mix(vec3(1.),clamp(p-1.,0.,1.),c.y);}`).replace('#include <map_fragment>',`#include <map_fragment>
+{vec3 srgb=pow(max(diffuseColor.rgb,vec3(0.)),vec3(1./2.2));vec3 c=rgb2hsv(srgb);float dh=abs(c.x-recolorHue);dh=min(dh,1.-dh);float w=smoothstep(.34,.44,c.y)*(1.-smoothstep(.11,.13,dh));
+ vec3 shifted=hsv2rgb(vec3(fract(c.x+recolor.x),clamp(c.y*recolor.y,0.,1.),clamp(c.z*recolor.z,0.,1.)));
+ diffuseColor.rgb=pow(mix(srgb,shifted,w),vec3(2.2));}`)};
 }
 
 // The rigged body for one actor; returns null when the species should stay classic.
 function riggedBody(T,group,d,asset){
  const cfg=MONSTER_MODELS[d.species],body=cloneSkinned(asset.scene),pivot=new T.Group();
  pivot.rotation.y=cfg.yaw||0;pivot.add(body);const fit=new T.Group();fit.scale.setScalar(asset.scale);fit.position.copy(asset.offset);fit.add(pivot);group.add(fit);
- body.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=false;o.material=tintedMaterial(T,o.material,Number.isFinite(d.tint)?d.tint:cfg.tint);
+ body.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=false;o.material=tintedMaterial(T,o.material,Number.isFinite(d.tint)?d.tint:cfg.tint,cfg);
   // Bounds from the bind pose plus margin for the clips (once per instance, no per-frame work).
   if(o.isSkinnedMesh){o.computeBoundingSphere?.();if(o.boundingSphere)o.boundingSphere.radius*=1.6}});
  const mixer=new T.AnimationMixer(body),act={};for(const [name,clip] of Object.entries(asset.clips))act[name]=mixer.clipAction(clip);

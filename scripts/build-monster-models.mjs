@@ -3,7 +3,8 @@
 // usage: node scripts/build-monster-models.mjs <raw-dir> [name ...]
 //   raw-dir holds one GLB per species exported from the source .blend/.fbx with Blender
 //   (one armature, the kept meshes, clips renamed to idle/walk/attack/hit/death, textures
-//   already scaled down to 256 px). This step resamples the clips, drops unused data and
+//   already scaled down to 256 px), or converted directly from a glTF source with the clips
+//   renamed (the Ultimate Monsters models; see assets/monsters/CREDITS.md). This step resamples the clips, drops unused data and
 //   quantizes the geometry (KHR_mesh_quantization, read natively by three's GLTFLoader),
 //   writing assets/monsters/<name>.glb.
 import fs from 'node:fs';import path from 'node:path';
@@ -31,11 +32,14 @@ for(const file of fs.readdirSync(rawDir).filter(f=>f.endsWith('.glb')).sort()){
   const tol=path==='translation'?1e-4*Math.max(1,Math.hypot(...rest)):1e-4;let same=true;
   for(let i=0;i<values.length&&same;i+=rest.length){let d=0;if(path==='rotation'){const dot=Math.abs(values[i]*rest[0]+values[i+1]*rest[1]+values[i+2]*rest[2]+values[i+3]*rest[3]);d=1-dot}else for(let k=0;k<rest.length;k++)d=Math.max(d,Math.abs(values[i+k]-rest[k]));if(d>tol)same=false}
   if(same){const s=ch.getSampler();ch.dispose();if(s&&!s.listParents().some(p=>p.propertyType==='AnimationChannel'))s.dispose();dropped++}}
+ await doc.transform(weld(),dedup(),prune({keepAttributes:true}),quantize({pattern:/^(POSITION|NORMAL|TEXCOORD_0|WEIGHTS_0)$/,quantizationVolume:'scene',quantizePosition:14,quantizeNormal:10,quantizeTexcoord:12,quantizeWeight:8}));
  // Meshes of one body share one skeleton: identical skins (same joints and bind matrices) merge.
+ // Quantizing over one volume for the whole scene keeps the bind matrices of a body and its
+ // props (a weapon) equal, so they still merge afterwards.
  const skins=[];for(const node of doc.getRoot().listNodes()){const skin=node.getSkin();if(!skin)continue;
   const same=skins.find(s=>s!==skin&&s.listJoints().length===skin.listJoints().length&&s.listJoints().every((j,i)=>j===skin.listJoints()[i])&&String(s.getInverseBindMatrices()?.getArray())===String(skin.getInverseBindMatrices()?.getArray()));
   if(same)node.setSkin(same);else skins.push(skin)}
- await doc.transform(weld(),dedup(),prune({keepAttributes:true}),quantize({pattern:/^(POSITION|NORMAL|TEXCOORD_0)$/,quantizePosition:14,quantizeNormal:10,quantizeTexcoord:12}));
+ await doc.transform(prune({keepAttributes:true}));
  const target=path.join(out,name+'.glb');await io.write(target,doc);
  const clips=doc.getRoot().listAnimations().map(a=>a.getName()).join(',');
  console.log(name.padEnd(8),String(fs.statSync(target).size).padStart(7),'bytes','clips',clips,'(dropped',dropped,'rest channels)');
