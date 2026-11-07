@@ -279,3 +279,6 @@ html body.fantasy-hud #trade-request .trade-request-meter{background:var(--mv-st
 html body.fantasy-hud #trade-request .trade-request-buttons button.trade-accept:not(:disabled){background:var(--mv-grain),linear-gradient(180deg,#a8442a,var(--mv-ember) 55%,var(--mv-ember-lo))!important;border-color:var(--mv-gold-mid)!important}
 html body.fantasy-hud #trade-request .trade-request-buttons button.trade-decline:not(:disabled){background:var(--mv-wood-face)!important}
 html body.fantasy-hud #trade-request .trade-request-buttons button:disabled{background:var(--mv-stone-dark)!important;border-color:#0e0b08!important;color:#8f8470!important}
+/* Minimap orbs (run energy was Arial) and the Castle Training card (system-ui) take the theme faces. */
+html body.fantasy-hud :is(#map-widget,#mech-orbs,.tutorial-hud) :not(svg,svg *){font-family:var(--mv-body)!important}
+html body.fantasy-hud .tutorial-hud .tutorial-hud-badge{font-family:var(--mv-display)!important;letter-spacing:.06em}
