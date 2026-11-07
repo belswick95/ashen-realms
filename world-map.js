@@ -16,7 +16,7 @@
 // in a little, hover or tap names them with their level, and the legend toggles each kind.
 //
 // The pure helpers (view maths, colours, POI kinds) are exported for tests.
-import {MARKER_CATS,MARKER_GROUPS,clusterMarkers,markerLabel,drawMarker,drawMarkerIcon,legendTint,loadFilters,saveFilters} from './map-icons.js?v=release-20261107-ground158';
+import {MARKER_CATS,MARKER_GROUPS,clusterMarkers,markerLabel,drawMarker,drawMarkerIcon,legendTint,loadFilters,saveFilters} from './map-icons.js?v=release-20261107-animals159';
 
 export const POI_KINDS={
  bank:{label:'Bank',color:'#d6a21e',ink:'#4a3006'},

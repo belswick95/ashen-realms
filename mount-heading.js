@@ -1,4 +1,4 @@
-import {turnToward} from './motion-track.js?v=release-20261107-ground158';
+import {turnToward} from './motion-track.js?v=release-20261107-animals159';
 // Mounted heading (OSRS rules, as on foot): the horse faces the tile step it is on and turns fast
 // at the route's one bend (turnToward, ~70 ms). heading144 low-passed the horse's velocity (~80 ms)
 // instead; on its line-hugging routes (E, NE, E, E, NE ...) the velocity swung at every diagonal

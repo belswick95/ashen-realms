@@ -1,4 +1,4 @@
-import {surfaceTexture} from './surface-textures.js?v=release-20261107-ground158';
+import {surfaceTexture} from './surface-textures.js?v=release-20261107-animals159';
 // Town work that reads as work. Every job pairs a base clip (animation.js
 // ACTIVITY) with its own prop and a light procedural layer applied after the
 // mixer: hands closed on a broom handle, a hammer striking a real anvil, a

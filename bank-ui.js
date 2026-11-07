@@ -1,6 +1,6 @@
-import {goods,inventoryEntries,quantity,inventoryUsed,isWorn,INVENTORY_SLOTS} from './economy.js?v=release-20261107-ground158';
-import {morphChildren,setMarkup,setText} from './ui-stable.js?v=release-20261107-ground158';
-import {fitToViewport} from './touch-menus.js?v=release-20261107-ground158';
+import {goods,inventoryEntries,quantity,inventoryUsed,isWorn,INVENTORY_SLOTS} from './economy.js?v=release-20261107-animals159';
+import {morphChildren,setMarkup,setText} from './ui-stable.js?v=release-20261107-animals159';
+import {fitToViewport} from './touch-menus.js?v=release-20261107-animals159';
 const setDisabled=(b,on)=>{if(b.disabled!==!!on)b.disabled=!!on},setPressed=(b,on)=>{const v=String(!!on);if(b.getAttribute('aria-pressed')!==v)b.setAttribute('aria-pressed',v)},element=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n},compact=n=>n>=1e6?(n/1e6).toFixed(n%1e6?1:0)+'m':n>=1e4?Math.floor(n/1000)+'k':n.toLocaleString();
 function category(g){if(g.noteOf)return 'notes';if(g.field)return 'equipment';if(g.heal>0)return 'provisions';if(g.category==='Tools'||g.unique)return 'tools';if(['Ores','Bars','Timber','Materials','Ingredients','Herbs','Seeds','Runes'].includes(g.category)||['Logs','Iron ore','Raw river fish','Fishing bait'].includes(g.name))return 'resources';return 'other'}
 // Status after "Deposit inventory": the backpack is empty, or names what the bank could not hold.
