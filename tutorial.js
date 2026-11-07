@@ -1,9 +1,9 @@
 // Castle training client: objective HUD, guide arrow, tutor dialogue, gate lock and the arrival cutscene.
 // Server state (quests + game_flags.tutorial) arrives with every realm sync; nothing here is authoritative.
-import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261107-mixamo129';
-import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261107-mixamo129';
-import {frameShot,roomFromGroup,glideClear} from './cutscene-camera.js?v=release-20261107-mixamo129';
-import {obstructionDistance} from './camera-obstruction.js?v=release-20261107-mixamo129';
+import {cutscenes,validCutscene} from './cutscenes.js?v=release-20261107-combatsfx130';
+import {currentStep,talkPlan,tutorialLocked,needsCutscene,exitBlocked,bearing,GATE_MESSAGE,tutorialQuestsOf} from './tutorial-logic.js?v=release-20261107-combatsfx130';
+import {frameShot,roomFromGroup,glideClear} from './cutscene-camera.js?v=release-20261107-combatsfx130';
+import {obstructionDistance} from './camera-obstruction.js?v=release-20261107-combatsfx130';
 
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -17,7 +17,7 @@ const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 // people indoors stay inside that room (cutscene-camera.js). prewarm(eye,look) (optional): draws a
 // shot off-screen so its shaders compile while the prologue still covers the canvas (cutscene-boot.js).
 export function createTutorial({T,scene,heightAt,locate,playerPosition,say,command,lastError,carried,refreshGates,npcDialogue=null,actorRoot=null,cameraOccluders=()=>[],rooms=()=>[],prewarm=null}){
- document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261107-mixamo129'}));
+ document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'./tutorial.css?v=release-20261107-combatsfx130'}));
  let quests=[],flags={},locked=false,step=null,talking=false,destroyed=false,selfName='';
  // ---- objective HUD
  const hud=el('section','tutorial-hud');hud.hidden=true;hud.setAttribute('aria-live','polite');

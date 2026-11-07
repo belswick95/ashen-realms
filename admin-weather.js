@@ -3,7 +3,7 @@
 // changes, preview any weather on this screen only, and a forecast of the coming slots.
 // Reads and writes go through world_admin -> admin_action (weather_* commands, owner-checked and
 // audited on the server: db/weather.sql). The schedule itself is shared with weather.js.
-import {WEATHER_KINDS,WEATHER_LABELS,WEATHER_REGIONS,DEFAULT_WEIGHTS,WEATHER_LIMITS,regionWeather,weatherLabel} from './weather.js?v=release-20261107-mixamo129';
+import {WEATHER_KINDS,WEATHER_LABELS,WEATHER_REGIONS,DEFAULT_WEIGHTS,WEATHER_LIMITS,regionWeather,weatherLabel} from './weather.js?v=release-20261107-combatsfx130';
 
 // Percent share of each kind for one region's weights (rounded; all zero -> clear 100).
 export function weightShares(weights={}){const total=WEATHER_KINDS.reduce((s,k)=>s+(Number(weights[k])||0),0);if(!total)return {clear:100};return Object.fromEntries(WEATHER_KINDS.filter(k=>weights[k]>0).map(k=>[k,Math.round(weights[k]/total*100)]))}

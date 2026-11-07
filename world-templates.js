@@ -1,8 +1,8 @@
-import {campObjects,adventurePeople} from './adventure-catalog.js?v=release-20261107-mixamo129';
-import {professionStations} from './profession-data.js?v=release-20261107-mixamo129';
-import {PASSAGE_TEMPLATES} from './underground-data.js?v=release-20261107-mixamo129';
-import {AGILITY_TEMPLATES} from './agility-data.js?v=release-20261107-mixamo129';
-import {LORE_MODELS,CRATE_TEMPLATE} from './explore-data.js?v=release-20261107-mixamo129';
+import {campObjects,adventurePeople} from './adventure-catalog.js?v=release-20261107-combatsfx130';
+import {professionStations} from './profession-data.js?v=release-20261107-combatsfx130';
+import {PASSAGE_TEMPLATES} from './underground-data.js?v=release-20261107-combatsfx130';
+import {AGILITY_TEMPLATES} from './agility-data.js?v=release-20261107-combatsfx130';
+import {LORE_MODELS,CRATE_TEMPLATE} from './explore-data.js?v=release-20261107-combatsfx130';
 // Original Eldervale templates. All actors have a combat profile, including peaceful services.
 const npc=(name,role,weapon,attackType,color,extra={})=>({kind:'npc',name,role,weapon,attackType,color,level:5,hp:45,damage:4,attackSpeed:2.4,roam:3,respawn:30,attackable:false,hostile:false,scale:1,dialogue:'Welcome, traveler. These roads connect us all.',...extra});
 const monster=(name,species,attackType,level,hp,damage,extra={})=>({kind:'monster',name,species,attackType,level,hp,damage,attackSpeed:2.6,roam:5,respawn:30,attackable:true,hostile:false,scale:1,...extra});

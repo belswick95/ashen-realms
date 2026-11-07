@@ -1,8 +1,8 @@
-import {weaponCatalog,isTwoHanded} from './weapons.js?v=release-20261107-mixamo129';
-import {shieldCatalog} from './shields.js?v=release-20261107-mixamo129';
-import {outfitItems,SLOT_LABELS} from './outfits.js?v=release-20261107-mixamo129';
-import {CAPE_GEAR,addBonuses,bonuses,bestArrow,ARROWS,levelsFromXp,requirementError,ARMOUR_VERB,describeGear} from './gear-tiers.js?v=release-20261107-mixamo129';
-import {skillLevel} from './combat-level.js?v=release-20261107-mixamo129';
+import {weaponCatalog,isTwoHanded} from './weapons.js?v=release-20261107-combatsfx130';
+import {shieldCatalog} from './shields.js?v=release-20261107-combatsfx130';
+import {outfitItems,SLOT_LABELS} from './outfits.js?v=release-20261107-combatsfx130';
+import {CAPE_GEAR,addBonuses,bonuses,bestArrow,ARROWS,levelsFromXp,requirementError,ARMOUR_VERB,describeGear} from './gear-tiers.js?v=release-20261107-combatsfx130';
+import {skillLevel} from './combat-level.js?v=release-20261107-combatsfx130';
 // Every wearable outfit piece (outfits.js) plus the cape. `equipSlot` is the
 // machine slot; one item per slot can be worn. Legacy helm/chest/legs/boots
 // are the iron knight pieces.

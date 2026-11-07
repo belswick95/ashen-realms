@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import {fishingDock} from '../waterfront.js';
 import * as T from 'three';
-import {initializeGeography,worldRivers,landscapeLakes,roadLines,ribbonGeometry,distanceToRoad,landscapeSettlements} from '../geography.js?v=release-20261107-mixamo129';
-import {generatedTreePoints} from '../procedural-world.js?v=release-20261107-mixamo129';
+import {initializeGeography,worldRivers,landscapeLakes,roadLines,ribbonGeometry,distanceToRoad,landscapeSettlements} from '../geography.js?v=release-20261107-combatsfx130';
+import {generatedTreePoints} from '../procedural-world.js?v=release-20261107-combatsfx130';
 import {createLandscape,landscapeGeometry} from '../landscape.js';
 import {isBuilding,buildingPlot,localPoint,coversSurface,pavedGeometry,drapedGeometry} from '../world-surfaces.js';
 import {sculptPatches} from '../terrain-patches.js';
