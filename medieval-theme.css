@@ -251,3 +251,21 @@ html body #auth-screen .auth-card #auth-status{font-family:var(--mv-body)!import
 html body #auth-screen .login-card-foot{font-family:var(--mv-display)!important;color:var(--mv-ink-dim)!important;border-top-color:#d9ae5526!important}
 html body #auth-screen #login-sound-toggle{background:var(--mv-wood-face)!important;border:1px solid #120a04!important;border-radius:4px!important;color:var(--mv-gold-hi)!important;box-shadow:var(--mv-bevel-out)!important;min-height:44px}
 @media(max-width:480px){html body #auth-screen .login-tabs button{font-size:12px!important;letter-spacing:.01em!important;white-space:nowrap;padding:8px 4px!important}html body #auth-screen #auth-title{font-size:30px!important}}
+
+/* --------------------------------------------------------------------------
+   QA pass (portrait145): leftovers from the generic UI inside the medieval
+   panels. Old rules set 11–13px Arial on equipment stats, stance buttons,
+   skill names, settings rows, panel notes and the Log out button, and painted
+   green boxes (#0f1e18 / #23382d / #202c24) with thin outlines. Panel text
+   takes the book face; display (Cinzel) headings keep theirs.
+   -------------------------------------------------------------------------- */
+html body.fantasy-hud :is(#side,#social-panel,#contextmenu,#dialog,dialog,.map-card) :not(svg,svg *){font-family:var(--mv-body)!important}
+html body.fantasy-hud :is(#side,#social-panel,#dialog,dialog,.map-card) :is(h2,h3),
+html body.fantasy-hud #side :is(.skills-footer,.settings-nav button,#inventory-gold),
+html body.fantasy-hud #social-panel :is(.social-head strong,#social-toggle),
+html body.fantasy-hud #dialog :is(#dialog-name,.dialog-badge,#dialog-next){font-family:var(--mv-display)!important}
+html body.fantasy-hud #side .equipment-stats{background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important;color:var(--mv-ink)!important}
+html body.fantasy-hud #side .equipment-stats-group{background:#00000033!important;border:1px solid #d9ae5526!important}
+html body.fantasy-hud #side .equipment-stats-group h4{color:var(--mv-gold)!important;font-weight:700}
+html body.fantasy-hud #side .player-combat-level{background:var(--mv-wood-face)!important;border:1px solid #140c05!important;box-shadow:var(--mv-bevel-out),inset 0 0 0 1px #d9ae5540!important;color:var(--mv-gold-hi)!important;text-shadow:var(--mv-shadow-text)}
+html body.fantasy-hud #settings-tab label{background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important}

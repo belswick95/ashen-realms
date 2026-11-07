@@ -14,3 +14,16 @@ test('sign-in and sign-up errors read as plain sentences, not raw API codes',()=
  assert.equal(authErrorText(null),'Something went wrong. Please try again.');
  assert.match(read('auth.js'),/message\(authErrorText\(err\)\)/);
 });
+
+test('medieval theme restyles the generic-UI leftovers inside panels (Arial text, green boxes)',()=>{
+ const css=read('medieval-theme.css'),tail=css.slice(css.lastIndexOf('QA pass (portrait145)'));
+ assert.ok(tail.includes(':is(#side,#social-panel,#contextmenu,#dialog,dialog,.map-card) :not(svg,svg *){font-family:var(--mv-body)!important}'));
+ for(const sel of ['.equipment-stats{','.equipment-stats-group{','.player-combat-level{','#settings-tab label{'])assert.ok(tail.includes(sel),sel+' restyled');
+ // Display headings keep Cinzel after the blanket body-face rule.
+ assert.ok(tail.indexOf('.settings-nav button')>tail.indexOf(':not(svg,svg *)'));
+});
+
+test('settings dropdown labels fit the phone panel',()=>{
+ const html=read('index.html'),select=html.match(/<select id="graphics-preset"[\s\S]*?<\/select>/)[0];
+ for(const [,label] of select.matchAll(/<option[^>]*>([^<]*)<\/option>/g))assert.ok(label.length<=18,label);
+});
