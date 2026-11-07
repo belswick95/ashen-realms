@@ -7,12 +7,29 @@ const MOTION_COMMANDS=new Set(['move','stop']);
 // online (the server's presence window is 8-15 s) but stops costing the database a world reply
 // every 250 ms. Steering and commands are unaffected; the next visible tick polls at once.
 export const HIDDEN_POLL_MS=3000;
+// A visible tab polls once per server tick (600 ms), not four times a second: the world only
+// changes on a tick, the local walker predicts movement, and every poll runs the world tick and
+// builds a full reply under the server's one world lock (db/realm-busy-fix.sql). Polling faster
+// only queued more requests on that lock. Steering and commands still go out at once.
+export const POLL_MS=600;
+// A busy realm (lock or statement timeouts, gateway errors) or a slow reply backs the poll off
+// (1.2 s, 2.4 s, 4.8 s, at most 8 s) so a struggling server is not kept saturated; the first
+// quick reply restores the normal rate.
+export const SLOW_REPLY_MS=1500,MAX_POLL_MS=8000;
+export function nextPollDelay(current,{ok,ms=0,busy=false}={}){
+ if(ok&&ms<SLOW_REPLY_MS)return POLL_MS;
+ if(ok||busy)return Math.min(MAX_POLL_MS,Math.max(POLL_MS*2,current*2));
+ return Math.min(MAX_POLL_MS,Math.max(POLL_MS*2,current));
+}
+export const isRealmBusy=message=>/statement timeout|canceling statement|deadlock detected|could not obtain lock|lock timeout|Failed to fetch|NetworkError|Load failed|upstream|Bad Gateway|Gateway Time-?out|Service Unavailable|realm is busy/i.test(String(message||''));
+// The same busy notice at most once per 5 s in the chat (each failed command used to add one).
+const BUSY_NOTICE_MS=5000;
 // Database/transport failures are not game messages: never show raw Postgres text (e.g. "canceling
 // statement due to statement timeout") in the chat. Game-rule refusals pass through unchanged.
-export function playerFacingError(message){const m=String(message||'');return /statement timeout|canceling statement|deadlock detected|could not obtain lock|lock timeout|Failed to fetch|NetworkError|Load failed|upstream|Bad Gateway|Gateway Time-?out|Service Unavailable/i.test(m)?'The realm is busy - please try that again.':m}
+export function playerFacingError(message){const m=String(message||'');return isRealmBusy(m)?'The realm is busy - please try that again.':m}
 export async function startRealm(db,user,session){
  const diet=createSyncDiet();let lean=true;
- let lastRequestAt=0,cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,movesPending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
+ let lastRequestAt=0,pollDelay=POLL_MS,wasHidden=false,leaving=false,lastBusyNotice=0,cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,movesPending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
  const badge=document.createElement('output');badge.id='realm-connection';badge.setAttribute('role','status');badge.style.cssText='position:fixed;top:42px;left:50%;transform:translateX(-50%);z-index:250;background:#25271d;color:#f4d899;padding:7px 12px;border-radius:5px';badge.hidden=true;document.body.append(badge);
  async function request(command='sync',payload={},id=null){
   if(disposed)throw Error('Disconnected from the world');
@@ -21,9 +38,10 @@ export async function startRealm(db,user,session){
   // Lean replies (db/sync-diet.sql) skip what this client already holds; a server
   // without the lean RPC gets the original call.
   try{const args={session_id:session,command,payload,request_id:id,event_cursor:cursor};if(lean){({data,error}=await db.rpc('world_command_lean',{...args,have:diet.have()}));if(missingRpc(error)){lean=false;diet.reset();({data,error}=await db.rpc('world_command',args))}}else({data,error}=await db.rpc('world_command',args))}catch(e){error=e}finally{slow.end()}
+  pollDelay=nextPollDelay(pollDelay,{ok:!error,ms:Date.now()-started,busy:!!error&&isRealmBusy(error.message)});
   // A refused logout (still in combat) is a game message, not a connection problem.
   if(error&&command==='logout'&&isLogoutRefusal(error.message))throw Error(error.message);
-  if(error){badge.hidden=false;badge.textContent='World connection: '+error.message;failures++;
+  if(error){badge.hidden=false;badge.textContent='World connection: '+playerFacingError(error.message);failures++;
    // Signing in elsewhere replaces this world session: stop polling a dead session (it would fail
    // four times a second forever) and hand over to the sign-in screen.
    if(/session expired/i.test(error.message)&&!disposed){disposed=true;window.eldervaleSessionLost?.('Your character was signed in from another window or device. Please sign in again.');throw Error(error.message)}
@@ -47,15 +65,20 @@ export async function startRealm(db,user,session){
  }
  // steerPending: only unacknowledged WASD input holds the local walker; a click-walk in flight
  // does not (the walker keeps presenting its current path until the new one arrives).
- const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued||movesPending>0,steerPending:()=>acknowledged<issued,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=playerFacingError(e.message);window.eldervaleWorldBridge.notice(commandError);return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
+ const controller={predictionLead:()=>Math.min(500,roundtrip/2),movementPending:()=>acknowledged<issued||movesPending>0,steerPending:()=>acknowledged<issued,steer:input=>{window.eldervaleRecordActivity?.();latestSteer={...input,sequence:++issued};void sendSteer()},get lastError(){return commandError},command:(c,p)=>{window.eldervaleRecordActivity?.();const label=commandLabel(c),run=enqueue(c,p);return (label?loading.track(run,label):run).then(result=>{commandError='';return result}).catch(e=>{commandError=playerFacingError(e.message);const busy=isRealmBusy(e.message),now=Date.now();if(!busy||now-lastBusyNotice>=BUSY_NOTICE_MS){if(busy)lastBusyNotice=now;window.eldervaleWorldBridge.notice(commandError)}return false})},refresh:()=>enqueue(),checkpoint:()=>enqueue().catch(()=>false),
   // Logout (logout-guard.js, db/logout-combat.sql): the server refuses while the 10 s combat timer
   // runs; on success it ends this world session, so polling stops here.
-  leave:async()=>{const stop=()=>{disposed=true;clearInterval(timer)};try{await enqueue('logout',{});stop();return {ok:true}}catch(e){const m=e.message||'';if(isLogoutRefusal(m))return {refused:m};if(isLegacyLogoutReply(m)){stop();return {ok:true,legacy:true}}return {error:playerFacingError(m)}}},
+  // While a logout is in flight no background poll queues ahead of a retry.
+  leave:async()=>{const stop=()=>{disposed=true;clearInterval(timer)};leaving=true;try{await enqueue('logout',{});stop();return {ok:true}}catch(e){const m=e.message||'';if(isLogoutRefusal(m))return {refused:m};if(isLegacyLogoutReply(m)){stop();return {ok:true,legacy:true}}return {error:playerFacingError(m),busy:isRealmBusy(m)}}finally{leaving=false}},
   // Cosmetic commands (level-up fireworks) fail silently: no chat notice.
   quietCommand:(c,p)=>enqueue(c,p).then(r=>r??true).catch(()=>false),
   // Quest guidance trail: the server tile grid around a point (db/quests-v2.sql quest_guide_tiles).
   guideTiles:args=>db.rpc('quest_guide_tiles',args).then(r=>{if(r.error)throw Error(r.error.message);return r.data})};window.eldervaleRealm=controller;
- await enqueue();const timer=setInterval(()=>{if(disposed)return;if(latestSteer)void sendSteer();else if(!pending&&!steerInFlight&&!(document.hidden&&Date.now()-lastRequestAt<HIDDEN_POLL_MS))void enqueue().catch(()=>{})},250);
+ await enqueue();const timer=setInterval(()=>{if(disposed)return;if(latestSteer){void sendSteer();return}
+  const hidden=!!document.hidden,shown=wasHidden&&!hidden;wasHidden=hidden;
+  if(pending||steerInFlight||leaving)return;
+  const since=Date.now()-lastRequestAt;if(shown?false:since<(hidden?Math.max(HIDDEN_POLL_MS,pollDelay):pollDelay))return;
+  void enqueue().catch(()=>{})},250);
  addEventListener('pagehide',()=>{disposed=true;clearInterval(timer)},{once:true});
  return controller;
 }

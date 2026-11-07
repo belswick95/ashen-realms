@@ -63,7 +63,8 @@ form.onsubmit=async e=>{e.preventDefault();if(loading)return;setBusy(true);messa
 // pending-save retry stays scheduled), cancel trades, then the server 'logout' command, which
 // re-checks combat and ends the world session, then the auth sign-out.
 const logoutButton=document.querySelector('#logout');
-const logoutFlow=createLogoutFlow({clock:combatClock,notify:text=>showLogoutNotice(text),
+// onBusy: the X shows it is working (a slow or busy server never leaves a tap without an answer).
+const logoutFlow=createLogoutFlow({clock:combatClock,notify:text=>showLogoutNotice(text),onBusy:busy=>{document.querySelector('#logout-x')?.classList.toggle('logout-busy',busy)},
  save:async()=>{clearTimeout(saveTimer);window.eldervaleCaptureSave?.();if(await flush()){logoutButton.textContent='Log out';return true}logoutButton.textContent='Retry logout';showLogoutNotice('Could not save your character yet — please try logging out again.');return false},
  // Logging out cancels a pending trade request or open trade for both players.
  cancelTrade:()=>Promise.race([window.eldervaleTradeCancel?.(),sleep(2000)]).catch(()=>{}),

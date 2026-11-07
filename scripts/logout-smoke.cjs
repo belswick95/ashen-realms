@@ -22,6 +22,7 @@ const USER='11111111-1111-4111-8111-111111111111';
    if(fn==='world_snapshot')return {data:{settings:{maintenance:false,revision:1,world_config:{enabled:true,seed:241916600,version:2}},access:{},owner:false,entities:[],deliveries:[]}};
    if(fn==='world_enter')return {data:{save:{user_id:user,gold:5,health:100,max_health:100,world_position:{x:-229,y:134},game_flags:{appearance:{hair:'Buzz cut'},tutorial:{done:true}}},session:'44444444-4444-4444-8444-444444444444'}};
    if(fn==='world_command_lean'||fn==='world_command'){if(args.command!=='sync')window.rpcLog.push(args.command);
+    if(args.command==='logout'&&window.mockLogoutBusy>0){window.mockLogoutBusy--;return {error:{message:'canceling statement due to statement timeout'}}}
     if(args.command==='logout'){if(window.mockServerCombat)return {error:{message:"You can't log out until 10 seconds after the end of combat."}};window.serverLoggedOut=true;return {data:{reset:true,loggedOut:true}}}
     if(localStorage.getItem('mock-fail')==='1')return {error:{message:'Failed to fetch'}};
     return sync()}
@@ -52,8 +53,14 @@ const USER='11111111-1111-4111-8111-111111111111';
  await page.evaluate(()=>{window.mockServerCombat=false;window.rpcLog.length=0;localStorage.setItem('mock-fail','1')});
  await page.evaluate(()=>document.querySelector('#settings-logout').click());await page.waitForFunction(()=>document.querySelector('#logout').textContent==='Retry logout');
  assert.deepEqual(await page.evaluate(()=>window.rpcLog),[]);
- // 4. Out of combat, save works: logout is immediate (server logout, then sign-out, then the sign-in screen).
- await page.evaluate(()=>localStorage.removeItem('mock-fail'));await x.click();
+ // 4. Out of combat, save works, but the realm is busy (the server's logout times out twice): the X
+ // answers at once ("Logging out…"), says it is retrying, a second tap repeats the status instead of
+ // doing nothing, and the logout completes by itself (server logout, sign-out, sign-in screen).
+ await page.evaluate(()=>{localStorage.removeItem('mock-fail');window.mockLogoutBusy=2});await x.click();
+ await page.waitForFunction(()=>window.notices.some(t=>/Logging out/.test(t)),null,{timeout:3000});
+ await page.waitForFunction(()=>/busy.*retrying/i.test(document.querySelector('#logout-toast')?.textContent||''),null,{timeout:12000});
+ assert.equal(await x.evaluate(el=>el.classList.contains('logout-busy')),true,'the X shows a logout under way');
+ await x.click();assert.match(await page.locator('#logout-toast').innerText(),/busy.*retrying/i,'a second tap answers with the status');
  await page.waitForFunction(()=>!!localStorage.getItem('mock-signed-out'));assert.equal(await page.evaluate(()=>localStorage.getItem('mock-signed-out')),'after-server-logout');await page.waitForFunction(()=>!document.querySelector('#auth-screen').hidden);
  assert.equal(await page.locator('#logout-x').count(),0,'no X on the sign-in screen');
  assert.deepEqual(errors,[]);console.log('PASS: logout X and Settings button share the OSRS 10 s combat rule (client lock, server refusal, retry after failed save, immediate logout) - fake transport only.');

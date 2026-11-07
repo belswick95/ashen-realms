@@ -30,14 +30,39 @@ test('failed latest stop retries without resurrecting movement',async()=>{
  }finally{for(const k of keys)if(old[k]===undefined)delete globalThis[k];else globalThis[k]=old[k];}
 });
 
-test('a hidden tab keeps a 3 s presence poll instead of four syncs a second',async()=>{
+test('a hidden tab keeps a 3 s presence poll; a visible one polls once per 600 ms tick',async()=>{
  const keys=['window','document','addEventListener','setInterval'],old=Object.fromEntries(keys.map(k=>[k,globalThis[k]])),oldNow=Date.now;let tick,clock=10000,syncs=0;
  try{Date.now=()=>clock;globalThis.window={eldervaleRealmBridge:{snapshot(){},event(){}}};globalThis.document={hidden:false,createElement:()=>({style:{},setAttribute(){}}),body:{append(){}}};globalThis.addEventListener=()=>{};globalThis.setInterval=fn=>{tick=fn;return 1};
  const db={async rpc(name,args){if(args.command==='sync')syncs++;return {data:{time:new Date(clock).toISOString(),events:[]}}}};
  await startRealm(db,{id:'self'},'session');assert.equal(syncs,1);
- clock+=250;tick();await new Promise(setImmediate);assert.equal(syncs,2,'visible: polls every interval');
+ clock+=250;tick();await new Promise(setImmediate);assert.equal(syncs,1,'visible: no poll faster than a server tick');
+ clock+=350;tick();await new Promise(setImmediate);assert.equal(syncs,2,'visible: polls once a tick');
  document.hidden=true;for(let i=0;i<11;i++){clock+=250;tick();await new Promise(setImmediate)}assert.equal(syncs,2,'hidden: no poll within 3 s');
  clock+=250;tick();await new Promise(setImmediate);assert.equal(syncs,3,'hidden: presence poll after 3 s');
  document.hidden=false;clock+=250;tick();await new Promise(setImmediate);assert.equal(syncs,4,'visible again: polls at once');
+ }finally{Date.now=oldNow;for(const k of keys)if(old[k]===undefined)delete globalThis[k];else globalThis[k]=old[k];}
+});
+
+test('a busy or slow realm backs the poll off and a quick reply restores it',async()=>{
+ const {nextPollDelay,POLL_MS,MAX_POLL_MS,isRealmBusy,playerFacingError}=await import('../realm-client.js');
+ assert.equal(nextPollDelay(POLL_MS,{ok:true,ms:120}),POLL_MS);
+ let d=POLL_MS;const seen=[];for(let i=0;i<6;i++){d=nextPollDelay(d,{ok:false,busy:true});seen.push(d)}
+ assert.deepEqual(seen,[1200,2400,4800,8000,8000,8000]);assert.equal(MAX_POLL_MS,8000);
+ assert.equal(nextPollDelay(600,{ok:true,ms:3000}),1200,'a slow reply also backs off');
+ assert.equal(nextPollDelay(4800,{ok:true,ms:90}),POLL_MS);
+ for(const m of ['canceling statement due to statement timeout','canceling statement due to lock timeout','Failed to fetch','Load failed'])assert.equal(isRealmBusy(m),true,m);
+ assert.equal(isRealmBusy('Quest already completed'),false);assert.equal(playerFacingError('canceling statement due to lock timeout'),'The realm is busy - please try that again.');
+});
+test('busy polls space out on the 250 ms timer and recover after a good reply',async()=>{
+ const keys=['window','document','addEventListener','setInterval'],old=Object.fromEntries(keys.map(k=>[k,globalThis[k]])),oldNow=Date.now;let tick,clock=10000,syncs=0,fail=false;
+ try{Date.now=()=>clock;globalThis.window={eldervaleRealmBridge:{snapshot(){},event(){}},eldervaleWorldBridge:{notice(){}}};globalThis.document={hidden:false,createElement:()=>({style:{},setAttribute(){}}),body:{append(){}}};globalThis.addEventListener=()=>{};globalThis.setInterval=fn=>{tick=fn;return 1};
+ const db={async rpc(name,args){if(args.command==='sync')syncs++;return fail?{error:{message:'canceling statement due to statement timeout'}}:{data:{time:new Date(clock).toISOString(),events:[]}}}};
+ await startRealm(db,{id:'self'},'session');fail=true;
+ const run=async ms=>{for(let t=0;t<ms;t+=250){clock+=250;tick();await new Promise(setImmediate)}};
+ await run(600);assert.equal(syncs,2,'first failing poll');
+ await run(1000);assert.equal(syncs,2,'backed off to 1.2 s');await run(250);assert.equal(syncs,3);
+ await run(2250);assert.equal(syncs,3,'then 2.4 s');await run(250);assert.equal(syncs,4);
+ fail=false;await run(4500);assert.equal(syncs,4,'backed off to 4.8 s');await run(500);assert.equal(syncs,5,'4.8 s later the realm answers');
+ await run(600);assert.equal(syncs,6,'back to one poll a tick');
  }finally{Date.now=oldNow;for(const k of keys)if(old[k]===undefined)delete globalThis[k];else globalThis[k]=old[k];}
 });

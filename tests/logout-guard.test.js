@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {LOGOUT_COMBAT_MS,LOGOUT_COMBAT_MESSAGE,createCombatClock,createLogoutFlow,isCombatEvent,isLogoutRefusal,isLegacyLogoutReply} from '../logout-guard.js';
+import {LOGOUT_COMBAT_MS,LOGOUT_COMBAT_MESSAGE,LOGOUT_PROGRESS_MESSAGE,LOGOUT_BUSY_MESSAGE,LOGOUT_GAVE_UP_MESSAGE,createCombatClock,createLogoutFlow,isCombatEvent,isLogoutRefusal,isLegacyLogoutReply} from '../logout-guard.js';
 import {startRealm} from '../realm-client.js';
 
 const clockAt=start=>{let t=start;const clock=createCombatClock({now:()=>t});return {clock,advance:ms=>{t+=ms},get t(){return t}}};
@@ -46,7 +46,7 @@ test('every attempt inside the window is refused; once 10 s have passed logout i
 });
 test('out of combat: save, cancel trades, server logout, sign out, reload - in that order',async()=>{
  const c=clockAt(0);const {flow,calls,notices}=flowWith(c.clock,plain);assert.equal(await flow.request(),'done');
- assert.deepEqual(calls,['save','trade','leave','signOut','finish']);assert.deepEqual(notices,[]);
+ assert.deepEqual(calls,['save','trade','leave','signOut','finish']);assert.deepEqual(notices,[LOGOUT_PROGRESS_MESSAGE],'the tap is answered at once');
 });
 test('a failed save stops the logout (Retry logout) and a later retry goes through',async()=>{
  const c=clockAt(0);let ok=false;const {flow,calls}=flowWith(c.clock,calls=>({save:async()=>{calls.push('save');return ok}}));
@@ -55,15 +55,15 @@ test('a failed save stops the logout (Retry logout) and a later retry goes throu
 });
 test('combat that starts while the save is in flight cancels the logout',async()=>{
  const c=clockAt(0);const {flow,calls,notices}=flowWith(c.clock,calls=>({save:async()=>{calls.push('save');c.clock.observeEvent({type:'hit',player:'me',side:'enemy'},'me');return true}}));
- assert.equal(await flow.request(),'combat');assert.deepEqual(calls,['save']);assert.deepEqual(notices,[LOGOUT_COMBAT_MESSAGE]);
+ assert.equal(await flow.request(),'combat');assert.deepEqual(calls,['save']);assert.deepEqual(notices,[LOGOUT_PROGRESS_MESSAGE,LOGOUT_COMBAT_MESSAGE]);
 });
 test('the server refusal wins over a stale client clock and starts the client window',async()=>{
  const c=clockAt(0);const {flow,calls,notices}=flowWith(c.clock,calls=>({leave:async()=>{calls.push('leave');return {refused:LOGOUT_COMBAT_MESSAGE}}}));
- assert.equal(await flow.request(),'combat');assert.deepEqual(calls,['save','trade','leave']);assert.deepEqual(notices,[LOGOUT_COMBAT_MESSAGE]);assert.equal(c.clock.locked(),true);
+ assert.equal(await flow.request(),'combat');assert.deepEqual(calls,['save','trade','leave']);assert.deepEqual(notices,[LOGOUT_PROGRESS_MESSAGE,LOGOUT_COMBAT_MESSAGE]);assert.equal(c.clock.locked(),true);
 });
 test('a realm error keeps the player in game with a readable message; a failed sign-out does not reload',async()=>{
  const c=clockAt(0);let r=flowWith(c.clock,calls=>({leave:async()=>{calls.push('leave');return {error:'The realm is busy - please try that again.'}}}));
- assert.equal(await r.flow.request(),'error');assert.deepEqual(r.notices,['The realm is busy - please try that again.']);assert.ok(!r.calls.includes('signOut'));
+ assert.equal(await r.flow.request(),'error');assert.deepEqual(r.notices,[LOGOUT_PROGRESS_MESSAGE,'The realm is busy - please try that again.']);assert.ok(!r.calls.includes('signOut'));
  r=flowWith(c.clock,calls=>({signOut:async()=>{calls.push('signOut');return false}}));assert.equal(await r.flow.request(),'signout-failed');assert.ok(!r.calls.includes('finish'));
 });
 test('the X and the Settings button cannot run two logouts at once',async()=>{
@@ -71,6 +71,24 @@ test('the X and the Settings button cannot run two logouts at once',async()=>{
  const {flow,calls}=flowWith(c.clock,calls=>({save:async()=>{calls.push('save');await gate;return true},onBusy:v=>busy.push(v)}));
  const first=flow.request();assert.equal(flow.busy,true);assert.equal(await flow.request(),'busy');release();assert.equal(await first,'done');
  assert.equal(calls.filter(x=>x==='save').length,1);assert.deepEqual(busy,[true,false]);assert.equal(flow.busy,false);
+});
+test('a busy realm: the X says it is retrying, retries by itself, and a second tap gets the status, never silence',async()=>{
+ const c=clockAt(0);let tries=0,release;const waits=[];
+ const r=flowWith(c.clock,calls=>({leave:async()=>{calls.push('leave');return ++tries<3?{error:'The realm is busy - please try that again.',busy:true}:{ok:true}},wait:ms=>{waits.push(ms);return new Promise(res=>{release=res})},retryDelays:[1500,3000,5000]}));
+ const first=r.flow.request();await new Promise(setImmediate);
+ assert.deepEqual(r.notices,[LOGOUT_PROGRESS_MESSAGE,LOGOUT_BUSY_MESSAGE]);assert.match(LOGOUT_BUSY_MESSAGE,/busy.*retrying/i);
+ assert.equal(await r.flow.request(),'busy');assert.equal(r.notices.at(-1),LOGOUT_BUSY_MESSAGE,'a tap while busy repeats the status');
+ release();await new Promise(setImmediate);release();assert.equal(await first,'done');
+ assert.deepEqual(waits,[1500,3000]);assert.deepEqual(r.calls,['save','trade','leave','leave','leave','signOut','finish']);
+});
+test('a realm that stays busy ends with a clear "tap X again" message and the player stays in game',async()=>{
+ const c=clockAt(0);const r=flowWith(c.clock,calls=>({leave:async()=>{calls.push('leave');return {error:'The realm is busy - please try that again.',busy:true}},wait:async()=>{},retryDelays:[1,1]}));
+ assert.equal(await r.flow.request(),'error');assert.equal(r.calls.filter(x=>x==='leave').length,3);assert.equal(r.notices.at(-1),LOGOUT_GAVE_UP_MESSAGE);assert.ok(!r.calls.includes('signOut'));
+ assert.equal(r.flow.busy,false,'the next tap starts a fresh attempt');
+});
+test('combat that starts while waiting to retry cancels the logout',async()=>{
+ const c=clockAt(0);const r=flowWith(c.clock,calls=>({leave:async()=>{calls.push('leave');return {error:'busy',busy:true}},wait:async()=>{c.clock.mark()},retryDelays:[1]}));
+ assert.equal(await r.flow.request(),'combat');assert.equal(r.notices.at(-1),LOGOUT_COMBAT_MESSAGE);
 });
 test('server replies are classified: refusal, legacy server or ended session, other errors',()=>{
  assert.equal(isLogoutRefusal("You can't log out until 10 seconds after the end of combat."),true);
@@ -98,7 +116,7 @@ test('realm client: a server without the logout command falls back to the old si
  const r=await realmWith(a=>a.command==='logout'?{error:{message:'Unknown world command'}}:ok());
  try{assert.deepEqual(await r.realm.leave(),{ok:true,legacy:true});assert.equal(r.cleared,1)}finally{r.restore()}
  const e=await realmWith(a=>a.command==='logout'?{error:{message:'canceling statement due to statement timeout'}}:ok());
- try{assert.deepEqual(await e.realm.leave(),{error:'The realm is busy - please try that again.'});assert.equal(e.cleared,0)}finally{e.restore()}
+ try{assert.deepEqual(await e.realm.leave(),{error:'The realm is busy - please try that again.',busy:true});assert.equal(e.cleared,0)}finally{e.restore()}
 });
 test('realm client: hits on the player and monsters targeting the player start the combat clock',async()=>{
  // Same module instance as realm-client.js (it imports the versioned URL).

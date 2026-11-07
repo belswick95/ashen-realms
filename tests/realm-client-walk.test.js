@@ -23,5 +23,7 @@ test('the snapshot handler keeps the local walk on a motion-stale snapshot',()=>
 test('database and transport failures reach the player as a friendly message; game refusals pass through',()=>{
  for(const raw of ['canceling statement due to statement timeout','deadlock detected','Failed to fetch','TypeError: NetworkError when attempting to fetch resource.'])assert.equal(playerFacingError(raw),'The realm is busy - please try that again.');
  for(const rule of ['You need level 20 Woodcutting to chop this tree.','Your inventory is full.','You should finish your training before leaving the castle.'])assert.equal(playerFacingError(rule),rule);
- assert.match(fs.readFileSync(new URL('../realm-client.js',import.meta.url),'utf8'),/commandError=playerFacingError\(e\.message\);window\.eldervaleWorldBridge\.notice\(commandError\)/);
+ // The friendly text reaches the chat; a busy realm says so at most once per 5 s instead of once per failed command.
+ const src=fs.readFileSync(new URL('../realm-client.js',import.meta.url),'utf8');
+ assert.match(src,/commandError=playerFacingError\(e\.message\);/);assert.match(src,/if\(!busy\|\|now-lastBusyNotice>=BUSY_NOTICE_MS\)\{if\(busy\)lastBusyNotice=now;window\.eldervaleWorldBridge\.notice\(commandError\)\}/);
 });

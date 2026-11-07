@@ -67,7 +67,7 @@ test('a world session replaced by another sign-in stops polling and returns to t
  const db={rpc:async()=>{calls++;return calls===1?{data:{time:new Date().toISOString(),events:[],eventCursor:0}}:{error:{message:'Session expired'}}}};
  try{
   await startRealm(db,{id:'u'},'s');
-  timers[0]();await new Promise(r=>setTimeout(r,10));
+  await new Promise(r=>setTimeout(r,650));timers[0]();await new Promise(r=>setTimeout(r,10));
   assert.match(String(lost),/signed in from another/);
   const after=calls;for(let i=0;i<5;i++)timers[0]();await new Promise(r=>setTimeout(r,10));
   assert.equal(calls,after,'no more requests once the session is gone');

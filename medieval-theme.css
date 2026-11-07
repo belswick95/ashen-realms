@@ -327,6 +327,13 @@ html body #logout-x#logout-x:focus-visible{outline:2px solid #f1d087!important;o
 html body #logout-x#logout-x .logout-x-lock{display:none!important;position:absolute!important;right:-4px!important;bottom:-4px!important;width:18px!important;height:18px!important;padding:2px!important;box-sizing:border-box!important;border-radius:50%!important;background:#1c1611!important;box-shadow:0 0 0 1px var(--mv-gold-lo)!important;color:var(--mv-gold)!important;pointer-events:none!important}
 html body #logout-x#logout-x.logout-locked{color:#a5634d!important;filter:saturate(.6)!important}
 html body #logout-x#logout-x.logout-locked .logout-x-lock{display:block!important}
+/* Touch: no double-tap-zoom wait on the X, always hit-testable, and a square hit area slightly
+   larger than the disc so a tap on its rim (or just outside it) still lands (iPad Safari). While a
+   logout is under way (slow or busy server) the X dims and pulses. */
+html body #logout-x#logout-x{touch-action:manipulation!important;-webkit-tap-highlight-color:transparent;pointer-events:auto!important;-webkit-user-select:none;user-select:none}
+html body #logout-x#logout-x::after{content:'';position:absolute;inset:-4px;border-radius:0;background:transparent;pointer-events:auto}
+html body #logout-x#logout-x.logout-busy{animation:logout-busy-pulse 1s ease-in-out infinite alternate}
+@keyframes logout-busy-pulse{from{opacity:1}to{opacity:.55}}
 #logout-toast{position:fixed;left:50%;top:max(56px,calc(env(safe-area-inset-top) + 48px));transform:translateX(-50%);z-index:60;box-sizing:border-box;max-width:min(440px,calc(100vw - 32px));padding:9px 16px;border:3px solid transparent;border-radius:6px;background:var(--mv-leather-face) padding-box,var(--mv-stone-face) border-box;box-shadow:var(--mv-frame-shadow),inset 0 0 0 1px var(--mv-gold-lo);color:var(--mv-ink);font:600 14px/1.35 var(--mv-body);text-align:center;text-shadow:var(--mv-shadow-text);pointer-events:none}
 #logout-toast[hidden]{display:none}
 /* Short landscape screens (phones): below the player panel. */
