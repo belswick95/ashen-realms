@@ -209,3 +209,15 @@ html body.fantasy-hud #map-widget#map-widget #explore-toggle{font-size:18px!impo
 html body.fantasy-hud #map-widget#map-widget #explore-toggle svg{width:22px!important;height:22px!important}
 html body.fantasy-hud #map-widget#map-widget :is(#prayer-orb,#spec-orb) .mech-orb-icon svg{width:14px;height:14px}
 html body.fantasy-hud #map-widget#map-widget #explore-toggle .explore-counter{right:-8px;bottom:-4px}
+
+/* ---- Log out X (logout-guard.js) ----
+   The X sits in the cluster's top-right corner, level with the compass. The disc and the journal /
+   world-map pair drop by --mm-xs so the X rests in the disc's top-right shoulder with a clear gap
+   (the disc's dark ring included): 34px on the 168px disc, 40px on the phone's 112px disc. The
+   orb column on the left does not move. The quest tracker follows the cluster's new bottom. */
+html body.fantasy-hud{--mm-xs:34px;--mm-h:calc(var(--mm-xs) + var(--mm-d) + var(--mm-g) + var(--mm-o))}
+html body.fantasy-hud.phone-layout{--mm-xs:40px;--mm-h:max(calc(4 * var(--mm-o) + 3 * var(--mm-g)),calc(var(--mm-xs) + var(--mm-d) + var(--mm-g) + var(--mm-o)))}
+html body.fantasy-hud #map-widget#map-widget #minimap{top:var(--mm-xs)!important}
+html body.fantasy-hud #map-widget#map-widget :is(#explore-toggle,#map-toggle){top:calc(var(--mm-xs) + var(--mm-d) + var(--mm-g))!important}
+#logout-x{position:fixed;top:max(12px,calc(env(safe-area-inset-top) + 8px));right:max(12px,calc(env(safe-area-inset-right) + 8px));z-index:40;width:44px;height:44px}
+html body.fantasy-hud #map-widget#map-widget #logout-x{position:absolute!important;inset:0 0 auto auto!important;width:var(--mm-o)!important;height:var(--mm-o)!important;min-width:0!important;min-height:0!important;margin:0!important;transform:none;z-index:4}
