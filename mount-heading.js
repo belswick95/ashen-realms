@@ -4,10 +4,11 @@
 // mounted), so the reported yaw and the real travel direction often differ by up
 // to 45° on mixed diagonal/straight paths. Facing that yaw made the horse crab
 // sideways. This follows the low-passed velocity instead (per-frame deltas are
-// far too noisy), falls back to the given yaw only when the rider stands still,
+// far too noisy; ~80 ms, so a route crossing a slope does not wag the horse at
+// every diagonal tile), falls back to the given yaw only when the rider stands still,
 // and turns at a capped, horse-like rate.
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
-export function createTravelHeading({turnRate=10,ease=25,smoothing=.05,minSpeed=1.2,teleport=6}={}){
+export function createTravelHeading({turnRate=10,ease=25,smoothing=.08,minSpeed=1.2,teleport=6}={}){
  let yaw=null,vx=0,vz=0,lastX=null,lastZ=null;
  return {
   get yaw(){return yaw},

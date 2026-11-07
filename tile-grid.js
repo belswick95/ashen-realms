@@ -29,12 +29,22 @@ export function canMove(flagsAt,i,j,di,dj){
 // mode 'tile': end on goal; 'card': end orthogonally next to goal; 'near': end within `reach`
 // units of `point`. Unreachable: the reached tile closest to `point`, if within `alt` tiles (alt<0: any).
 // Returns {path:[[x,z],...], reached, nodes} exactly like eldervale_private.tile_route.
+// The path is traced back from the end along the shortest-path tiles that lie closest to the
+// straight line from the start to the end (ties: the first-found parent). Following the first-found
+// parent alone put every straight step first and every diagonal last, so a click 10 east and 3 north
+// walked east (off to one side of the marker) and then swung over to the diagonal on the other side.
 const DI=[-1,1,0,0,-1,1,-1,1],DJ=[0,0,-1,1,-1,-1,1,1];
 export function bfsRoute({start,goal,mode='tile',point=null,reach=0,radius=32,alt=10,flagsAt}){
  radius=Math.max(2,Math.min(64,radius|0));const w=2*radius+1,n=w*w,ox=start[0]-radius,oz=start[1]-radius;
  const px=point?point[0]:goal[0]*TILE,pz=point?point[1]:goal[1]*TILE,tpx=Math.round(px/TILE*1e6)/1e6,tpz=Math.round(pz/TILE*1e6)/1e6;
  const fl=new Int32Array(n);for(let k=0;k<n;k++)fl[k]=flagsAt(ox+k%w,oz+Math.floor(k/w))|0;
- const prev=new Int32Array(n).fill(-1),queue=new Int32Array(n);let head=0,tail=0;
+ const prev=new Int32Array(n).fill(-1),depth=new Int32Array(n),queue=new Int32Array(n);let head=0,tail=0;
+ // Can the walker step from window tile (ci,cj) by (di,dj)? (the target tile itself is checked by the caller)
+ const open=(ci,cj,di,dj)=>{const ni=ci+di,nj=cj+dj;
+  if(!dj)return !(fl[cj*w+Math.min(ci,ni)]&FLAG.E);
+  if(!di)return !(fl[Math.min(cj,nj)*w+ci]&FLAG.N);
+  if(fl[cj*w+ni]&FLAG.BLOCK||fl[nj*w+ci]&FLAG.BLOCK||fl[cj*w+Math.min(ci,ni)]&FLAG.E||fl[Math.min(cj,nj)*w+ci]&FLAG.N)return false;
+  return di===dj?!(fl[Math.min(cj,nj)*w+Math.min(ci,ni)]&FLAG.NE):!(fl[Math.min(cj,nj)*w+Math.max(ci,ni)]&FLAG.NW)};
  const origin=radius*w+radius;prev[origin]=origin;queue[tail++]=origin;
  let found=-1,best=-1,bestD=Infinity;
  while(head<tail){
@@ -43,21 +53,55 @@ export function bfsRoute({start,goal,mode='tile',point=null,reach=0,radius=32,al
   const d=(wi-tpx)**2+(wj-tpz)**2;if(best<0||d<bestD){best=cur;bestD=d}
   for(let k=0;k<8;k++){
    const di=DI[k],dj=DJ[k],ni=ci+di,nj=cj+dj;if(ni<0||nj<0||ni>=w||nj>=w)continue;
-   const idx=nj*w+ni;if(prev[idx]>=0||fl[idx]&FLAG.BLOCK)continue;
-   let f;
-   if(!dj)f=fl[cj*w+Math.min(ci,ni)]&FLAG.E;
-   else if(!di)f=fl[Math.min(cj,nj)*w+ci]&FLAG.N;
-   else if(fl[cj*w+ni]&FLAG.BLOCK||fl[nj*w+ci]&FLAG.BLOCK||fl[cj*w+Math.min(ci,ni)]&FLAG.E||fl[Math.min(cj,nj)*w+ci]&FLAG.N)f=1;
-   else if(di===dj)f=fl[Math.min(cj,nj)*w+Math.min(ci,ni)]&FLAG.NE;
-   else f=fl[Math.min(cj,nj)*w+Math.max(ci,ni)]&FLAG.NW;
-   if(f)continue;
-   prev[idx]=cur;queue[tail++]=idx;
+   const idx=nj*w+ni;if(prev[idx]>=0||fl[idx]&FLAG.BLOCK||!open(ci,cj,di,dj))continue;
+   prev[idx]=cur;depth[idx]=depth[cur]+1;queue[tail++]=idx;
   }
  }
  const reachedGoal=found>=0;
  if(!reachedGoal){if(best>=0&&(alt<0||bestD<=alt*alt))found=best;if(found<0||found===origin)return {path:[],reached:false,nodes:tail}}
- const path=[];for(let k=found,steps=0;k!==origin&&steps<n;k=prev[k],steps++)path.push([tileCenter(k%w+ox),tileCenter(Math.floor(k/w)+oz)]);
+ const ex=found%w-radius,ez=Math.floor(found/w)-radius,path=[];
+ for(let k=found,steps=0;k!==origin&&steps<n;steps++){
+  const ci=k%w,cj=(k-ci)/w;path.push([tileCenter(ci+ox),tileCenter(cj+oz)]);
+  // Off-line distance of each one-step-shorter parent that can step here (|cross| with the line).
+  let next=prev[k],off=Math.abs((prev[k]%w-radius)*ez-(Math.floor(prev[k]/w)-radius)*ex);
+  for(let q=0;q<8;q++){const pi=ci-DI[q],pj=cj-DJ[q];if(pi<0||pj<0||pi>=w||pj>=w)continue;const p=pj*w+pi;
+   if(p===next||prev[p]<0||depth[p]!==depth[k]-1||!open(pi,pj,DI[q],DJ[q]))continue;
+   const o=Math.abs((pi-radius)*ez-(pj-radius)*ex);if(o<off-1e-9){off=o;next=p}}
+  k=next;
+ }
  path.reverse();return {path,reached:reachedGoal,nodes:tail};
+}
+
+// Facing of a tile walker: along the stretch of its path just ahead, not just the next tile. A
+// route crossing a slope mixes two neighbouring step directions (east, east, north-east, east, ...);
+// facing each tile flicked the walker 45° at every diagonal. Instead it faces the point up to
+// `look` tile steps ahead, as far as the path keeps to those two neighbouring directions, so it
+// looks along the slope toward the marker, and still turns at a real corner (90° or more).
+// `path` holds [x,z] pairs or {x,z}; `from` is the index of the next point.
+export const LOOK_TILES=6;
+const ptX=p=>Number(p?.[0]??p?.x),ptZ=p=>Number(p?.[1]??p?.z);
+const stepDir=(dx,dz)=>{const m=Math.max(Math.abs(dx),Math.abs(dz));return m<1e-9?-1:(Math.round(dx/m)+1)*3+Math.round(dz/m)+1};
+const DIR_ANGLE=[-3*Math.PI/4,-Math.PI/2,-Math.PI/4,Math.PI,NaN,0,3*Math.PI/4,Math.PI/2,Math.PI/4];// stepDir -> atan2(di,dj)
+const adjacent=(a,b)=>{const d=Math.abs(DIR_ANGLE[a]-DIR_ANGLE[b]);return Math.min(d,2*Math.PI-d)<Math.PI/4+1e-6};
+export function aheadYaw(x,z,path,from=0,fallback=0,look=LOOK_TILES,behind=null){
+ let steps=0,lx=x,lz=z,tx=x,tz=z,first=-1,other=-1;
+ const fits=dir=>{if(first<0){first=dir;return true}if(dir===first||dir===other)return true;if(other<0&&adjacent(dir,first)){other=dir;return true}return false};
+ for(let k=from;k<path.length;k++){
+  const gx=ptX(path[k]),gz=ptZ(path[k]);if(!Number.isFinite(gx)||!Number.isFinite(gz))break;
+  const dir=stepDir(gx-lx,gz-lz);if(dir<0)continue;if(!fits(dir))break;
+  const seg=Math.max(Math.abs(gx-lx),Math.abs(gz-lz))/TILE;
+  if(steps+seg>look){const f=(look-steps)/seg;tx=lx+(gx-lx)*f;tz=lz+(gz-lz)*f;break}
+  steps+=seg;lx=tx=gx;lz=tz=gz;
+ }
+ // Tiles already walked (oldest first) that keep to the same directions widen the stretch when
+ // little of the path ahead is known (a remote walker's queue holds a tile or two).
+ let sx=x,sz=z;
+ if(behind&&first>=0)for(let k=behind.length-1,back=0,nx=x,nz=z;k>=0&&back<look-steps;k--){
+  const bx=ptX(behind[k]),bz=ptZ(behind[k]);if(!Number.isFinite(bx)||!Number.isFinite(bz))break;
+  const dir=stepDir(nx-bx,nz-bz);if(dir<0)continue;if(!fits(dir))break;
+  back+=Math.max(Math.abs(nx-bx),Math.abs(nz-bz))/TILE;sx=nx=bx;sz=nz=bz;
+ }
+ return Math.hypot(tx-sx,tz-sz)>1e-6&&Math.hypot(tx-x,tz-z)>1e-6?Math.atan2(tx-sx,tz-sz):fallback;
 }
 
 // Smooth presentation of a tile walker: the server reports where it stood at the tick boundary
@@ -68,11 +112,11 @@ export function projectTilePose(pose,now,{maxTicks=3}={}){
  const out={x:pose.x,z:pose.z,yaw:pose.yaw,moving:false},path=Array.isArray(pose.path)?pose.path:[],steps=pose.stepTiles>0?pose.stepTiles:1;
  if(!path.length||!Number.isFinite(pose.at)||!Number.isFinite(now))return out;
  let budget=Math.max(0,Math.min(maxTicks,(now-pose.at)/(GAME_TICK*1000)))*steps;
- for(const point of path){
-  const gx=Number(point?.[0]),gz=Number(point?.[1]);if(!Number.isFinite(gx)||!Number.isFinite(gz))break;
+ for(let k=0;k<path.length;k++){
+  const gx=Number(path[k]?.[0]),gz=Number(path[k]?.[1]);if(!Number.isFinite(gx)||!Number.isFinite(gz))break;
   const dx=gx-out.x,dz=gz-out.z;if(Math.abs(dx)+Math.abs(dz)<1e-6)continue;
   out.yaw=Math.atan2(dx,dz);out.moving=true;
-  if(budget<1){out.x+=dx*budget;out.z+=dz*budget;return out}
+  if(budget<1){out.x+=dx*budget;out.z+=dz*budget;out.yaw=aheadYaw(out.x,out.z,path,k,out.yaw);return out}
   out.x=gx;out.z=gz;budget-=1;
  }
  out.moving=false;return out;

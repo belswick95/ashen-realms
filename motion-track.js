@@ -1,5 +1,5 @@
 import {slideStep} from './movement-collision.js?v=release-20261107-emotes143';
-import {projectTilePose,TILE,GAME_TICK} from './tile-grid.js?v=release-20261107-emotes143';
+import {projectTilePose,aheadYaw,LOOK_TILES,TILE,GAME_TICK} from './tile-grid.js?v=release-20261107-emotes143';
 // Timestamped presentation buffer: no position authority or damage is decided here.
 // When snapshots arrive later than `delay` (a slow reply on a phone or tablet
 // connection) the buffer runs dry and the actor would freeze, then jump. The
@@ -27,19 +27,19 @@ export function createMotionTrack({delay=350,maxExtra=600}={}){let tile=false,pl
 // sample(now) returns {x,z,yaw,moving,run,speed,snapped}; one object is reused (no allocation).
 export const TILE_WALK_SPEED=TILE/GAME_TICK,CATCH_UP=1.3,SLOW=.6,SNAP_TILES=4,BUFFER_TILES=2,DUE_MS=1800,START_WAIT_MS=900,TELEPORT=12;
 export function createTilePlayback({buffer=BUFFER_TILES,slow=SLOW,gain=.2,ease=.4}={}){
- const path=[],out={x:0,z:0,yaw:0,moving:false,run:false,speed:0,snapped:false};let ready=false,walking=false,startAt=0,stand=0,heading=0,steps=1,rate=1,lastNow=null,lastTile=-Infinity,snapNext=false;
+ const path=[],trail=[],out={x:0,z:0,yaw:0,moving:false,run:false,speed:0,snapped:false};let ready=false,walking=false,startAt=0,stand=0,lastStep=NaN,heading=0,steps=1,rate=1,lastNow=null,lastTile=-Infinity,snapNext=false;
  // Distances are in tile steps (a diagonal step is one step, as on the server: one tick), not units.
  const stepsOf=(dx,dz)=>Math.max(Math.abs(dx),Math.abs(dz))/TILE;
  const len=()=>{let d=0,px=out.x,pz=out.z;for(const p of path){d+=stepsOf(p.x-px,p.z-pz);px=p.x;pz=p.z}return d};
  // Walk `d` tile steps along the queued path from the presented point; returns the ground covered.
- function advance(d){let ground=0;while(path.length&&d>0){const p=path[0],dx=p.x-out.x,dz=p.z-out.z,seg=stepsOf(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){ground+=Math.hypot(dx,dz);out.x=p.x;out.z=p.z;d-=seg;path.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}return ground}
+ function advance(d){let ground=0;while(path.length&&d>0){const p=path[0],dx=p.x-out.x,dz=p.z-out.z,seg=stepsOf(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){ground+=Math.hypot(dx,dz);out.x=p.x;out.z=p.z;d-=seg;trail.push(path.shift());if(trail.length>LOOK_TILES)trail.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}if(path.length)heading=aheadYaw(out.x,out.z,path,0,heading,LOOK_TILES,trail);return ground}
  return {get backlog(){return len()},
   push(pose,now=performance.now()){if(!Number.isFinite(pose.x)||!Number.isFinite(pose.z))return;
    if(!ready){ready=true;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand=Number.isFinite(pose.yaw)?pose.yaw:0;return}
    const last=path.at(-1)||out,d=Math.hypot(pose.x-last.x,pose.z-last.z);if(Number.isFinite(pose.yaw))stand=pose.yaw;
    if(d<1e-6)return;// same tile: only the facing (an NPC turning to talk)
-   if(d>TELEPORT){path.length=0;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand;snapNext=true;return}
-   steps=pose.stepTiles>0?pose.stepTiles:pose.run?2:1;if(!path.length&&!walking)startAt=now;path.push({x:pose.x,z:pose.z});lastTile=now},
+   if(d>TELEPORT){path.length=0;trail.length=0;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand;snapNext=true;return}
+   lastStep=Math.atan2(pose.x-last.x,pose.z-last.z);steps=pose.stepTiles>0?pose.stepTiles:pose.run?2:1;if(!path.length&&!walking)startAt=now;path.push({x:pose.x,z:pose.z});lastTile=now},
   sample(now=performance.now()){if(!ready)return null;const dt=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow))/1000;lastNow=now;
    out.snapped=snapNext;snapNext=false;let lag=len();
    if(lag>SNAP_TILES){advance(lag-buffer);out.snapped=true;lag=len()}
@@ -49,11 +49,22 @@ export function createTilePlayback({buffer=BUFFER_TILES,slow=SLOW,gain=.2,ease=.
    // A walk starts once the buffer has filled (or a short wait has passed: a single step aside).
    if(!walking&&path.length&&(lag>=buffer*.99||now-startAt>=START_WAIT_MS||!due))walking=true;
    out.moving=walking&&path.length>0;out.run=steps>1;
-   out.speed=out.moving&&dt>0?advance(steps*rate*dt/GAME_TICK)/dt:0;if(!path.length){out.moving=false;walking=false;heading=stand}
+   out.speed=out.moving&&dt>0?advance(steps*rate*dt/GAME_TICK)/dt:0;if(!path.length){out.moving=false;walking=false;
+    // The queue ran dry while tiles are still due (a late reply): keep facing along the walk; the
+    // stand yaw is only the last step's. A walk that has ended, or a real facing (talk), turns to it.
+    if(!due||Math.abs(Math.atan2(Math.sin(stand-lastStep),Math.cos(stand-lastStep)))>1e-3)heading=stand;if(!due)trail.length=0}
    // Turn toward the heading (a corner, a diagonal tile step, the facing at rest) over ~0.1 s, not in one frame.
-   const turn=Math.atan2(Math.sin(heading-out.yaw),Math.cos(heading-out.yaw));out.yaw=dt>0&&!out.snapped?out.yaw+turn*Math.min(1,1-Math.exp(-dt/.1)):heading;
+   out.yaw=dt>0&&!out.snapped?turnToward(out.yaw,heading,dt):heading;
    return out},
-  clear(){path.length=0;ready=false;walking=false;lastNow=null;lastTile=-Infinity;rate=1}};
+  clear(){path.length=0;trail.length=0;ready=false;walking=false;lastNow=null;lastTile=-Infinity;rate=1}};
+}
+
+// A quick OSRS-like turn toward `target` the short way round (never across ±π the long way),
+// easing over ~`tau` seconds; the result stays in -π..π.
+export function turnToward(yaw,target,dt,tau=.1){
+ if(!Number.isFinite(yaw))return target;
+ const turn=Math.atan2(Math.sin(target-yaw),Math.cos(target-yaw)),next=yaw+turn*Math.min(1,1-Math.exp(-Math.max(0,dt)/tau));
+ return Math.atan2(Math.sin(next),Math.cos(next));
 }
 
 // The owning client predicts input immediately. Only reconcile the latest final

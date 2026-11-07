@@ -50,7 +50,9 @@ test('tile walker interpolation is smooth and tick-paced, diagonals included',()
  const diag=projectTilePose(pose,1900);assert.ok(Math.abs(diag.x-1.5*TILE)<1e-9&&Math.abs(diag.z-.5*TILE)<1e-9,'a diagonal tile also takes one tick');
  const end=projectTilePose(pose,1000+5*600);assert.deepEqual([end.x,end.z,end.moving],[2*TILE,2*TILE,false]);
  assert.ok(Math.abs(projectTilePose({...pose,stepTiles:2},1300).x-TILE)<1e-9,'running crosses two tiles per tick');
- assert.equal(projectTilePose(pose,1300).yaw,Math.atan2(1,0),'faces the direction of travel');
+ // Faces along the stretch ahead (east, then north-east): between the leg it walks and the bend.
+ const half=projectTilePose(pose,1300).yaw;assert.ok(half<=Math.atan2(1,0)+1e-9&&half>Math.PI/4,'faces along the path ahead');
+ assert.equal(projectTilePose({...pose,path:[[TILE,0],[2*TILE,0],[3*TILE,0]]},1300).yaw,Math.atan2(1,0),'faces the direction of travel');
 });
 
 // QA (fix113): with tile mode on, the bronze sword tooltip read "Speed 4 ticks (1.8s)" (0.45 s ticks) while the
