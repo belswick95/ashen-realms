@@ -293,3 +293,16 @@ html body.fantasy-hud #side>.tabs .fantasy-tab-icon{max-width:100%!important;mar
 html body.fantasy-hud.touch-controls #social-panel .social-tabs button{min-height:36px!important}
 html body.fantasy-hud.touch-controls:not(.phone-layout) #account-bar{padding-block:2px!important}
 html body.fantasy-hud.touch-controls:not(.phone-layout) #account-bar #logout{min-height:32px!important;min-width:64px!important}
+/* Character creator (first sign-in): it kept the old green card, Arial labels and plain outlined
+   buttons. Same leather, stone, wood and gold as the login card. */
+html body #character-creator{background:radial-gradient(ellipse at 45% 20%,#3a2c1f,#0d0906 75%)!important}
+html body #character-creator :not(svg,svg *,canvas){font-family:var(--mv-body)!important}
+html body #character-creator .creator-card{border:5px solid transparent!important;border-radius:6px!important;background:var(--mv-leather-face) padding-box,var(--mv-stone-face) border-box!important;box-shadow:var(--mv-frame-shadow),inset 0 0 0 1px var(--mv-gold-lo)!important}
+html body #character-creator .creator-preview{background:radial-gradient(ellipse at 50% 45%,#5a4632,#2a1f15 72%)!important}
+html body #character-creator :is(.creator-heading,.creator-controls h2){font-family:var(--mv-display)!important;color:var(--mv-gold)!important;text-shadow:var(--mv-shadow-text)}
+html body #character-creator .creator-row label{color:var(--mv-gold)!important;font-weight:700}
+html body #character-creator :is(.creator-preview p,.creator-controls>p){color:var(--mv-ink-dim)!important}
+html body #character-creator select{background:var(--mv-stone-dark)!important;color:var(--mv-ink)!important;border:0!important;box-shadow:var(--mv-bevel-in),0 0 0 1px #0009!important}
+html body #character-creator .creator-preview button{background:var(--mv-wood-face)!important;border:1px solid #140c05!important;border-radius:4px!important;color:var(--mv-gold-hi)!important;box-shadow:var(--mv-bevel-out)!important;text-shadow:var(--mv-shadow-text)}
+html body #character-creator .creator-preview button[aria-pressed=true]{background:var(--mv-grain),linear-gradient(180deg,#a8442a,var(--mv-ember) 55%,var(--mv-ember-lo))!important;border-color:var(--mv-gold-mid)!important}
+html body #character-creator #creator-finish{background:var(--mv-grain),linear-gradient(180deg,#a8442a,var(--mv-ember) 55%,var(--mv-ember-lo))!important;border:1px solid var(--mv-gold-mid)!important;color:#fff0c8!important;font-family:var(--mv-display)!important;font-weight:700;letter-spacing:.06em;box-shadow:var(--mv-bevel-out),inset 0 0 0 1px var(--mv-gold)!important}

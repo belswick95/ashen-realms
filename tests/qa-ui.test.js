@@ -77,6 +77,12 @@ test('side tabs fill the open panel, tab icons keep full size, touch targets are
  assert.match(tail,/touch-controls:not\(\.phone-layout\) #account-bar #logout\{min-height:32px!important/);
 });
 
+test('character creator takes the medieval theme (no green card, Arial labels or outline buttons)',()=>{
+ const css=read('medieval-theme.css'),tail=css.slice(css.lastIndexOf('QA pass (portrait145)'));
+ for(const sel of ['#character-creator .creator-card{','#character-creator .creator-preview button{','#character-creator #creator-finish{','#character-creator select{','#character-creator :not(svg,svg *,canvas){font-family:var(--mv-body)!important}'])assert.ok(tail.includes(sel),sel);
+ assert.ok(!/#character-creator[^{]*\.creator-swatch/.test(tail),'swatch colours are left alone');
+});
+
 test('settings dropdown labels fit the phone panel',()=>{
  const html=read('index.html'),select=html.match(/<select id="graphics-preset"[\s\S]*?<\/select>/)[0];
  for(const [,label] of select.matchAll(/<option[^>]*>([^<]*)<\/option>/g))assert.ok(label.length<=18,label);
