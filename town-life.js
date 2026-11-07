@@ -30,3 +30,23 @@ export {createWorkKit,workFacing};
 // Civilians keep any defensive weapon out of sight; it would otherwise put
 // them in a fighting stance and stop their work.
 export function carriesWeapon(profile={}){return /guard|warden|knight|soldier|ranger|scout|hunter|bandit|sentinel/i.test(String(profile.role||''))||profile.attackable===true}
+// Standing room. Server tiles do not keep townsfolk apart: around the capital fountain six routes
+// share the plaza ring and two sweepers share stations, so people stood inside one another (and
+// inside a parked horse). Each standing person is nudged (presentation only, at most SPREAD_MAX)
+// out of anyone within SPREAD_RADIUS (or the other's own `radius`, e.g. a horse); walkers are not
+// moved but still push. people = [{x,z,moving,key,radius?,spread:{x,z}|null}] with x,z the
+// server-presented position; an entry with spread null is an obstacle only. Spread eases toward
+// its target (tau ~0.4 s), so nobody slides sideways in a frame.
+export const SPREAD_RADIUS=1.05,SPREAD_MAX=.6;
+export function spreadStanding(people,dt){
+ for(const p of people){p.tx=0;p.tz=0}
+ for(let i=0;i<people.length;i++)for(let j=i+1;j<people.length;j++){const a=people[i],b=people[j];const fixedA=a.moving||!a.spread,fixedB=b.moving||!b.spread;if(fixedA&&fixedB)continue;
+  let dx=b.x-a.x,dz=b.z-a.z,d=Math.hypot(dx,dz);const r=Math.max(SPREAD_RADIUS,a.radius||0,b.radius||0);if(d>=r)continue;
+  // Same spot: separate along a direction fixed by the pair (stable from frame to frame).
+  if(d<1e-3){const h=spreadHash(a.key+'|'+b.key);dx=Math.sin(h);dz=Math.cos(h);d=0}else{dx/=d;dz/=d}
+  const push=r-d,sa=fixedA?0:fixedB?1:.5,sb=fixedB?0:fixedA?1:.5;a.tx-=dx*push*sa;a.tz-=dz*push*sa;b.tx+=dx*push*sb;b.tz+=dz*push*sb}
+ const k=1-Math.exp(-Math.max(0,dt)/.4);
+ for(const p of people){const s=p.spread;if(!s)continue;let tx=p.moving?0:p.tx,tz=p.moving?0:p.tz;const m=Math.hypot(tx,tz);if(m>SPREAD_MAX){tx*=SPREAD_MAX/m;tz*=SPREAD_MAX/m}
+  s.x+=(tx-s.x)*k;s.z+=(tz-s.z)*k;if(Math.abs(s.x)<1e-4&&Math.abs(s.z)<1e-4){s.x=0;s.z=0}}
+}
+function spreadHash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)/4294967296*Math.PI*2}

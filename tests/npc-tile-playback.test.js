@@ -56,3 +56,22 @@ test('game.js: realm NPCs take tile playback (no stride on a snap) and keep a wa
  assert.match(src,/locomotion:npc\.previewAttack>0\?'combat':npc\.motionRun\?'jog':'walk'/);
  assert.match(src,/actor\.motionRun=sample\.run===true;return sample\.snapped===true/);
 });
+
+test('standing room: townsfolk on one tile are eased apart, walkers and a parked horse push but are not moved',async()=>{
+ const {spreadStanding,SPREAD_RADIUS,SPREAD_MAX}=await import('../town-life.js');
+ const mk=(key,x,z,extra={})=>({key,x,z,moving:false,spread:{x:0,z:0},...extra});
+ const a=mk('a',0,0),b=mk('b',0,0),walker=mk('w',.3,0,{moving:true}),horse={key:'h',x:-226,z:120,radius:1.6,spread:null,moving:false},c=mk('c',-225.5,120);
+ spreadStanding([a,b],1/60);assert.ok(Math.hypot(a.spread.x-b.spread.x,a.spread.z-b.spread.z)<.1,'eased, not snapped apart in one frame');
+ for(let i=0;i<180;i++)spreadStanding([a,b],1/60);
+ const gap=Math.hypot(a.spread.x-b.spread.x,a.spread.z-b.spread.z);assert.ok(Math.abs(gap-SPREAD_RADIUS)<.02,'same-tile pair separated to arm\'s length: '+gap.toFixed(2));
+ for(let i=0;i<60;i++)spreadStanding([a,b,walker],1/60);
+ assert.equal(walker.spread.x,0,'a walker is never nudged');assert.ok(Math.hypot(a.spread.x,a.spread.z)<=SPREAD_MAX+1e-9,'nudges are capped');
+ for(let i=0;i<180;i++)spreadStanding([c,horse],1/60);assert.ok(c.spread.x>.4,'pushed out of the parked horse: '+c.spread.x.toFixed(2));
+ const far=mk('f',10,10);for(let i=0;i<60;i++)spreadStanding([far,mk('g',12,10)],1/60);assert.equal(far.spread.x,0,'people apart are left alone');
+});
+
+test('game.js: spread offsets are presentation only (removed before travel is measured)',()=>{
+ const src=fs.readFileSync(new URL('../game.js',import.meta.url),'utf8');
+ assert.match(src,/if\(window\.eldervaleAuthority\)spreadTownsfolk\(dt\);\nfor\(const npc of npcs\)\{/);
+ assert.match(src,/const before=actorBefore\.copy\(npc\.root\.position\);if\(shown\)\{before\.x-=shown\.x;before\.z-=shown\.z\}const snapped=interpolateRealm\(npc,dt\);/);
+});
