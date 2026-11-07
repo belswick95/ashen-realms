@@ -119,6 +119,8 @@ import {createUnderground,installUndergroundTerrain} from './underground.js?v=re
 import {createExplore} from './explore.js?v=release-20261107-monsters135';
 import {createBossFx} from './boss-fx.js?v=release-20261107-monsters135';
 import {fishingOptions} from './fish-tiers.js?v=release-20261107-monsters135';
+import {SKILL_PANEL,skillId} from './skill-list.js?v=release-20261107-monsters135';
+import {createSkillGuide} from './skill-guide.js?v=release-20261107-monsters135';
 import {plantFeet} from './foot-ground.js?v=release-20261107-monsters135';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 // RuneScape-style death: input lock and death pose, jingle, kept-items note, death pile on the maps (death.js).
@@ -1345,8 +1347,14 @@ let lastEatAt=-Infinity;
 // Bones: bury for Prayer XP (doubled when offered beside an altar); the server checks and awards.
 let lastBuryAt=-Infinity;function buryBones(id){const item=goods[id];if(!item?.prayerXP||!(state[id]>0))return;const now=performance.now();if(now-lastBuryAt<1150)return;if(!window.eldervaleAuthority){say('Burying bones requires a connection to the shared world.');return}lastBuryAt=now;void window.eldervaleRealm?.command('bury',{item:id}).then(ok=>{if(!ok){lastBuryAt=-Infinity;const why=window.eldervaleRealm?.lastError;if(why)say(why)}})}
 function eatFood(id){const item=goods[id];if(!isFood(item)||!(state[id]>0))return;const now=performance.now();if(now-lastEatAt<EAT_DELAY*1000-50)return;if(!window.eldervaleAuthority){say('Eating requires a connection to the shared world.');return}lastEatAt=now;say('You eat the '+item.name.replace(/^Cooked /,'').toLowerCase()+'.');void window.eldervaleRealm?.command(item.profession&&item.category!=='Food'?'skill_consume':'consume',{item:id}).then(ok=>{if(!ok){lastEatAt=-Infinity;const why=window.eldervaleRealm?.lastError;if(why)say(why)}})}
-const skillDefinitions=[['⚔','Attack','attackXP'],['💪','Strength','strengthXP'],['🛡','Defence','defenceXP'],['❤️','Hitpoints','hitpointsXP'],['🏹','Ranged','rangedXP'],['✨','Magic','magicXP'],['🙏','Prayer','prayerXP'],['🌳','Woodcutting','woodXP'],['⛏','Mining','miningXP'],['🔥','Firemaking','firemakingXP'],['🎣','Fishing','fishingXP'],['🍳','Cooking','cookingXP'],['🔨','Smithing','smithingXP'],['🛠','Crafting','craftingXP'],['🌿','Herblore','herbloreXP'],['🌱','Farming','farmingXP'],['🏃','Agility','agilityXP'],['🗝','Thieving','thievingXP'],['🏹','Fletching','fletchingXP'],['✧','Runecrafting','runecraftingXP'],['🏠','Construction','constructionXP'],['🪤','Hunter','hunterXP']];
+const skillDefinitions=SKILL_PANEL;
 const professions=createProfessionPanel(state,{notice:say});addEventListener('keydown',e=>{if(e.code==='Escape')professions.clear()});
+// Skill guides (skill-guide.js): clicking a skill opens what each level unlocks, from the game data.
+const skillLevelOf=id=>{const def=skillDefinitions.find(([,name])=>skillId(name)===id);if(!def)return 1;const key=def[2],xp=Math.max(0,Number(state[key])||0);return (key==='hitpointsXP'?hitpointsLevel(xp):level(xp))+jewelryBonus(state,key)};
+const skillGuide=createSkillGuide({level:skillLevelOf,position:()=>({x:player.position.x,z:player.position.z}),
+ showOnMap:({x,z})=>{setMapOpen(true);requestAnimationFrame(()=>requestAnimationFrame(()=>{try{worldMap.setView({x,z,scale:worldMap.limits.min*4})}catch{/* map not laid out */}}))},
+ recipesFor:id=>professionSkills[id]?()=>professions.open({skill:id}):null});
+window.eldervaleSkillGuide=skillGuide;
 const skillsPanel=document.querySelector('#skills');
 function drawSkills(){
  skillsPanel.replaceChildren();const rank=document.createElement('div');rank.className='player-combat-level';rank.innerHTML=crossedSwords;const label=document.createElement('strong');label.textContent='Player Combat Level: '+combatLevel(state)+' / 126';rank.append(label);skillsPanel.append(rank);
@@ -1361,7 +1369,7 @@ function drawSkills(){
   tile.append(glyph,rank,title);
   tile.style.setProperty('--skill-progress',Math.round(progress.fraction*100)+'%');tile.title=name+' — Level '+lv+' · '+Math.floor(xp).toLocaleString()+' XP'+(baseLevel>=99?' · Maximum level':' · Next: '+next.toLocaleString()+' XP · '+Math.ceil(Math.max(0,next-xp)).toLocaleString()+' to go');
   tile.onclick=()=>{const old=skillsPanel.querySelector('.skill-detail');old?.remove();const detail=document.createElement('div');detail.className='skill-detail';const h=document.createElement('strong');h.textContent=icon+' '+name+' — Level '+lv;const p=document.createElement('p');p.textContent=baseLevel>=99?Math.floor(xp).toLocaleString()+' XP · Level 99 reached':Math.floor(xp).toLocaleString()+' XP · '+Math.ceil(Math.max(0,next-xp)).toLocaleString()+' XP until level '+(baseLevel+1);detail.append(h,p);skillsPanel.append(detail)};
-  const showSkillDetail=tile.onclick;tile.onclick=()=>{const skill=Object.keys(professionSkills).find(id=>professionSkills[id].key===key);if(skill)professions.open({skill});else showSkillDetail();};grid.append(tile)
+  const showSkillDetail=tile.onclick;tile.onclick=()=>{if(!skillGuide.open(skillId(name)))showSkillDetail()};tile.setAttribute('aria-haspopup','dialog');grid.append(tile)
  }
  skillsPanel.append(grid);
  const footer=document.createElement('div');footer.className='skills-footer';footer.textContent='✦ Total level '+total+'  ·  '+skillDefinitions.length+' skills';skillsPanel.append(footer);
