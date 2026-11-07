@@ -21,7 +21,7 @@ export const monsters=[
  monster(A,2,'hound1','ember_hound','Ash-fed ember hound',335,252,{level:35,rank:'Common',arch:'beast',examine:'Someone has been feeding it coal. It liked it.'}),
  monster(A,3,'hound2','ember_hound','Ash-fed ember hound',341,258,{level:35,rank:'Common',arch:'beast',examine:'Someone has been feeding it coal. It liked it.'}),
  monster(A,4,'hound3','ember_hound','Ash-fed ember hound',330,260,{level:35,rank:'Common',arch:'beast',examine:'Someone has been feeding it coal. It liked it.'}),
- monster(A,5,'sworn1','sandscar_raider','Kindled cinder-sworn',316,118,{level:40,rank:'Veteran',arch:'brute',examine:'Their oath is branded on the back of the hand.'}),
+ monster(A,5,'sworn1','sandscar_raider','Kindled cinder-sworn',314.42,118.5,{level:40,rank:'Veteran',arch:'brute',examine:'Their oath is branded on the back of the hand.'}),
  monster(A,6,'sworn2','sandscar_raider','Kindled cinder-sworn',324,124,{level:40,rank:'Veteran',arch:'brute',examine:'Their oath is branded on the back of the hand.'}),
  monster(A,7,'guard1','cinder_fiend','Kiln-bound guardian',3022,2998,{level:56,rank:'Veteran',arch:'brute',scale:1.3,roam:1,respawn:45,examine:'A Kindled zealot who gave the fire more than an oath.'}),
  monster(A,8,'guard2','cinder_fiend','Kiln-bound guardian',3026,3004,{level:56,rank:'Veteran',arch:'brute',scale:1.3,roam:1,respawn:45,examine:'A Kindled zealot who gave the fire more than an oath.'}),
