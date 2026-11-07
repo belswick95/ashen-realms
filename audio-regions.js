@@ -14,13 +14,19 @@ export const townMusic=[
  {id:'silverfin',name:'Silverfin',x:187,z:74,radius:24,title:'Lost Frontier'},
  {id:'pinehollow',name:'Pinehollow',x:-152,z:-133,radius:24,title:'Willow and the Light'},
  {id:'stonebridge',name:'Stonebridge',x:164,z:-116,radius:24,title:'The Britons'},
- {id:'castle',name:'Eldervale Castle',x:-340,z:-305,radius:76,title:'Crown of the Heartlands',artist:'Eldervale'}
+ {id:'castle',name:'Eldervale Castle',x:-340,z:-305,radius:76,title:'Banners over Eldervale',artist:'Eldervale'}
 ];
-export const loginMusic={id:'login',name:'The gates of Eldervale',title:'Clash Defiant'};
+// Birchford, the capital (generated town 0), has its own bustling market theme.
+export const capitalMusic={id:'birchford',title:'Minstrel Guild',artist:'Kevin MacLeod'};
+// Open country between towns: the old castle piece, played softly (`gain` scales
+// this track inside the music channel) so the nature beds stay clearly audible.
+export const wildernessMusic={id:'wilderness',name:'The open wilds',title:'Crown of the Heartlands',artist:'Eldervale',gain:.4};
+// Title theme: streams only after the first tap (music.js), fades out on entering the world.
+export const loginMusic={id:'login',name:'The gates of Eldervale',title:'The Gates of Eldervale',artist:'Eldervale'};
 export function musicRegion(position,current=null){
  if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.z))return null;
  const below=globalThis.eldervaleUndergroundMusic?.(position);if(below)return below;// caves (underground.js)
- const towns=generatedWorld?[...generatedWorld.towns.map((t,i)=>({...t,...townExtent(t,48),id:['oakcross','northwatch','suncrest'][i],title:['Lord of the Land','Night Vigil','Angevin'][i]})),townMusic.find(t=>t.id==='castle')]:townMusic;
+ const towns=generatedWorld?[...generatedWorld.towns.map((t,i)=>({...t,...townExtent(t,48),id:[capitalMusic.id,'northwatch','suncrest'][i],title:[capitalMusic.title,'Night Vigil','Angevin'][i],artist:'Kevin MacLeod'})),townMusic.find(t=>t.id==='castle')]:townMusic;
  const distance=town=>Math.hypot(position.x-town.x,position.z-town.z);
  if(current&&towns.some(t=>t.id===current.id)&&distance(current)<current.radius+6)return current;
  return towns.filter(t=>distance(t)<=t.radius).sort((a,b)=>distance(a)-distance(b))[0]||null;

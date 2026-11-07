@@ -1,5 +1,5 @@
-import {townMusic,loginMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261107-walls155';
-import {createSfx} from './sfx.js?v=release-20261107-walls155';
+import {loginMusic,wildernessMusic,musicRegion,audioPreference,waterProximity} from './audio-regions.js?v=release-20261107-walls155';
+import {createSfx,SAMPLE_SETS} from './sfx.js?v=release-20261107-walls155';
 import {createAmbience} from './ambience.js?v=release-20261107-walls155';
 import {playJingle} from './jingles.js?v=release-20261107-walls155';
 let singleton;
@@ -8,21 +8,27 @@ let singleton;
 // default), Sound effects (actions, combat, horses, jingles) and Area sounds
 // (birds, wind, water, towns). Every gain change is ramped (no clicks), the
 // context suspends while the tab is hidden and resumes on the next gesture.
-// Default mix: music sits at roughly 35–40% of the area-sound level.
+// Default mix: music sits at roughly 35–40% of the area-sound level. Region
+// tracks are mastered to about −19 LUFS; a track's `gain` trims it inside the
+// music channel (the wilderness piece plays at .4, about 8 dB down, so the
+// nature beds stay clearly in front of it). Both still follow the Music slider.
 export const DEFAULT_VOLUMES={music:35,sfx:80,environment:70};
+// Recorded level-up fanfares (scripts/build-level-jingle.py): every skill
+// level shares one, a combat level gets the bolder brass-and-drums one.
+export const LEVEL_UP_SAMPLES={combat:'levelSkill',gathering:'levelSkill',artisan:'levelSkill',skill:'levelSkill',combatLevel:'levelCombat'};
 export function startMusic({scene='world'}={}){
  if(singleton){singleton.setScene(scene);return singleton}
  const storage=localStorage,listeners=new Set(),decks=[new Audio(),new Audio()];
- let celebration=null;let mode=scene,zone=null,desired=null,active=0,generation=0,ctx,musicBus,duckBus,environmentBus,sfxBus,gains,started=false,waiting=false,unavailable=false,disposed=false,sfx=null,ambience=null,duckUntil=0,lastSnort=0;
+ let celebration=null,fanfaresRequested=false;let mode=scene,zone=null,desired=null,active=0,generation=0,ctx,musicBus,duckBus,environmentBus,sfxBus,gains,started=false,waiting=false,unavailable=false,disposed=false,sfx=null,ambience=null,duckUntil=0,lastSnort=0;
  let enabled=storage.getItem('eldervale-audio-enabled')!=='false',musicEnabled=storage.getItem('eldervale-music-enabled')===null?storage.getItem('eldervale-music-muted')!=='true':storage.getItem('eldervale-music-enabled')!=='false',environmentEnabled=storage.getItem('eldervale-environment-enabled')!=='false',sfxEnabled=storage.getItem('eldervale-sfx-enabled')!=='false';
  let volume=audioPreference(storage,'eldervale-music-volume',DEFAULT_VOLUMES.music),environmentVolume=audioPreference(storage,'eldervale-environment-volume',audioPreference(storage,'eldervale-ambient-volume',DEFAULT_VOLUMES.environment)),sfxVolume=audioPreference(storage,'eldervale-sfx-volume',DEFAULT_VOLUMES.sfx);
  const fades=new Map();
  decks.forEach(deck=>{deck.loop=true;
   // No download before the first gesture: a track cannot play until then, and the login theme
-  // alone is 2.4 MB of the first load (autoplay would override preload). After unlock, play() streams the track as before.
+  // alone is 1.4 MB of the first load (autoplay would override preload). After unlock, play() streams the track as before.
   deck.preload='none';deck.autoplay=false;deck.setAttribute('playsinline','');deck.addEventListener('error',()=>{if(deck===decks[active]&&enabled){unavailable=true;notify()}})});
  function state(){return {scene:mode,zone:zone?.id||null,track:desired?.title||null,enabled,musicEnabled,environmentEnabled,sfxEnabled,volume,environmentVolume,sfxVolume,status:unavailable?'unavailable':!enabled?'muted':waiting?'waiting':started?'playing':'waiting',context:ctx?.state||'not-started',sfxLoaded:sfx?.loaded||0,beds:ambience?.beds||[]}}
- function notify(){for(const listener of listeners)listener(state());const b=document.querySelector('#music-toggle'),s=document.querySelector('#music-volume'),label=document.querySelector('#music-track');if(b){b.textContent=musicEnabled?'♫ Music on':'♫ Music off';b.setAttribute('aria-pressed',String(musicEnabled))}if(s)s.value=String(volume);if(label)label.textContent=desired?desired.title+' · '+(desired.artist||'Kevin MacLeod'):'No town music';const e=document.querySelector('#environment-toggle'),v=document.querySelector('#environment-volume');if(e){e.textContent=environmentEnabled?'Area sounds on':'Area sounds off';e.setAttribute('aria-pressed',String(environmentEnabled))}if(v)v.value=String(environmentVolume);const f=document.querySelector('#sfx-toggle'),fv=document.querySelector('#sfx-volume');if(f){f.textContent=sfxEnabled?'Sound effects on':'Sound effects off';f.setAttribute('aria-pressed',String(sfxEnabled))}if(fv)fv.value=String(sfxVolume)}
+ function notify(){for(const listener of listeners)listener(state());const b=document.querySelector('#music-toggle'),s=document.querySelector('#music-volume'),label=document.querySelector('#music-track');if(b){b.textContent=musicEnabled?'♫ Music on':'♫ Music off';b.setAttribute('aria-pressed',String(musicEnabled))}if(s)s.value=String(volume);if(label)label.textContent=desired?desired.title+' · '+(desired.artist||'Kevin MacLeod'):'No music here';const e=document.querySelector('#environment-toggle'),v=document.querySelector('#environment-volume');if(e){e.textContent=environmentEnabled?'Area sounds on':'Area sounds off';e.setAttribute('aria-pressed',String(environmentEnabled))}if(v)v.value=String(environmentVolume);const f=document.querySelector('#sfx-toggle'),fv=document.querySelector('#sfx-volume');if(f){f.textContent=sfxEnabled?'Sound effects on':'Sound effects off';f.setAttribute('aria-pressed',String(sfxEnabled))}if(fv)fv.value=String(sfxVolume)}
  function ramp(gain,value,duration=.7){if(!gain||!ctx)return;const p=gain.gain,t=ctx.currentTime;p.cancelScheduledValues(t);p.setValueAtTime(p.value,t);p.setTargetAtTime(value,t,duration/4)}
  function initialize(){
   if(ctx)return;const Context=window.AudioContext||window.webkitAudioContext;if(!Context)throw Error('Web Audio unavailable');ctx=new Context();
@@ -45,17 +51,18 @@ export function startMusic({scene='world'}={}){
   const timer=setTimeout(()=>{if(epoch===generation)decks[old].pause();fades.delete(old)},3400);fades.set(old,timer);notify();
  }
  async function playActive(){
-  if(!desired||!enabled||!musicEnabled||disposed)return;const epoch=generation,deck=decks[active];try{await deck.play();if(epoch!==generation){deck.pause();return}ramp(gains?.[active],1,2.6);waiting=false;unavailable=false;notify()}catch(error){if(epoch!==generation)return;if(error.name==='NotAllowedError'){waiting=true}else if(error.name!=='AbortError'){unavailable=true}notify()}
+  if(!desired||!enabled||!musicEnabled||disposed)return;const epoch=generation,deck=decks[active];try{await deck.play();if(epoch!==generation){deck.pause();return}ramp(gains?.[active],trackGain(desired),2.6);waiting=false;unavailable=false;notify()}catch(error){if(epoch!==generation)return;if(error.name==='NotAllowedError'){waiting=true}else if(error.name!=='AbortError'){unavailable=true}notify()}
  }
  async function unlock(){
   if(!enabled||disposed)return;try{initialize();const resume=ctx.resume();const playback=desired&&musicEnabled?playActive():Promise.resolve();await Promise.all([resume,playback]);started=ctx.state==='running';waiting=!started;applyVolume();if(started)sfx.preload(['hoof','chop','crunch','splashCast','splashCatch','combat']);environment();notify()}catch{unavailable=true;notify()}
  }
+ function trackGain(track){return Number.isFinite(track?.gain)?track.gain:1}
  function environment(){
   if(!ctx||!started||document.hidden||mode==='login'||!ambience)return;let env=null;try{env=window.eldervaleAmbientState?.()||null}catch{}
   if(!env){let pos=null;try{pos=window.eldervaleGetPlayerPosition?.()}catch{}if(!pos)return;env={position:pos,listener:pos,day:window.eldervaleWorldNight===true?0:1,water:waterProximity(pos)}}
   if(enabled&&environmentEnabled)ambience.update(env);sfx.update();
  }
- function tick(){if(disposed)return;const overlay=document.querySelector('#auth-screen');if(mode==='login'&&overlay?.hidden&&window.eldervaleGetPlayerPosition)mode='world';if(mode==='login'){zone=null;transition(loginMusic)}else{let pos;try{pos=window.eldervaleGetPlayerPosition?.()}catch{}zone=musicRegion(pos,zone);transition(zone)}environment()}
+ function tick(){if(disposed)return;const overlay=document.querySelector('#auth-screen');if(mode==='login'&&overlay?.hidden&&window.eldervaleGetPlayerPosition)mode='world';if(mode==='login'){zone=null;transition(loginMusic)}else{let pos;try{pos=window.eldervaleGetPlayerPosition?.()}catch{}zone=musicRegion(pos,zone);transition(zone||(pos?wildernessMusic:null));if(started&&!fanfaresRequested){fanfaresRequested=true;sfx?.preload(['levelSkill','levelCombat'])}}environment()}
  function setScene(next){mode=next;zone=null;tick();notify()}
  // Horse hooves: recorded hoof falls on each hoof's ground contact. Earth and
  // grass give a dull thud (low-passed, fuller); road, bridge and castle stone a
@@ -66,7 +73,12 @@ export function startMusic({scene='world'}={}){
   const now=performance.now();if(now>lastSnort&&Math.random()<.012){lastSnort=now+9000;sfx.proc('snort',{gain:Math.min(1,gainValue)*.7,pan,delay:.1})}
  }
  function celebrate(kind='gathering'){if(!enabled||document.hidden||!ctx||ctx.state!=='running')return false;
-  // Music steps aside for the jingle (about −20 dB) and eases back afterwards.
+  // Level-ups play their recorded fanfare (fetched once the player is in the
+  // world; if it is still on its way it plays as soon as it lands). Music steps
+  // aside (about −18 dB) while it sounds and eases back afterwards.
+  const fanfare=LEVEL_UP_SAMPLES[kind];
+  if(fanfare&&sfx){const file=SAMPLE_SETS[fanfare][0],asked=performance.now(),play=buffer=>{if(!buffer||disposed||!ctx||ctx.state!=='running'||performance.now()-asked>3000)return;if(!sfx.sample(fanfare,{gain:.9,vary:0}))return;duck(-18,Math.max(1,buffer.duration-.9),1.8)};const ready=sfx.buffer(file);if(ready)play(ready);else sfx.load(file).then(play);return true}
+  // Quest and death cues stay live WebAudio fanfares (jingles.js).
   const length=playJingle(ctx,sfxBus,kind,{gain:.85});duck(-20,length,2.2);return length>0}
  function toggleMaster(){enabled=!enabled;storage.setItem('eldervale-audio-enabled',String(enabled));applyVolume();if(enabled)unlock();notify()}
  function toggleMusic(){musicEnabled=!musicEnabled;storage.setItem('eldervale-music-enabled',String(musicEnabled));applyVolume();if(musicEnabled&&enabled)unlock();notify()}

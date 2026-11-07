@@ -63,7 +63,7 @@ test('owner News console: draft validation mirrors the server and images are buc
  const sql=read('db/news-and-login.sql');assert.ok(sql.includes('news-images/[A-Za-z0-9._/-]{1,200}$'));
  const panel=read('admin-panel.js');assert.match(panel,/'Quests','News'/);assert.match(panel,/admin-news\.js\?v=/);
 });
-test('Eldervale motif: stated in the quest fanfare, every level-up family and the login sting; families stay distinct',()=>{
+test('Eldervale motif: stated in the quest fanfare, every level-up family and the motif sting; families stay distinct',()=>{
  assert.deepEqual([...ELDERVALE_MOTIF.intervals],[0,7,5,9,12]);
  const kinds=['quest','combat','gathering','artisan','combatLevel','motif'],signatures=new Set();
  for(const kind of kinds){const s=composeJingle(kind),motif=s.notes.filter(n=>n.motif);assert.equal(motif.length,5,kind);
@@ -72,7 +72,7 @@ test('Eldervale motif: stated in the quest fanfare, every level-up family and th
   if(kind==='motif')assert.ok(s.duration>=2&&s.duration<=3.2,'login sting is short: '+s.duration);else assert.ok(s.duration<=5.6,kind)}
  assert.equal(signatures.size,kinds.length,'each family voices the motif differently');
  assert.ok(!composeJingle('death').notes.some(n=>n.motif),'the death cue stays somber');
- const screen=read('login-screen.js');assert.match(screen,/celebrate\?\.\('motif'\)/);
+ const screen=read('login-screen.js');assert.doesNotMatch(screen,/celebrate\?\.\('motif'\)/,'the login screen no longer plays a separate sting over its title theme');
 });
 test('login scene: parallax targets are bounded and the page wires news, online count and the frame',()=>{
  assert.deepEqual(pointerTarget(0,0,100,100),{x:-1,y:-1});assert.deepEqual(pointerTarget(50,50,100,100),{x:0,y:0});assert.deepEqual(pointerTarget(500,-50,100,100),{x:1,y:-1});

@@ -1,16 +1,5 @@
 [
   {
-    "id": "login",
-    "title": "Clash Defiant",
-    "artist": "Kevin MacLeod",
-    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600003",
-    "license": "CC BY 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-    "file": "/assets/audio/login.mp3",
-    "duration": 172.04,
-    "changes": "Excerpt of the first 2:52; loudness normalized, short endpoint fades, MP3 encoding."
-  },
-  {
     "id": "oakcross",
     "title": "Lord of the Land",
     "artist": "Kevin MacLeod",
@@ -143,14 +132,69 @@
     "changes": "Loudness normalized, short endpoint fades, MP3 encoding."
   },
   {
-    "id": "castle",
+    "id": "wilderness",
     "title": "Crown of the Heartlands",
+    "artist": "Eldervale",
+    "source": "/scripts/compose-wilderness.py",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/wilderness.mp3",
+    "duration": 101.05,
+    "changes": "Original synthesized lute, flute and strings composition written for Eldervale; plays quietly in the open wilderness."
+  },
+  {
+    "id": "castle",
+    "title": "Banners over Eldervale",
     "artist": "Eldervale",
     "source": "/scripts/compose-castle.py",
     "license": "CC BY 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
     "file": "/assets/audio/castle.mp3",
-    "duration": 101.05,
-    "changes": "Original synthesized lute, flute and strings composition created for Eldervale Castle."
+    "duration": 80.0,
+    "changes": "Original march (snare, timpani, horns, trumpets, strings) composed for Eldervale Castle; MIDI rendered with FluidSynth and the FluidR3 GM SoundFont (MIT), looped seamlessly."
+  },
+  {
+    "id": "login",
+    "title": "The Gates of Eldervale",
+    "artist": "Eldervale",
+    "source": "/scripts/compose-login.py",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/login.mp3",
+    "duration": 102.86,
+    "changes": "Original title theme (tremolo strings, harp, solo horn, choir, brass, timpani) composed for the Eldervale login screen; MIDI rendered with FluidSynth and the FluidR3 GM SoundFont (MIT), looped seamlessly."
+  },
+  {
+    "id": "level-up-skill",
+    "title": "Eldervale Level Up",
+    "source": "/scripts/build-level-jingle.py",
+    "file": "/assets/audio/level-up-skill.mp3",
+    "duration": 4.6,
+    "changes": "Original level-up fanfare (trumpet, flute, strings, harp, glockenspiel and timpani) composed for Eldervale; MIDI rendered with FluidSynth and the FluidR3 GM SoundFont (MIT).",
+    "artist": "Eldervale",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  {
+    "id": "level-up-combat",
+    "title": "Eldervale Combat Level Up",
+    "source": "/scripts/build-level-jingle.py",
+    "file": "/assets/audio/level-up-combat.mp3",
+    "duration": 4.8,
+    "changes": "Original level-up fanfare (trumpets, horns, trombones, tuba, timpani, snare and cymbals) composed for Eldervale; MIDI rendered with FluidSynth and the FluidR3 GM SoundFont (MIT).",
+    "artist": "Eldervale",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  {
+    "id": "birchford",
+    "title": "Minstrel Guild",
+    "artist": "Kevin MacLeod",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200098",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "file": "/assets/audio/birchford.mp3",
+    "duration": 184.6,
+    "changes": "Trimmed the decayed ending (184.6 s), 1 s end fade for a clean loop, loudness matched to -19 LUFS, 96 kbps MP3 encoding."
   }
 ]

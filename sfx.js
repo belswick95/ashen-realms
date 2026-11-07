@@ -12,6 +12,7 @@ export const SAMPLE_SETS={
  splashCatch:['splash-catch'],ripple:['ripple','splash-small'],frog:['frog-1','frog-2'],dog:['dog'],sheep:['sheep'],
  cricket:['cricket'],birdSong:['../nature-birds'],hoof:['hoof-1','hoof-2','hoof-3','hoof-4','hoof-5','hoof-6'],
  thunderRoll:['thunder-roll'],thunderCrack:['thunder-crack'],
+ levelSkill:['../level-up-skill'],levelCombat:['../level-up-combat'],
  ...COMBAT_SAMPLE_SETS
 };
 // Voice budgets: at most this many sounds of a group play at once. A new sound

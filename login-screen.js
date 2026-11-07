@@ -13,7 +13,6 @@ const unsubscribe=audio?.subscribe(state=>{sound.textContent=state.enabled?'Soun
 document.querySelector('#auth-password-toggle').addEventListener('click',event=>{const input=document.querySelector('#auth-password'),button=event.currentTarget,show=input.type==='password';input.type=show?'text':'password';button.setAttribute('aria-label',show?'Hide password':'Show password');button.setAttribute('aria-pressed',String(show))});
 let atmosphere=null,news=null;try{atmosphere=createLoginAtmosphere({screen,image})}catch(error){console.warn('Login atmosphere unavailable:',error)}
 try{news=startLoginNews({screen})}catch(error){console.warn('Login news unavailable:',error)}
-// "Enter Eldervale": a short statement of the Eldervale motif (respects the sound toggle).
-let lastSting=0;
-document.querySelector('#auth-form')?.addEventListener('submit',()=>{if(document.querySelector('#auth-login-tab')?.getAttribute('aria-pressed')==='false')return;const now=Date.now();if(now-lastSting<5000||!audio)return;lastSting=now;try{audio.unlock?.()}catch{}if(audio.celebrate?.('motif'))return;const ctx=audio.context;if(!ctx)return;const retry=()=>{clearTimeout(timer);ctx.removeEventListener?.('statechange',retry);if(ctx.state==='running')audio.celebrate?.('motif')};const timer=setTimeout(retry,800);ctx.addEventListener?.('statechange',retry)});
+// No separate "Enter Eldervale" sting: the title theme (audio-regions.js loginMusic)
+// crossfades into the region music once the world appears.
 window.addEventListener('pagehide',event=>{if(event.persisted)return;fire?.dispose();atmosphere?.dispose();news?.stop();observer.disconnect();unsubscribe?.()});
