@@ -1,6 +1,6 @@
-import {worldTemplates,entityDefaults} from './world-templates.js?v=release-20261106-osrswalk124';
-import {worldPresets,presetEntity} from './world-presets.js?v=release-20261106-osrswalk124';
-import {rosterBeasts} from './monster-roster.js?v=release-20261106-osrswalk124';
+import {worldTemplates,entityDefaults} from './world-templates.js?v=release-20261107-horse126';
+import {worldPresets,presetEntity} from './world-presets.js?v=release-20261107-horse126';
+import {rosterBeasts} from './monster-roster.js?v=release-20261107-horse126';
 // Owner console catalog: MMORPG monsters with loot, farm bundles, buildings and decorative props.
 // Pure data and geometry helpers; the server re-validates everything the console sends.
 const drop=(item,min=1,max=min,chance=1)=>({item,min,max,chance});

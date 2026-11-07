@@ -210,3 +210,9 @@ previous STATUS block (unfinished QA checks outside the castle, pond radius, iPa
 - TODO next session: replace with better, natural CC0 field recordings (daytime birds, night crickets, wind,
   river/sea by water, town murmur), long seamless loops, gentle crossfades; NO synthesized calls, no dog/anvil
   one-shots unless clearly natural. Owner must approve by listening before enabling.
+
+## STATUS 07 Nov ~00:30 UTC (horse126 live)
+- Live: clips125 (original walk/run clips), horse126 (mount faces travel dir), tile-perf-2+3 applied, max_catchup_ticks=1, new ambience (amb123).
+- Running: NPC smoothing agent (ac5caa197e3205322) — client interpolation, no sprinting, fountain crowding.
+- Owner action recommended: Supabase compute upgrade (DB CPU-starved; ticks still spike to ~1 s).
+- Notes: horse asset only has a gallop (no walk/trot clip); horse uses person-size collision; lamp posts can block camera.

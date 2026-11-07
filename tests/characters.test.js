@@ -104,11 +104,11 @@ test('running leans the head ahead of the hips toward +Z',()=>{
  assert.ok(world(r.head).z>world(r.bones.pelvis).z+.2);
 });
 
-test('step rate follows travel speed so feet do not slide, within sane limits',()=>{
- // The gait clips follow a distance-driven stride: steps per second = speed / step length.
- const rate=(speed,mode='walk')=>{const r=character(),{pose}=run(r,20,{distance:speed/60,speed,locomotion:mode});return speed/pose.step};
- assert.ok(rate(2)>rate(1.2));assert.ok(rate(20,'run')<=9);assert.ok(rate(.2)>=.2);
- assert.ok(rate(6.4,'jog')>3,'jog cadence '+rate(6.4,'jog'));
+test('playback rate follows travel speed so feet do not slide, within sane limits',()=>{
+ const rate=(speed,mode='walk')=>{const r=character(),{a,pose}=run(r,20,{distance:speed/60,speed,locomotion:mode});return a.mixer.existingAction(clipsFor('male')[pose.gait]).timeScale};
+ assert.ok(rate(2)>rate(1.2));assert.ok(rate(20)<=2.4);assert.ok(rate(.2)>=.5);
+ // Jogging at the normal 6.4 travel speed steps faster than the clip, not in slow motion.
+ assert.ok(rate(6.4,'jog')>1.1,'jog cadence '+rate(6.4,'jog'));
 });
 
 test('the planted foot moves backward at the travel speed: short quick strides, no sliding',()=>{
@@ -122,10 +122,8 @@ test('the planted foot moves backward at the travel speed: short quick strides, 
 });
 
 test('frame rate does not change the pose after the same time',()=>{
- // Fades are exact exponentials; the stride integrates distance / step frame by frame
- // while the walk -> run blend changes the step, so allow a centimetre.
  const pose=hz=>{const r=character(),a=createHumanoidAnimator(r);for(let i=0;i<hz;i++)a.update(1/hz,{distance:5/hz,speed:5});r.root.updateMatrixWorld(true);return world(r.rightHand)};
- assert.ok(pose(30).distanceTo(pose(120))<.01);
+ assert.ok(pose(30).distanceTo(pose(120))<1e-6);
 });
 
 test('attacks, hits and jumps play one-shots that hand back to the base loop',()=>{

@@ -1,5 +1,9 @@
-import {buildWarhorse} from './horse-model.js?v=release-20261106-osrswalk124';
+import {buildWarhorse} from './horse-model.js?v=release-20261107-horse126';
 // Shared local/remote mount model. Hoof contacts and sounds use the same phase.
+// The baked gallop covers GALLOP_STRIDE units per cycle at full reach; it is at
+// full reach from GALLOP_PACE units/s (a mounted tile walk is 7.9 straight).
+export const GALLOP_STRIDE=7.6,GALLOP_PACE=7;
+const GAIT_MIN_PACE=.5,GAIT_MIN_REACH=.3,GAIT_SMOOTHING=.15;
 export function createHorseMount(T,parent,{onHoof=()=>{}}={}){
  const {root,barrel,tail,legs,resources,pose,skins,setReins}=buildWarhorse(T,parent);
  let phase=0,lastActive=false,hidden=[];
@@ -25,11 +29,19 @@ export function createHorseMount(T,parent,{onHoof=()=>{}}={}){
   for(const [s,sign] of [['l',1],['r',-1]]){goal.copy(pelvis).addScaledVector(fwd,.5).addScaledVector(up,.42).addScaledVector(side,sign*.13);reach(rig,s,goal)}
   rig.leftHand.getWorldPosition(lh);rig.rightHand.getWorldPosition(rh);setReins(lh,rh);
  }
- function update({active=false,distance=0,rig,visual,groundHeight=()=>parent.position.y}={}){
- root.visible=active;if(!active){for(const o of hidden)o.visible=true;hidden=[];if(lastActive&&visual){visual.rotation.x=0;visual.position.y=0;visual.position.z=0;}lastActive=false;return;}
+ // Gait from the real ground speed (`dt` given): a smoothed pace, so a stray
+ // reconcile nudge never flicks the legs into a gallop, and a stride that
+ // shortens with the pace (shorter reach, same hoof plant) instead of playing
+ // the gallop in slow motion. Without `dt` the full gallop runs per distance.
+ let pace=0,stride=0;
+ function update({active=false,distance=0,dt=0,rig,visual,groundHeight=()=>parent.position.y}={}){
+ root.visible=active;if(!active){for(const o of hidden)o.visible=true;hidden=[];if(lastActive&&visual){visual.rotation.x=0;visual.position.y=0;visual.position.z=0;}lastActive=false;pace=stride=0;return;}
  if(rig)for(const hand of [rig.rightHand,rig.leftHand])for(const o of hand.children)if(o.isGroup&&o.visible){o.visible=false;hidden.push(o)}
- const moving=distance>1e-5,previous=phase;phase+=Math.max(0,Math.min(distance,2))/7.6;const f=phase%1;
- const seat=pose(phase,moving);
+ const step=Math.max(0,Math.min(distance,2));let moving,amount;
+ if(dt>0){pace+=(step/dt-pace)*(1-Math.exp(-dt/GAIT_SMOOTHING));moving=pace>GAIT_MIN_PACE;const target=moving?Math.max(GAIT_MIN_REACH,Math.min(1,pace/GALLOP_PACE)):0;stride+=(target-stride)*(1-Math.exp(-dt/GAIT_SMOOTHING));amount=stride<.02?0:stride}
+ else{moving=distance>1e-5;amount=moving?1:0;stride=amount}
+ const previous=phase;if(amount>0)phase+=step/(GALLOP_STRIDE*Math.max(GAIT_MIN_REACH,amount));
+ const seat=pose(phase,amount);
  for(const [i,l]of legs.entries())if(moving&&lastActive&&Math.floor(phase-l.offset+1e-9)>Math.floor(previous-l.offset+1e-9))onHoof({index:i,front:l.front,root:parent});
  if(rig&&visual){seatRider(rig,visual,seat);holdReins(rig,visual)}
  lastActive=true;
