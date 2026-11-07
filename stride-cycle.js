@@ -1,4 +1,4 @@
-import {characterStore,CHARACTER_SCALE} from './character-assets.js?v=release-20261107-hud142';
+import {characterStore,CHARACTER_SCALE} from './character-assets.js?v=release-20261107-emotes143';
 // Procedural walk and run for every clip-driven human (player, remote players,
 // NPCs). Inspired by the feel of the classic tick-based MMO walk: upright, a
 // steady relaxed arm swing, a little bob, a calm head; the run leans in, pumps

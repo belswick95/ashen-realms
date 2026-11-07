@@ -1,4 +1,4 @@
-import {toPlayerRow} from './player-save.js?v=release-20261107-hud142';
+import {toPlayerRow} from './player-save.js?v=release-20261107-emotes143';
 // Serializes writes so a slower older request cannot overwrite a newer snapshot.
 // Pending snapshots are isolated by authenticated account and survive reloads.
 export function createSaveCoordinator({storage,getUser,readSave,writeRow,onStatus=()=>{}}){

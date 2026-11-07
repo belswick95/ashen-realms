@@ -1,5 +1,5 @@
-import {batchStaticMeshes} from './static-batch.js?v=release-20261107-hud142';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-hud142';
+import {batchStaticMeshes} from './static-batch.js?v=release-20261107-emotes143';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-emotes143';
 const castleMaterialCache=new WeakMap();
 function castleMaterials(T){let m=castleMaterialCache.get(T);if(m)return m;
  m={stone:new T.MeshStandardMaterial({map:surfaceTexture(T,'masonry',0x92958b),roughness:.92}),trim:new T.MeshStandardMaterial({color:0xb6b5a5,roughness:.8}),wood:new T.MeshStandardMaterial({map:surfaceTexture(T,'wood',0x5e3c27),roughness:.85}),iron:new T.MeshStandardMaterial({color:0x323a3a,metalness:.65,roughness:.45}),
