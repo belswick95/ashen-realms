@@ -282,3 +282,14 @@ html body.fantasy-hud #trade-request .trade-request-buttons button:disabled{back
 /* Minimap orbs (run energy was Arial) and the Castle Training card (system-ui) take the theme faces. */
 html body.fantasy-hud :is(#map-widget,#mech-orbs,.tutorial-hud) :not(svg,svg *){font-family:var(--mv-body)!important}
 html body.fantasy-hud .tutorial-hud .tutorial-hud-badge{font-family:var(--mv-display)!important;letter-spacing:.06em}
+/* Quests, Friends, Blocked and Settings kept an old max-height:min(60vh,440px): on a 390px phone the quest
+   list stopped 40px above the tab bar with the last entry cut off. The open panel already bounds them. */
+html body.fantasy-hud.hud-panel-open #side>:is(#settings-tab,#friends-tab,#blocked-tab,#quests-tab){max-height:none!important}
+/* iPad and desktop: 6px side padding plus the old max-width:85% squeezed the 28px tab icons to ~17px wide
+   (half the size of the phone icons). Thin side padding lets every tab show its full icon. */
+html body.fantasy-hud:not(.phone-layout) #side>.tabs button[data-tab]{padding:6px 2px!important}
+html body.fantasy-hud #side>.tabs .fantasy-tab-icon{max-width:100%!important;margin:0 auto}
+/* Touch (iPad): Log out and the World Chat / Friends tabs were 24px tall, too small to tap reliably. */
+html body.fantasy-hud.touch-controls #social-panel .social-tabs button{min-height:36px!important}
+html body.fantasy-hud.touch-controls:not(.phone-layout) #account-bar{padding-block:2px!important}
+html body.fantasy-hud.touch-controls:not(.phone-layout) #account-bar #logout{min-height:32px!important;min-width:64px!important}

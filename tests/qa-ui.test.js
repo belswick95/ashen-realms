@@ -68,6 +68,15 @@ test('phone Castle Training card sits under the player frame, compact and foldab
  classes.clear();installHudFold(hud,storage);assert.equal(classes.has('tutorial-hud-folded'),true,'remembered for the session');
 });
 
+test('side tabs fill the open panel, tab icons keep full size, touch targets are tall enough',()=>{
+ const css=read('medieval-theme.css'),tail=css.slice(css.lastIndexOf('QA pass (portrait145)'));
+ assert.ok(tail.includes('#side>:is(#settings-tab,#friends-tab,#blocked-tab,#quests-tab){max-height:none!important}'),'quest list reaches the tab bar');
+ assert.ok(tail.includes(':not(.phone-layout) #side>.tabs button[data-tab]{padding:6px 2px!important}'));
+ assert.ok(tail.includes('#side>.tabs .fantasy-tab-icon{max-width:100%!important'));
+ assert.match(tail,/touch-controls #social-panel \.social-tabs button\{min-height:36px!important\}/);
+ assert.match(tail,/touch-controls:not\(\.phone-layout\) #account-bar #logout\{min-height:32px!important/);
+});
+
 test('settings dropdown labels fit the phone panel',()=>{
  const html=read('index.html'),select=html.match(/<select id="graphics-preset"[\s\S]*?<\/select>/)[0];
  for(const [,label] of select.matchAll(/<option[^>]*>([^<]*)<\/option>/g))assert.ok(label.length<=18,label);
