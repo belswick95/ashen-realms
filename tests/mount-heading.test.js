@@ -1,59 +1,55 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as T from 'three';
 import {createTravelHeading} from '../mount-heading.js';
-import {projectTilePose,TILE,GAME_TICK} from '../tile-grid.js';
-import {createMotionTrack,reconcileLocalPose} from '../motion-track.js';
+import {bfsRoute,TILE,GAME_TICK} from '../tile-grid.js';
+import {createMotionTrack,createTileFollower,turnToward} from '../motion-track.js';
 import {createHorseMount,GALLOP_STRIDE} from '../horse-mount.js';
 
 const wrapDeg=a=>Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))*180/Math.PI;
-// A mounted tile walk: three tiles per 600 ms tick, mixing diagonal and straight steps.
-const MOVES=[[1,1],[0,1],[0,1],[1,1],[1,0],[1,0],[1,1],[0,1],[1,1],[1,1],[0,1],[-1,1],[-1,1],[0,1],[0,1],[1,1],[1,0],[0,1],[1,1],[0,1],[0,1]];
-const tiles=[[0,0]];for(const [a,b] of MOVES){const t=tiles.at(-1);tiles.push([t[0]+a,t[1]+b])}
-const points=tiles.map(([i,j])=>[i*TILE,j*TILE]);
+// A mounted tile walk (three tiles per 600 ms tick) on an OSRS route: diagonal first, then straight.
+const tiles=[[0,0],...bfsRoute({start:[0,0],goal:[8,21],flagsAt:()=>0}).path.map(([x,z])=>[Math.round(x/TILE),Math.round(z/TILE)])];
+const points=tiles.map(([i,j])=>[i*TILE,j*TILE]),MOVES=tiles.slice(1);
 const TICK=GAME_TICK*1000,dt=1/60;
 
-// Crab angle between the heading and the travel direction (velocity over ±4 frames,
-// what the eye reads as "where it is going"), sampled while moving at riding pace.
-function crab(samples,w=4){const out=[];for(let k=w;k<samples.length-w;k++){const a=samples[k-w],b=samples[k],c=samples[k+w],dx=c.x-a.x,dz=c.z-a.z;if(Math.hypot(dx,dz)/(2*w*dt)<3)continue;out.push(wrapDeg(Math.atan2(dx,dz)-b.yaw))}return out}
-const stats=v=>{const s=[...v].sort((a,b)=>a-b);return {mean:s.reduce((a,b)=>a+b,0)/s.length,p90:s[Math.floor(s.length*.9)],max:s.at(-1)}};
+// Crab angle between the heading and the travel direction (velocity over ±4 frames, what the eye
+// reads as "where it is going"), sampled while moving at riding pace, away from the one bend.
+// Frames up to `settle` s after a change of direction are the fast turn itself, not crabbing.
+function crab(samples,w=4,settle=.15){const out=[],dir=[];let bend=-Infinity;
+ for(let k=1;k<samples.length;k++){const a=samples[k-1],b=samples[k];dir[k]=Math.hypot(b.x-a.x,b.z-a.z)>1e-6?Math.atan2(b.x-a.x,b.z-a.z):null}
+ for(let k=w;k<samples.length-w;k++){if(dir[k]!=null&&(dir[k-1]==null||wrapDeg(dir[k]-dir[k-1])>.5))bend=k;
+  const a=samples[k-w],b=samples[k],c=samples[k+w],dx=c.x-a.x,dz=c.z-a.z;
+  if(Math.hypot(dx,dz)/(2*w*dt)<3||(k-bend)*dt<settle||dir.slice(k-w+1,k+w+1).some((d,i,l)=>d==null||wrapDeg(d-l[0])>.5))continue;out.push(wrapDeg(Math.atan2(dx,dz)-b.yaw))}return out}
+const reversals=ys=>{let n=0,last=0;for(let i=1;i<ys.length;i++){const d=Math.atan2(Math.sin(ys[i]-ys[i-1]),Math.cos(ys[i]-ys[i-1]));if(Math.abs(d)<1e-5)continue;const s=Math.sign(d);if(last&&s!==last)n++;last=s}return n};
 
-test('local rider: the horse faces its velocity on mixed diagonal and straight tile steps',()=>{
- // The server's tick pose as the client presents it (projectTilePose), chased by
- // reconcileLocalPose exactly as game.js does; the game used to face the path yaw.
- const poseAt=(idx,at)=>{const prev=points[Math.max(0,idx-1)],cur=points[idx];return {x:cur[0],z:cur[1],yaw:Math.atan2(cur[0]-prev[0],cur[1]-prev[1]),path:points.slice(idx+1),at,tile:true,stepTiles:3,speed:3*TILE/GAME_TICK}};
- const heading=createTravelHeading(),local={x:0,z:0},samples=[],raw=[];let last=null,maxTurn=0;
- for(let t=0;t<(MOVES.length/3+1)*TICK;t+=dt*1000){
-  const tick=Math.floor(t/TICK),pose=poseAt(Math.min(points.length-1,tick*3),tick*TICK),p=projectTilePose(pose,t);
-  reconcileLocalPose(local,{...p,speed:pose.speed},dt);
-  const yaw=heading.update(local.x,local.z,dt,p.yaw);if(last!==null)maxTurn=Math.max(maxTurn,wrapDeg(yaw-last));last=yaw;
-  raw.push({x:local.x,z:local.z,yaw:p.yaw});samples.push({x:local.x,z:local.z,yaw});
+test('local rider: the horse faces its tile step, turns once at the bend, never crabs or wobbles',()=>{
+ const poseAt=(idx,at)=>{const prev=points[Math.max(0,idx-1)],cur=points[idx];return {x:cur[0],z:cur[1],yaw:Math.atan2(cur[0]-prev[0],cur[1]-prev[1]),path:points.slice(idx+1),at,tile:true,stepTiles:3,moving:idx<points.length-1,speed:3*TILE/GAME_TICK}};
+ const heading=createTravelHeading(),follower=createTileFollower(),local={x:0,z:0},samples=[];let yaw=Math.PI/4;
+ for(let t=0;t<(MOVES.length/3+2)*TICK;t+=dt*1000){
+  const tick=Math.floor(t/TICK),pose=poseAt(Math.min(points.length-1,tick*3),tick*TICK),f=follower.update(local,pose,t,dt);
+  if(f)yaw=turnToward(yaw,f.yaw,dt);yaw=heading.update(local.x,local.z,dt,yaw);samples.push({x:local.x,z:local.z,yaw});
  }
- const before=stats(crab(raw)),after=stats(crab(samples));
- assert.ok(before.max>45,'the path yaw alone points well off the travel direction ('+before.max.toFixed(0)+'°)');
- assert.ok(after.max<40,'never sideways: worst '+after.max.toFixed(0)+'°');
- assert.ok(after.p90<25&&after.p90<before.p90,'p90 '+after.p90.toFixed(1)+'° (was '+before.p90.toFixed(1)+'°)');
- assert.ok(maxTurn<=10*dt*180/Math.PI+1e-6,'turns smoothly, no snapping: '+maxTurn.toFixed(1)+'° per frame');
+ const c=crab(samples);assert.ok(c.length>50&&Math.max(...c)<1,'faces the travel direction: worst '+Math.max(...c).toFixed(2)+'° at '+c.indexOf(Math.max(...c))+' of '+c.length);
+ assert.equal(reversals(samples.map(s=>s.yaw)),0,'no side-to-side swing');
+ assert.ok(Math.hypot(local.x-points.at(-1)[0],local.z-points.at(-1)[1])<1e-6,'arrives on the clicked tile');
 });
 
-test('remote rider: tick samples three tiles apart glide on chords; the horse faces the chord, not the last step',()=>{
- const track=createMotionTrack({delay:650}),heading=createTravelHeading(),samples=[],raw=[];
- for(let tick=0;tick*3<MOVES.length;tick++){const idx=Math.min(points.length-1,tick*3),prev=points[Math.max(0,idx-1)],cur=points[idx];track.pushTile(tick*TICK,{x:cur[0],z:cur[1],yaw:Math.atan2(cur[0]-prev[0],cur[1]-prev[1]),moving:true,stepTiles:3},tick*TICK,0)}
- for(let now=0;now<(MOVES.length/3+2)*TICK;now+=dt*1000){const s=track.sample(now);if(!s)continue;raw.push({x:s.x,z:s.z,yaw:s.yaw});samples.push({x:s.x,z:s.z,yaw:heading.update(s.x,s.z,dt,s.yaw)})}
- const before=stats(crab(raw)),after=stats(crab(samples));
- // Tile playback (motion-track.js createTilePlayback) already walks the tiles in order and faces
- // the leg being walked, so the raw track no longer reports the last step's yaw; the heading
- // filter must keep it at least as straight.
- assert.ok(after.p90<=before.p90+2,'heading no worse than the track ('+before.p90.toFixed(0)+'°)');
- assert.ok(after.mean<7,'mean crab '+after.mean.toFixed(1)+'°');
- assert.ok(after.p90<22,'p90 crab '+after.p90.toFixed(1)+'°');
+test('remote rider: tick positions three tiles apart are walked tile by tile; the horse faces each step',()=>{
+ const track=createMotionTrack({delay:650}),heading=createTravelHeading(),samples=[];
+ let sent=0;
+ for(let now=0;now<(MOVES.length/3+6)*TICK;now+=dt*1000){
+  // Each tick's position arrives 150 ms after its tick (three tiles on, when riding).
+  for(;sent*TICK+150<=now&&sent*3<MOVES.length+3;sent++){const idx=Math.min(points.length-1,sent*3),prev=points[Math.max(0,idx-1)],cur=points[idx];track.pushTile(sent*TICK,{x:cur[0],z:cur[1],yaw:idx?Math.atan2(cur[0]-prev[0],cur[1]-prev[1]):Math.PI/4,moving:true,stepTiles:3},now)}// standing facing the first (diagonal) step
+  const s=track.sample(now);if(!s)continue;samples.push({x:s.x,z:s.z,yaw:heading.update(s.x,s.z,dt,s.yaw)})}
+ const c=crab(samples);assert.ok(c.length>50&&Math.max(...c)<1,'faces each step, no chord between tick positions: worst '+Math.max(...c).toFixed(2)+'° n='+c.length);
+ assert.equal(reversals(samples.slice(1).map(s=>s.yaw)),0,'no side-to-side swing');
 });
 
-test('heading turns at a capped rate, holds the given yaw at rest and snaps on teleport',()=>{
- const h=createTravelHeading();h.update(0,0,dt,0);
- // Reverse direction: a 180° turn is not instantaneous.
- let x=0,yaw=0,maxStep=0;for(let i=0;i<60;i++){x-=8*dt;const before=yaw;yaw=h.update(0,x,dt,0);maxStep=Math.max(maxStep,wrapDeg(yaw-before))}
- assert.ok(maxStep<=10*dt*180/Math.PI+1e-6,'turn rate capped');assert.ok(wrapDeg(yaw-Math.PI)<3,'ends facing travel');
- for(let i=0;i<120;i++)yaw=h.update(0,x,dt,Math.PI/2);assert.ok(wrapDeg(yaw-Math.PI/2)<2,'standing: turns to the given yaw');
+test('heading follows the step yaw with the same fast turn, holds it at rest and snaps on teleport',()=>{
+ const h=createTravelHeading();assert.equal(h.update(0,0,dt,0),0);
+ let yaw=0,t=0;while(wrapDeg(yaw-Math.PI/2)>.5&&t<1){yaw=h.update(0,0,dt,Math.PI/2);t+=dt}
+ assert.ok(t<=.12,'90° in '+t.toFixed(3)+' s: fast, not a lazy drift');
+ let same=0;for(let i=0;i<10;i++)same=h.update(0,0,dt,Math.PI/2);assert.ok(wrapDeg(same-Math.PI/2)<1e-6,'holds the given yaw');
  assert.equal(h.update(50,50,dt,1),1,'teleport snaps');
+ assert.ok(!('speed' in h),'no velocity filter any more');
 });
 
 test('horse gait follows the real pace: no gallop from tiny nudges, shorter reach when slow, full gallop at riding speed',()=>{

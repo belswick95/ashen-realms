@@ -1,5 +1,5 @@
 import {slideStep} from './movement-collision.js?v=release-20261107-music156';
-import {projectTilePose,aheadYaw,LOOK_TILES,TILE,GAME_TICK} from './tile-grid.js?v=release-20261107-music156';
+import {projectTilePose,tileSteps,TILE,GAME_TICK} from './tile-grid.js?v=release-20261107-music156';
 // Timestamped presentation buffer: no position authority or damage is decided here.
 // When snapshots arrive later than `delay` (a slow reply on a phone or tablet
 // connection) the buffer runs dry and the actor would freeze, then jump. The
@@ -24,22 +24,25 @@ export function createMotionTrack({delay=350,maxExtra=600}={}){let tile=false,pl
 //    their true 1.41x ground speed instead of falling behind);
 //  - further behind than SNAP_TILES the walker is placed quietly at the buffer distance (sample().snapped,
 //    so the caller animates no stride for that frame); a jump over 12 units is a teleport.
+// OSRS rules: a tick position several tiles on (a runner's 2, a rider's 3) is walked tile by tile in
+// the route's shape (diagonal first, then straight: tileSteps), at a constant pace, facing the step
+// being walked; the facing turns fast (turnToward, ~70 ms) and only at a bend.
 // sample(now) returns {x,z,yaw,moving,run,speed,snapped}; one object is reused (no allocation).
 export const TILE_WALK_SPEED=TILE/GAME_TICK,CATCH_UP=1.3,SLOW=.6,SNAP_TILES=4,BUFFER_TILES=2,DUE_MS=1800,START_WAIT_MS=900,TELEPORT=12;
 export function createTilePlayback({buffer=BUFFER_TILES,slow=SLOW,gain=.2,ease=.4}={}){
- const path=[],trail=[],out={x:0,z:0,yaw:0,moving:false,run:false,speed:0,snapped:false};let ready=false,walking=false,startAt=0,stand=0,lastStep=NaN,heading=0,steps=1,rate=1,lastNow=null,lastTile=-Infinity,snapNext=false;
+ const path=[],out={x:0,z:0,yaw:0,moving:false,run:false,speed:0,snapped:false};let ready=false,walking=false,startAt=0,stand=0,lastStep=NaN,heading=0,steps=1,rate=1,lastNow=null,lastTile=-Infinity,snapNext=false;
  // Distances are in tile steps (a diagonal step is one step, as on the server: one tick), not units.
  const stepsOf=(dx,dz)=>Math.max(Math.abs(dx),Math.abs(dz))/TILE;
  const len=()=>{let d=0,px=out.x,pz=out.z;for(const p of path){d+=stepsOf(p.x-px,p.z-pz);px=p.x;pz=p.z}return d};
  // Walk `d` tile steps along the queued path from the presented point; returns the ground covered.
- function advance(d){let ground=0;while(path.length&&d>0){const p=path[0],dx=p.x-out.x,dz=p.z-out.z,seg=stepsOf(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){ground+=Math.hypot(dx,dz);out.x=p.x;out.z=p.z;d-=seg;trail.push(path.shift());if(trail.length>LOOK_TILES)trail.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}if(path.length)heading=aheadYaw(out.x,out.z,path,0,heading,LOOK_TILES,trail);return ground}
+ function advance(d){let ground=0;while(path.length&&d>0){const p=path[0],dx=p.x-out.x,dz=p.z-out.z,seg=stepsOf(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){ground+=Math.hypot(dx,dz);out.x=p.x;out.z=p.z;d-=seg;path.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}return ground}
  return {get backlog(){return len()},
   push(pose,now=performance.now()){if(!Number.isFinite(pose.x)||!Number.isFinite(pose.z))return;
    if(!ready){ready=true;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand=Number.isFinite(pose.yaw)?pose.yaw:0;return}
    const last=path.at(-1)||out,d=Math.hypot(pose.x-last.x,pose.z-last.z);if(Number.isFinite(pose.yaw))stand=pose.yaw;
    if(d<1e-6)return;// same tile: only the facing (an NPC turning to talk)
-   if(d>TELEPORT){path.length=0;trail.length=0;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand;snapNext=true;return}
-   lastStep=Math.atan2(pose.x-last.x,pose.z-last.z);steps=pose.stepTiles>0?pose.stepTiles:pose.run?2:1;if(!path.length&&!walking)startAt=now;path.push({x:pose.x,z:pose.z});lastTile=now},
+   if(d>TELEPORT){path.length=0;out.x=pose.x;out.z=pose.z;out.yaw=heading=stand;snapNext=true;return}
+   const legs=tileSteps(last,pose),from=legs.length>1?legs.at(-2):last;lastStep=Math.atan2(pose.x-from.x,pose.z-from.z);steps=pose.stepTiles>0?pose.stepTiles:pose.run?2:1;if(!path.length&&!walking)startAt=now;for(const p of legs)path.push(p);lastTile=now},
   sample(now=performance.now()){if(!ready)return null;const dt=lastNow===null?0:Math.max(0,Math.min(250,now-lastNow))/1000;lastNow=now;
    out.snapped=snapNext;snapNext=false;let lag=len();
    if(lag>SNAP_TILES){advance(lag-buffer);out.snapped=true;lag=len()}
@@ -52,18 +55,72 @@ export function createTilePlayback({buffer=BUFFER_TILES,slow=SLOW,gain=.2,ease=.
    out.speed=out.moving&&dt>0?advance(steps*rate*dt/GAME_TICK)/dt:0;if(!path.length){out.moving=false;walking=false;
     // The queue ran dry while tiles are still due (a late reply): keep facing along the walk; the
     // stand yaw is only the last step's. A walk that has ended, or a real facing (talk), turns to it.
-    if(!due||Math.abs(Math.atan2(Math.sin(stand-lastStep),Math.cos(stand-lastStep)))>1e-3)heading=stand;if(!due)trail.length=0}
-   // Turn toward the heading (a corner, a diagonal tile step, the facing at rest) over ~0.1 s, not in one frame.
+    if(!due||Math.abs(Math.atan2(Math.sin(stand-lastStep),Math.cos(stand-lastStep)))>1e-3)heading=stand}
+   // Turn toward the heading (the bend, the facing at rest) fast, OSRS-like (~70 ms), not in one frame.
    out.yaw=dt>0&&!out.snapped?turnToward(out.yaw,heading,dt):heading;
    return out},
-  clear(){path.length=0;trail.length=0;ready=false;walking=false;lastNow=null;lastTile=-Infinity;rate=1}};
+  clear(){path.length=0;ready=false;walking=false;lastNow=null;lastTile=-Infinity;rate=1}};
 }
 
-// A quick OSRS-like turn toward `target` the short way round (never across ±π the long way),
-// easing over ~`tau` seconds; the result stays in -π..π.
-export function turnToward(yaw,target,dt,tau=.1){
+// The local tile walker (game.js), OSRS-style: it walks ITS OWN queue of the route's tile centres,
+// leg by leg, at the walk/run/ride pace, facing the leg it is on, and keeps level with where the
+// server walker is now (presentPose) by pace alone: up to CATCH_UP x when behind, down to SLOW x
+// when ahead, eased over ~0.3 s. heading144 chased the presented point instead (reconcileLocalPose):
+// that point runs a tile or more ahead from the first snapshot of a walk (latency, plus the chase
+// was capped at 1.15 x the STRAIGHT pace, so it fell further behind on every diagonal), so the body
+// cut each bend on a curve that took ~2 s (a sideways slide), while the facing, taken from the
+// presented point, had already turned a tile early.
+// A new snapshot is merged into the queue: the tiles already queued up to the server's tick tile
+// are kept, so the walker never jumps back or cuts across to it; a new route (a fresh click) starts
+// from the walker's tile. update() returns {x,z,yaw,moving,speed} (one object, reused), or null
+// while the player steers by keys or a move command is pending.
+export function createTileFollower({slow=SLOW,catchUp=CATCH_UP,gain=.4,ease=.3,snapTiles=SNAP_TILES}={}){
+ const queue=[],out={x:0,z:0,yaw:0,moving:false,speed:0};let ready=false,lastPose=null,lastPassed=null,rate=1,steps=1,heading=0;
+ const stepsOf=(dx,dz)=>Math.max(Math.abs(dx),Math.abs(dz))/TILE,near=(a,b)=>!!a&&!!b&&Math.abs(a.x-b.x)+Math.abs(a.z-b.z)<.05;
+ const ahead=()=>{let d=0,px=out.x,pz=out.z;for(const p of queue){d+=stepsOf(p.x-px,p.z-pz);px=p.x;pz=p.z}return d};
+ function advance(d){let ground=0;while(queue.length&&d>0){const p=queue[0],dx=p.x-out.x,dz=p.z-out.z,seg=stepsOf(dx,dz);if(seg>1e-9)heading=Math.atan2(dx,dz);if(seg<=d){ground+=Math.hypot(dx,dz);out.x=p.x;out.z=p.z;d-=seg;lastPassed=queue.shift()}else{const f=d/seg;ground+=Math.hypot(dx,dz)*f;out.x+=dx*f;out.z+=dz*f;d=0}}return ground}
+ function merge(pose){
+  const route=[{x:pose.x,z:pose.z}];for(const p of Array.isArray(pose.path)?pose.path:[]){const x=Number(p?.[0]??p?.x),z=Number(p?.[1]??p?.z);if(Number.isFinite(x)&&Number.isFinite(z))route.push({x,z})}
+  const j=queue.length?route.findIndex(p=>near(p,queue[0])):-1;
+  if(j>=0){queue.length=0;queue.push(...route.slice(j));return}// the same route, the server further on (or behind)
+  const k=queue.findIndex(p=>near(p,route[0]));
+  if(k>=0){queue.length=k;queue.push(...route);return}// the server is still ahead on our queue
+  // The tile just left, or stood on, is on the route (a late snapshot, or a new route from here):
+  // carry on from there, never back over it.
+  let m=-1;for(let i=route.length-1;i>=0&&m<0;i--)if(near(route[i],lastPassed)||near(route[i],out))m=i;
+  queue.length=0;
+  if(m>=0){queue.push(...route.slice(m+1));return}
+  // A new route elsewhere: a short step to its first tile; far off (a missed stretch) placed on it.
+  if(stepsOf(route[0].x-out.x,route[0].z-out.z)>1.5){out.x=route[0].x;out.z=route[0].z;route.shift()}
+  queue.push(...route);
+ }
+ return {get queue(){return queue},
+  update(position,pose,now,dt,{active=false,pending=false}={}){
+   if(active||pending||!pose){lastPose=null;return null}
+   if(!ready||Math.hypot(position.x-out.x,position.z-out.z)>.3){ready=true;out.x=position.x;out.z=position.z;queue.length=0;lastPassed=null;lastPose=null;rate=1;heading=Number.isFinite(pose.yaw)?pose.yaw:0}
+   if(pose!==lastPose){lastPose=pose;merge(pose)}
+   const moving=pose.moving&&Array.isArray(pose.path)&&pose.path.length>0;if(pose.stepTiles>0)steps=pose.stepTiles;
+   // How far the server walker still has to go now (tile steps), against what is queued here.
+   let total=0,px=pose.x,pz=pose.z;for(const p of pose.path||[]){const x=Number(p?.[0]??p?.x),z=Number(p?.[1]??p?.z);if(!Number.isFinite(x)||!Number.isFinite(z))break;total+=stepsOf(x-px,z-pz);px=x;pz=z}
+   const used=moving&&Number.isFinite(pose.at)?Math.max(0,Math.min(3,(now-pose.at)/(GAME_TICK*1000)))*steps:0,gap=ahead()-Math.max(0,total-used);
+   if(gap>snapTiles)advance(gap-1);
+   const want=queue.length?gap>=0?Math.min(catchUp,1+gain*gap):Math.max(slow,1+gain*gap):1;
+   const was=out.moving;out.moving=queue.length>0;if(!was&&out.moving)rate=Math.min(1,want);
+   rate+=(want-rate)*(1-Math.exp(-Math.max(0,dt)/ease));
+   out.speed=out.moving&&dt>0?advance(steps*rate*dt/GAME_TICK)/dt:0;
+   if(!queue.length){out.moving=false;if(!moving&&Number.isFinite(pose.yaw))heading=pose.yaw}
+   out.yaw=heading;position.x=out.x;position.z=out.z;return out}};
+}
+
+// OSRS facing: a walker faces its tile step and turns essentially at once, with a short visual
+// slerp: an ease-out (time constant TURN_TAU) that finishes at no less than TURN_MIN_RATE, the short
+// way round (never across ±π the long way). A 45° bend takes ~65 ms, 90° ~85 ms, 180° ~100 ms;
+// never a lazy drift. The result stays in -π..π.
+export const TURN_TAU=.025,TURN_MIN_RATE=6;
+export function turnToward(yaw,target,dt,tau=TURN_TAU){
  if(!Number.isFinite(yaw))return target;
- const turn=Math.atan2(Math.sin(target-yaw),Math.cos(target-yaw)),next=yaw+turn*Math.min(1,1-Math.exp(-Math.max(0,dt)/tau));
+ const turn=Math.atan2(Math.sin(target-yaw),Math.cos(target-yaw)),t=Math.max(0,dt),a=Math.abs(turn);
+ const step=Math.min(a,Math.max(a*(1-Math.exp(-t/tau)),TURN_MIN_RATE*t)),next=yaw+Math.sign(turn)*step;
  return Math.atan2(Math.sin(next),Math.cos(next));
 }
 

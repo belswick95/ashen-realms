@@ -1,26 +1,24 @@
-// Mounted heading: a horse faces where it is actually going.
-// Tile walkers report the yaw of their last tile step, and a rider's presented
-// position glides on a chord between tick positions (three tiles per tick when
-// mounted), so the reported yaw and the real travel direction often differ by up
-// to 45° on mixed diagonal/straight paths. Facing that yaw made the horse crab
-// sideways. This follows the low-passed velocity instead (per-frame deltas are
-// far too noisy; ~80 ms, so a route crossing a slope does not wag the horse at
-// every diagonal tile), falls back to the given yaw only when the rider stands still,
-// and turns at a capped, horse-like rate.
+import {turnToward} from './motion-track.js?v=release-20261107-music156';
+// Mounted heading (OSRS rules, as on foot): the horse faces the tile step it is on and turns fast
+// at the route's one bend (turnToward, ~70 ms). heading144 low-passed the horse's velocity (~80 ms)
+// instead; on its line-hugging routes (E, NE, E, E, NE ...) the velocity swung at every diagonal
+// tile, so the horse swung side to side. Diagonal-first routes and tile-by-tile playback (local
+// projectTilePose, remote createTilePlayback) already give the step direction as the walker's yaw,
+// so this only follows it: no velocity filter, no lag behind an already-turning yaw (the rate is the
+// same), and a snap on the first frame or a teleport. The horse model adds no yaw of its own (its
+// gallop moves the saddle up/down and fore/aft only: horse-mount.js seatRider).
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
-export function createTravelHeading({turnRate=10,ease=25,smoothing=.08,minSpeed=1.2,teleport=6}={}){
- let yaw=null,vx=0,vz=0,lastX=null,lastZ=null;
+export function createTravelHeading({teleport=6}={}){
+ let yaw=null,lastX=null,lastZ=null;
  return {
   get yaw(){return yaw},
-  get speed(){return Math.hypot(vx,vz)},
-  reset(){yaw=null;vx=vz=0;lastX=lastZ=null},
-  // x,z: this frame's position; dt: seconds; fallback: yaw to hold while standing.
-  update(x,z,dt,fallback=0){
-   if(yaw===null||lastX===null||!(dt>0)||Math.hypot(x-lastX,z-lastZ)>teleport){yaw=wrap(fallback);vx=vz=0;lastX=x;lastZ=z;return yaw}
-   const k=1-Math.exp(-dt/smoothing);vx+=((x-lastX)/dt-vx)*k;vz+=((z-lastZ)/dt-vz)*k;lastX=x;lastZ=z;
-   const target=Math.hypot(vx,vz)>=minSpeed?Math.atan2(vx,vz):fallback;
-   const delta=wrap(target-yaw),step=Math.min(Math.abs(delta)*(1-Math.exp(-ease*dt)),turnRate*dt);
-   yaw=wrap(yaw+Math.sign(delta)*step);return yaw;
+  reset(){yaw=null;lastX=lastZ=null},
+  // x,z: this frame's position; dt: seconds; stepYaw: the walker's facing (its tile step's direction).
+  update(x,z,dt,stepYaw=0){
+   const jump=lastX===null||Math.hypot(x-lastX,z-lastZ)>teleport;lastX=x;lastZ=z;
+   if(yaw===null||jump)return yaw=wrap(stepYaw);
+   if(!(dt>0))return yaw;
+   return yaw=turnToward(yaw,stepYaw,dt);
   }
  };
 }

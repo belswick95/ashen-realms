@@ -32,6 +32,9 @@ test('moves: blocked tiles, edge walls and no corner cutting (OSRS)',()=>{
 
 test('BFS: spec vectors (straight walk, corner rule, W-first ties, 21x21 fallback, reach)',()=>{
  assert.deepEqual(tiles(route(grid([]),[0,0],[5,0])),[[1,0],[2,0],[3,0],[4,0],[5,0]]);
+ // OSRS route shape: diagonal first until level on one axis, then straight (one clean bend).
+ assert.deepEqual(tiles(route(grid([]),[0,0],[10,3])),[[1,1],[2,2],[3,3],[4,3],[5,3],[6,3],[7,3],[8,3],[9,3],[10,3]],'NE x3, then E x7');
+ assert.deepEqual(tiles(route(grid([]),[0,0],[-2,-6])),[[-1,-1],[-2,-2],[-2,-3],[-2,-4],[-2,-5],[-2,-6]],'SW x2, then S x4');
  assert.deepEqual(tiles(route(grid([[1,0,FLAG.BLOCK]]),[0,0],[1,1])),[[0,1],[1,1]]);
  assert.deepEqual(tiles(route(grid([[0,0,FLAG.E]]),[0,0],[1,1])),[[0,1],[1,1]]);
  assert.deepEqual(tiles(route(grid([]),[5,5],[5,5],{mode:'card'})),[[4,5]],'W first');

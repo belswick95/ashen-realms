@@ -85,8 +85,13 @@ export function turnToward(from,to,dt){if(!Number.isFinite(from)||!(dt>0))return
 // every frame while the worker stands; a moving walker follows the server yaw.
 // With the frame time, the walker turns from the station back onto its path
 // (and toward a fresh server yaw) at a natural rate instead of in one frame.
-export function workFacing(rig,yaw,moved=false,dt=0){const w=rig?.work,face=w?.yaw;if(!moved&&Number.isFinite(face)){if(w)w.shown=face;return face}
+// Once the walker has turned onto its path it faces the server-driven yaw as given (tile playback
+// already turns it OSRS-fast, at the route's one bend), so a walking NPC follows the same facing
+// rules as a player instead of drifting ~0.3 s behind at the bend.
+export function workFacing(rig,yaw,moved=false,dt=0){const w=rig?.work,face=w?.yaw;if(!moved&&Number.isFinite(face)){if(w){w.shown=face;w.onPath=false}return face}
  if(!w||!(dt>0)){if(w)w.shown=yaw;return yaw}
+ if(!moved)w.onPath=false;
+ if(w.onPath||Math.abs(Math.atan2(Math.sin(yaw-w.shown),Math.cos(yaw-w.shown)))<.02){w.onPath=moved;return w.shown=yaw}
  return w.shown=turnToward(w.shown,yaw,dt)}
 
 // Pose helpers (all in the character's own frame: +Z forward, +X its left).

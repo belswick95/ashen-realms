@@ -29,10 +29,14 @@ export function canMove(flagsAt,i,j,di,dj){
 // mode 'tile': end on goal; 'card': end orthogonally next to goal; 'near': end within `reach`
 // units of `point`. Unreachable: the reached tile closest to `point`, if within `alt` tiles (alt<0: any).
 // Returns {path:[[x,z],...], reached, nodes} exactly like eldervale_private.tile_route.
-// The path is traced back from the end along the shortest-path tiles that lie closest to the
-// straight line from the start to the end (ties: the first-found parent). Following the first-found
-// parent alone put every straight step first and every diagonal last, so a click 10 east and 3 north
-// walked east (off to one side of the marker) and then swung over to the diagonal on the other side.
+// OSRS route shape: DIAGONAL FIRST until the walker is level with the end on one axis, then
+// STRAIGHT to it (a click 10 east, 3 north walks NE, NE, NE, then E x7: one clean bend). Traced back
+// from the end, each tile takes the one-step-shorter parent whose step into it is that shape's step:
+// straight along the longer axis of what is left from the start, diagonal once both are equal.
+// Around walls (no such parent) it takes the parent whose step is closest in direction to it
+// (ties: the first-found parent). Same length as before; only the choice between equally short
+// routes. Mirrors db/tile-route-osrs.sql (heading144 hugged the start-end line instead, which
+// interleaved straight and diagonal steps: a zig-zag, and a horse that swung side to side).
 const DI=[-1,1,0,0,-1,1,-1,1],DJ=[0,0,-1,1,-1,-1,1,1];
 export function bfsRoute({start,goal,mode='tile',point=null,reach=0,radius=32,alt=10,flagsAt}){
  radius=Math.max(2,Math.min(64,radius|0));const w=2*radius+1,n=w*w,ox=start[0]-radius,oz=start[1]-radius;
@@ -59,49 +63,37 @@ export function bfsRoute({start,goal,mode='tile',point=null,reach=0,radius=32,al
  }
  const reachedGoal=found>=0;
  if(!reachedGoal){if(best>=0&&(alt<0||bestD<=alt*alt))found=best;if(found<0||found===origin)return {path:[],reached:false,nodes:tail}}
- const ex=found%w-radius,ez=Math.floor(found/w)-radius,path=[];
+ const path=[];
  for(let k=found,steps=0;k!==origin&&steps<n;steps++){
-  const ci=k%w,cj=(k-ci)/w;path.push([tileCenter(ci+ox),tileCenter(cj+oz)]);
-  // Off-line distance of each one-step-shorter parent that can step here (|cross| with the line).
-  let next=prev[k],off=Math.abs((prev[k]%w-radius)*ez-(Math.floor(prev[k]/w)-radius)*ex);
+  const ci=k%w,cj=(k-ci)/w,rx=ci-radius,rz=cj-radius;path.push([tileCenter(ci+ox),tileCenter(cj+oz)]);
+  // The diagonal-first step into this tile, from what is left of the route from the start.
+  const ix=Math.abs(rx)>=Math.abs(rz)?Math.sign(rx):0,iz=Math.abs(rz)>=Math.abs(rx)?Math.sign(rz):0;
+  const fit=(di,dj)=>-(di*ix+dj*iz)/Math.sqrt(Math.abs(di)+Math.abs(dj));
+  let next=prev[k],off=fit(ci-next%w,cj-Math.floor(next/w));
   for(let q=0;q<8;q++){const pi=ci-DI[q],pj=cj-DJ[q];if(pi<0||pj<0||pi>=w||pj>=w)continue;const p=pj*w+pi;
    if(p===next||prev[p]<0||depth[p]!==depth[k]-1||!open(pi,pj,DI[q],DJ[q]))continue;
-   const o=Math.abs((pi-radius)*ez-(pj-radius)*ex);if(o<off-1e-9){off=o;next=p}}
+   const o=fit(DI[q],DJ[q]);if(o<off-1e-9){off=o;next=p}}
   k=next;
  }
  path.reverse();return {path,reached:reachedGoal,nodes:tail};
 }
 
-// Facing of a tile walker: along the stretch of its path just ahead, not just the next tile. A
-// route crossing a slope mixes two neighbouring step directions (east, east, north-east, east, ...);
-// facing each tile flicked the walker 45° at every diagonal. Instead it faces the point up to
-// `look` tile steps ahead, as far as the path keeps to those two neighbouring directions, so it
-// looks along the slope toward the marker, and still turns at a real corner (90° or more).
-// `path` holds [x,z] pairs or {x,z}; `from` is the index of the next point.
-export const LOOK_TILES=6;
-const ptX=p=>Number(p?.[0]??p?.x),ptZ=p=>Number(p?.[1]??p?.z);
-const stepDir=(dx,dz)=>{const m=Math.max(Math.abs(dx),Math.abs(dz));return m<1e-9?-1:(Math.round(dx/m)+1)*3+Math.round(dz/m)+1};
-const DIR_ANGLE=[-3*Math.PI/4,-Math.PI/2,-Math.PI/4,Math.PI,NaN,0,3*Math.PI/4,Math.PI/2,Math.PI/4];// stepDir -> atan2(di,dj)
-const adjacent=(a,b)=>{const d=Math.abs(DIR_ANGLE[a]-DIR_ANGLE[b]);return Math.min(d,2*Math.PI-d)<Math.PI/4+1e-6};
-export function aheadYaw(x,z,path,from=0,fallback=0,look=LOOK_TILES,behind=null){
- let steps=0,lx=x,lz=z,tx=x,tz=z,first=-1,other=-1;
- const fits=dir=>{if(first<0){first=dir;return true}if(dir===first||dir===other)return true;if(other<0&&adjacent(dir,first)){other=dir;return true}return false};
- for(let k=from;k<path.length;k++){
-  const gx=ptX(path[k]),gz=ptZ(path[k]);if(!Number.isFinite(gx)||!Number.isFinite(gz))break;
-  const dir=stepDir(gx-lx,gz-lz);if(dir<0)continue;if(!fits(dir))break;
-  const seg=Math.max(Math.abs(gx-lx),Math.abs(gz-lz))/TILE;
-  if(steps+seg>look){const f=(look-steps)/seg;tx=lx+(gx-lx)*f;tz=lz+(gz-lz)*f;break}
-  steps+=seg;lx=tx=gx;lz=tz=gz;
- }
- // Tiles already walked (oldest first) that keep to the same directions widen the stretch when
- // little of the path ahead is known (a remote walker's queue holds a tile or two).
- let sx=x,sz=z;
- if(behind&&first>=0)for(let k=behind.length-1,back=0,nx=x,nz=z;k>=0&&back<look-steps;k--){
-  const bx=ptX(behind[k]),bz=ptZ(behind[k]);if(!Number.isFinite(bx)||!Number.isFinite(bz))break;
-  const dir=stepDir(nx-bx,nz-bz);if(dir<0)continue;if(!fits(dir))break;
-  back+=Math.max(Math.abs(nx-bx),Math.abs(nz-bz))/TILE;sx=nx=bx;sz=nz=bz;
- }
- return Math.hypot(tx-sx,tz-sz)>1e-6&&Math.hypot(tx-x,tz-z)>1e-6?Math.atan2(tx-sx,tz-sz):fallback;
+// Facing of a tile walker (OSRS): the direction of the tile step it is on, nothing else. A route
+// has one bend (diagonal first, then straight), so this turns once, at the bend.
+export const stepYaw=(dx,dz,fallback=0)=>Math.abs(dx)+Math.abs(dz)<1e-9?fallback:Math.atan2(dx,dz);
+
+// The tile steps between two tile centres up to a few tiles apart (a remote walker's tick
+// positions: a runner moves 2 tiles a tick, a rider 3), in the route's own shape: diagonal first,
+// then straight. Any stretch of an OSRS route is itself diagonal-first, so a remote walker walks the
+// same tiles as its owner sees instead of gliding on chords between tick positions.
+export function tileSteps(from,to,max=4){
+ const fi=Math.round(from.x/TILE),fj=Math.round(from.z/TILE),ti=Math.round(to.x/TILE),tj=Math.round(to.z/TILE);
+ const onGrid=(p,i,j)=>Math.abs(p.x-i*TILE)<.02&&Math.abs(p.z-j*TILE)<.02;
+ const n=Math.max(Math.abs(ti-fi),Math.abs(tj-fj));
+ if(n<=1||n>max||!onGrid(from,fi,fj)||!onGrid(to,ti,tj))return [{x:to.x,z:to.z}];
+ const out=[];let i=fi,j=fj;
+ while(i!==ti||j!==tj){i+=Math.sign(ti-i);j+=Math.sign(tj-j);out.push({x:tileCenter(i),z:tileCenter(j)})}
+ out[out.length-1]={x:to.x,z:to.z};return out;
 }
 
 // Smooth presentation of a tile walker: the server reports where it stood at the tick boundary
@@ -116,7 +108,7 @@ export function projectTilePose(pose,now,{maxTicks=3}={}){
   const gx=Number(path[k]?.[0]),gz=Number(path[k]?.[1]);if(!Number.isFinite(gx)||!Number.isFinite(gz))break;
   const dx=gx-out.x,dz=gz-out.z;if(Math.abs(dx)+Math.abs(dz)<1e-6)continue;
   out.yaw=Math.atan2(dx,dz);out.moving=true;
-  if(budget<1){out.x+=dx*budget;out.z+=dz*budget;out.yaw=aheadYaw(out.x,out.z,path,k,out.yaw);return out}
+  if(budget<1){out.x+=dx*budget;out.z+=dz*budget;return out}
   out.x=gx;out.z=gz;budget-=1;
  }
  out.moving=false;return out;

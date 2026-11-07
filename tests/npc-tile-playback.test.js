@@ -53,8 +53,9 @@ test('tile playback: a diagonal walk keeps the server pace (one diagonal tile pe
 
 test('tile playback: stopping turns to the server facing smoothly; runners play at two tiles a tick',()=>{
  const p=createTilePlayback();p.push({x:0,z:0,yaw:0},0);p.sample(0);p.push({x:0,z:0,yaw:Math.PI/2},10);
- const first=p.sample(16).yaw;assert.ok(first>0&&first<Math.PI/2*.3,'turns over a few frames, not in one: '+first);
- let y=0;for(let t=32;t<800;t+=16)y=p.sample(t).yaw;assert.ok(Math.abs(y-Math.PI/2)<1e-3);
+ // OSRS: a fast turn (~70-90 ms for 90°), a short visual slerp rather than a one-frame snap or a lazy drift.
+ const first=p.sample(16).yaw;assert.ok(first>0&&first<Math.PI/2*.6,'turns over a few frames, not in one: '+first);
+ let y=first;for(let t=32;t<=112;t+=16)y=p.sample(t).yaw;assert.ok(Math.abs(y-Math.PI/2)<1e-3,'turned within ~0.1 s: '+y);
  const r=createTilePlayback();r.push({x:0,z:0,yaw:0},0);r.sample(0);for(let i=1;i<=4;i++)r.push({x:0,z:i*TILE,yaw:0,stepTiles:2},0);
  const s=r.sample(100);assert.equal(s.run,true);assert.ok(s.speed>TILE_WALK_SPEED*1.5,'runner pace '+s.speed.toFixed(2));
 });

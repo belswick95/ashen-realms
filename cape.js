@@ -23,6 +23,10 @@ export function createCape(T,body,{color=0x71364a,rig=null}={}){
   clasp.position.set(side*.28,2.20,-.228);cloth.add(clasp);clasps.push(clasp);
  }
  const seam=new T.Vector3(0,2.20,-.26),seamShift=new T.Vector3(),hang=new T.Vector3();
+ // Running: the hem flares back with the run (drag), and the feet join the leg capsules. A running
+ // stride kicks the trailing heel up behind the knee, well behind the walking drape (the owner
+ // saw feet and shins pass through the cape). Walking (run 0) keeps the drape exactly as before.
+ const FLARE=.42,RUN_EASE=.22,KICK_RECOVER=.18,sheet=new Float32Array((rows+1)*(cols+1)*3),rowPush=new Float32Array(rows+1);let run=0;
  let time=0;const inverse=new T.Matrix4(),anchor=new T.Matrix4(),v=new T.Vector3(),point=new T.Vector3();
  const horseFromBody=new T.Matrix4(),bodyFromHorse=new T.Matrix4(),horsePoint=new T.Vector3();
  const jointPosition=joint=>body.worldToLocal(joint.getWorldPosition(new T.Vector3()));
@@ -32,26 +36,32 @@ export function createCape(T,body,{color=0x71364a,rig=null}={}){
   for(const [a,b,radius] of capsules){const dx=b.x-a.x,dy=b.y-a.y,d=dx*dx+dy*dy,t=d?Math.max(0,Math.min(1,((x-a.x)*dx+(y-a.y)*dy)/d)):0,cx=a.x+t*dx,cy=a.y+t*dy,r2=radius*radius-(x-cx)**2-(y-cy)**2;if(r2>0)z=Math.min(z,a.z+t*(b.z-a.z)-Math.sqrt(r2)-.045)}return z;
  }
 
- return {mesh:cloth,update(dt,speed=0,{mounted=false,mountRoot=null}={}){
+ return {mesh:cloth,get run(){return run},update(dt,speed=0,{mounted=false,mountRoot=null,run:running=0}={}){
   if(!cloth.visible)return;
-  time+=Math.min(.05,dt);const movement=Math.min(1,Math.max(0,speed));
+  time+=Math.min(.05,dt);const movement=Math.min(1,Math.max(0,speed)),step=Math.max(0,Math.min(.25,dt||0));
+  const wantRun=mounted?0:movement*Math.min(1,Math.max(0,+running||0));run=step>0?run+(wantRun-run)*(1-Math.exp(-step/RUN_EASE)):wantRun;if(run<1e-3)run=0;
   body.updateWorldMatrix(true,true);inverse.copy(body.matrixWorld).invert();anchor.identity();
   if(rig?.base)anchor.multiplyMatrices(inverse,rig.base.matrixWorld);
-  const capsules=[];if(rig)for(const side of ['left','right']){const hip=jointPosition(rig[side+'Leg']),knee=jointPosition(rig[side+'Knee']),ankle=jointPosition(rig[side+'Ankle']);capsules.push([hip,knee,.23],[knee,ankle,.20]);}
+  const capsules=[];if(rig)for(const side of ['left','right']){const hip=jointPosition(rig[side+'Leg']),knee=jointPosition(rig[side+'Knee']),ankle=jointPosition(rig[side+'Ankle']);capsules.push([hip,knee,.23],[knee,ankle,.20]);
+   if(run>0){const ball=rig.bones?.['ball_'+side[0]];if(ball){const toe=ball.children[0];const b=jointPosition(ball);capsules.push([ankle,b,.12]);if(toe)capsules.push([b,jointPosition(toe),.09])}}}
   const profile=mounted&&mountRoot?.userData.capeBackProfile;if(profile){mountRoot.updateWorldMatrix(true,false);horseFromBody.copy(mountRoot.matrixWorld).invert().multiply(body.matrixWorld);bodyFromHorse.copy(inverse).multiply(mountRoot.matrixWorld);}
   seamShift.copy(seam).applyMatrix4(anchor).sub(seam);
-  const attr=geometry.attributes.position;
+  const attr=geometry.attributes.position,sy=seam.y+seamShift.y,sz=seam.z+seamShift.z,flutter=1+run*.8;
   for(let r=0;r<=rows;r++){
    const t=r/rows,weight=t*t;
    for(let c=0;c<=cols;c++){
     const u=c/cols,i=r*(cols+1)+c,base=i*3;
-    const wave=Math.sin(time*(3.2+movement*4.8)-t*6.2+u*2.3);
-    point.set(positions[base]+weight*Math.sin(time*2.4-t*3.5)*(.018+movement*.025),positions[base+1]+weight*.015*Math.sin(time*4-t*5+u),positions[base+2]-weight*(.045+movement*.13)+weight*wave*(.012+movement*.025));
+    const wave=Math.sin(time*(3.2+movement*4.8+run*3)-t*6.2+u*2.3);
+    point.set(positions[base]+weight*Math.sin(time*2.4-t*3.5)*(.018+movement*.025),positions[base+1]+weight*.015*Math.sin(time*4-t*5+u),positions[base+2]-weight*(.045+movement*.13)+weight*wave*(.012+movement*.025)*flutter);
     // The seam rides the upper back rigidly; lower down the cloth hangs under
     // gravity (it follows the shoulders' position but only a little of the
     // spine's lean), so a leaning or crouched stance cannot fling the hem out
     // like a board.
     hang.copy(point).add(seamShift);point.applyMatrix4(anchor);const free=t<.06?0:Math.min(1,(t-.06)/.44),g=free*free*(3-2*free)*.82;point.lerp(hang,g);
+    // Run flare: swing the cloth back about the shoulder seam, more toward the hem (air drag
+    // curves it), keeping its length. A bent-forward run torso already carries the top back.
+    if(run>0){const a=run*FLARE*free*free*(3-2*free),c=Math.cos(a),s=Math.sin(a),dy=point.y-sy,dz=point.z-sz;point.y=sy+dy*c-dz*s;point.z=sz+dz*c+dy*s}
+    if(run>0){sheet[base]=point.x;sheet[base+1]=point.y;sheet[base+2]=point.z;continue}
     point.z=clearance(point.x,point.y,point.z,capsules);
     if(mounted){const fold=Math.max(0,Math.min(1,(t-.35)/.65)),ease=fold*fold*(3-2*fold);point.y+=.90*ease;point.z-=.40*weight;
      if(profile&&t>.30){horsePoint.copy(point).applyMatrix4(horseFromBody);const cell=Math.floor((horsePoint.z-profile.minZ)/profile.step);if(Math.abs(horsePoint.x)<.75&&cell>=0&&cell<profile.heights.length){const back=Math.max(profile.heights[Math.max(0,cell-1)],profile.heights[cell],profile.heights[Math.min(profile.heights.length-1,cell+1)]);if(back>0){horsePoint.y=Math.max(horsePoint.y,back+.045);point.copy(horsePoint.applyMatrix4(bodyFromHorse));}}}
@@ -59,6 +69,14 @@ export function createCape(T,body,{color=0x71364a,rig=null}={}){
     attr.setXYZ(i,point.x,point.y,point.z);
    }
   }
+  if(run>0){
+   // Kicks: a heel or shin reaching behind the cloth pushes its whole row back (and every row
+   // below, which hangs from it) as one panel, not a tent around the foot; the push recovers over
+   // ~0.2 s instead of snapping back as the foot swings forward. Then no vertex may sit inside a leg.
+   let carry=0;for(let r=0;r<=rows;r++){let need=0;for(let c=0;c<=cols;c++){const b=(r*(cols+1)+c)*3,z=sheet[b+2];need=Math.max(need,z-clearance(sheet[b],sheet[b+1],z,capsules))}
+    carry=Math.max(carry,need);const kept=rowPush[r]*Math.exp(-step/KICK_RECOVER);rowPush[r]=Math.max(carry,kept);
+    for(let c=0;c<=cols;c++){const i=r*(cols+1)+c,b=i*3,z=sheet[b+2]-rowPush[r];attr.setXYZ(i,sheet[b],sheet[b+1],clearance(sheet[b],sheet[b+1],z,capsules))}}
+  }else rowPush.fill(0);
   for(let i=0;i<clasps.length;i++){v.set((i?1:-1)*.28,2.20,-.228).applyMatrix4(anchor);clasps[i].position.copy(v)}
   attr.needsUpdate=true;geometry.computeVertexNormals();
  }};
