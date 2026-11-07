@@ -1,0 +1,127 @@
+{
+ "shots": {
+  "birchford-street": {
+   "regular": {
+    "calls": 572,
+    "triangles": 1036419,
+    "programs": 136,
+    "classic": false,
+    "scenery": {
+     "grass": 7450,
+     "grassBusy": false,
+     "detailBusy": false,
+     "clutter": {
+      "tuft": 805,
+      "pebble": 122,
+      "twig": 33,
+      "flower": 0
+     },
+     "clutterBusy": false
+    }
+   },
+   "classic": {
+    "calls": 567,
+    "triangles": 877753,
+    "programs": 101,
+    "classic": true,
+    "scenery": {
+     "grass": 7450,
+     "grassBusy": false,
+     "detailBusy": false,
+     "clutter": {
+      "tuft": 805,
+      "pebble": 122,
+      "twig": 33,
+      "flower": 95
+     },
+     "clutterBusy": false
+    }
+   }
+  },
+  "trail-high": {
+   "regular": {
+    "calls": 128,
+    "triangles": 631042,
+    "programs": 136,
+    "classic": false,
+    "scenery": {
+     "grass": 14464,
+     "grassBusy": false,
+     "detailBusy": false,
+     "clutter": {
+      "tuft": 1050,
+      "pebble": 117,
+      "twig": 63,
+      "flower": 0
+     },
+     "clutterBusy": false
+    }
+   },
+   "classic": {
+    "calls": 128,
+    "triangles": 330279,
+    "programs": 106,
+    "classic": true,
+    "scenery": {
+     "grass": 14464,
+     "grassBusy": false,
+     "detailBusy": false,
+     "clutter": {
+      "tuft": 1708,
+      "pebble": 117,
+      "twig": 63,
+      "flower": 169
+     },
+     "clutterBusy": false
+    }
+   }
+  },
+  "trail-mid": {
+   "regular": {
+    "calls": 123,
+    "triangles": 622840,
+    "programs": 136,
+    "classic": false,
+    "scenery": {
+     "grass": 14464,
+     "grassBusy": false,
+     "detailBusy": false,
+     "clutter": {
+      "tuft": 1050,
+      "pebble": 117,
+      "twig": 63,
+      "flower": 0
+     },
+     "clutterBusy": false
+    }
+   },
+   "classic": {
+    "calls": 123,
+    "triangles": 322077,
+    "programs": 106,
+    "classic": true,
+    "scenery": {
+     "grass": 14464,
+     "grassBusy": false,
+     "detailBusy": false,
+     "clutter": {
+      "tuft": 1708,
+      "pebble": 117,
+      "twig": 63,
+      "flower": 169
+     },
+     "clutterBusy": false
+    }
+   }
+  },
+  "programs-regular": {
+   "settled": 136,
+   "again": 136
+  },
+  "programs-classic": {
+   "settled": 106,
+   "again": 106
+  }
+ },
+ "errors": []
+}

@@ -25,8 +25,8 @@ export function clutterBudget(preset='high',{classic=false,phone=false}={}){
 // `r` a seeded random source. Pure, for the tests.
 export function clutterKind(cover,edge,w,r){
  const lush=w.grass+w.castle,v=r();
- if(cover>.55)return v<.035?'pebble':v<.045?'twig':null;// sparse stones on the trail itself
- if(edge>.16&&cover<.5)return v<.34?'pebble':null;// gravel spilling over the verges
+ if(cover>.55)return v<.015?'pebble':v<.022?'twig':null;// a few stones on the trail itself
+ if(edge>.16&&cover<.5)return v<.10?'pebble':null;// some gravel spilling over the verges
  if(v<.30*lush+.06*w.dry)return 'tuft';
  if(v<.30*lush+.06*w.dry+.035*lush*(1-w.snow))return 'flower';
  if(v<.30*lush+.06*w.dry+.035*lush+.022)return 'pebble';
@@ -55,11 +55,13 @@ export function clutterGeometries(T){
  for(let i=0;i<5;i++){const a=i*Math.PI*2/5,b=a+.55,c=a-.55;flower.pos.push(0,.13,0,Math.cos(b)*.035,.135,Math.sin(b)*.035,Math.cos(a)*.075,.14,Math.sin(a)*.075,0,.13,0,Math.cos(a)*.075,.14,Math.sin(a)*.075,Math.cos(c)*.035,.135,Math.sin(c)*.035);for(let k=0;k<6;k++){flower.col.push(...(k%3===0?[1.1,1.0,.55]:[1,1,1]));flower.nor.push(0,1,0)}}
  return {tuft:merge(T,[tuft]),pebble:merge(T,[pebble]),twig:merge(T,[twig]),flower:merge(T,[flower])};
 }
-const TUFT=[0x4c6a2a,0x587a30,0x67853a,0x46602c,0x6f8a3e],TUFT_DRY=[0x8d8a4a,0x9a9152,0x7e7c42],PEBBLE=[0x8d877b,0x777166,0x9f9686,0x6c665c,0xa49a87],TWIG=[0x5b4129,0x6d5234,0x4e3a26],FLOWER=[0xf0d35a,0xf4f1e4,0xd27bb0,0x9fb3e6,0xe0743f,0xf3e9a2];
-export function clutterColor(kind,w,r){
+const TUFT=[0x4c6a2a,0x587a30,0x67853a,0x46602c,0x6f8a3e],TUFT_DRY=[0x8d8a4a,0x9a9152,0x7e7c42],PEBBLE=[0x8d877b,0x777166,0x9f9686,0x6c665c,0xa49a87],
+ // Stones on and beside the trail: darker grey-brown, so they never read as bright dots on the dirt.
+ PATH_PEBBLE=[0x5a5248,0x655b4e,0x4e483f,0x6d6355,0x5f5a52],TWIG=[0x5b4129,0x6d5234,0x4e3a26],FLOWER=[0xf0d35a,0xf4f1e4,0xd27bb0,0x9fb3e6,0xe0743f,0xf3e9a2];
+export function clutterColor(kind,w,r,onPath=false){
  const pick=a=>a[Math.floor(r()*a.length)%a.length];
  if(kind==='tuft')return w.dry>.55||w.snow>.6?pick(TUFT_DRY):pick(TUFT);
- if(kind==='pebble')return pick(PEBBLE);if(kind==='twig')return pick(TWIG);return pick(FLOWER);
+ if(kind==='pebble')return pick(onPath?PATH_PEBBLE:PEBBLE);if(kind==='twig')return pick(TWIG);return pick(FLOWER);
 }
 export function createGroundClutter(T,scene,land,{seed=1,paths=null,canPlant=()=>true}={}){
  const geometries=clutterGeometries(T),uniforms={clutterFocus:{value:new T.Vector2()},clutterRange:{value:42}};
@@ -80,11 +82,11 @@ export function createGroundClutter(T,scene,land,{seed=1,paths=null,canPlant=()=
    if(land.waterAt(x,z)>0||!canPlant(x,z,kind))continue;
    const y=land.heightAt(x,z);let s;
    if(kind==='tuft'){s=.75+r()*.65;dummy.scale.set(s,s*(.8+r()*.5),s);dummy.rotation.set(0,r()*6.283,0)}
-   else if(kind==='pebble'){s=(cover>.55||m.cover>.16?.05:.07)+r()*r()*.13;dummy.scale.set(s*(1+r()*.6),s,s);dummy.rotation.set((r()-.5)*.4,r()*6.283,(r()-.5)*.4)}
+   else if(kind==='pebble'){const trail=cover>.55||m.cover>.16;s=trail?.04+r()*r()*.07:.07+r()*r()*.13;dummy.scale.set(s*(1+r()*.6),s*(trail?.7:1),s*(.8+r()*.4));dummy.rotation.set((r()-.5)*.4,r()*6.283,(r()-.5)*.4)}
    else if(kind==='twig'){s=.45+r()*.55;dummy.scale.set(s,1,s);dummy.rotation.set(0,r()*6.283,(r()-.5)*.08)}
    else {s=.8+r()*.6;dummy.scale.setScalar(s);dummy.rotation.set(0,r()*6.283,0)}
    dummy.position.set(x,y-.01,z);dummy.updateMatrix();const st=staging[kind],n=counts[kind]++;dummy.matrix.toArray(st.matrix,n*16);
-   color.setHex(clutterColor(kind,w,r));color.multiplyScalar(.88+r()*.24);st.color[n*3]=color.r;st.color[n*3+1]=color.g;st.color[n*3+2]=color.b;
+   color.setHex(clutterColor(kind,w,r,kind==='pebble'&&(cover>.55||m.cover>.16)));color.multiplyScalar(.88+r()*.24);st.color[n*3]=color.r;st.color[n*3+1]=color.g;st.color[n*3+2]=color.b;
   }}
   if(ticket!==version)return;
   for(const kind of CLUTTER_KINDS){const mesh=meshes[kind],n=counts[kind];mesh.instanceMatrix.array.set(staging[kind].matrix.subarray(0,n*16));mesh.instanceColor.array.set(staging[kind].color.subarray(0,n*3));mesh.count=n;mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;if(n)mesh.computeBoundingSphere();else mesh.boundingSphere=null;mesh.visible=enabled&&n>0}

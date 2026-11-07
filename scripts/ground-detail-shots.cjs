@@ -19,6 +19,9 @@ const shots=[
  {id:'birchford-street',at:[-216,127],eye:[-228,4.2,126.2],look:[-198,.4,129]},
  // The Birchford-castle road through open country (dirt).
  {id:'countryside-trail',at:[-266,-6],eye:[-264,4,0],look:[-279,0,-48]},
+ // The owner's trail photo: a high camera looking down along the same dirt road, and a mid view.
+ {id:'trail-high',at:[-266,-6],eye:[-261,15,6],look:[-276,0,-34]},
+ {id:'trail-mid',at:[-266,-6],eye:[-263,7.5,2],look:[-277,0,-40]},
  // Woodland edge beside the Birchford-Winterwatch road.
  {id:'forest-edge',at:[-115,150],eye:[-118,4,141],look:[-112,1.2,168]},
 ].filter(s=>!process.env.GROUND_SHOTS||process.env.GROUND_SHOTS.split(',').includes(s.id));

@@ -129,15 +129,27 @@ vec2 gpP=vGroundWorld;vec3 gpTilt=vec3(0.);float gpAmount=0.;
   float gpFw=sqrt(length(dFdx(gpP))*length(dFdy(gpP)));
   float gpDirt=smoothstep(.40,.60,gpMask.r+gpBreak);
   float gpCobEdge=smoothstep(.25,.62,gpMask.g+gpBreak*.7);
-  // Worn verge: dry, bare-earth patches in the grass along both sides.
-  float gpVerge=smoothstep(.12,.42,max(gpMask.r,gpMask.g)+(gpNoise(gpP*.8+2.)-.5)*.5)*(1.-max(gpDirt,gpCobEdge));
+  // Worn verge: the grass dries a little toward the edge and fades smoothly into the same dirt
+  // colour as the trail. A continuous ramp, no noise threshold: no second colour band.
+  float gpVerge=smoothstep(.10,.50,max(gpMask.r,gpMask.g)+(gpNoise(gpP*.8+2.)-.5)*.22)*(1.-max(gpDirt,gpCobEdge));
+  // Fine detail fades out with the pixel footprint: pebbles first (they are small), then grain.
+  float gpPebFade=1.-smoothstep(.016,.04,gpFw),gpGrainFade=1.-smoothstep(.06,.16,gpFw),gpFineFade=1.-smoothstep(.02,.05,gpFw);
   vec2 gpTo;
 #ifdef GROUND_CLASSIC
-  const vec3 DIRT=vec3(.300,.170,.072),DIRT_DARK=vec3(.190,.105,.045),DIRT_LIGHT=vec3(.420,.275,.135);
+  // Mostly uniform warm, saturated earth: broad soft light/dark over many metres, a gently lighter
+  // worn centre line and a fine grain. No high-contrast patches.
+  const vec3 DIRT=vec3(.300,.170,.072),DIRT_WORN=vec3(.345,.205,.092);
   float gpDetail=1.-smoothstep(.3,.65,gpFw*1.9);
-  vec3 gpDirtCol=mix(DIRT_DARK,DIRT,smoothstep(.3,.6,gpNoise(gpP*.45)));
-  gpDirtCol=mix(gpDirtCol,DIRT_LIGHT,smoothstep(.55,.75,gpNoise(gpP*1.3+5.))*.6+gpMask.b*.15);
-  vec4 gpPeb=gpCells(gpP*2.2,gpTo);gpDirtCol=mix(gpDirtCol,mix(vec3(.17,.15,.12),vec3(.32,.29,.24),gpPeb.w),(1.-smoothstep(.13,.17,gpPeb.x))*step(.8,gpPeb.z)*gpDetail);
+  float gpBroad=gpNoise(gpP*.05+3.1)*.6+gpNoise(gpP*.17+8.7)*.4;
+  vec3 gpDirtCol=DIRT*(.82+.32*gpBroad+.10*(gpNoise(gpP*.6+5.3)-.5));
+  gpDirtCol=mix(gpDirtCol,DIRT_WORN*(.92+.16*gpBroad),smoothstep(.35,.95,gpMask.b)*.45);
+  gpDirtCol*=1.+(gpNoise(gpP*4.3+1.7)-.5)*.12*gpGrainFade+(gpNoise(gpP*13.+4.2)-.5)*.06*gpFineFade;
+  // A few small, dark, irregular stones; none in the distance.
+  vec4 gpPeb=gpCells(gpP*1.3,gpTo);
+  float gpPa=gpPeb.w*6.283,gpPc=cos(gpPa),gpPs=sin(gpPa);
+  float gpPd=length(vec2(gpTo.x*gpPc+gpTo.y*gpPs,(gpTo.y*gpPc-gpTo.x*gpPs)*1.55))+(gpNoise(gpP*19.+gpPeb.zw*30.)-.5)*.05;
+  float gpPebble=(1.-smoothstep(.07,.10,gpPd))*step(.93,gpPeb.z)*gpPebFade;
+  gpDirtCol=mix(gpDirtCol,gpDirtCol*vec3(.52,.56,.62)*(.85+.25*gpPeb.w),gpPebble);
   vec4 gpC=vec4(1.,1.,1.,0.);if(gpMask.g>.004)gpC=gpCells(gpP*2.1,gpTo);
   float gpTone=floor(gpC.w*3.)/2.;
   vec3 gpStone=mix(vec3(.120,.115,.104),vec3(.250,.238,.210),gpTone)*(gpC.z<.12?vec3(1.12,1.0,.8):vec3(1.));
@@ -145,13 +157,21 @@ vec2 gpP=vGroundWorld;vec3 gpTilt=vec3(0.);float gpAmount=0.;
   gpStone=mix(gpStone,vec3(.055,.050,.042),gpGrout);
   gpStone=mix(gpStone,vec3(.15,.143,.128),1.-gpDetail);
 #else
-  const vec3 DIRT=vec3(.175,.100,.044),DIRT_DARK=vec3(.085,.050,.024),DIRT_LIGHT=vec3(.270,.180,.092);
+  // Mostly uniform mid-brown earth: broad soft variation over many metres, a gently lighter worn
+  // centre line and a fine grain that fades with distance. No high-contrast patches.
+  const vec3 DIRT=vec3(.162,.098,.050),DIRT_WORN=vec3(.192,.122,.066);
   float gpDetail=1.-smoothstep(.28,.6,gpFw*3.3);
-  vec3 gpDirtCol=mix(DIRT_DARK,DIRT,smoothstep(.15,.8,gpNoise(gpP*.9)));
-  gpDirtCol=mix(gpDirtCol,DIRT_LIGHT,smoothstep(.5,.9,gpNoise(gpP*2.7+5.))*.5+gpMask.b*.2);
-  gpDirtCol*=.9+.2*gpNoise(gpP*7.3+1.7);
-  vec4 gpPeb=gpCells(gpP*3.2,gpTo);float gpPebble=(1.-smoothstep(.10,.17,gpPeb.x))*step(.7,gpPeb.z)*gpDetail;
-  gpDirtCol=mix(gpDirtCol,mix(vec3(.09,.083,.07),vec3(.22,.20,.17),gpPeb.w)*(.75+.5*(1.-gpPeb.x*6.)),gpPebble);
+  float gpBroad=gpNoise(gpP*.045+3.1)*.6+gpNoise(gpP*.16+8.7)*.4;
+  vec3 gpDirtCol=DIRT*(.80+.36*gpBroad+.12*(gpNoise(gpP*.6+5.3)-.5))*mix(vec3(1.),vec3(1.03,1.,.95),gpNoise(gpP*.11+1.3));
+  gpDirtCol=mix(gpDirtCol,DIRT_WORN*(.92+.16*gpBroad),smoothstep(.35,.95,gpMask.b)*.45);
+  gpDirtCol*=1.+((gpNoise(gpP*6.1+1.7)-.5)*.10+(gpNoise(gpP*17.+4.2)-.5)*.12*gpFineFade)*gpGrainFade;
+  // A few small, darker grey-brown stones: irregular (rotated, stretched, ragged rim), sparse,
+  // flat-shaded and gone in the distance.
+  vec4 gpPeb=gpCells(gpP*1.6,gpTo);
+  float gpPa=gpPeb.w*6.283,gpPc=cos(gpPa),gpPs=sin(gpPa);
+  float gpPd=length(vec2(gpTo.x*gpPc+gpTo.y*gpPs,(gpTo.y*gpPc-gpTo.x*gpPs)*1.6))+(gpNoise(gpP*24.+gpPeb.zw*30.)-.5)*.05;
+  float gpPebble=(1.-smoothstep(.06,.09,gpPd))*step(.92,gpPeb.z)*gpPebFade;
+  gpDirtCol=mix(gpDirtCol,gpDirtCol*vec3(.50,.54,.60)*(.85+.3*gpPeb.w),gpPebble);
   vec4 gpC=vec4(1.,1.,1.,0.);gpTo=vec2(0.);if(gpMask.g>.004)gpC=gpCells(gpP*3.3,gpTo);
   vec3 gpStone=vec3(.150,.142,.124)*(.70+.50*gpC.w);
   gpStone*=mix(vec3(1.12,1.02,.86),vec3(.92,.98,1.06),gpC.z);
@@ -166,8 +186,8 @@ vec2 gpP=vGroundWorld;vec3 gpTilt=vec3(0.);float gpAmount=0.;
   // Stones drop out one by one toward the edge: a ragged rim with dirt showing between them.
   float gpKeep=step(gpC.z*.92+.04,gpCobEdge*1.1)*step(.02,gpMask.g);
   float gpUnder=smoothstep(.20,.48,gpMask.g+gpBreak)*(1.-gpKeep);
-  vec3 gpVergeCol=mix(diffuseColor.rgb*vec3(1.12,1.0,.70),gpDirtCol,smoothstep(.55,.8,gpNoise(gpP*1.6+4.))*.8);
-  diffuseColor.rgb=mix(diffuseColor.rgb,gpVergeCol,gpVerge*.75);
+  vec3 gpVergeCol=mix(diffuseColor.rgb*vec3(1.04,.98,.84),gpDirtCol,gpVerge*.55);
+  diffuseColor.rgb=mix(diffuseColor.rgb,gpVergeCol,gpVerge*.6);
   diffuseColor.rgb=mix(diffuseColor.rgb,gpDirtCol,max(gpDirt,gpUnder*.9));
   diffuseColor.rgb=mix(diffuseColor.rgb,gpStone,gpKeep);
   gpAmount=max(max(gpDirt,gpUnder),gpKeep);gpTilt*=gpKeep;
