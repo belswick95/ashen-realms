@@ -80,6 +80,6 @@ export function trackLoadingManager(manager,indicator=loading,label='Loading mod
 }
 
 // Server commands that the player is not visibly waiting on (movement, cosmetics).
-const QUIET=new Set(['move','stop','jump','run','steer','sync','celebrate','preview','attack_style']);
+const QUIET=new Set(['move','stop','run','steer','sync','celebrate','preview','attack_style']);
 const LABELS=[[/^bank/,'Banking…'],[/^trade/,'Trading…'],[/^(buy|sell|shop)/,'Trading…'],[/^equip|unequip/,'Equipping…'],[/^quest|tutorial/,'Updating quest…'],[/^(stairs|enter|exit|door|travel|cart|teleport|respawn)/,'Travelling…'],[/^(drop|pickup)/,'Updating inventory…']];
 export function commandLabel(command){const c=String(command||'');if(QUIET.has(c))return null;for(const [re,label] of LABELS)if(re.test(c))return label;return 'Working…'}

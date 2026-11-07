@@ -2,7 +2,7 @@
 // and flags, cutscenes, unlocks, XP lamps and completion text inside the quest editor; a step-by-step
 // simulator; the per-player quest state inspector (set stage, set flags, reset, mark complete);
 // guidance (trail/minimap) settings and a dependency check of every quest.
-import {UNLOCK_TYPES,SKILL_NAMES,isStaged,createQuestSimulator,questGraph,unlockLabel,lampLabel,validateV2Draft} from './quest-v2.js?v=release-20261107-torch141';
+import {UNLOCK_TYPES,SKILL_NAMES,isStaged,createQuestSimulator,questGraph,unlockLabel,lampLabel,validateV2Draft} from './quest-v2.js?v=release-20261107-hud142';
 
 export const V2_KEYS=['requirements','stages','unlocks','lamps','cutscenes','onComplete','journalDone','journalVariants','branchDialogue'];
 const cap=s=>String(s)[0].toUpperCase()+String(s).slice(1);

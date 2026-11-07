@@ -71,7 +71,7 @@ test('works without a document (node, workers) and wraps three.js loading manage
 });
 
 test('movement and cosmetic commands stay quiet; waited-on commands get a label',()=>{
- for(const c of ['move','stop','jump','run','steer','sync','celebrate'])assert.equal(commandLabel(c),null);
+ for(const c of ['move','stop','run','steer','sync','celebrate'])assert.equal(commandLabel(c),null);
  assert.equal(commandLabel('bank'),'Banking…');assert.equal(commandLabel('trade_offer'),'Trading…');assert.equal(commandLabel('equip'),'Equipping…');assert.equal(commandLabel('stairs'),'Travelling…');assert.equal(commandLabel('skill_start'),'Working…');
 });
 
