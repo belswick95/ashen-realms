@@ -17,7 +17,7 @@
 //   shot:{over:{shoulder,at,side,height}}         over `shoulder`'s shoulder onto `at`
 // Framed shots (cutscene-camera.js) follow the subjects, stay inside their room and never look
 // through a wall, door or bench; fixed eye/look shots are only for open ground.
-import {tutorialId} from './tutorial-data.js?v=release-20261107-portrait145';
+import {tutorialId} from './tutorial-data.js?v=release-20261107-qa147';
 // King Oswin holds court in the Keep (tutorial-data.js entity 1).
 export const KING={id:tutorialId(1),at:[-340,-333.2],scale:1.05};
 export const cutscenes={

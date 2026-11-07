@@ -1,5 +1,5 @@
-import {cloneSpeaker} from './dialogue-portrait.js?v=release-20261107-portrait145';
-import {texturesSettled} from './character-assets.js?v=release-20261107-portrait145';
+import {cloneSpeaker} from './dialogue-portrait.js?v=release-20261107-qa147';
+import {texturesSettled} from './character-assets.js?v=release-20261107-qa147';
 // The portrait renders the actual equipped player meshes, using the existing GPU
 // context only when the look changes (worn gear, hair, skin). No second animated
 // renderer is needed: one small offscreen render, copied into a 2D canvas.

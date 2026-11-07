@@ -1,8 +1,8 @@
 // Boss log: the "Bosses" tab of the journal (explore.js panel). One row per enabled boss from
 // public.boss_journal() — name, lair, kill count and personal best — with "Not yet slain" for bosses
 // the player has never beaten. The server owns the numbers; this module only formats and draws them.
-import {bossById,LAIRS,LAIR_EXTENSIONS,formatTicks} from './bosses.js?v=release-20261107-portrait145';
-import {dungeons} from './underground-data.js?v=release-20261107-portrait145';
+import {bossById,LAIRS,LAIR_EXTENSIONS,formatTicks} from './bosses.js?v=release-20261107-qa147';
+import {dungeons} from './underground-data.js?v=release-20261107-qa147';
 
 const AREA_NAMES=Object.fromEntries([...dungeons,...LAIRS].map(a=>[a.id,a.name]));
 const LEVEL_NAMES={};

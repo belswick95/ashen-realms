@@ -1,4 +1,4 @@
-import {buildingWorld} from './building-stories.js?v=release-20261107-portrait145';
+import {buildingWorld} from './building-stories.js?v=release-20261107-qa147';
 // Daily routines for the townsfolk of a seeded settlement, derived only from
 // the town's own layout so the server routes (db/town-life.sql), the props
 // they use and the client stations always agree.

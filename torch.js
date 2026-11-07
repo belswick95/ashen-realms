@@ -1,5 +1,5 @@
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-portrait145';
-import {lightingAt} from './world-lighting.js?v=release-20261107-portrait145';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial} from './shared-geometry.js?v=release-20261107-qa147';
+import {lightingAt} from './world-lighting.js?v=release-20261107-qa147';
 // The torch: an off-hand item (shields.js, slot "shield") that burns while held.
 // Original procedural model in the held-item frame (humanoid.js sockets): the
 // fist grips the handle at the origin, the handle runs along +Y. The shield
@@ -39,7 +39,7 @@ const FLAME_PROFILE=[[0,0],[.042,.025],[.05,.07],[.04,.13],[.024,.2],[.008,.26],
 const flameGeometry=T=>sharedCustomGeometry(T,'torch:flame',()=>new T.LatheGeometry(FLAME_PROFILE.map(([r,y])=>new T.Vector2(r,y)),10));
 const EMBERS=6;
 
-export function makeTorch(T,{lit=true}={}){
+export function makeTorch(T,{lit=true,pooled=true}={}){
  const group=new T.Group();group.name='torch';group.userData.torch=true;
  const body=new T.Group();body.name='torch-body';body.position.z=-TORCH_MOUNT_OFFSET;group.add(body);
  const add=(geo,mat,y,name)=>{const m=new T.Mesh(geo,mat);m.position.y=y;m.name=name;m.castShadow=true;body.add(m);return m};
@@ -55,8 +55,16 @@ export function makeTorch(T,{lit=true}={}){
  for(const y of [.38,.45]){const band=add(sharedGeometry(T,'torus',.043,.007,5,12),cord,y,'torch-cord');band.rotation.x=Math.PI/2}
  add(sharedGeometry(T,'cylinder',.036,.044,.035,10),char,.5,'torch-crown');
  if(!lit)return group;
- // Flame: two additive teardrops (outer orange, inner yellow core), a glow sprite and rising embers.
- const flame=new T.Group();flame.name='torch-flame';flame.position.y=.505;flame.userData.torchFlame=true;body.add(flame);
+ const flame=makeFlame(T,{owner:pooled?group:null});flame.position.y=.505;body.add(flame);
+ group.userData.flame=flame;group.userData.extinguish=()=>{flame.visible=false};
+ return group;
+}
+// The burning head on its own: two additive teardrops (outer orange, inner yellow core), a glow
+// sprite and rising embers, animated while drawn. `owner` (a held torch) reports itself to the
+// torch light pool while drawn; scenery flames (cave torches and braziers, underground-models.js)
+// pass none, since their light already comes from the cave's own light anchors.
+export function makeFlame(T,{owner=null}={}){
+ const flame=new T.Group();flame.name='torch-flame';flame.userData.torchFlame=true;
  const outer=new T.Mesh(flameGeometry(T),flameMaterial(T,'flame-outer',0xff6a14,.85));outer.name='torch-flame-outer';outer.renderOrder=2;outer.frustumCulled=false;
  const inner=new T.Mesh(flameGeometry(T),flameMaterial(T,'flame-inner',0xffd774,.95));inner.name='torch-flame-inner';inner.scale.set(.55,.62,.55);inner.position.y=.005;inner.renderOrder=3;
  const glow=new T.Sprite(torchGlowMaterial(T));glow.name='torch-glow';glow.position.y=TORCH_FLAME_Y-.505;glow.scale.setScalar(.75);glow.renderOrder=1;
@@ -66,7 +74,7 @@ export function makeTorch(T,{lit=true}={}){
  flame.add(glow,outer,inner,embers);
  const phase=Math.random()*100,seeds=Array.from({length:EMBERS},(_,i)=>({o:i/EMBERS+Math.random()*.1,s:.55+Math.random()*.5,a:Math.random()*6.28,r:.02+Math.random()*.035}));
  let last=-1;
- function animate(scene){const now=clock(),t=now/1000+phase;seen.set(group,{at:now,scene});if(now===last)return;last=now;
+ function animate(scene){const now=clock(),t=now/1000+phase;if(owner)seen.set(owner,{at:now,scene});if(now===last)return;last=now;
   const f=torchFlicker(t,phase),sway=Math.sin(t*3.1)*.08+Math.sin(t*7.3)*.04;
   outer.scale.set(.92+.1*Math.sin(t*9.1),f,.92+.1*Math.cos(t*8.3));outer.rotation.set(sway*.6,t*1.7%6.283,sway);
   inner.scale.set(.55,.62*(.9+.15*Math.sin(t*17.3+1)),.55);inner.rotation.set(sway*.4,0,sway*.8);
@@ -78,8 +86,7 @@ export function makeTorch(T,{lit=true}={}){
   // Changes apply now (the renderer already composed this frame's matrices).
   for(const m of [outer,inner,glow]){m.updateMatrix();m.matrixWorld.multiplyMatrices(flame.matrixWorld,m.matrix)}}
  outer.onBeforeRender=(renderer,scene)=>animate(scene);
- group.userData.flame=flame;group.userData.extinguish=()=>{flame.visible=false};
- return group;
+ return flame;
 }
 // A torch in its world position: the flame centre (for lights and sounds).
 export function torchFlamePosition(torch,out){const flame=torch.userData.flame;if(flame){out.set(0,TORCH_FLAME_Y-.505,0);return flame.localToWorld(out)}return torch.getWorldPosition(out)}

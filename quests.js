@@ -1,6 +1,6 @@
-import {goods,quantity} from './economy.js?v=release-20261107-portrait145';
-import {levelSkills} from './level-up.js?v=release-20261107-portrait145';
-import {isStaged,journalEntries,requirementRows,lampLabel,lampChoices,unlockLabel} from './quest-v2.js?v=release-20261107-portrait145';
+import {goods,quantity} from './economy.js?v=release-20261107-qa147';
+import {levelSkills} from './level-up.js?v=release-20261107-qa147';
+import {isStaged,journalEntries,requirementRows,lampLabel,lampChoices,unlockLabel} from './quest-v2.js?v=release-20261107-qa147';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!=null)n.textContent=text;for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);return n};
 const button=(parent,label,fn)=>{const n=el('button',label,{type:'button'});n.onclick=fn;parent.append(n);return n};
 function input(parent,label,value,type='text',choices=null){const wrap=el('label',label),n=el(choices?'select':type==='textarea'?'textarea':'input');if(choices){for(const [v,t]of choices)n.append(el('option',t,{value:v}));n.value=value??''}else if(type==='checkbox'){n.type=type;n.checked=!!value}else{if(type!=='textarea')n.type=type;n.value=value??''}wrap.append(n);parent.append(wrap);return n}
@@ -146,12 +146,12 @@ export function showQuestComplete(q,{totalPoints=null,jingle=true}={}){
  dialog.addEventListener('close',()=>{dialog.remove();if(scrollOpen===dialog)scrollOpen=null});
  try{dialog.showModal()}catch{dialog.setAttribute('open','')}
  close.focus({preventScroll:true});scrollOpen=dialog;
- if(jingle)import('./music.js?v=release-20261107-portrait145').then(m=>m.playLevelUpJingle?.('quest')).catch(()=>{});
+ if(jingle)import('./music.js?v=release-20261107-qa147').then(m=>m.playLevelUpJingle?.('quest')).catch(()=>{});
  return dialog;
 }
 
 export function createQuestJournal(state){
- const css=el('link',null,{rel:'stylesheet',href:'./quests.css?v=release-20261107-portrait145'});document.head.append(css);
+ const css=el('link',null,{rel:'stylesheet',href:'./quests.css?v=release-20261107-qa147'});document.head.append(css);
  // The journal lives in the bottom-right panel as the Quests tab; the floating dialog is only a fallback for pages without that panel.
  const tab=document.querySelector('#side [data-tab=quests]'),host=document.querySelector('#quests-tab');let panel=null;
  const head=el('header',null,{class:'quest-journal-head'}),summary=el('p','',{class:'quest-summary'}),list=el('div',null,{class:'quest-list'}),status=el('p','',{role:'status'});

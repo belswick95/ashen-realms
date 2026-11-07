@@ -9,12 +9,12 @@
 //   inside (prop lights go through the shared 4-light pool: every PointLight here becomes a
 //   light-proxy anchor, the scene light count never changes), draws the underground minimap,
 //   picks cave music and ambience, and plays agility crossings.
-import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,PASSAGE_LOOK_LABELS,passageLook,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261107-portrait145';
-import {AGILITY_TEMPLATES,AGILITY_VERBS,failChance} from './agility-data.js?v=release-20261107-portrait145';
-import {sharedMaterial,sharedGeometry} from './shared-geometry.js?v=release-20261107-portrait145';
-import {lightMarker} from './underground-models.js?v=release-20261107-portrait145';
-import {loading} from './loading-indicator.js?v=release-20261107-portrait145';
-import {nextFrame} from './frame-work.js?v=release-20261107-portrait145';
+import {dungeons,THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,PASSAGE_VERBS,PASSAGE_LOOK_LABELS,passageLook,TILE,createUndergroundIndex,levelOrigin,isUndergroundPoint,passageObjects,tileOf} from './underground-data.js?v=release-20261107-qa147';
+import {AGILITY_TEMPLATES,AGILITY_VERBS,failChance} from './agility-data.js?v=release-20261107-qa147';
+import {sharedMaterial,sharedGeometry} from './shared-geometry.js?v=release-20261107-qa147';
+import {lightMarker} from './underground-models.js?v=release-20261107-qa147';
+import {loading} from './loading-indicator.js?v=release-20261107-qa147';
+import {nextFrame} from './frame-work.js?v=release-20261107-qa147';
 
 const state={areas:dungeons.slice(),index:createUndergroundIndex(dungeons),listeners:new Set()};
 export function undergroundAreas(){return state.areas}
@@ -102,9 +102,12 @@ export function createUnderground({T,scene,landscape,skyLight,sun,renderer,camer
  function applyLighting(area){if(area.outdoor){restoreLighting();return}const th=THEMES[area.theme]||THEMES.earth;
   if(!saved)saved={bg:scene.background?.clone?.(),fog:scene.fog?{color:scene.fog.color.clone(),near:scene.fog.near,far:scene.fog.far}:null,sky:skyLight?{i:skyLight.intensity,c:skyLight.color.clone(),g:skyLight.groundColor.clone()}:null,sun:sun?.intensity};
   scene.background?.setHex?.(th.fog);if(scene.fog){scene.fog.color.setHex(th.fog);scene.fog.near=th.fogNear;scene.fog.far=th.fogFar}
+  // The weather (weather-effects.js) sets the fog distances every frame from the surface values; it
+  // keeps these instead while they are published here, so a cave fades into its own dark at fogFar.
+  scene.userData.undergroundFog={near:th.fogNear,far:th.fogFar};
   if(skyLight){skyLight.intensity=th.ambientIntensity;skyLight.color.setHex(th.ambient);skyLight.groundColor.setHex(0x1a1410)}if(sun)sun.intensity=th.sun;
  }
- function restoreLighting(){if(!saved)return;if(saved.bg&&scene.background?.copy)scene.background.copy(saved.bg);if(saved.fog&&scene.fog){scene.fog.color.copy(saved.fog.color);scene.fog.near=saved.fog.near;scene.fog.far=saved.fog.far}if(saved.sky&&skyLight){skyLight.intensity=saved.sky.i;skyLight.color.copy(saved.sky.c);skyLight.groundColor.copy(saved.sky.g)}if(sun&&Number.isFinite(saved.sun))sun.intensity=saved.sun;saved=null}
+ function restoreLighting(){delete scene.userData.undergroundFog;if(!saved)return;if(saved.bg&&scene.background?.copy)scene.background.copy(saved.bg);if(saved.fog&&scene.fog){scene.fog.color.copy(saved.fog.color);scene.fog.near=saved.fog.near;scene.fog.far=saved.fog.far}if(saved.sky&&skyLight){skyLight.intensity=saved.sky.i;skyLight.color.copy(saved.sky.c);skyLight.groundColor.copy(saved.sky.g)}if(sun&&Number.isFinite(saved.sun))sun.intensity=saved.sun;saved=null}
  function wrapAmbience(){if(ambientWrapped||typeof window==='undefined'||!window.eldervaleAmbientState)return;ambientWrapped=true;const base=window.eldervaleAmbientState;
   window.eldervaleAmbientState=()=>{const s=base();if(!current||current.area.outdoor)return s;return {...s,day:0,water:0,town:0,farm:0,forest:0,snow:0,chapel:0,smithy:0,indoors:1,ember:current.area.theme==='fire'?1:0,sources:[]}}}
  // Every passage near the player: prebuild its target area before the click.

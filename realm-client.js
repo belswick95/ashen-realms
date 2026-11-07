@@ -1,18 +1,22 @@
 // Immediate numbered movement; queued actions and monotonic server snapshots.
-import {loading,commandLabel} from './loading-indicator.js?v=release-20261107-portrait145';
-import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261107-portrait145';
+import {loading,commandLabel} from './loading-indicator.js?v=release-20261107-qa147';
+import {createSyncDiet,missingRpc} from './sync-diet.js?v=release-20261107-qa147';
 const MOTION_COMMANDS=new Set(['move','stop']);
+// A hidden tab (nothing is drawn) polls every 3 s instead of four times a second: it still counts as
+// online (the server's presence window is 8-15 s) but stops costing the database a world reply
+// every 250 ms. Steering and commands are unaffected; the next visible tick polls at once.
+export const HIDDEN_POLL_MS=3000;
 // Database/transport failures are not game messages: never show raw Postgres text (e.g. "canceling
 // statement due to statement timeout") in the chat. Game-rule refusals pass through unchanged.
 export function playerFacingError(message){const m=String(message||'');return /statement timeout|canceling statement|deadlock detected|could not obtain lock|lock timeout|Failed to fetch|NetworkError|Load failed|upstream|Bad Gateway|Gateway Time-?out|Service Unavailable/i.test(m)?'The realm is busy - please try that again.':m}
 export async function startRealm(db,user,session){
  const diet=createSyncDiet();let lean=true;
- let cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,movesPending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
+ let lastRequestAt=0,cursor=0,first=true,queue=Promise.resolve(),disposed=false,failures=0,offset=0,pending=0,movesPending=0,roundtrip=0,clockReady=false,latestSnapshotTime=-Infinity;
  const badge=document.createElement('output');badge.id='realm-connection';badge.setAttribute('role','status');badge.style.cssText='position:fixed;top:42px;left:50%;transform:translateX(-50%);z-index:250;background:#25271d;color:#f4d899;padding:7px 12px;border-radius:5px';badge.hidden=true;document.body.append(badge);
  async function request(command='sync',payload={},id=null){
   if(disposed)throw Error('Disconnected from the world');
   // A request that hangs (dropped connection) or fails shows "Reconnecting…" until one succeeds.
-  const started=Date.now(),slow=loading.begin('Reconnecting…',{key:'realm-slow',delay:4000,kind:'reconnect'});let data,error;
+  const started=Date.now();lastRequestAt=started;const slow=loading.begin('Reconnecting…',{key:'realm-slow',delay:4000,kind:'reconnect'});let data,error;
   // Lean replies (db/sync-diet.sql) skip what this client already holds; a server
   // without the lean RPC gets the original call.
   try{const args={session_id:session,command,payload,request_id:id,event_cursor:cursor};if(lean){({data,error}=await db.rpc('world_command_lean',{...args,have:diet.have()}));if(missingRpc(error)){lean=false;diet.reset();({data,error}=await db.rpc('world_command',args))}}else({data,error}=await db.rpc('world_command',args))}catch(e){error=e}finally{slow.end()}
@@ -45,7 +49,7 @@ export async function startRealm(db,user,session){
   quietCommand:(c,p)=>enqueue(c,p).then(r=>r??true).catch(()=>false),
   // Quest guidance trail: the server tile grid around a point (db/quests-v2.sql quest_guide_tiles).
   guideTiles:args=>db.rpc('quest_guide_tiles',args).then(r=>{if(r.error)throw Error(r.error.message);return r.data})};window.eldervaleRealm=controller;
- await enqueue();const timer=setInterval(()=>{if(disposed)return;if(latestSteer)void sendSteer();else if(!pending&&!steerInFlight)void enqueue().catch(()=>{})},250);
+ await enqueue();const timer=setInterval(()=>{if(disposed)return;if(latestSteer)void sendSteer();else if(!pending&&!steerInFlight&&!(document.hidden&&Date.now()-lastRequestAt<HIDDEN_POLL_MS))void enqueue().catch(()=>{})},250);
  addEventListener('pagehide',()=>{disposed=true;clearInterval(timer)},{once:true});
  return controller;
 }
