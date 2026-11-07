@@ -155,3 +155,17 @@ html body.fantasy-hud.phone-layout #map-controls #run-toggle{min-width:40px!impo
 body.touch-controls #settings-tab a{display:inline-block;padding:12px 0}
 /* All eight tabs share the bar on phones (QA fix113): at 40px each the Settings tab was cut off and only reachable by scrolling the tab strip. */
 html body.fantasy-hud.phone-layout #side>.tabs button{flex:1 1 0!important;min-width:34px!important;padding:5px 2px!important}
+
+/* ---- Chat: always bottom-left (desktop, tablet, phone landscape) ----
+   The panel and its Chat/minimise toggle grow upward from the bottom-left corner, inside the notch and
+   home-bar insets. The inventory bar and jump button own the bottom-right, the minimap the top-right and
+   the player frame the top-left, so the chat never shares a corner. Replaces the older phone rule that
+   parked the chat under the player frame and the tablet rule that lifted it 166px for a joystick that
+   no longer exists. */
+html body.fantasy-hud{--chat-left:max(12px,calc(env(safe-area-inset-left) + 8px));--chat-bottom:max(12px,calc(env(safe-area-inset-bottom) + 6px))}
+html body.fantasy-hud.phone-layout{--chat-left:var(--phone-left);--chat-bottom:var(--phone-bottom)}
+html body.fantasy-hud #social-panel#social-panel{position:fixed!important;left:var(--chat-left)!important;right:auto!important;top:auto!important;bottom:var(--chat-bottom)!important;transform:none!important}
+/* On phones, never reach the inventory bar on the right (48vw wide at most, see above). */
+html body.fantasy-hud.phone-layout #social-panel#social-panel{max-width:min(260px,calc(100vw - var(--phone-left) - var(--phone-right) - min(316px,48vw) - 12px))!important}
+/* NPC and tutorial dialogue also sit bottom-centre; on phones and tablets the chat steps aside while one is up. */
+html body.touch-controls.fantasy-hud:is(.npc-conversation,:has(.tutorial-dialogue:not([hidden]))) #social-panel#social-panel{visibility:hidden!important}
