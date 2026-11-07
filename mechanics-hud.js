@@ -2,7 +2,7 @@
 // attack orbs beside the run orb, the run orb's energy ring and carried weight, the poison/venom
 // tint on the health bar, and drinking potions. State comes from the server's per-request
 // `mechanics` block (db/mechanics-ii-3-hooks.sql mech_reply); commands are mech_*.
-import {PRAYERS,formatWeight} from './mechanics.js?v=release-20261107-demons132';
+import {PRAYERS,formatWeight} from './mechanics.js?v=release-20261107-mapicons133';
 
 const h=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
 export function prayerRows(list,{level=1,active=[],quick=[]}={}){
@@ -11,7 +11,7 @@ export function prayerRows(list,{level=1,active=[],quick=[]}={}){
 export const specPercent=energy=>Math.floor((Number(energy)||0)/10);
 export function createMechanicsHud({command=(n,p)=>window.eldervaleRealm?.command(n,p),lastError=()=>window.eldervaleRealm?.lastError||'',say=t=>console.info(t),doc=globalThis.document}={}){
  if(!doc)return {sync(){},drink(){return false},altar(){}};
- if(!doc.querySelector('link[data-mechanics-css]')){const css=doc.createElement('link');css.rel='stylesheet';css.href='./mechanics.css?v=release-20261107-demons132';css.dataset.mechanicsCss='1';doc.head.append(css)}
+ if(!doc.querySelector('link[data-mechanics-css]')){const css=doc.createElement('link');css.rel='stylesheet';css.href='./mechanics.css?v=release-20261107-mapicons133';css.dataset.mechanicsCss='1';doc.head.append(css)}
  let mech=null,prayers=PRAYERS,catalogAsked=false,editingQuick=false,quickDraft=[],busy=false,lastSig='';
  const host=doc.querySelector('#prayer-tab');
  const controls=doc.querySelector('#map-controls');

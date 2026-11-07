@@ -1,19 +1,19 @@
-import {undergroundObjectModel} from './underground-models.js?v=release-20261107-demons132';
-import {exploreObjectModel} from './explore-models.js?v=release-20261107-demons132';
-import {campObject} from './camp-models.js?v=release-20261107-demons132';
-import {professionStationModel} from './profession-models.js?v=release-20261107-demons132';
-import {oreResources} from './profession-data.js?v=release-20261107-demons132';
-import {fishingRipple} from './gathering-visuals.js?v=release-20261107-demons132';
-import {buildNaturalForest} from './natural-forest.js?v=release-20261107-demons132';
-import {creatureMaterial} from './creature-material.js?v=release-20261107-demons132';
-import {dragonModel} from './monster-dragon.js?v=release-20261107-demons132';
-import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-demons132';
-import {castleObject} from './castle-models.js?v=release-20261107-demons132';
-import {buildCharacterDisplay} from './character-display.js?v=release-20261107-demons132';
-import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-demons132';
-import {townProp,dressFountain} from './town-props.js?v=release-20261107-demons132';
-import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-demons132';
-import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-demons132';
+import {undergroundObjectModel} from './underground-models.js?v=release-20261107-mapicons133';
+import {exploreObjectModel} from './explore-models.js?v=release-20261107-mapicons133';
+import {campObject} from './camp-models.js?v=release-20261107-mapicons133';
+import {professionStationModel} from './profession-models.js?v=release-20261107-mapicons133';
+import {oreResources} from './profession-data.js?v=release-20261107-mapicons133';
+import {fishingRipple} from './gathering-visuals.js?v=release-20261107-mapicons133';
+import {buildNaturalForest} from './natural-forest.js?v=release-20261107-mapicons133';
+import {creatureMaterial} from './creature-material.js?v=release-20261107-mapicons133';
+import {dragonModel} from './monster-dragon.js?v=release-20261107-mapicons133';
+import {hasRiggedModel,riggedActorModel} from './monster-models.js?v=release-20261107-mapicons133';
+import {castleObject} from './castle-models.js?v=release-20261107-mapicons133';
+import {buildCharacterDisplay} from './character-display.js?v=release-20261107-mapicons133';
+import {farmAnimalModel,farmObjectModel} from './farm-models.js?v=release-20261107-mapicons133';
+import {townProp,dressFountain} from './town-props.js?v=release-20261107-mapicons133';
+import {sharedGeometry,sharedCustomGeometry,sharedMaterial,disposeOwned} from './shared-geometry.js?v=release-20261107-mapicons133';
+import {trainingDummyModel,tutorialObjectModel} from './tutorial-models.js?v=release-20261107-mapicons133';
 // Small, articulated species models with their own attack silhouettes and effects.
 export function actorModel(T,parent,d){
  if(d.species==='dummy')return trainingDummyModel(T,parent,d);

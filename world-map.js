@@ -10,7 +10,13 @@
 // Redraws happen only when the view or something on the map changes, and each
 // one is a single crop of the cached terrain painting plus the overlays.
 //
+// Map icons (map-icons.js): mines, tiered trees, fishing spots, skilling stations, banks and
+// shops, caves and boss lairs, dragons, training areas, agility shortcuts and boats. They merge
+// further as the map zooms out (one icon per area on screen), minor services appear once zoomed
+// in a little, hover or tap names them with their level, and the legend toggles each kind.
+//
 // The pure helpers (view maths, colours, POI kinds) are exported for tests.
+import {MARKER_CATS,MARKER_GROUPS,clusterMarkers,markerLabel,drawMarker,drawMarkerIcon,legendTint,loadFilters,saveFilters} from './map-icons.js?v=release-20261107-mapicons133';
 
 export const POI_KINDS={
  bank:{label:'Bank',color:'#d6a21e',ink:'#4a3006'},
@@ -90,6 +96,11 @@ export function edgePoint(x,y,w,h,m=18){
 }
 // Nearest feature to a world point within `radius` world units, or null.
 export function pickFeature(list,x,z,radius){let best=null,bd=radius;for(const f of list){const d=Math.hypot(f.x-x,f.z-z);if(d<=bd){bd=d;best=f}}return best}
+// Map markers merge further as the map zooms out: two of a kind closer on screen than about an
+// icon and a bit join. The world distance is bucketed (half powers of two) so a slow zoom reuses
+// the same grouping instead of re-clustering every frame.
+export function zoomLink(scale,iconPx=18){const L=iconPx*1.15/Math.max(1e-6,scale);return Math.pow(2,Math.round(Math.log2(Math.max(1,L))*2)/2)}
+export function markersForZoom(items,scale,iconPx=18,cache=null){const L=zoomLink(scale,iconPx);if(cache?.has(L))return cache.get(L);const out=clusterMarkers(items,L);cache?.set(L,out);return out}
 
 const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t),clamp01=t=>Math.max(0,Math.min(1,t)),smooth=(a,b,x)=>{const t=clamp01((x-a)/(b-a));return t*t*(3-2*t)};
 const PAINT={meadow:[104,142,66],lush:[86,132,54],snow:[226,231,233],sand:[214,190,128],rock:[140,132,114],forest:[44,88,40],scrub:[128,124,70],shore:[219,203,152],shallow:[92,148,186],deep:[42,94,152]};
@@ -206,9 +217,16 @@ body.landscape-required #map-panel:not([hidden]){z-index:30001!important;visibil
 .wm-tools button[aria-pressed=true]{background:#7a6235}
 .wm-tools button:disabled{opacity:.45}
 .wm-legend{position:absolute;left:8px;bottom:8px;z-index:2;max-height:calc(100% - 16px);overflow:auto;background:#14100ae0;border:1px solid #9d8554;border-radius:6px;padding:7px 10px;color:#efdfb9;font:12px Georgia,serif;display:grid;grid-template-columns:auto auto;gap:4px 12px}
-.wm-legend[hidden]{display:none}.wm-legend div{display:flex;align-items:center;gap:6px;white-space:nowrap}.wm-legend canvas{width:20px;height:20px}
-.wm-legend strong{grid-column:1/-1;color:#e8c56f;letter-spacing:1px;font-size:11px;text-transform:uppercase}
-.wm-info{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;background:#14100ae6;border:1px solid #9d8554;border-radius:16px;padding:5px 14px;color:#f3e2b5;font:13px Georgia,serif;pointer-events:none;white-space:nowrap;max-width:calc(100% - 120px);overflow:hidden;text-overflow:ellipsis}
+.wm-legend[hidden]{display:none}.wm-legend div{display:flex;align-items:center;gap:6px;white-space:nowrap}.wm-legend canvas{width:20px;height:20px;flex:0 0 auto}
+.wm-legend strong{grid-column:1/-1;color:#e8c56f;letter-spacing:1px;font-size:11px;text-transform:uppercase;margin-top:2px}
+.wm-legend{max-width:min(380px,calc(100% - 70px));grid-template-columns:repeat(auto-fill,minmax(150px,1fr));min-width:min(300px,calc(100% - 70px))}
+.wm-legend button.wm-cat{display:flex;align-items:center;gap:6px;margin:0;padding:2px 6px 2px 2px;min-height:28px;width:100%;background:transparent;border:1px solid transparent;border-radius:5px;color:inherit;font:inherit;text-align:left;white-space:nowrap;cursor:pointer;touch-action:manipulation}
+.wm-legend button.wm-cat:hover{border-color:#9d855488}
+.wm-legend button.wm-cat[aria-pressed=false]{opacity:.42}.wm-legend button.wm-cat[aria-pressed=false] span{text-decoration:line-through}
+.wm-legend button.wm-cat small{margin-left:auto;color:#bfa978;font-size:10px}
+.wm-legend .wm-all{grid-column:1/-1;display:flex;gap:6px}.wm-legend .wm-all button{margin:0;padding:3px 9px;min-height:26px;font:11px Georgia,serif;background:#1d2a22;border:1px solid #9d8554;color:#f0dcae;border-radius:5px}
+body.touch-controls .wm-legend button.wm-cat{min-height:34px}
+.wm-info{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:3;background:#14100ae6;border:1px solid #9d8554;border-radius:14px;padding:5px 14px;color:#f3e2b5;font:13px/1.35 Georgia,serif;pointer-events:none;white-space:normal;text-align:center;width:max-content;max-width:calc(100% - 120px);overflow:hidden}
 .wm-info[hidden]{display:none}
 .wm-busy{position:absolute;inset:0;display:grid;place-items:center;color:#e9d6a6;font:italic 16px Georgia,serif;pointer-events:none}
 .wm-busy[hidden]{display:none}
@@ -299,10 +317,12 @@ export function createWorldMap({canvas,source}){
 
  // World features are read when the map opens and every two seconds while it
  // is open; a redraw happens only when something on the map actually changed.
- let lists={buildings:[],places:[],pois:[],quests:[]},listKey='',dynKey='',lastLists=0;
- function readLists(){lists={buildings:source.buildings?.()||[],places:source.places?.()||[],pois:mergePois(source.pois?.()||[]),quests:source.quests?.()||[]};
-  const sum=a=>a.reduce((s,p)=>s+(p.x||0)*1.3+(p.z||0)*.7,0).toFixed(1);const key=[lists.buildings.length,lists.places.length,lists.pois.length,lists.quests.map(q=>q.kind).join(''),sum(lists.buildings),sum(lists.pois),sum(lists.quests)].join('|');
-  lastLists=performance.now();if(key!==listKey){listKey=key;return true}return false}
+ let lists={buildings:[],places:[],pois:[],quests:[],markers:[]},listKey='',dynKey='',lastLists=0;
+ // Viewer's legend toggles (kinds hidden on this device) and the per-zoom marker groupings.
+ const filters=loadFilters(win.localStorage);let markerCache=new Map(),drawn=[];
+ function readLists(){lists={buildings:source.buildings?.()||[],places:source.places?.()||[],pois:mergePois(source.pois?.()||[]),quests:source.quests?.()||[],markers:source.markers?.()||[]};
+  const sum=a=>a.reduce((s,p)=>s+(p.x||0)*1.3+(p.z||0)*.7,0).toFixed(1);const key=[lists.buildings.length,lists.places.length,lists.pois.length,lists.markers.length,lists.quests.map(q=>q.kind).join(''),sum(lists.buildings),sum(lists.pois),sum(lists.quests),sum(lists.markers),lists.markers.map(m=>m.name).join('')].join('|');
+  lastLists=performance.now();if(key!==listKey){listKey=key;markerCache=new Map();return true}return false}
  // Moving things: player, destination flag, death pile and the quest objective.
  function dynamicKey(){const me=source.player?.(),f=source.flag?.(),pile=source.deathPile?.(),o=source.objective?.(),r=v=>Math.round(v*4)/4;
   return [me?r(me.x)+','+r(me.z)+','+Math.round(me.heading*20):'',f?r(f.x)+','+r(f.z):'',pile?r(pile.x)+','+r(pile.z)+pile.label:'',o?r(o.x)+','+r(o.z)+(o.label||''):''].join('|')}
@@ -364,9 +384,14 @@ export function createWorldMap({canvas,source}){
   for(const fn of drawLater)fn();
   // Points of interest, skipping icons that would overlap a name or another icon.
   const icon=Math.round(Math.max(7,Math.min(11,6+k*2.2))*Math.max(.85,ui));
-  for(const p of lists.pois){const q=S(p.x,p.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12||!claim({x:q.x,y:q.y,w:icon*2,h:icon*2}))continue;drawPoiIcon(ctx,p.kind,q.x,q.y,icon)}
+  // Map markers (map-icons.js): highest priority first, one icon per area at this zoom; minor
+  // kinds only once zoomed in a little; kinds switched off in the legend are skipped.
+  const markerPx=Math.round(Math.max(16,Math.min(22,icon*2))),fit=fitScale(w,h,extent);drawn=[];
+  for(const c of markersForZoom(lists.markers,k,markerPx,markerCache)){const def=MARKER_CATS[c.cat];if(!def||filters.has(c.cat)||k<fit*(def.zoom||1)*.999)continue;
+   const q=S(c.x,c.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12||!claim({x:q.x,y:q.y,w:markerPx-2,h:markerPx-2}))continue;drawMarker(ctx,c,q.x,q.y,markerPx,dpr);drawn.push({c,x:q.x,y:q.y,r:markerPx/2})}
+  if(!filters.has('exploration'))for(const p of lists.pois){if(p.kind==='quest'&&filters.has('quest'))continue;const q=S(p.x,p.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12||!claim({x:q.x,y:q.y,w:icon*2,h:icon*2}))continue;drawPoiIcon(ctx,p.kind,q.x,q.y,icon)}
   // Quest givers: the same yellow ! and ? as over their heads in the world.
-  for(const g of lists.quests){const q=S(g.x,g.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12)continue;drawQuestGlyph(ctx,g.kind,q.x,q.y,Math.max(.85,ui))}
+  if(!filters.has('quest'))for(const g of lists.quests){const q=S(g.x,g.z);if(q.x<-12||q.y<-12||q.x>w+12||q.y>h+12)continue;drawQuestGlyph(ctx,g.kind,q.x,q.y,Math.max(.85,ui))}
   // The player's death pile: skull with the time left beneath it.
   const pile=source.deathPile?.();if(pile){const q=S(pile.x,pile.z);
    ctx.save();ctx.strokeStyle='rgba(224,38,29,.6)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(q.x,q.y,15,0,Math.PI*2);ctx.stroke();ctx.restore();
@@ -387,10 +412,22 @@ export function createWorldMap({canvas,source}){
   stats.lastDrawMs=performance.now()-t0;
  }
 
- function refreshLegend(){legend.replaceChildren();const title=doc.createElement('strong');title.textContent='Legend';legend.append(title);const kinds=new Set(lists.pois.map(p=>p.kind));
-  const row=(label,paint)=>{const r=doc.createElement('div'),c=doc.createElement('canvas');c.width=c.height=40;const g=c.getContext('2d');g.scale(2,2);paint(g);r.append(c,label);legend.append(r)};
-  for(const [kind,def] of Object.entries(POI_KINDS))if(kinds.has(kind))row(def.label,g=>drawPoiIcon(g,kind,10,10,8));
-  if(lists.quests.length)row('Quest giver',g=>drawQuestGlyph(g,'!',10,10,.8));
+ // Legend: every kind on the map, grouped, each a toggle (tap or click) remembered on this device.
+ function toggle(key,on){if(on)filters.delete(key);else filters.add(key);saveFilters(filters,win.localStorage);invalidate()}
+ function refreshLegend(){legend.replaceChildren();const title=doc.createElement('strong');title.textContent='Legend · tap to show or hide';legend.append(title);const kinds=new Set(lists.pois.map(p=>p.kind));
+  const icon=paint=>{const c=doc.createElement('canvas');c.width=c.height=40;const g=c.getContext('2d');g.scale(2,2);paint(g);return c};
+  const row=(label,paint)=>{const r=doc.createElement('div');r.append(icon(paint),label);legend.append(r)};
+  const toggleRow=(key,label,count,paint)=>{const b=doc.createElement('button');b.type='button';b.className='wm-cat';b.dataset.cat=key;b.setAttribute('aria-pressed',String(!filters.has(key)));b.title=(filters.has(key)?'Show ':'Hide ')+label.toLowerCase();
+   const t=doc.createElement('span');t.textContent=label;b.append(icon(paint),t);if(count){const n=doc.createElement('small');n.textContent=String(count);b.append(n)}
+   b.onclick=e=>{e.preventDefault();e.stopPropagation();const on=filters.has(key);toggle(key,on);b.setAttribute('aria-pressed',String(on));b.title=(on?'Hide ':'Show ')+label.toLowerCase()};legend.append(b)};
+  const counts=new Map();for(const m of lists.markers)counts.set(m.cat,(counts.get(m.cat)||0)+1);
+  const all=doc.createElement('div');all.className='wm-all';for(const [text,on] of [['Show all',true],['Hide all',false]]){const b=doc.createElement('button');b.type='button';b.textContent=text;b.onclick=e=>{e.preventDefault();e.stopPropagation();for(const k of [...counts.keys(),'quest','exploration'])if(on)filters.delete(k);else filters.add(k);saveFilters(filters,win.localStorage);refreshLegend();invalidate()};all.append(b)}legend.append(all);
+  for(const [group,name] of MARKER_GROUPS){const cats=Object.entries(MARKER_CATS).filter(([c,d])=>d.group===group&&counts.has(c));const extra=group==='places'&&(lists.quests.length||kinds.size);if(!cats.length&&!extra)continue;
+   const h=doc.createElement('strong');h.textContent=name;legend.append(h);
+   for(const [cat,def] of cats){const tint=legendTint(cat,lists.markers);toggleRow(cat,def.label,counts.get(cat),g=>drawMarkerIcon(g,cat,10,10,18,{tint}))}
+   if(group==='places'){if(lists.quests.length)toggleRow('quest','Quest giver',lists.quests.length,g=>drawQuestGlyph(g,'!',10,10,.8));if(kinds.has('discovered')||kinds.has('hidden'))toggleRow('exploration','Discovered place',lists.pois.length,g=>drawPoiIcon(g,'discovered',10,10,8))}}
+  const h=doc.createElement('strong');h.textContent='You';legend.append(h);
+  for(const [kind,def] of Object.entries(POI_KINDS))if(kinds.has(kind)&&!['discovered','hidden','quest'].includes(kind))row(def.label,g=>drawPoiIcon(g,kind,10,10,8));
   if(source.objective)row('Quest objective',g=>{g.translate(10,10);g.rotate(Math.PI/4);g.fillStyle='#ffd23a';g.strokeStyle='#2a1a04';g.lineWidth=1.5;g.fillRect(-4.5,-4.5,9,9);g.strokeRect(-4.5,-4.5,9,9)});
   row('You',g=>{g.translate(10,10);g.fillStyle='#fff';g.strokeStyle='#101a14';g.lineWidth=1.5;g.beginPath();g.moveTo(0,-7);g.lineTo(5,5);g.lineTo(0,2);g.lineTo(-5,5);g.closePath();g.fill();g.stroke()});
   row('Your death pile',g=>drawSkullIcon(g,10,10,17));
@@ -426,8 +463,15 @@ export function createWorldMap({canvas,source}){
  canvas.addEventListener('click',e=>{e.preventDefault();e.stopPropagation()});
  canvas.addEventListener('dblclick',e=>{e.preventDefault();e.stopPropagation()});
  canvas.addEventListener('contextmenu',e=>e.preventDefault());
+ // The map marker drawn under a screen point (the icons on screen, nearest first).
+ function markerAt(sx,sy,slop=4){let best=null,bd=Infinity;for(const d of drawn){const dist=Math.hypot(d.x-sx,d.y-sy);if(dist<=d.r+slop&&dist<bd){bd=dist;best=d}}return best}
+ // Hover (mouse and pen): name the marker under the pointer while it rests there.
+ let hovering=null;canvas.addEventListener('pointermove',e=>{if(e.pointerType==='touch'||pointers.size)return;const p=local(e),d=markerAt(p.x,p.y,2);
+  if(d?.c===hovering)return;hovering=d?.c||null;canvas.style.cursor=d?'pointer':'';if(d){win.clearTimeout(infoTimer);info.textContent=markerLabel(d.c);info.hidden=false}else if(!selected)info.hidden=true});
+ canvas.addEventListener('pointerleave',()=>{if(hovering){hovering=null;canvas.style.cursor='';if(!selected)info.hidden=true}});
  function select(sx,sy){const at=screenToWorld(view,sx,sy,w,h),r=16/view.scale;
-  const hit=pickFeature(lists.pois.map(p=>({...p,label:(p.name?p.name+' · ':'')+POI_KINDS[p.kind].label})),at.x,at.z,r)||pickFeature(lists.quests.map(q=>({...q,label:(q.name?q.name+' · ':'')+(q.kind==='?'?'Quest to hand in':'Quest available')})),at.x,at.z,r)||pickFeature(lists.places.map(p=>({...p,label:p.name})),at.x,at.z,Math.max(r,28/view.scale))||pickFeature(lists.buildings.map(b=>({...b,label:b.name||'Building'})),at.x,at.z,Math.max(r,4));
+  const mark=markerAt(sx,sy,6);
+  const hit=mark?{label:markerLabel(mark.c)}:pickFeature(lists.pois.map(p=>({...p,label:(p.name?p.name+' · ':'')+POI_KINDS[p.kind].label})),at.x,at.z,r)||pickFeature(lists.quests.map(q=>({...q,label:(q.name?q.name+' · ':'')+(q.kind==='?'?'Quest to hand in':'Quest available')})),at.x,at.z,r)||pickFeature(lists.places.map(p=>({...p,label:p.name})),at.x,at.z,Math.max(r,28/view.scale))||pickFeature(lists.buildings.map(b=>({...b,label:b.name||'Building'})),at.x,at.z,Math.max(r,4));
   const me=source.player?.();const youAre=me&&Math.hypot(me.x-at.x,me.z-at.z)<r;
   const pile=source.deathPile?.(),onPile=pile&&Math.hypot(pile.x-at.x,pile.z-at.z)<r;
   const goal=source.objective?.(),onGoal=goal&&Math.hypot(goal.x-at.x,goal.z-at.z)<r;
@@ -436,8 +480,10 @@ export function createWorldMap({canvas,source}){
  function fit(){animateTo(fitView(w,h,extent))}
  const zoomIn=tool('+','Zoom in','in',()=>zoomBy(1.6)),zoomOut=tool('−','Zoom out','out',()=>zoomBy(1/1.6)),fitButton=tool('Fit','Show the whole world','fit',fit);
  tool('◎','Centre on me','me',()=>{const me=source.player?.();if(me)animateTo({x:me.x,z:me.z,scale:Math.max((target||view).scale,zoomRange(w,h,extent,MAX).min*3)})});
- const legendButton=tool('☰','Show or hide the legend','legend',()=>{legend.hidden=!legend.hidden;legendButton.setAttribute('aria-pressed',String(!legend.hidden))});
- if(phone||(win.innerHeight||800)<560||(win.innerWidth||800)<560){legend.hidden=true}legendButton.setAttribute('aria-pressed',String(!legend.hidden));
+ // The legend (kind toggles) starts closed so it never covers the map; ☰ opens it, remembered per device.
+ const LEGEND_KEY='eldervale-map-legend',remember=v=>{try{win.localStorage?.setItem(LEGEND_KEY,v?'open':'closed')}catch{}};
+ const legendButton=tool('☰','Map legend: show or hide kinds of icons','legend',()=>{legend.hidden=!legend.hidden;remember(!legend.hidden);legendButton.setAttribute('aria-pressed',String(!legend.hidden))});
+ let legendOpen=false;try{legendOpen=win.localStorage?.getItem(LEGEND_KEY)==='open'}catch{}legend.hidden=!legendOpen||phone||(win.innerHeight||800)<380;legendButton.setAttribute('aria-pressed',String(!legend.hidden));
 
  function ensureBase(){const sig=source.signature?.()||'';if(base&&sig===signature)return;signature=sig;busy.hidden=false;paintBase();busy.hidden=true;refreshLegend()}
  function close(){if(!open)return;open=false;if(raf)win.cancelAnimationFrame(raf);raf=0;win.clearInterval(watch);watch=0;pointers.clear();drag=null;target=null;inertia=null;info.hidden=true;canvas.classList.remove('dragging')}
@@ -455,6 +501,12 @@ export function createWorldMap({canvas,source}){
   get limits(){return zoomRange(w,h,extent,MAX)},
   get size(){return {w,h,dpr}},
   stats,
+  // Markers drawn by the last redraw ({label,cat,x,y} in CSS px) and the legend toggles.
+  get drawnMarkers(){return drawn.map(d=>({label:markerLabel(d.c),cat:d.c.cat,x:d.x,y:d.y}))},
+  get hiddenKinds(){return [...filters]},
+  setKind(kind,on){toggle(kind,on);refreshLegend()},
+  // New markers or owner overrides: read them now instead of at the next poll.
+  refreshMarkers(){if(open&&readLists()){refreshLegend();invalidate()}},
   draw(){if(base)draw()}
  };
 }

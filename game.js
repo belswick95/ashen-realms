@@ -1,125 +1,125 @@
-import {capital,capitalActive,capitalMapWalls,inCapitalClearing,isCapitalTown,townExtent,inwardNormal} from './capital-layout.js?v=release-20261107-demons132';
-import {campClearing} from './camp-blueprint.js?v=release-20261107-demons132';
-import {createLevelUpPanel,jingleFor} from './level-up.js?v=release-20261107-demons132';
-import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261107-demons132';
-import {createQuestJournal} from './quests.js?v=release-20261107-demons132';
-import {createTutorial} from './tutorial.js?v=release-20261107-demons132';
-import {createBuildingSigns,defaultSignposts} from './building-signs.js?v=release-20261107-demons132';
-import {createQuestMarkers} from './quest-markers.js?v=release-20261107-demons132';
-import {createQuestTracker} from './quest-tracker.js?v=release-20261107-demons132';
-import {createQuestTrail,mountGuidanceSettings} from './quest-trail.js?v=release-20261107-demons132';
-import {createQuestCutscenes} from './quest-cutscenes.js?v=release-20261107-demons132';
-import {npcLinesFor} from './quest-v2.js?v=release-20261107-demons132';
-import {createNpcDialogue,converse} from './npc-dialogue.js?v=release-20261107-demons132';
-import {panelStateKey} from './panel-state.js?v=release-20261107-demons132';
-import {obstructionDistance,collectCameraOccluders} from './camera-obstruction.js?v=release-20261107-demons132';
-import {slideStep,locomotionDistance,movementTime} from './movement-collision.js?v=release-20261107-demons132';
-import {createWildlife} from './wildlife.js?v=release-20261107-demons132';
-import {createProfessionVisuals} from './profession-visuals.js?v=release-20261107-demons132';
-import {makeDroppedItemModel} from './item-models.js?v=release-20261107-demons132';
-import {createProfessionPanel} from './professions.js?v=release-20261107-demons132';
-import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261107-demons132';
-import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261107-demons132';
-import {createHorseMount} from './horse-mount.js?v=release-20261107-demons132';
-import {createTravelHeading} from './mount-heading.js?v=release-20261107-demons132';
-import {playHorseHoof,playLevelUpJingle,soundEffects,duckMusic,playThunder} from './music.js?v=release-20261107-demons132';
-import {createCombatAudio,weaponFamily,monsterFamily} from './combat-audio.js?v=release-20261107-demons132';
-import {createLevelFireworks} from './level-fireworks.js?v=release-20261107-demons132';
-import {townMusic,waterProximity} from './audio-regions.js?v=release-20261107-demons132';
-import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261107-demons132';
-import {createGroundDressing} from './environment-detail.js?v=release-20261107-demons132';
-import {createWaterSystem} from './water-rendering.js?v=release-20261107-demons132';
-import {fishingDock} from './waterfront.js?v=release-20261107-demons132';
-import {createSurfaceCoverIndex,isBuilding as isWalkInBuilding,buildingPlot as walkInPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261107-demons132';
-import {isFoundationStructure,structurePlot,propBase} from './foundation.js?v=release-20261107-demons132';
-import {batchStaticMeshes,createCellBatcher,BATCHED_LAYER} from './static-batch.js?v=release-20261107-demons132';
-import {createWeatherEffects} from './weather-effects.js?v=release-20261107-demons132';
+import {capital,capitalActive,capitalMapWalls,inCapitalClearing,isCapitalTown,townExtent,inwardNormal} from './capital-layout.js?v=release-20261107-mapicons133';
+import {campClearing} from './camp-blueprint.js?v=release-20261107-mapicons133';
+import {createLevelUpPanel,jingleFor} from './level-up.js?v=release-20261107-mapicons133';
+import {addBuildingStories,buildingLocal,stairPosition,storyOffset,validStoryPosition} from './building-stories.js?v=release-20261107-mapicons133';
+import {createQuestJournal} from './quests.js?v=release-20261107-mapicons133';
+import {createTutorial} from './tutorial.js?v=release-20261107-mapicons133';
+import {createBuildingSigns,defaultSignposts} from './building-signs.js?v=release-20261107-mapicons133';
+import {createQuestMarkers} from './quest-markers.js?v=release-20261107-mapicons133';
+import {createQuestTracker} from './quest-tracker.js?v=release-20261107-mapicons133';
+import {createQuestTrail,mountGuidanceSettings} from './quest-trail.js?v=release-20261107-mapicons133';
+import {createQuestCutscenes} from './quest-cutscenes.js?v=release-20261107-mapicons133';
+import {npcLinesFor} from './quest-v2.js?v=release-20261107-mapicons133';
+import {createNpcDialogue,converse} from './npc-dialogue.js?v=release-20261107-mapicons133';
+import {panelStateKey} from './panel-state.js?v=release-20261107-mapicons133';
+import {obstructionDistance,collectCameraOccluders} from './camera-obstruction.js?v=release-20261107-mapicons133';
+import {slideStep,locomotionDistance,movementTime} from './movement-collision.js?v=release-20261107-mapicons133';
+import {createWildlife} from './wildlife.js?v=release-20261107-mapicons133';
+import {createProfessionVisuals} from './profession-visuals.js?v=release-20261107-mapicons133';
+import {makeDroppedItemModel} from './item-models.js?v=release-20261107-mapicons133';
+import {createProfessionPanel} from './professions.js?v=release-20261107-mapicons133';
+import {professionSkills,professionItems,professionStations} from './profession-data.js?v=release-20261107-mapicons133';
+import {mountCatalog,mountAllowed,mountSpeed} from './mounts.js?v=release-20261107-mapicons133';
+import {createHorseMount} from './horse-mount.js?v=release-20261107-mapicons133';
+import {createTravelHeading} from './mount-heading.js?v=release-20261107-mapicons133';
+import {playHorseHoof,playLevelUpJingle,soundEffects,duckMusic,playThunder} from './music.js?v=release-20261107-mapicons133';
+import {createCombatAudio,weaponFamily,monsterFamily} from './combat-audio.js?v=release-20261107-mapicons133';
+import {createLevelFireworks} from './level-fireworks.js?v=release-20261107-mapicons133';
+import {townMusic,waterProximity} from './audio-regions.js?v=release-20261107-mapicons133';
+import {createGatheringVisuals} from './gathering-visuals.js?v=release-20261107-mapicons133';
+import {createGroundDressing} from './environment-detail.js?v=release-20261107-mapicons133';
+import {createWaterSystem} from './water-rendering.js?v=release-20261107-mapicons133';
+import {fishingDock} from './waterfront.js?v=release-20261107-mapicons133';
+import {createSurfaceCoverIndex,isBuilding as isWalkInBuilding,buildingPlot as walkInPlot,coversSurface,onBridge,pavedGeometry,drapedGeometry} from './world-surfaces.js?v=release-20261107-mapicons133';
+import {isFoundationStructure,structurePlot,propBase} from './foundation.js?v=release-20261107-mapicons133';
+import {batchStaticMeshes,createCellBatcher,BATCHED_LAYER} from './static-batch.js?v=release-20261107-mapicons133';
+import {createWeatherEffects} from './weather-effects.js?v=release-20261107-mapicons133';
 // Walk-in buildings and freestanding structures (farm huts, stalls, wells...)
 // both get a levelled terrain pad; only buildings register a walkable floor.
 const isBuilding=d=>isWalkInBuilding(d)||isFoundationStructure(d),buildingPlot=d=>isWalkInBuilding(d)?walkInPlot(d):structurePlot(d);
-import {installFantasyHUD} from './hud-redesign.js?v=release-20261107-demons132';
-import {installWorldHoverCursor} from './cursors.js?v=release-20261107-demons132';
-import {installMMOControls,jumpHeight,isAirborne,CAMERA_TURN_RATE,CAMERA_PITCH_RATE} from './mmorpg-controls.js?v=release-20261107-demons132';
-import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261107-demons132';
-import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261107-demons132';
-import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261107-demons132';
-import {runFrameWork,nextTask,createLoadingPanel} from './frame-work.js?v=release-20261107-demons132';import {trackLoadingManager} from './loading-indicator.js?v=release-20261107-demons132';import {installLongPressMenus,fitToViewport} from './touch-menus.js?v=release-20261107-demons132';installLongPressMenus();trackLoadingManager(T.DefaultLoadingManager);
-import {createRegionStreamer} from './region-streamer.js?v=release-20261107-demons132';
-import {searchRoute} from './route-search.js?v=release-20261107-demons132';
-import {disposeEntityResources} from './entity-resources.js?v=release-20261107-demons132';
-import {actorMenuLabel} from './context-label.js?v=release-20261107-demons132';
-import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261107-demons132';
-import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261107-demons132';
-import {createGroundDrops} from './ground-drops.js?v=release-20261107-demons132';
-import {createCombatHealth} from './combat-health.js?v=release-20261107-demons132';
-import {terrainCameraClearance} from './camera-clearance.js?v=release-20261107-demons132';
-import {castle,inCastle} from './castle-layout.js?v=release-20261107-demons132';
-import {createMotionTrack,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose,presentPose,TILE_WALK_SPEED,CATCH_UP} from './motion-track.js?v=release-20261107-demons132';
-import {lightingAt} from './world-lighting.js?v=release-20261107-demons132';
-import {sculptPatches} from './terrain-patches.js?v=release-20261107-demons132';
-import {fromPlayerRow} from './player-save.js?v=release-20261107-demons132';
-import {combatLevel,skillLevel,crossedSwords,xpProgress,hitpointsLevel,formatXp} from './combat-level.js?v=release-20261107-demons132';
-import {EAT_DELAY,EAT_ANIMATION,isFood,fishingMethods} from './food.js?v=release-20261107-demons132';
-import {createXpDrops} from './xp-drops.js?v=release-20261107-demons132';
-import {worldTemplates} from './world-templates.js?v=release-20261107-demons132';
-import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261107-demons132';
-import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261107-demons132';
-import {armorCatalog,weaponStats,meleeProtection,meleeRoll,equipRefusal,gearDetails,equipmentBonuses,playerLevels} from './melee-stats.js?v=release-20261107-demons132';
-import {renderEquipmentStats,installGearTooltip} from './equipment-stats.js?v=release-20261107-demons132';
-import {styleLabels,playerAttackProfile,rollPlayerHit,rollMonsterHit} from './gear-tiers.js?v=release-20261107-demons132';
-import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261107-demons132';
-import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261107-demons132';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon,drawCityWalls} from './world-map.js?v=release-20261107-demons132';
+import {installFantasyHUD} from './hud-redesign.js?v=release-20261107-mapicons133';
+import {installWorldHoverCursor} from './cursors.js?v=release-20261107-mapicons133';
+import {installMMOControls,jumpHeight,isAirborne,CAMERA_TURN_RATE,CAMERA_PITCH_RATE} from './mmorpg-controls.js?v=release-20261107-mapicons133';
+import {configureBiomeTerrain,createNaturalSky,createMeadow} from './natural-environment.js?v=release-20261107-mapicons133';
+import {buildNaturalForest,updateNaturalForest,setForestTreeVisible} from './natural-forest.js?v=release-20261107-mapicons133';
+import {generatedWorld,generatedTreePoints,biomeColor} from './procedural-world.js?v=release-20261107-mapicons133';
+import {runFrameWork,nextTask,createLoadingPanel} from './frame-work.js?v=release-20261107-mapicons133';import {trackLoadingManager} from './loading-indicator.js?v=release-20261107-mapicons133';import {installLongPressMenus,fitToViewport} from './touch-menus.js?v=release-20261107-mapicons133';installLongPressMenus();trackLoadingManager(T.DefaultLoadingManager);
+import {createRegionStreamer} from './region-streamer.js?v=release-20261107-mapicons133';
+import {searchRoute} from './route-search.js?v=release-20261107-mapicons133';
+import {disposeEntityResources} from './entity-resources.js?v=release-20261107-mapicons133';
+import {actorMenuLabel} from './context-label.js?v=release-20261107-mapicons133';
+import {fixedObstacles,obstacleBlocks,createObstacleIndex} from './navigation-obstacles.js?v=release-20261107-mapicons133';
+import {createTradePanel,requestDrop} from './player-trading.js?v=release-20261107-mapicons133';
+import {createGroundDrops} from './ground-drops.js?v=release-20261107-mapicons133';
+import {createCombatHealth} from './combat-health.js?v=release-20261107-mapicons133';
+import {terrainCameraClearance} from './camera-clearance.js?v=release-20261107-mapicons133';
+import {castle,inCastle} from './castle-layout.js?v=release-20261107-mapicons133';
+import {createMotionTrack,reconcileLocalPose,reconcileActivePose,serverMotionJump,projectPathPose,presentPose,TILE_WALK_SPEED,CATCH_UP} from './motion-track.js?v=release-20261107-mapicons133';
+import {lightingAt} from './world-lighting.js?v=release-20261107-mapicons133';
+import {sculptPatches} from './terrain-patches.js?v=release-20261107-mapicons133';
+import {fromPlayerRow} from './player-save.js?v=release-20261107-mapicons133';
+import {combatLevel,skillLevel,crossedSwords,xpProgress,hitpointsLevel,formatXp} from './combat-level.js?v=release-20261107-mapicons133';
+import {EAT_DELAY,EAT_ANIMATION,isFood,fishingMethods} from './food.js?v=release-20261107-mapicons133';
+import {createXpDrops} from './xp-drops.js?v=release-20261107-mapicons133';
+import {worldTemplates} from './world-templates.js?v=release-20261107-mapicons133';
+import {actorModel,objectModel,serviceAttackEffect} from './world-models.js?v=release-20261107-mapicons133';
+import {createCombatTurns,WALK_SPEED,SPRINT_SPEED} from './combat-turns.js?v=release-20261107-mapicons133';
+import {armorCatalog,weaponStats,meleeProtection,meleeRoll,equipRefusal,gearDetails,equipmentBonuses,playerLevels} from './melee-stats.js?v=release-20261107-mapicons133';
+import {renderEquipmentStats,installGearTooltip} from './equipment-stats.js?v=release-20261107-mapicons133';
+import {styleLabels,playerAttackProfile,rollPlayerHit,rollMonsterHit} from './gear-tiers.js?v=release-20261107-mapicons133';
+import {OUTFIT_SLOTS,SLOT_LABELS} from './outfits.js?v=release-20261107-mapicons133';
+import {regionDefinitions,biomeWeights} from './procedural-world.js?v=release-20261107-mapicons133';import {createWorldMap,poiKind,regionAnchors,drawSkullIcon,drawCityWalls} from './world-map.js?v=release-20261107-mapicons133';import {createMapMarkers} from './map-markers.js?v=release-20261107-mapicons133';import {drawMarker} from './map-icons.js?v=release-20261107-mapicons133';
 const ARMOR_SLOTS=[...OUTFIT_SLOTS,'cape'];
-import {stepEnergy,footIcon} from './run-energy.js?v=release-20261107-demons132';
-import {createMechanicsHud} from './mechanics-hud.js?v=release-20261107-demons132';
-import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261107-demons132';
-import {createCombatTimeline} from './combat-timeline.js?v=release-20261107-demons132';
-import {impactDelay,monsterStrike} from './attack-motion.js?v=release-20261107-demons132';
-import {MONSTER_MODELS} from './monster-models.js?v=release-20261107-demons132';
-import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity,serviceOutOfReach} from './economy.js?v=release-20261107-demons132';
-import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261107-demons132';
-import {mapPoint,worldToMinimap,minimapRotation,cameraHeading,compassRotation,nearestYaw,stepYaw,LOOK_YAW} from './minimap.js?v=release-20261107-demons132';
-import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261107-demons132';
-import {heldOpen,heldOpenExamine} from './business-doors.js?v=release-20261107-demons132';
-import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus,actorsFirst,withWalkHere,followGoal,TILE,GAME_TICK,REDIRECT_PAUSE_MS,trimPassedWaypoints} from './click-walk.js?v=release-20261107-demons132';
-import {townResidents,animateTownActivity,createWorkKit,carriesWeapon,workFacing,spreadStanding} from './town-life.js?v=release-20261107-demons132';
-import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-demons132';
-import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261107-demons132';
-import {createPlayerHUD} from './player-hud.js?v=release-20261107-demons132';
-import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261107-demons132';
-import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261107-demons132';
-import {stabilizeSun,shadowQuality,celestialLight,installShadowEdgeFade} from './sun-shadow.js?v=release-20261107-demons132';
-import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261107-demons132';
-import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261107-demons132';
-import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261107-demons132';
-import {isTablet,isPhone,lowerTier,createFrameGovernor,createDistanceCuller,characterLod,lodStep,holdGait,HIDDEN_LAYER} from './graphics-quality.js?v=release-20261107-demons132';
+import {stepEnergy,footIcon} from './run-energy.js?v=release-20261107-mapicons133';
+import {createMechanicsHud} from './mechanics-hud.js?v=release-20261107-mapicons133';
+import {resolveHit,createHitNumbers} from './combat-effects.js?v=release-20261107-mapicons133';
+import {createCombatTimeline} from './combat-timeline.js?v=release-20261107-mapicons133';
+import {impactDelay,monsterStrike} from './attack-motion.js?v=release-20261107-mapicons133';
+import {MONSTER_MODELS} from './monster-models.js?v=release-20261107-mapicons133';
+import {goods,sanitizeBank,inventoryUsed,createServicePanel,INVENTORY_SLOTS,quantity,serviceOutOfReach} from './economy.js?v=release-20261107-mapicons133';
+import {jewelryCatalog,jewelryBonus,gatheringXP} from './jewelry.js?v=release-20261107-mapicons133';
+import {mapPoint,worldToMinimap,minimapRotation,cameraHeading,compassRotation,nearestYaw,stepYaw,LOOK_YAW} from './minimap.js?v=release-20261107-mapicons133';
+import {npcService,npcDisplayName,npcMenuOptions,npcDialogueChoices,npcGreeting,dialogueLines} from './npc-options.js?v=release-20261107-mapicons133';
+import {heldOpen,heldOpenExamine} from './business-doors.js?v=release-20261107-mapicons133';
+import {isTap,dragThreshold,mapClickToWorld,flagExpired,showClickCross,drawMapFlag,approachPoint,withinReach,arrivalStatus,actorsFirst,withWalkHere,followGoal,TILE,GAME_TICK,REDIRECT_PAUSE_MS,trimPassedWaypoints} from './click-walk.js?v=release-20261107-mapicons133';
+import {townResidents,animateTownActivity,createWorkKit,carriesWeapon,workFacing,spreadStanding} from './town-life.js?v=release-20261107-mapicons133';
+import {surfaceTexture,scaleSurfaceUV} from './surface-textures.js?v=release-20261107-mapicons133';
+import {attachWeapon,attachShield} from './equipment-pose.js?v=release-20261107-mapicons133';
+import {createPlayerHUD} from './player-hud.js?v=release-20261107-mapicons133';
+import {oakcrossBuildings,decorateTownBuilding} from './town.js?v=release-20261107-mapicons133';
+import {detailBuilding,buildingStyle,ridgeAlignedUV} from './building-detail.js?v=release-20261107-mapicons133';
+import {stabilizeSun,shadowQuality,celestialLight,installShadowEdgeFade} from './sun-shadow.js?v=release-20261107-mapicons133';
+import {createDialoguePortrait} from './dialogue-portrait.js?v=release-20261107-mapicons133';
+import {addSystemMessage,renderFeed} from './chat-feed.js?v=release-20261107-mapicons133';
+import {deviceProfile,effectiveGraphics,installResponsiveLayout,installTouchGestures,bindGameViewport} from './responsive.js?v=release-20261107-mapicons133';
+import {isTablet,isPhone,lowerTier,createFrameGovernor,createDistanceCuller,characterLod,lodStep,holdGait,HIDDEN_LAYER} from './graphics-quality.js?v=release-20261107-mapicons133';
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import {preloadCharacters,setCharacterRim} from './character-assets.js?v=release-20261107-demons132';
-import {buildHumanoid} from './humanoid.js?v=release-20261107-demons132';
-import {arrangeEquipmentDoll,loadStance,saveStance,stanceToggle} from './equipment-doll.js?v=release-20261107-demons132';
-import {createHumanoidAnimator} from './animation.js?v=release-20261107-demons132';
-import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261107-demons132';
-import {buildForest} from './forest.js?v=release-20261107-demons132';
-import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261107-demons132';
-import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261107-demons132';
-import {governorOptions,leanGraphics} from './graphics-quality.js?v=release-20261107-demons132';
-import {warmupList,runShaderWarmup} from './shader-warmup.js?v=release-20261107-demons132';
-import {cutsceneBootFocus,cutsceneBusy,afterArrival,holdRender,deferReflections,prewarmShot,CUTSCENE_FOCUS_RADIUS} from './cutscene-boot.js?v=release-20261107-demons132';
-import {createLightProxies} from './light-proxies.js?v=release-20261107-demons132';
-import {createClassicLook,classicEnabled,classicPixelRatio,blobRadius} from './classic-look.js?v=release-20261107-demons132';
+import {preloadCharacters,setCharacterRim} from './character-assets.js?v=release-20261107-mapicons133';
+import {buildHumanoid} from './humanoid.js?v=release-20261107-mapicons133';
+import {arrangeEquipmentDoll,loadStance,saveStance,stanceToggle} from './equipment-doll.js?v=release-20261107-mapicons133';
+import {createHumanoidAnimator} from './animation.js?v=release-20261107-mapicons133';
+import {worldRoads,roadPoints,lakeOutline,ribbonGeometry,landscapeLakes,worldRivers,landscapeSettlements,distanceToRoad} from './geography.js?v=release-20261107-mapicons133';
+import {buildForest} from './forest.js?v=release-20261107-mapicons133';
+import {publicCharacter,buildCharacterDisplay} from './character-display.js?v=release-20261107-mapicons133';
+import {createLandscape,landscapeGeometry,noise} from './landscape.js?v=release-20261107-mapicons133';
+import {governorOptions,leanGraphics} from './graphics-quality.js?v=release-20261107-mapicons133';
+import {warmupList,runShaderWarmup} from './shader-warmup.js?v=release-20261107-mapicons133';
+import {cutsceneBootFocus,cutsceneBusy,afterArrival,holdRender,deferReflections,prewarmShot,CUTSCENE_FOCUS_RADIUS} from './cutscene-boot.js?v=release-20261107-mapicons133';
+import {createLightProxies} from './light-proxies.js?v=release-20261107-mapicons133';
+import {createClassicLook,classicEnabled,classicPixelRatio,blobRadius} from './classic-look.js?v=release-20261107-mapicons133';
 const landscape=installUndergroundTerrain(createLandscape());
-import {npcAppearance} from './npc-looks.js?v=release-20261107-demons132';
-import {createCape} from './cape.js?v=release-20261107-demons132';
-import {weaponCatalog,makeWeapon,iconForWeapon,isTwoHanded,isRanged,isMagic,usesArrows} from './weapons.js?v=release-20261107-demons132';
-import {createArrows} from './arrows.js?v=release-20261107-demons132';
-import {shieldCatalog,makeShield} from './shields.js?v=release-20261107-demons132';
-import {createDeathFlow,renderKeptOnDeath} from './death.js?v=release-20261107-demons132';
-import {createTileOverlay} from './tile-overlay.js?v=release-20261107-demons132';
-import {createUnderground,installUndergroundTerrain} from './underground.js?v=release-20261107-demons132';
-import {createExplore} from './explore.js?v=release-20261107-demons132';
-import {createBossFx} from './boss-fx.js?v=release-20261107-demons132';
-import {fishingOptions} from './fish-tiers.js?v=release-20261107-demons132';
-import {plantFeet} from './foot-ground.js?v=release-20261107-demons132';
+import {npcAppearance} from './npc-looks.js?v=release-20261107-mapicons133';
+import {createCape} from './cape.js?v=release-20261107-mapicons133';
+import {weaponCatalog,makeWeapon,iconForWeapon,isTwoHanded,isRanged,isMagic,usesArrows} from './weapons.js?v=release-20261107-mapicons133';
+import {createArrows} from './arrows.js?v=release-20261107-mapicons133';
+import {shieldCatalog,makeShield} from './shields.js?v=release-20261107-mapicons133';
+import {createDeathFlow,renderKeptOnDeath} from './death.js?v=release-20261107-mapicons133';
+import {createTileOverlay} from './tile-overlay.js?v=release-20261107-mapicons133';
+import {createUnderground,installUndergroundTerrain} from './underground.js?v=release-20261107-mapicons133';
+import {createExplore} from './explore.js?v=release-20261107-mapicons133';
+import {createBossFx} from './boss-fx.js?v=release-20261107-mapicons133';
+import {fishingOptions} from './fish-tiers.js?v=release-20261107-mapicons133';
+import {plantFeet} from './foot-ground.js?v=release-20261107-mapicons133';
 const appearance=(()=>{try{return JSON.parse(localStorage.getItem('eldervale-save')||'{}').appearance||{}}catch{return {}}})();
 // RuneScape-style death: input lock and death pose, jingle, kept-items note, death pile on the maps (death.js).
 const deathFlow=createDeathFlow({say:text=>say(text),jingle:kind=>playLevelUpJingle(kind),now:()=>window.eldervaleServerTime?.()||Date.now(),goods});
@@ -1039,7 +1039,10 @@ const minimapCached={x:0,z:0,extent:0,ready:false},minimapDrawn={yaw:NaN,x:NaN,z
 let minimapRes=0,minimapStamp=0,compassAngle=NaN,compassTurn=null;
 function sizeMinimap(){const res=Math.min(2,Math.max(1,Math.ceil((window.devicePixelRatio||1)*2)/2));if(res===minimapRes)return;minimapRes=res;mapCanvas.width=mapCanvas.height=MINIMAP_SIZE*res;minimapCache.width=minimapCache.height=minimapCacheSpan*res;minimapCached.ready=false;minimapDrawn.stamp=-1}
 sizeMinimap();addEventListener('resize',sizeMinimap);
-function refreshMinimapCache(){sizeMinimap();minimapCacheCtx.setTransform(minimapRes,0,0,minimapRes,0,0);drawMap(minimapCacheCtx,minimapCache,false,{w:minimapCacheSpan,h:minimapCacheSpan,extent:minimapExtent*minimapCacheSpan/MINIMAP_SIZE});minimapCached.x=player.position.x;minimapCached.z=player.position.z;minimapCached.extent=minimapExtent;minimapCached.ready=true;minimapStamp++}
+function refreshMinimapCache(){sizeMinimap();minimapCacheCtx.setTransform(minimapRes,0,0,minimapRes,0,0);drawMap(minimapCacheCtx,minimapCache,false,{w:minimapCacheSpan,h:minimapCacheSpan,extent:minimapExtent*minimapCacheSpan/MINIMAP_SIZE});minimapCached.x=player.position.x;minimapCached.z=player.position.z;minimapCached.extent=minimapExtent;minimapCached.ready=true;minimapStamp++;refreshMinimapMarkers()}
+// Map markers near the player (map-icons.js), refreshed with the cache; drawn upright by composeMinimap.
+let minimapMarkers=[],minimapMarkerKey='';
+function refreshMinimapMarkers(){let list=[];try{list=mapMarkers.near(player.position.x,player.position.z,minimapExtent*.75,new Set(worldMap.hiddenKinds))}catch{/* before the map is set up */}const key=list.map(c=>c.id).join('|');if(key!==minimapMarkerKey){minimapMarkerKey=key;minimapMarkers=list;minimapDrawn.stamp=-1}}
 function composeMinimap(force=false){
  const px=player.position.x,pz=player.position.z,ppu=MINIMAP_SIZE/minimapExtent;
  if(!minimapCached.ready||minimapCached.extent!==minimapExtent||Math.hypot(minimapCached.x-px,minimapCached.z-pz)*ppu>MINIMAP_PAD*.8)refreshMinimapCache();
@@ -1051,7 +1054,9 @@ function composeMinimap(force=false){
  ctx.save();ctx.translate(c,c);ctx.rotate(minimapRotation(yaw));ctx.translate((minimapCached.x-px)*ppu,(minimapCached.z-pz)*ppu);
  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(minimapCache,-minimapCacheSpan/2,-minimapCacheSpan/2,minimapCacheSpan,minimapCacheSpan);ctx.restore();
  ctx.font='bold 10px Georgia';ctx.textAlign='center';ctx.fillStyle='#f7e5a9';
- for(const h of houseInteriors){if(h.type!=='bank'&&h.type!=='hall')continue;const p=worldToMinimap(h.group.position.x,h.group.position.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(p.x>-20&&p.x<S+20&&p.y>-10&&p.y<S+10)ctx.fillText(h.type==='bank'?'BANK':'HALL',p.x,p.y+3)}
+ for(const h of houseInteriors){if(h.type!=='hall')continue;const p=worldToMinimap(h.group.position.x,h.group.position.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(p.x>-20&&p.x<S+20&&p.y>-10&&p.y<S+10)ctx.fillText('HALL',p.x,p.y+3)}
+ // Map markers (banks, mines, stations, caves…): upright icons, the higher kinds first, no overlaps.
+ if(minimapMarkers.length){const placed=[],size=15;for(const m of minimapMarkers){const p=worldToMinimap(m.x,m.z,player.position,yaw,minimapExtent,S,S,minimapScratch);if(Math.hypot(p.x-c,p.y-c)>c-6||placed.some(q=>Math.abs(q.x-p.x)<size-2&&Math.abs(q.y-p.y)<size-2))continue;placed.push({x:p.x,y:p.y});drawMarker(ctx,m,p.x,p.y,size,minimapRes)}}
  ctx.textAlign='left';
  questUiRef?.trail.drawMinimap(ctx,(x,z)=>worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch),c,c);
  questUiRef?.markers.drawMinimap(ctx,(x,z)=>{const p=worldToMinimap(x,z,player.position,yaw,minimapExtent,S,S,minimapScratch);return p.x>5&&p.x<S-5&&p.y>5&&p.y<S-5&&Math.hypot(p.x-c,p.y-c)<c-5?p:null});
@@ -1076,13 +1081,17 @@ mapCanvas.addEventListener('click',e=>walkFromMap(e,mapCanvas));
 // The full world map (world-map.js) pans, zooms and names places; it never walks.
 const worldMapRegions=()=>generatedWorld?regionAnchors(regionDefinitions,(x,z)=>biomeWeights(x,z,generatedWorld.seed),840,20,places.map(([,x,z])=>({x,z}))):[];
 const worldMapRows=()=>{try{return [...persistentRows.values()].filter(r=>!r.deleted&&r.data)}catch{return []}};
+// Map markers (map-markers.js / map-icons.js): mines, trees, fishing, stations, shops, caves, lairs,
+// dragons, training areas, shortcuts, boats — shared by the world map, the minimap and the console.
+const mapMarkers=createMapMarkers({rows:()=>worldMapRows().filter(r=>!(r.data.floor>0)).map(r=>r.data),buildings:()=>houseInteriors.map(h=>({type:h.type,name:h.name,x:h.group.position.x,z:h.group.position.z})),config:()=>window.eldervaleGameConfig?.mapMarkers});
+window.eldervaleMapMarkers=mapMarkers;
 const worldMap=createWorldMap({canvas:largeMap,source:{extent:840,phone:matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<700,
  heightAt:(x,z)=>landscape.heightAt(x,z),waterAt:(x,z)=>landscape.waterAt(x,z),biome:generatedWorld?(x,z)=>biomeWeights(x,z,generatedWorld.seed):null,regions:worldMapRegions,
  rivers:worldRivers,lakes:worldLakes,lakeOutline,roads:worldRoads,roadPoints,streets:()=>townStreets,bridges:landscape.bridges,castle,trees:()=>forestTrees,
  plazas:()=>worldMapRows().filter(r=>r.data.template==='plaza').map(r=>({x:r.data.x,z:r.data.z,r:8})),
  buildings:()=>houseInteriors.map(h=>({x:h.group.position.x,z:h.group.position.z,halfW:2*h.group.scale.x,halfD:1.85*h.group.scale.z,rot:h.group.rotation.y,roof:'#'+Number(h.roofColor||0x8a4b33).toString(16).padStart(6,'0'),type:h.type,name:h.name})),
  places:()=>places.map(([name,x,z])=>({name,x,z,kind:name.includes('Castle')?'castle':'town',...(isCapitalTown({x,z})&&name===capital.name?{capital:true,title:capital.title}:{})})),walls:()=>capitalActive()?[capitalMapWalls()]:[],
- pois:()=>[...explore.mapPois(),...houseInteriors.map(h=>({kind:poiKind(h.type),x:h.group.position.x,z:h.group.position.z,name:h.name})),...worldMapRows().map(r=>({kind:r.data.kind==='npc'&&(r.data.quest||r.data.questId)?'quest':poiKind(r.data.template),x:r.data.x,z:r.data.z,name:r.data.name}))],
+ pois:()=>explore.mapPois(),markers:()=>mapMarkers.items(),
  quests:()=>questUiRef?.markers.givers?.()||[],objective:()=>{const t=questUiRef?.trail?.target;return t?{x:t.x,z:t.z,label:questUiRef.tracker?.step?.label||''}:null},
  player:()=>({x:player.position.x,z:player.position.z,heading:player.rotation.y}),flag:()=>walkFlagState||mapDestination,deathPile:()=>deathFlow.pile(),
  signature:()=>forestTrees.length+':'+townStreets.length+':'+worldMapRows().filter(r=>r.data.template==='plaza').length}});
