@@ -132,6 +132,15 @@ html body #side>#inventory>.slot .item-icon>:is(img,svg){
 html body #side>#inventory>.slot .item-icon>svg{height:86%!important;max-width:86%!important}
 /* Stack counts: bright yellow in the top-left corner with a black edge. */
 html body #side>#inventory>.slot .item-icon small{position:absolute;top:1px;left:4px;z-index:1;font:700 12px/1 var(--mv-body)!important;color:var(--mv-count)!important;text-shadow:1px 1px 0 #000,-1px 0 0 #000,0 -1px 0 #000,0 0 2px #000;letter-spacing:0;pointer-events:none}
+/* Drag to rearrange (inventory-order.js): the lifted item follows the pointer, its
+   slot dims, and the slot it would land on gets a gold ring. No text selection or iOS callout on a hold. */
+html body #side>#inventory>.slot{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html body #side>#inventory>.slot.drag-source .item-icon{opacity:.35}
+html body #side>#inventory>.slot.drag-over{outline:2px solid var(--mv-gold)!important;outline-offset:-2px}
+body.inventory-dragging,body.inventory-dragging *{cursor:grabbing!important}
+.inventory-drag-ghost{position:fixed;left:0;top:0;z-index:10000;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:.85;will-change:transform}
+.inventory-drag-ghost>:is(img,svg){width:90%;height:90%;object-fit:contain;filter:drop-shadow(1px 2px 2px #000a)}
+.inventory-drag-ghost small{position:absolute;top:1px;left:4px;font:700 12px/1 var(--mv-body,Georgia);color:var(--mv-count,#ff0);text-shadow:1px 1px 0 #000}
 
 /* Equipment, skills and other tabs pick up the same recessed look. */
 html body.fantasy-hud #side :is(#skills,#equipment) .skill-tile{background:var(--mv-stone-dark)!important;border:0!important;box-shadow:var(--mv-bevel-in)!important;color:var(--mv-ink)!important;border-radius:3px!important}

@@ -14,7 +14,7 @@ test('the backpack holds 28 items (RuneScape size) on the client',()=>{
 
 test('no client inventory limit still hard-codes 16 slots',()=>{
  for(const file of ['game.js','economy.js','bank-ui.js']){const src=read(file);assert.doesNotMatch(src,/inventoryUsed\(state\)\s*(?:[<>]=?)\s*16\b|\b16-inventoryUsed|length<16\b|i<16;i\+\+\)\{\n  const item=slots|\/ ?16'/,file)}
- assert.match(read('game.js'),/for\(let i=0;i<INVENTORY_SLOTS;i\+\+\)\{\n  const item=slots\[i\]/);
+ assert.match(read('game.js'),/for\(let i=0;i<INVENTORY_SLOTS;i\+\+\)\{\n  const item=arranged\.slots\[i\]/);
 });
 
 test('the inventory panel is a 4×7 grid whose rows share the panel height',()=>{
