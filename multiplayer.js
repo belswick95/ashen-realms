@@ -1,4 +1,4 @@
-import {publicCharacter} from './character-display.js?v=release-20261107-attacks134';
+import {publicCharacter} from './character-display.js?v=release-20261107-monsters135';
 
 const validId=value=>typeof value==='string'&&value.length>0&&value.length<160;
 function playerState(value){

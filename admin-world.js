@@ -3,10 +3,10 @@
 // ug_* commands through ctx.invoke -> world_admin, owner-checked and audited on the server
 // (db/underground-3-console.sql). Dungeon edits are validated here first (validateDungeon) and
 // again on the server, then re-synced: walls, passages and spawn groups update for everyone.
-import {THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,validateDungeon,rasterize,passageObjects,toWorld,dungeons as defaultDungeons} from './underground-data.js?v=release-20261107-attacks134';
-import {AGILITY_TEMPLATES,failChance} from './agility-data.js?v=release-20261107-attacks134';
-import {SPOT_TYPES,SPOT_MOVE,extraLakes,extraRivers} from './water-data.js?v=release-20261107-attacks134';
-import {fishingOptions} from './fish-tiers.js?v=release-20261107-attacks134';
+import {THEMES,LIGHT_KINDS,PASSAGE_TEMPLATES,validateDungeon,rasterize,passageObjects,toWorld,dungeons as defaultDungeons} from './underground-data.js?v=release-20261107-monsters135';
+import {AGILITY_TEMPLATES,failChance} from './agility-data.js?v=release-20261107-monsters135';
+import {SPOT_TYPES,SPOT_MOVE,extraLakes,extraRivers} from './water-data.js?v=release-20261107-monsters135';
+import {fishingOptions} from './fish-tiers.js?v=release-20261107-monsters135';
 
 // Names of the generated water ids (scripts/build-water-seed.mjs numbering).
 export function waterName(id){if(id>=9001&&id<9010)return extraLakes[id-9001]?.name||'New lake';if(id>=9010&&id<9050){const k=Math.floor((id-9010)/10);return (extraRivers[k]?.name||'New river')+' · segment '+((id-9010)%10+1)}if(id>=9050)return 'Bridge (new water)';return 'Water body '+id}
