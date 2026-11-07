@@ -1,7 +1,7 @@
 // QA2 gameplay and world pass (release move3v161). Each test reproduces a bug found live or in review.
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {createLocalWalker,TICK_MS} from '../motion-track.js';
-import {TILE} from '../tile-grid.js';
+import {TILE,createTileFlagCache,planTileMove} from '../tile-grid.js';
 import {throughOpenDoorway} from '../click-walk.js';
 
 const src=f=>fs.readFileSync(new URL('../'+f,import.meta.url),'utf8');
@@ -58,4 +58,23 @@ test('tile mode: a blocking area load does not stop the server walk under the lo
 // not the monster's name). Attacking says nothing (OSRS); the fight is the feedback.
 test('a left-click attack does not print "Approaching creature..."',()=>{
  const g=src('game.js');assert.match(g,/followActionTarget\(action\);if\(action\.kind!=='npc'&&action\.kind!=='creature'\)say\(/);
+});
+
+// Review (movement v3): the local walker plans a click with the server's tile flags, closed doors
+// included, but refreshWalkTiles() never refetched them while the player stood still, and nothing
+// marked them stale when a door or gate changed. Opening a door, waiting, then clicking through it
+// planned the long way round (the server took the door: a re-route mid-walk, the "wrong way first").
+test('tile flags: a door or gate change marks them stale, and a stale cache is refetched even standing still',()=>{
+ const c=createTileFlagCache();
+ // A wall along j=1 with a door at (0,1) (flag 1: blocked tile).
+ const view=open=>({center:[0,0],radius:40,tiles:[...Array.from({length:21},(_,k)=>[k-10,1,k===10&&open?0:1])]});
+ c.set(view(false),1000);
+ const around=planTileMove([0,0],[[0,3*TILE]],c.flagsAt).path.length;assert.ok(around>3,'door shut: around the wall ('+around+' steps)');
+ assert.equal(c.stale,false);c.invalidate();assert.equal(c.stale,true);assert.equal(c.flagsAt(0,1),1,'the old flags stay usable until the refetch');
+ c.set(view(true),2000);assert.equal(c.stale,false);
+ assert.equal(planTileMove([0,0],[[0,3*TILE]],c.flagsAt).path.length,3,'door open: straight through');
+ const g=src('game.js');
+ assert.match(g,/if\(walkTiles\.covers\(i,j,30\)&&\(now-walkTiles\.fetchedAt<30000\|\|!localWalker\.queue\.length&&!walkTiles\.stale\)\)return;/);
+ assert.match(g,/if\(gate\.userData\.gateOpen!==undefined&&gate\.userData\.gateOpen!==open\)walkTiles\.invalidate\(\);/);
+ assert.match(g,/if\(house\)\{if\(house\.open!==undefined&&!!house\.open!==!!object\.open\)walkTiles\.invalidate\(\);house\.open=object\.open;/);
 });

@@ -154,5 +154,7 @@ export function createTileFlagCache(){
   set(view,now=Date.now()){if(!view||!Array.isArray(view.tiles)||!Array.isArray(view.center))return false;const next=new Map();for(const t of view.tiles){if(Array.isArray(t)&&t[2])next.set(k(t[0]|0,t[1]|0),t[2]|0)}flags=next;center=[view.center[0]|0,view.center[1]|0];radius=view.radius|0;at=now;return true},
   flagsAt:(i,j)=>flags.get(k(i,j))||0,
   covers(i,j,r=32){return !!center&&Math.max(Math.abs(i-center[0]),Math.abs(j-center[1]))+r<=radius},
+  // A door or gate opened or closed: the flags stay usable but are refetched (stale) at once.
+  invalidate(){at=0},get stale(){return at===0},
   get center(){return center},get radius(){return radius},get fetchedAt(){return at}};
 }
