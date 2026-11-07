@@ -1,5 +1,5 @@
-import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261107-qa147';
-import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261107-qa147';
+import {seededRandom,biomeWeights} from './procedural-world.js?v=release-20261107-qaui148';
+import {worldRivers,landscapeLakes,segmentDistance} from './geography.js?v=release-20261107-qaui148';
 // Tree species share the same three instanced meshes per 64-unit chunk (trunks, branches, leaf
 // cards): a species is only a different arrangement and an instance tint, so adding variety costs
 // no extra draw calls. Everything is seeded by position, so every client grows the same forest.
