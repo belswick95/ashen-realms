@@ -223,3 +223,8 @@ previous STATUS block (unfinished QA checks outside the castle, pond radius, iPa
   NPC work/idle/LOD visual checklist not done; monsters trail ~1.2 s (tune createTilePlayback buffer if combat feels late);
   Supabase compute upgrade still recommended; dedicated game server plan (Oracle Cloud) pending owner setup.
 - Owner declined/IP: no extraction of RuneScape/MoparScape client assets; legal options: Mixamo, paid packs, commissions.
+
+## 07 Nov — owner: "You don't need me to say go. Just deploy when they're all done."
+Running: combat attack anims + hit/death ordering (acd0df7a41a3abc25), map icons (afbcb0c969d7b0391),
+Ultimate Monsters fit: ogre=Orc, revenant=Orc_Skull, wraith=Ghost, imp=Demon, bear=Yeti if it reads (a338b7b5e8ed6490a).
+Deploy each after review + tests, without waiting for owner approval.
